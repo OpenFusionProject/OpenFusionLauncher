@@ -1,9 +1,26 @@
+import "./css/bootstrap.min.css";
 import "./css/openfusion.css";
+
+import ofLogo from "./img/of-3.png";
+
+import Image from "next/image";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 export default function Home() {
   return (
-    <div>
-      <p id="of-intro-text">hehe <code>dong</code></p>
-    </div>
+    <Container>
+      <Row className="text-center mt-3">
+        <Col>
+          <Image src={ofLogo} alt="OpenFusion logo" width={256} />
+          <p id="of-intro-text">
+            Welcome to OpenFusion.
+            <br />
+            Select a server from the list below to get started.
+          </p>
+        </Col>
+      </Row>
+    </Container>
   );
 }
