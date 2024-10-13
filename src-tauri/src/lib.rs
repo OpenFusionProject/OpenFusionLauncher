@@ -46,7 +46,7 @@ impl AppStatics {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 struct AppState {
     config: Config,
     versions: Versions,
@@ -132,6 +132,17 @@ struct Config {
     #[serde(default = "version_zero")]
     last_version_initialized: String,
 }
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            autoupdate_check: true,
+            cache_swapping: true,
+            enable_offline_cache: true,
+            verify_offline_cache: false,
+            last_version_initialized: version_zero(),
+        }
+    }
+}
 impl Config {
     fn new() -> Self {
         let mut cfg = match Self::load() {
@@ -188,7 +199,7 @@ struct Version {
     url: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 struct Versions {
     versions: Vec<Version>,
 }
@@ -240,7 +251,7 @@ struct Server {
     version: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 struct Servers {
     servers: Vec<Server>,
     favorites: Vec<Uuid>,
@@ -291,6 +302,17 @@ fn save_app_state(app_handle: &tauri::AppHandle) {
     app_state.save();
 }
 
+#[tauri::command]
+fn get_servers(state: tauri::State<Mutex<AppState>>) -> Servers {
+    match state.lock() {
+        Ok(state) => state.servers.clone(),
+        Err(e) => {
+            error!("Failed to lock app state: {}", e);
+            Servers::default()
+        }
+    }
+}
+
 #[allow(clippy::single_match)]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -306,12 +328,14 @@ pub fn run() {
 
             APP_STATICS.set(AppStatics::load(app)).unwrap();
             dbg!(get_app_statics());
-            let app_state = Mutex::new(AppState::load());
-            app.manage(app_state);
+            // N.B. AppState::load depends on APP_STATICS
+            let app_state = AppState::load();
+            app.manage(Mutex::new(app_state));
 
             Ok(())
         })
-        .build(tauri::generate_context!())
+        .invoke_handler(tauri::generate_handler![get_servers])
+        .build(tauri::generate_context![])
         .unwrap()
         .run(|app_handle, event| match event {
             tauri::RunEvent::Exit { .. } => save_app_state(app_handle),

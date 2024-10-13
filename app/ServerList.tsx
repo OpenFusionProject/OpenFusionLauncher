@@ -1,4 +1,8 @@
-export default function ServerList() {
+import { ServerEntry } from "./types";
+
+export default function ServerList({
+  servers,
+}: Readonly<{ servers: ServerEntry[] }>) {
   return (
     <div
       className="table-responsive text-center border rounded border-primary"
@@ -12,11 +16,20 @@ export default function ServerList() {
           </tr>
         </thead>
         <tbody id="server-tablebody">
-          <tr id="server-listing-placeholder">
-            <td colSpan={2}>
-              No servers added yet... perhaps you should find one?
-            </td>
-          </tr>
+          {servers.length == 0 ? (
+            <tr id="server-listing-placeholder">
+              <td colSpan={2}>
+                No servers added yet... perhaps you should find one?
+              </td>
+            </tr>
+          ) : (
+            servers.map((server) => (
+              <tr key={server.uuid} className="server-listing-entry">
+                <td>{server.description}</td>
+                <td className="text-monospace">{server.version}</td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>
