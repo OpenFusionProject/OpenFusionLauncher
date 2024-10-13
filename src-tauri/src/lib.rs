@@ -313,6 +313,15 @@ fn get_servers(state: tauri::State<Mutex<AppState>>) -> Servers {
     }
 }
 
+#[tauri::command]
+fn connect_to_server(uuid: String) {
+    if let Ok(uuid) = Uuid::parse_str(&uuid) {
+        info!("Connecting to server {}", uuid);
+    } else {
+        warn!("Invalid server UUID: {}", uuid);
+    }
+}
+
 #[allow(clippy::single_match)]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -334,7 +343,7 @@ pub fn run() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![get_servers])
+        .invoke_handler(tauri::generate_handler![get_servers, connect_to_server])
         .build(tauri::generate_context![])
         .unwrap()
         .run(|app_handle, event| match event {

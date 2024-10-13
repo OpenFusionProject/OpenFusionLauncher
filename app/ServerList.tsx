@@ -4,10 +4,12 @@ export default function ServerList({
   servers,
   selectedServer,
   setSelectedServer,
+  connectToServer,
 }: {
   servers: ServerEntry[];
   selectedServer: string;
   setSelectedServer: (server: string) => void;
+  connectToServer: (server: string) => void;
 }) {
   return (
     <div
@@ -37,6 +39,7 @@ export default function ServerList({
                   (selectedServer == server.uuid ? "bg-primary" : "")
                 }
                 onClick={() => setSelectedServer(server.uuid)}
+                onDoubleClick={() => connectToServer(server.uuid)}
               >
                 <td>{server.description}</td>
                 <td className="text-monospace">{server.version}</td>

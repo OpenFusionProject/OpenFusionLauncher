@@ -25,6 +25,15 @@ export default function Home() {
     setServers(serverData.servers);
   };
 
+  const connectToServer = (serverUuid: string) => {
+    if (serverUuid == "") {
+      return;
+    }
+    // @ts-ignore
+    const invoke = window.__TAURI__.core.invoke;
+    invoke("connect_to_server", { uuid: serverUuid });
+  };
+
   useEffect(() => {
     updateServers();
   }, [servers]);
@@ -50,6 +59,7 @@ export default function Home() {
             servers={servers}
             selectedServer={selectedServer}
             setSelectedServer={setSelectedServer}
+            connectToServer={connectToServer}
           />
         </Col>
       </Row>
