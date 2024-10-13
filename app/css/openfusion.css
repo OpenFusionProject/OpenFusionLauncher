@@ -9,7 +9,7 @@
     background-color: #34476e;
 }
 
-#server-table > .table-striped tbody tr:nth-of-type(odd) {
+#server-table > .table-striped tbody tr:nth-of-type(even) {
     background-color: #34476e;
 }
 
@@ -19,7 +19,7 @@
     -webkit-user-select: none;
 }
 
-#server-table > .table-striped tbody tr:nth-of-type(even),
+#server-table > .table-striped tbody tr:nth-of-type(odd),
 th {
     background-color: #24314d;
 }
