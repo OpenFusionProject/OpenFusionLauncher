@@ -16,6 +16,7 @@ import ServerList from "./ServerList";
 
 export default function Home() {
   const [servers, setServers] = useState<ServerEntry[]>([]);
+  const [selectedServer, setSelectedServer] = useState<string>("");
 
   const updateServers = async () => {
     // @ts-ignore
@@ -45,7 +46,11 @@ export default function Home() {
         className="d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center"
       >
         <Col xs={8} className="mb-2">
-          <ServerList servers={servers} />
+          <ServerList
+            servers={servers}
+            selectedServer={selectedServer}
+            setSelectedServer={setSelectedServer}
+          />
         </Col>
       </Row>
     </Container>

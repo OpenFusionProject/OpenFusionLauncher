@@ -2,7 +2,13 @@ import { ServerEntry } from "./types";
 
 export default function ServerList({
   servers,
-}: Readonly<{ servers: ServerEntry[] }>) {
+  selectedServer,
+  setSelectedServer,
+}: {
+  servers: ServerEntry[];
+  selectedServer: string;
+  setSelectedServer: (server: string) => void;
+}) {
   return (
     <div
       className="table-responsive text-center border rounded border-primary"
@@ -24,7 +30,14 @@ export default function ServerList({
             </tr>
           ) : (
             servers.map((server) => (
-              <tr key={server.uuid} className="server-listing-entry">
+              <tr
+                key={server.uuid}
+                className={
+                  "server-listing-entry " +
+                  (selectedServer == server.uuid ? "bg-primary" : "")
+                }
+                onClick={() => setSelectedServer(server.uuid)}
+              >
                 <td>{server.description}</td>
                 <td className="text-monospace">{server.version}</td>
               </tr>
