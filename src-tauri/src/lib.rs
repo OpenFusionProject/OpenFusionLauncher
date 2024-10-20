@@ -1,6 +1,7 @@
 mod state;
 mod util;
 
+use serde::Serialize;
 use state::{get_app_statics, AppState, Server, Servers, Version};
 
 use std::{path::PathBuf, sync::Mutex};
@@ -10,7 +11,13 @@ use tauri::Manager;
 use uuid::Uuid;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
-type CommandResult = std::result::Result<(), String>;
+type CommandResult<T> = std::result::Result<T, String>;
+
+#[derive(Debug, Serialize)]
+struct ImportCounts {
+    version_count: usize,
+    server_count: usize,
+}
 
 fn save_app_state(app_handle: &tauri::AppHandle) {
     let app_state = app_handle.state::<Mutex<AppState>>();
@@ -98,10 +105,31 @@ fn connect_to_server_internal(app_handle: tauri::AppHandle, uuid: String) -> Res
     Ok(())
 }
 
+fn import_from_openfusionclient_internal(
+    state: tauri::State<Mutex<AppState>>,
+) -> Result<ImportCounts> {
+    let mut app_state = state.lock().unwrap();
+    let version_count = app_state.import_versions()?;
+    let server_count = app_state.import_servers()?;
+    app_state.save();
+    Ok(ImportCounts {
+        version_count,
+        server_count,
+    })
+}
+
 #[tauri::command]
-fn connect_to_server(app_handle: tauri::AppHandle, uuid: String) -> CommandResult {
+fn connect_to_server(app_handle: tauri::AppHandle, uuid: String) -> CommandResult<()> {
     debug!("connect_to_server {}", uuid);
     connect_to_server_internal(app_handle, uuid).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn import_from_openfusionclient(
+    state: tauri::State<Mutex<AppState>>,
+) -> CommandResult<ImportCounts> {
+    debug!("import_from_openfusionclient");
+    import_from_openfusionclient_internal(state).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -152,6 +180,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             reload_state,
             get_servers,
+            import_from_openfusionclient,
             connect_to_server
         ])
         .build(tauri::generate_context![])

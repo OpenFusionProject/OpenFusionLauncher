@@ -30,3 +30,8 @@ export type LoadingTask = {
   id: string;
   text?: string;
 };
+
+export type ImportCounts = {
+  version_count: number;
+  server_count: number;
+};

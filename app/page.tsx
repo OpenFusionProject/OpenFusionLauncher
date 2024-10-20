@@ -11,7 +11,13 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Stack from "react-bootstrap/Stack";
 
-import { ServerEntry, Servers, Alert, LoadingTask } from "./types";
+import {
+  ServerEntry,
+  Servers,
+  Alert,
+  LoadingTask,
+  ImportCounts,
+} from "./types";
 import ServerList from "./ServerList";
 import AlertList from "./AlertList";
 import Button from "./Button";
@@ -65,8 +71,36 @@ export default function Home() {
     stopLoading("get-init-servers");
   };
 
+  const importFromOpenFusionClient = async () => {
+    startLoading("import");
+    await invoker()("import_from_openfusionclient")
+      .then((counts: ImportCounts) => {
+        if (counts.server_count == 0 && counts.version_count == 0) {
+          console.log("Nothing to import");
+        } else {
+          let text = "Imported ";
+          if (counts.version_count > 0) {
+            text += counts.version_count + " versions ";
+            if (counts.server_count > 0) {
+              text += "and ";
+            }
+          }
+          if (counts.server_count > 0) {
+            text += counts.server_count + " servers ";
+          }
+          text += "from OpenFusionClient";
+          alertSuccess(text);
+        }
+      })
+      .catch((e: string) => {
+        console.log("Failed to import (" + e + ")");
+      });
+    stopLoading("import");
+  };
+
   const doInit = async () => {
     await invoker()("reload_state");
+    await importFromOpenFusionClient();
     await updateServers();
   };
 

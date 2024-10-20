@@ -10,6 +10,7 @@ use crate::{util, Result};
 const CDN_URL: &str = "http://cdn.dexlabs.systems/ff/big";
 const UNITY_CACHE_PATH: &str = "LocalLow/Unity/Web Player/Cache";
 const DEFAULTS_PATH: &str = "defaults";
+const OPENFUSIONCLIENT_PATH: &str = "OpenFusionClient";
 
 static APP_STATICS: OnceLock<AppStatics> = OnceLock::new();
 
@@ -91,6 +92,24 @@ impl AppState {
         }
         if let Err(e) = self.servers.save() {
             warn!("Failed to save servers: {}", e);
+        }
+    }
+
+    pub fn import_servers(&mut self) -> Result<usize> {
+        let imported_servers = Servers::load_from_openfusionclient()?;
+        if let Some(imported_servers) = imported_servers {
+            Ok(self.servers.merge(&imported_servers))
+        } else {
+            Ok(0)
+        }
+    }
+
+    pub fn import_versions(&mut self) -> Result<usize> {
+        let imported_versions = Versions::load_from_openfusionclient()?;
+        if let Some(imported_versions) = imported_versions {
+            Ok(self.versions.merge(&imported_versions))
+        } else {
+            Ok(0)
         }
     }
 
@@ -211,6 +230,31 @@ impl Versions {
         Ok(versions)
     }
 
+    fn load_from_openfusionclient() -> Result<Option<Self>> {
+        let versions_path = get_app_statics()
+            .app_data_dir
+            .join("../")
+            .join(OPENFUSIONCLIENT_PATH)
+            .join("versions.json");
+        if !versions_path.exists() {
+            return Ok(None);
+        }
+        let versions_str = std::fs::read_to_string(versions_path)?;
+        let versions: Self = serde_json::from_str(&versions_str)?;
+        Ok(Some(versions))
+    }
+
+    fn merge(&mut self, other: &Self) -> usize {
+        let mut count = 0;
+        for version in &other.versions {
+            if !self.versions.iter().any(|v| v.name == version.name) {
+                self.versions.push(version.clone());
+                count += 1;
+            }
+        }
+        count
+    }
+
     fn save(&self) -> Result<()> {
         let versions_path = get_app_statics().app_data_dir.join("versions.json");
         let versions_str = serde_json::to_string_pretty(self)?;
@@ -267,6 +311,31 @@ impl Servers {
         let servers_str = std::fs::read_to_string(servers_path)?;
         let servers: Self = serde_json::from_str(&servers_str)?;
         Ok(servers)
+    }
+
+    fn load_from_openfusionclient() -> Result<Option<Self>> {
+        let servers_path = get_app_statics()
+            .app_data_dir
+            .join("../")
+            .join(OPENFUSIONCLIENT_PATH)
+            .join("servers.json");
+        if !servers_path.exists() {
+            return Ok(None);
+        }
+        let servers_str = std::fs::read_to_string(servers_path)?;
+        let servers: Self = serde_json::from_str(&servers_str)?;
+        Ok(Some(servers))
+    }
+
+    fn merge(&mut self, other: &Self) -> usize {
+        let mut count = 0;
+        for server in &other.servers {
+            if !self.servers.iter().any(|s| s.uuid == server.uuid) {
+                self.servers.push(server.clone());
+                count += 1;
+            }
+        }
+        count
     }
 
     fn save(&self) -> Result<()> {
