@@ -9,7 +9,7 @@ export default function Button({
   enabled: boolean;
   variant: string;
   icon: string;
-  text?: number;
+  text?: string;
 }) {
   return (
     <button
@@ -18,7 +18,7 @@ export default function Button({
       onClick={onClick}
     >
       {text && <span>{text}</span>}
-      <i class={"fas fa-" + icon}></i>
+      <i className={"fas fa-" + icon}></i>
     </button>
   )
 }
