@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.6.0",
+    "@tauri-apps/api": "^2.0.3",
     "@types/uuid": "^10.0.0",
     "bootstrap": "^5.3.3",
     "magic-snowflakes": "^6.3.0",

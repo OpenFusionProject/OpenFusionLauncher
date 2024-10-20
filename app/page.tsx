@@ -4,6 +4,7 @@ import ofLogo from "./img/of-dark.png";
 
 import startEasterEggs from "./easter-eggs";
 
+import { invoke } from "@tauri-apps/api/core";
 import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Container from "react-bootstrap/Container";
@@ -35,11 +36,6 @@ export default function Home() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>(initTasks);
 
-  const invoker = () => {
-    // @ts-ignore
-    return window.__TAURI__.core.invoke;
-  };
-
   const pushAlert = (variant: string, text: string) => {
     const id = Math.floor(Math.random() * 1000000);
     setAlerts((alerts) => [{ variant, text, id }, ...alerts]);
@@ -66,7 +62,7 @@ export default function Home() {
   };
 
   const updateServers = async () => {
-    const serverData: Servers = await invoker()("get_servers");
+    const serverData: Servers = await invoke("get_servers");
     setServers(serverData.servers);
     stopLoading("get-init-servers");
   };
@@ -74,9 +70,7 @@ export default function Home() {
   const importFromOpenFusionClient = async () => {
     startLoading("import");
     try {
-      const counts: ImportCounts = await invoker()(
-        "import_from_openfusionclient"
-      );
+      const counts: ImportCounts = await invoke("import_from_openfusionclient");
       if (counts.server_count == 0 && counts.version_count == 0) {
         console.log("Nothing to import");
       } else {
@@ -100,7 +94,7 @@ export default function Home() {
   };
 
   const doInit = async () => {
-    await invoker()("reload_state");
+    await invoke("reload_state");
     await importFromOpenFusionClient();
     await updateServers();
   };
@@ -119,7 +113,7 @@ export default function Home() {
   const connectToServer = async (serverUuid?: string) => {
     if (serverUuid) {
       try {
-        await invoker()("connect_to_server", { uuid: serverUuid });
+        await invoke("connect_to_server", { uuid: serverUuid });
         alertSuccess("Ready to launch");
       } catch (e: unknown) {
         alertError("Failed to prep launch (" + e + ")");
