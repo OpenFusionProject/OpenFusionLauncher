@@ -19,14 +19,14 @@ pub fn init_app_statics(app: &mut tauri::App) {
     APP_STATICS.set(statics).unwrap();
 }
 
-fn get_app_statics() -> &'static AppStatics {
+pub fn get_app_statics() -> &'static AppStatics {
     APP_STATICS.get().unwrap()
 }
 
 #[derive(Debug)]
 pub struct AppStatics {
     version: String,
-    app_data_dir: PathBuf,
+    pub app_data_dir: PathBuf,
     defaults_dir: PathBuf,
     unity_cache_dir: PathBuf,
     cdn_url: String,
@@ -178,7 +178,7 @@ impl Config {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Version {
     name: String,
-    url: String,
+    pub url: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
@@ -223,14 +223,19 @@ impl Versions {
             std::fs::read_to_string(default_versions_path).expect("Default versions not found");
         serde_json::from_str(&default_versions_str).expect("Default versions are invalid")
     }
+
+    pub fn get_entry(&self, name: &str) -> Option<&Version> {
+        self.versions.iter().find(|v| v.name == name)
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-struct Server {
+pub struct Server {
     uuid: Uuid,
     description: String,
-    ip: String,
-    version: String,
+    pub ip: String,
+    pub version: String,
+    pub endpoint: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
@@ -275,5 +280,9 @@ impl Servers {
         let default_servers_str =
             std::fs::read_to_string(default_servers_path).expect("Default servers not found");
         serde_json::from_str(&default_servers_str).expect("Default servers are invalid")
+    }
+
+    pub fn get_entry(&self, uuid: Uuid) -> Option<&Server> {
+        self.servers.iter().find(|s| s.uuid == uuid)
     }
 }

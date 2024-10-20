@@ -34,7 +34,9 @@ export default function Home() {
     }
     // @ts-ignore
     const invoke = window.__TAURI__.core.invoke;
-    invoke("connect_to_server", { uuid: serverUuid });
+    invoke("connect_to_server", { uuid: serverUuid })
+      .then(() => console.log("Ready to launch"))
+      .catch((e: string) => console.log("Error connecting to server: " + e));
   };
 
   useEffect(() => {
