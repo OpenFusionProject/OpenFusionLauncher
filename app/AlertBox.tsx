@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Alert from "react-bootstrap/Alert";
 
 function variantToLabel(variant: string) {
@@ -22,19 +23,22 @@ export default function AlertBox({
   variant: string;
   text: string;
 }) {
+  const [show, setShow] = useState(true);
   return (
-    <Alert
-      variant={variant}
-      className={"mb-2 border border-" + variant + " btn-" + variant}
-      dismissible={false}
-    >
-      <span>
-        <strong>{variantToLabel(variant)}:</strong> {text}
-      </span>
-      <button
-        type="button"
-        className="btn shadow-none float-right fas fa-times"
-      ></button>
-    </Alert>
+    show && (
+      <Alert
+        variant={variant}
+        className={"mb-2 pr-0 border border-" + variant + " btn-" + variant}
+      >
+        <span>
+          <strong>{variantToLabel(variant)}:</strong> {text}
+        </span>
+        <button
+          type="button"
+          className="btn shadow-none float-right fas fa-times"
+          onClick={() => setShow(false)}
+        ></button>
+      </Alert>
+    )
   );
 }

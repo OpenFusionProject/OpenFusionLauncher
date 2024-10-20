@@ -19,3 +19,8 @@ export type VersionEntry = {
 export type Versions = {
   versions: VersionEntry[];
 };
+
+export type Alert = {
+  variant: string;
+  text: string;
+};

@@ -178,10 +178,9 @@ button > i {
     cursor: pointer;
 }
 
-#alerts-container {
+#alerts {
     position: fixed;
     width: 100%;
-    height: 100%;
     margin: 0;
     padding: 10px;
     top: 0;

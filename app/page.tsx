@@ -13,13 +13,30 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Stack from "react-bootstrap/Stack";
 
-import { ServerEntry, Servers } from "./types";
+import { ServerEntry, Servers, Alert } from "./types";
 import ServerList from "./ServerList";
-import AlertBox from "./AlertBox";
+import AlertList from "./AlertList";
 
 export default function Home() {
   const [servers, setServers] = useState<ServerEntry[]>([]);
   const [selectedServer, setSelectedServer] = useState<string>("");
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+
+  const pushAlert = (variant: string, text: string) => {
+    setAlerts((alerts) => [{ variant, text }, ...alerts]);
+  };
+
+  const alertError = (text: string) => {
+    pushAlert("danger", text);
+  };
+
+  const alertInfo = (text: string) => {
+    pushAlert("primary", text);
+  };
+
+  const alertSuccess = (text: string) => {
+    pushAlert("success", text);
+  };
 
   const updateServers = async () => {
     // @ts-ignore
@@ -35,21 +52,17 @@ export default function Home() {
     // @ts-ignore
     const invoke = window.__TAURI__.core.invoke;
     invoke("connect_to_server", { uuid: serverUuid })
-      .then(() => console.log("Ready to launch"))
-      .catch((e: string) => console.log("Error connecting to server: " + e));
+      .then(() => alertSuccess("Ready to launch")) // temp for testing
+      .catch((e: string) => alertError("Error connecting to server: " + e));
   };
 
   useEffect(() => {
     updateServers();
-  }, [servers]);
+  }, []);
 
   return (
     <>
-      <Stack id="alerts-container">
-        <AlertBox variant="danger" text="This is a test alert box." />
-        <AlertBox variant="success" text="This is a test alert box." />
-        <AlertBox variant="primary" text="This is a test alert box." />
-      </Stack>
+      <AlertList alerts={alerts} />
       <Container id="serverselector-container">
         <Row id="of-logoheader" className="text-center mt-3">
           <Col>
