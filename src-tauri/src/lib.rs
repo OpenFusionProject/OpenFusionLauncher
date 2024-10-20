@@ -40,6 +40,19 @@ fn get_assets_dir() -> Result<PathBuf> {
 fn configure_for_server(server: &Server) -> Result<()> {
     let assets_dir = get_assets_dir()?;
 
+    let login_info_path = assets_dir.join("loginInfo.php");
+    // if the address is not already an IP, resolve it.
+    // whether it's an IP or not, it will have :PORT appended to it
+    let addr = server.ip.clone();
+    debug!("Server address is {}", addr);
+    let (mut addr, port) = util::split_addr_port(&addr)?;
+    if addr.parse::<std::net::IpAddr>().is_err() {
+        addr = util::resolve_host(&addr)?;
+        debug!("Resolved server hostname to {}", addr);
+    }
+    let login_info_contents = format!("{}:{}", addr, port);
+    std::fs::write(login_info_path, login_info_contents.as_bytes())?;
+
     // endpoint-specific stuff
     let rankurl_path = assets_dir.join("rankurl.txt");
     let images_path = assets_dir.join("images.php");
