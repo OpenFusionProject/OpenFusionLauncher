@@ -7,7 +7,7 @@ export default function ServerList({
   connectToServer,
 }: {
   servers: ServerEntry[];
-  selectedServer: string;
+  selectedServer?: string;
   setSelectedServer: (server: string) => void;
   connectToServer: (server: string) => void;
 }) {

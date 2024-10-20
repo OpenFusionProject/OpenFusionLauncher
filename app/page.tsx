@@ -25,7 +25,7 @@ const initTasks: LoadingTask[] = [
 
 export default function Home() {
   const [servers, setServers] = useState<ServerEntry[]>([]);
-  const [selectedServer, setSelectedServer] = useState<string>("");
+  const [selectedServer, setSelectedServer] = useState<string | undefined>();
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>(initTasks);
 
@@ -69,13 +69,12 @@ export default function Home() {
     alertInfo("hehe dong");
   };
 
-  const connectToServer = (serverUuid: string) => {
-    if (serverUuid == "") {
-      return;
+  const connectToServer = (serverUuid?: string) => {
+    if (serverUuid) {
+      invoker()("connect_to_server", { uuid: serverUuid })
+        .then(() => alertSuccess("Ready to launch")) // temp for testing
+        .catch((e: string) => alertError("Failed to prep launch (" + e + ")"));
     }
-    invoker()("connect_to_server", { uuid: serverUuid })
-      .then(() => alertSuccess("Ready to launch")) // temp for testing
-      .catch((e: string) => alertError("Failed to prep launch (" + e + ")"));
   };
 
   useEffect(() => {
@@ -130,13 +129,13 @@ export default function Home() {
               />
               <Button
                 onClick={stub}
-                enabled={selectedServer != ""}
+                enabled={selectedServer !== undefined}
                 variant="primary"
                 icon="edit"
               />
               <Button
                 onClick={stub}
-                enabled={selectedServer != ""}
+                enabled={selectedServer !== undefined}
                 variant="danger"
                 icon="trash"
               />
