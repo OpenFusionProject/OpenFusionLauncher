@@ -9,7 +9,6 @@ use crate::{util, Result};
 
 const CDN_URL: &str = "http://cdn.dexlabs.systems/ff/big";
 const UNITY_CACHE_PATH: &str = "LocalLow/Unity/Web Player/Cache";
-const DEFAULTS_PATH: &str = "defaults";
 const OPENFUSIONCLIENT_PATH: &str = "OpenFusionClient";
 
 static APP_STATICS: OnceLock<AppStatics> = OnceLock::new();
@@ -28,7 +27,7 @@ pub fn get_app_statics() -> &'static AppStatics {
 pub struct AppStatics {
     version: String,
     pub app_data_dir: PathBuf,
-    defaults_dir: PathBuf,
+    pub resource_dir: PathBuf,
     unity_cache_dir: PathBuf,
     cdn_url: String,
 }
@@ -37,8 +36,8 @@ impl AppStatics {
         let version = app.handle().package_info().version.to_string();
         let path_resolver = app.handle().path();
         let app_data_dir = path_resolver.app_data_dir().unwrap();
-        let defaults_dir = path_resolver
-            .resolve(DEFAULTS_PATH, BaseDirectory::Resource)
+        let resource_dir = path_resolver
+            .resolve("resources", BaseDirectory::Resource)
             .unwrap();
         let unity_cache_dir = path_resolver
             .resolve(UNITY_CACHE_PATH, BaseDirectory::AppData)
@@ -46,7 +45,7 @@ impl AppStatics {
         Self {
             version,
             app_data_dir,
-            defaults_dir,
+            resource_dir,
             unity_cache_dir,
             cdn_url: CDN_URL.to_string(),
         }
@@ -198,7 +197,7 @@ impl Config {
 
     fn load_default() -> Self {
         info!("Loading default config");
-        let default_config_path = get_app_statics().defaults_dir.join("config.json");
+        let default_config_path = get_app_statics().resource_dir.join("defaults/config.json");
         let default_config_str =
             std::fs::read_to_string(default_config_path).expect("Default config not found");
         serde_json::from_str(&default_config_str).expect("Default config is invalid")
@@ -273,7 +272,9 @@ impl Versions {
 
     fn load_default() -> Self {
         info!("Loading default versions");
-        let default_versions_path = get_app_statics().defaults_dir.join("versions.json");
+        let default_versions_path = get_app_statics()
+            .resource_dir
+            .join("defaults/versions.json");
         let default_versions_str =
             std::fs::read_to_string(default_versions_path).expect("Default versions not found");
         serde_json::from_str(&default_versions_str).expect("Default versions are invalid")
@@ -356,7 +357,7 @@ impl Servers {
 
     fn load_default() -> Self {
         info!("Loading default servers");
-        let default_servers_path = get_app_statics().defaults_dir.join("servers.json");
+        let default_servers_path = get_app_statics().resource_dir.join("defaults/servers.json");
         let default_servers_str =
             std::fs::read_to_string(default_servers_path).expect("Default servers not found");
         serde_json::from_str(&default_servers_str).expect("Default servers are invalid")

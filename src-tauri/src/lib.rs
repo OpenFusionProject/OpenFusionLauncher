@@ -26,12 +26,17 @@ fn save_app_state(app_handle: &tauri::AppHandle) {
 }
 
 fn get_assets_dir() -> Result<PathBuf> {
-    let assets_dir = get_app_statics().app_data_dir.join("assets");
+    let app_statics = get_app_statics();
+    let assets_dir = app_statics.app_data_dir.join("assets");
     if !assets_dir.exists() {
-        Err("Assets directory does not exist".into())
-    } else {
-        Ok(assets_dir)
+        let fresh_assets_dir = app_statics.resource_dir.join("assets");
+        fs_extra::dir::copy(
+            fresh_assets_dir,
+            &app_statics.app_data_dir,
+            &fs_extra::dir::CopyOptions::new(),
+        )?;
     }
+    Ok(assets_dir)
 }
 
 fn configure_for_server(server: &Server) -> Result<()> {
@@ -111,7 +116,9 @@ fn import_from_openfusionclient_internal(
     let mut app_state = state.lock().unwrap();
     let version_count = app_state.import_versions()?;
     let server_count = app_state.import_servers()?;
-    app_state.save();
+    if version_count > 0 || server_count > 0 {
+        app_state.save();
+    }
     Ok(ImportCounts {
         version_count,
         server_count,
