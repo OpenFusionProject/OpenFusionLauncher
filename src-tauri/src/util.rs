@@ -25,9 +25,14 @@ pub fn string_version_to_u32(version: &str) -> u32 {
 }
 
 pub fn split_addr_port(addr_port: &str) -> Result<(String, u16)> {
+    const DEFAULT_PORT: u16 = 23000;
     let mut parts = addr_port.split(':');
     let addr = parts.next().ok_or("Missing address")?.to_string();
-    let port = parts.next().ok_or("Missing port")?.parse::<u16>()?;
+    let port = if let Some(port) = parts.next() {
+        port.parse::<u16>()?
+    } else {
+        DEFAULT_PORT
+    };
     Ok((addr, port))
 }
 
