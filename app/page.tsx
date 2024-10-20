@@ -6,6 +6,8 @@ import "./css/openfusion.css";
 
 import ofLogo from "./img/of-3.png";
 
+import startEasterEggs from "./easter-eggs";
+
 import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Container from "react-bootstrap/Container";
@@ -58,6 +60,7 @@ export default function Home() {
 
   useEffect(() => {
     updateServers();
+    startEasterEggs();
   }, []);
 
   return (
