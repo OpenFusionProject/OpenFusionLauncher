@@ -42,7 +42,7 @@ export default function AlertBox({
         variant={variant}
         className={"mb-2 pr-0 border border-" + variant + " btn-" + variant}
       >
-        <span>
+        <span className="align-middle">
           <strong>{variantToLabel(variant)}:</strong> {text}
         </span>
         <button
