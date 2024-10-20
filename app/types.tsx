@@ -23,4 +23,5 @@ export type Versions = {
 export type Alert = {
   variant: string;
   text: string;
+  id: number;
 };

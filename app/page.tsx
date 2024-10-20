@@ -24,8 +24,14 @@ export default function Home() {
   const [selectedServer, setSelectedServer] = useState<string>("");
   const [alerts, setAlerts] = useState<Alert[]>([]);
 
+  const invoker = () => {
+    // @ts-ignore
+    return window.__TAURI__.core.invoke;
+  };
+
   const pushAlert = (variant: string, text: string) => {
-    setAlerts((alerts) => [{ variant, text }, ...alerts]);
+    const id = Math.floor(Math.random() * 1000000);
+    setAlerts((alerts) => [{ variant, text, id }, ...alerts]);
   };
 
   const alertError = (text: string) => {
@@ -41,9 +47,7 @@ export default function Home() {
   };
 
   const updateServers = async () => {
-    // @ts-ignore
-    const invoke = window.__TAURI__.core.invoke;
-    const serverData: Servers = await invoke("get_servers");
+    const serverData: Servers = await invoker()("get_servers");
     setServers(serverData.servers);
   };
 
@@ -51,9 +55,7 @@ export default function Home() {
     if (serverUuid == "") {
       return;
     }
-    // @ts-ignore
-    const invoke = window.__TAURI__.core.invoke;
-    invoke("connect_to_server", { uuid: serverUuid })
+    invoker()("connect_to_server", { uuid: serverUuid })
       .then(() => alertSuccess("Ready to launch")) // temp for testing
       .catch((e: string) => alertError("Failed to prep launch (" + e + ")"));
   };
