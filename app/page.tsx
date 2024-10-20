@@ -14,6 +14,7 @@ import Stack from "react-bootstrap/Stack";
 import { ServerEntry, Servers, Alert } from "./types";
 import ServerList from "./ServerList";
 import AlertList from "./AlertList";
+import Button from "./Button";
 
 export default function Home() {
   const [servers, setServers] = useState<ServerEntry[]>([]);
@@ -45,6 +46,10 @@ export default function Home() {
   const updateServers = async () => {
     const serverData: Servers = await invoker()("get_servers");
     setServers(serverData.servers);
+  };
+
+  const stub = () => {
+
   };
 
   const connectToServer = (serverUuid: string) => {
@@ -86,6 +91,47 @@ export default function Home() {
               setSelectedServer={setSelectedServer}
               connectToServer={connectToServer}
             />
+          </Col>
+        </Row>
+        <Row className="justify-content-center">
+          <Col xs={4}>
+            <Stack gap={1} direction="horizontal">
+              <Button
+                onClick={stub}
+                enabled={true}
+                variant="success"
+                icon="plus"
+              />
+              <Button
+                onClick={stub}
+                enabled={selectedServer != ""}
+                variant="primary"
+                icon="edit"
+              />
+              <Button
+                onClick={stub}
+                enabled={selectedServer != ""}
+                variant="danger"
+                icon="trash"
+              />
+            </Stack>
+          </Col>
+          <Col xs={4}>
+            <Stack gap={1} direction="horizontal" className="flex-row-reverse">
+              <Button
+                onClick={() => connectToServer(selectedServer)}
+                enabled={selectedServer != ""}
+                variant="primary"
+                icon="angle-double-right"
+                text="Connect "
+              />
+              <Button
+                onClick={stub}
+                enabled={true}
+                variant="primary"
+                icon="database"
+              />
+            </Stack>
           </Col>
         </Row>
       </Container>

@@ -42,7 +42,7 @@ export default function ServerList({
                 onDoubleClick={() => connectToServer(server.uuid)}
               >
                 <td>{server.description}</td>
-                <td className="text-monospace">{server.version}</td>
+                <td className="font-monospace">{server.version}</td>
               </tr>
             ))
           )}
