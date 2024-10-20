@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
 import Alert from "react-bootstrap/Alert";
 
 function variantToLabel(variant: string) {
@@ -19,11 +19,23 @@ function variantToLabel(variant: string) {
 export default function AlertBox({
   variant,
   text,
+  timeout
 }: {
   variant: string;
   text: string;
+  timeout?: number;
 }) {
   const [show, setShow] = useState(true);
+
+  useEffect(() => {
+    if (timeout) {
+      const timer = setTimeout(() => {
+        setShow(false);
+      }, timeout);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   return (
     show && (
       <Alert
