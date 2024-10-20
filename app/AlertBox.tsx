@@ -47,7 +47,7 @@ export default function AlertBox({
         </span>
         <button
           type="button"
-          className="btn shadow-none float-right fas fa-times"
+          className="btn shadow-none float-end fas fa-times"
           onClick={() => setShow(false)}
         ></button>
       </Alert>

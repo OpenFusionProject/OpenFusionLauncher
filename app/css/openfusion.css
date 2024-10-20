@@ -9,7 +9,7 @@
     background-color: #34476e;
 }
 
-#server-table > .table-striped tbody tr:nth-of-type(even) {
+#server-table > .table-striped tbody tr:nth-of-type(even) > td {
     background-color: #34476e;
 }
 
@@ -19,7 +19,11 @@
     -webkit-user-select: none;
 }
 
-#server-table > .table-striped tbody tr:nth-of-type(odd),
+.table-active > td {
+    background-color: var(--bs-primary) !important;
+}
+
+#server-table > .table-striped tbody tr:nth-of-type(odd) > td,
 th {
     background-color: #24314d;
 }
@@ -37,13 +41,6 @@ th {
 
 img {
     pointer-events: none;
-}
-
-:root {
-    --gray-dark: #343a40;
-    --primary: #6699ff;
-    --secondary: #384e7a;
-    --dark: #384e7a;
 }
 
 body {
@@ -187,4 +184,8 @@ button > i {
     left: 0;
     z-index: 1000;
     font-size: 12pt;
+}
+
+.alert > span {
+    color: var(--bs-body-color);
 }

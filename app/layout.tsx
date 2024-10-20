@@ -1,16 +1,6 @@
+import "bootstrap/dist/css/bootstrap.css"
+import "@fortawesome/fontawesome-free/css/all.css";
 import "./css/openfusion.css";
-
-// import localFont from "next/font/local";
-// const geistSans = localFont({
-//   src: "./fonts/GeistVF.woff",
-//   variable: "--font-geist-sans",
-//   weight: "100 900",
-// });
-// const geistMono = localFont({
-//   src: "./fonts/GeistMonoVF.woff",
-//   variable: "--font-geist-mono",
-//   weight: "100 900",
-// });
 
 export default function RootLayout({
   children,
@@ -18,7 +8,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-bs-theme="dark">
       <body>
         {children}
       </body>

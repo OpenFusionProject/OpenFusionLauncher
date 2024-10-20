@@ -1,9 +1,5 @@
 "use client";
 
-import "./css/bootstrap.min.css";
-import "./fonts/fontawesome-all.min.css";
-import "./css/openfusion.css";
-
 import ofLogo from "./img/of-dark.png";
 
 import startEasterEggs from "./easter-eggs";

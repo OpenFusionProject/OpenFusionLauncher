@@ -36,7 +36,7 @@ export default function ServerList({
                 key={server.uuid}
                 className={
                   "server-listing-entry " +
-                  (selectedServer == server.uuid ? "bg-primary" : "")
+                  (selectedServer == server.uuid ? "table-active" : "")
                 }
                 onClick={() => setSelectedServer(server.uuid)}
                 onDoubleClick={() => connectToServer(server.uuid)}
