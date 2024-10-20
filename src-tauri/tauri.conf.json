@@ -12,9 +12,12 @@
   "app": {
     "windows": [
       {
-        "title": "OpenFusionLauncher",
-        "width": 800,
-        "height": 600,
+        "title": "OpenFusion Launcher",
+        "width": 1280,
+        "height": 720,
+        "minWidth": 854,
+        "minHeight": 480,
+        "center": true,
         "resizable": true,
         "fullscreen": false
       }

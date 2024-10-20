@@ -161,7 +161,7 @@ export default function Home() {
             />
           </Col>
         </Row>
-        <Row className="justify-content-center">
+        <Row className="justify-content-center mb-4">
           <Col xs={4}>
             <Stack gap={1} direction="horizontal">
               <Button
@@ -169,18 +169,21 @@ export default function Home() {
                 enabled={true}
                 variant="success"
                 icon="plus"
+                tooltip="Add server"
               />
               <Button
                 onClick={stub}
                 enabled={selectedServer ? true : false}
                 variant="primary"
                 icon="edit"
+                tooltip="Edit server"
               />
               <Button
                 onClick={stub}
                 enabled={selectedServer ? true : false}
                 variant="danger"
                 icon="trash"
+                tooltip="Delete server"
               />
             </Stack>
           </Col>
@@ -198,6 +201,7 @@ export default function Home() {
                 enabled={true}
                 variant="primary"
                 icon="database"
+                tooltip="Edit Game Builds"
               />
             </Stack>
           </Col>
