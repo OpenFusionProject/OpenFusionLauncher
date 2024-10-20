@@ -72,6 +72,17 @@ impl AppState {
 
     pub fn save(&self) {
         debug!("Saving app state");
+        let app_data_dir = &get_app_statics().app_data_dir;
+        if !app_data_dir.exists() {
+            if let Err(e) = std::fs::create_dir_all(app_data_dir) {
+                warn!(
+                    "Failed to create app data dir: {}\nCan't save app state!",
+                    e
+                );
+                return;
+            }
+        }
+
         if let Err(e) = self.config.save() {
             warn!("Failed to save config: {}", e);
         }

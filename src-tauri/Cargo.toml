@@ -1,7 +1,7 @@
 [package]
-name = "openfusionclient"
-version = "2.0.0"
-description = "OpenFusionClient"
+name = "openfusionlauncher"
+version = "1.0.0"
+description = "OpenFusionLauncher"
 authors = ["OpenFusion Contributors"]
 license = "MIT"
 repository = ""

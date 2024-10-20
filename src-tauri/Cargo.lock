@@ -2033,8 +2033,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1261fe7e33c73b354eab43b1273a57c8f967d0391e80353e51f764ac02cf6775"
 
 [[package]]
-name = "openfusionclient"
-version = "2.0.0"
+name = "openfusionlauncher"
+version = "1.0.0"
 dependencies = [
  "dns-lookup",
  "log",

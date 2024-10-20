@@ -1,4 +1,4 @@
-# S.C.A.M.P.E.R.
+# OpenFusionLauncher (S.C.A.M.P.E.R.)
 
 OpenFusionClient rewrite with Tauri 2.0, Next.js and React.
 
