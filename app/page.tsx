@@ -172,13 +172,13 @@ export default function Home() {
               />
               <Button
                 onClick={stub}
-                enabled={selectedServer !== undefined}
+                enabled={selectedServer ? true : false}
                 variant="primary"
                 icon="edit"
               />
               <Button
                 onClick={stub}
-                enabled={selectedServer !== undefined}
+                enabled={selectedServer ? true : false}
                 variant="danger"
                 icon="trash"
               />
@@ -188,7 +188,7 @@ export default function Home() {
             <Stack gap={1} direction="horizontal" className="flex-row-reverse">
               <Button
                 onClick={() => connectToServer(selectedServer)}
-                enabled={selectedServer != ""}
+                enabled={selectedServer ? true : false}
                 variant="primary"
                 icon="angle-double-right"
                 text="Connect "
