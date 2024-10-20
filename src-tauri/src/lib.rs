@@ -41,30 +41,28 @@ fn configure_for_server(server: &Server) -> Result<()> {
     let assets_dir = get_assets_dir()?;
 
     // endpoint-specific stuff
+    let rankurl_path = assets_dir.join("rankurl.txt");
+    let images_path = assets_dir.join("images.php");
+    let sponsor_path = assets_dir.join("sponsor.php");
+
     if let Some(endpoint) = &server.endpoint {
         let endpoint = endpoint.trim_end_matches('/');
 
         // rankurl.txt
-        let rankurl_path = assets_dir.join("rankurl.txt");
         let rankurl_contents = format!("http://{}/getranks", endpoint);
         std::fs::write(rankurl_path, rankurl_contents.as_bytes())?;
 
         // images.php
-        let images_path = assets_dir.join("images.php");
         let images_contents = format!("http://{}/upsell/", endpoint);
         std::fs::write(images_path, images_contents.as_bytes())?;
 
         // sponsor.php
-        let sponsor_path = assets_dir.join("sponsor.php");
         let sponsor_contents = format!("http://{}/upsell/sponsor.png", endpoint);
         std::fs::write(sponsor_path, sponsor_contents.as_bytes())?;
     } else {
         // remove endpoint-specific files
-        let rankurl_path = assets_dir.join("rankurl.txt");
         std::fs::remove_file(rankurl_path).ok();
-        let images_path = assets_dir.join("images.php");
         std::fs::remove_file(images_path).ok();
-        let sponsor_path = assets_dir.join("sponsor.php");
         std::fs::remove_file(sponsor_path).ok();
     }
     Ok(())
