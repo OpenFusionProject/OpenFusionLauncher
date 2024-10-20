@@ -18,17 +18,6 @@ fn save_app_state(app_handle: &tauri::AppHandle) {
     app_state.save();
 }
 
-#[tauri::command]
-fn get_servers(state: tauri::State<Mutex<AppState>>) -> Servers {
-    match state.lock() {
-        Ok(state) => state.servers.clone(),
-        Err(e) => {
-            error!("Failed to lock app state: {}", e);
-            Servers::default()
-        }
-    }
-}
-
 fn get_assets_dir() -> Result<PathBuf> {
     let assets_dir = get_app_statics().app_data_dir.join("assets");
     if !assets_dir.exists() {
@@ -115,6 +104,26 @@ fn connect_to_server(app_handle: tauri::AppHandle, uuid: String) -> CommandResul
     connect_to_server_internal(app_handle, uuid).map_err(|e| e.to_string())
 }
 
+#[tauri::command]
+fn reload_state(state: tauri::State<Mutex<AppState>>) {
+    debug!("reload_state");
+    let mut app_state = state.lock().unwrap();
+    *app_state = AppState::load();
+    app_state.save();
+}
+
+#[tauri::command]
+fn get_servers(state: tauri::State<Mutex<AppState>>) -> Servers {
+    debug!("get_servers");
+    match state.lock() {
+        Ok(state) => state.servers.clone(),
+        Err(e) => {
+            error!("Failed to lock app state: {}", e);
+            Servers::default()
+        }
+    }
+}
+
 #[allow(clippy::single_match)]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -135,12 +144,16 @@ pub fn run() {
 
             state::init_app_statics(app);
             // N.B. AppState::load depends on APP_STATICS
-            let app_state = AppState::load();
+            let app_state = AppState::default();
             app.manage(Mutex::new(app_state));
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![get_servers, connect_to_server])
+        .invoke_handler(tauri::generate_handler![
+            reload_state,
+            get_servers,
+            connect_to_server
+        ])
         .build(tauri::generate_context![])
         .unwrap()
         .run(|app_handle, event| match event {

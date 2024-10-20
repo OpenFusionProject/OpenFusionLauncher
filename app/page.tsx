@@ -65,6 +65,18 @@ export default function Home() {
     stopLoading("get-init-servers");
   };
 
+  const doInit = async () => {
+    await invoker()("reload_state");
+    await updateServers();
+  };
+
+  const doDeinit = () => {
+    setServers([]);
+    setSelectedServer("");
+    setAlerts([]);
+    setLoadingTasks(initTasks);
+  };
+
   const stub = () => {
     alertInfo("hehe dong");
   };
@@ -79,14 +91,11 @@ export default function Home() {
 
   useEffect(() => {
     console.log("init");
-    updateServers();
+    doInit();
     startEasterEggs();
     return () => {
       console.log("deinit");
-      setServers([]);
-      setSelectedServer("");
-      setAlerts([]);
-      setLoadingTasks(initTasks);
+      doDeinit();
     };
   }, []);
 
