@@ -185,8 +185,39 @@ button > i {
     padding: 10px;
     top: 0;
     left: 0;
-    z-index: 1000;
+    z-index: 2000;
     font-size: 12pt;
+}
+
+#loading-screen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    color: #fff;
+    font-size: 24pt;
+    text-align: center;
+}
+
+#loading-screen-bg {
+    background-color: #000;
+    opacity: 0.5;
+}
+
+.loading-screen-component {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.loading-screen-task {
+    width: 33%;
 }
 
 .alert > span {

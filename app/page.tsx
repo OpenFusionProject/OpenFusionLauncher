@@ -11,15 +11,23 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Stack from "react-bootstrap/Stack";
 
-import { ServerEntry, Servers, Alert } from "./types";
+import { ServerEntry, Servers, Alert, LoadingTask } from "./types";
 import ServerList from "./ServerList";
 import AlertList from "./AlertList";
 import Button from "./Button";
+import LoadingScreen from "./LoadingScreen";
+
+const initTasks: LoadingTask[] = [
+  {
+    id: "get-init-servers",
+  },
+];
 
 export default function Home() {
   const [servers, setServers] = useState<ServerEntry[]>([]);
   const [selectedServer, setSelectedServer] = useState<string>("");
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>(initTasks);
 
   const invoker = () => {
     // @ts-ignore
@@ -43,13 +51,22 @@ export default function Home() {
     pushAlert("success", text);
   };
 
+  const startLoading = (id: string, text?: string) => {
+    setLoadingTasks((tasks) => [...tasks, { id, text }]);
+  };
+
+  const stopLoading = (id: string) => {
+    setLoadingTasks((tasks) => tasks.filter((task) => task.id != id));
+  };
+
   const updateServers = async () => {
     const serverData: Servers = await invoker()("get_servers");
     setServers(serverData.servers);
+    stopLoading("get-init-servers");
   };
 
   const stub = () => {
-
+    alertInfo("hehe dong");
   };
 
   const connectToServer = (serverUuid: string) => {
@@ -62,13 +79,22 @@ export default function Home() {
   };
 
   useEffect(() => {
+    console.log("init");
     updateServers();
     startEasterEggs();
+    return () => {
+      console.log("deinit");
+      setServers([]);
+      setSelectedServer("");
+      setAlerts([]);
+      setLoadingTasks(initTasks);
+    };
   }, []);
 
   return (
     <>
       <AlertList alerts={alerts} />
+      {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
       <Container id="serverselector-container">
         <Row id="of-logoheader" className="text-center mt-3">
           <Col>

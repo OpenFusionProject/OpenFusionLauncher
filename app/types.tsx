@@ -25,3 +25,8 @@ export type Alert = {
   text: string;
   id: number;
 };
+
+export type LoadingTask = {
+  id: string;
+  text?: string;
+};
