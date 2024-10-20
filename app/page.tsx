@@ -55,7 +55,7 @@ export default function Home() {
     const invoke = window.__TAURI__.core.invoke;
     invoke("connect_to_server", { uuid: serverUuid })
       .then(() => alertSuccess("Ready to launch")) // temp for testing
-      .catch((e: string) => alertError("Error connecting to server: " + e));
+      .catch((e: string) => alertError("Failed to prep launch (" + e + ")"));
   };
 
   useEffect(() => {

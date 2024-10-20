@@ -32,9 +32,10 @@ fn get_servers(state: tauri::State<Mutex<AppState>>) -> Servers {
 fn get_assets_dir() -> Result<PathBuf> {
     let assets_dir = get_app_statics().app_data_dir.join("assets");
     if !assets_dir.exists() {
-        std::fs::create_dir(&assets_dir)?;
+        Err("Assets directory does not exist".into())
+    } else {
+        Ok(assets_dir)
     }
-    Ok(assets_dir)
 }
 
 fn configure_for_server(server: &Server) -> Result<()> {
