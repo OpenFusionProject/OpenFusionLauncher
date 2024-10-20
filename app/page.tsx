@@ -73,28 +73,29 @@ export default function Home() {
 
   const importFromOpenFusionClient = async () => {
     startLoading("import");
-    await invoker()("import_from_openfusionclient")
-      .then((counts: ImportCounts) => {
-        if (counts.server_count == 0 && counts.version_count == 0) {
-          console.log("Nothing to import");
-        } else {
-          let text = "Imported ";
-          if (counts.version_count > 0) {
-            text += counts.version_count + " versions ";
-            if (counts.server_count > 0) {
-              text += "and ";
-            }
-          }
+    try {
+      const counts: ImportCounts = await invoker()(
+        "import_from_openfusionclient"
+      );
+      if (counts.server_count == 0 && counts.version_count == 0) {
+        console.log("Nothing to import");
+      } else {
+        let text = "Imported ";
+        if (counts.version_count > 0) {
+          text += counts.version_count + " versions ";
           if (counts.server_count > 0) {
-            text += counts.server_count + " servers ";
+            text += "and ";
           }
-          text += "from OpenFusionClient";
-          alertSuccess(text);
         }
-      })
-      .catch((e: string) => {
-        console.log("Failed to import (" + e + ")");
-      });
+        if (counts.server_count > 0) {
+          text += counts.server_count + " servers ";
+        }
+        text += "from OpenFusionClient";
+        alertSuccess(text);
+      }
+    } catch (e: unknown) {
+      console.log("Failed to import (" + e + ")");
+    }
     stopLoading("import");
   };
 
@@ -115,11 +116,14 @@ export default function Home() {
     alertInfo("hehe dong");
   };
 
-  const connectToServer = (serverUuid?: string) => {
+  const connectToServer = async (serverUuid?: string) => {
     if (serverUuid) {
-      invoker()("connect_to_server", { uuid: serverUuid })
-        .then(() => alertSuccess("Ready to launch")) // temp for testing
-        .catch((e: string) => alertError("Failed to prep launch (" + e + ")"));
+      try {
+        await invoker()("connect_to_server", { uuid: serverUuid });
+        alertSuccess("Ready to launch");
+      } catch (e: unknown) {
+        alertError("Failed to prep launch (" + e + ")");
+      }
     }
   };
 
