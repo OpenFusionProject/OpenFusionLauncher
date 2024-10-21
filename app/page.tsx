@@ -93,10 +93,17 @@ export default function Home() {
     stopLoading("import");
   };
 
+  const handleKeydown = (e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      setSelectedServer(undefined);
+    }
+  };
+
   const doInit = async () => {
     await invoke("reload_state");
     await importFromOpenFusionClient();
     await updateServers();
+    window.addEventListener("keydown", handleKeydown);
   };
 
   const doDeinit = () => {
@@ -104,6 +111,7 @@ export default function Home() {
     setSelectedServer("");
     setAlerts([]);
     setLoadingTasks(initTasks);
+    window.removeEventListener("keydown", handleKeydown);
   };
 
   const stub = () => {
