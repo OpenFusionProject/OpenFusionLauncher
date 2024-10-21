@@ -160,15 +160,24 @@ impl Config {
             Ok(config) => config,
             Err(_) => Self::load_default(),
         };
+        let app_statics = get_app_statics();
         if util::string_version_to_u32(&cfg.last_version_initialized)
-            != util::string_version_to_u32(&get_app_statics().version)
+            != util::string_version_to_u32(&app_statics.version)
         {
+            // backup config, servers, and versions
             if let Err(e) = AppState::backup(&cfg.last_version_initialized) {
                 warn!("Failed to backup app state: {}", e);
             }
+
+            // copy fresh resources
+            if let Err(e) =
+                util::copy_resources(&app_statics.resource_dir, &app_statics.app_data_dir)
+            {
+                warn!("Failed to copy fresh resources: {}", e);
+            }
         }
         cfg.last_version_initialized
-            .clone_from(&get_app_statics().version);
+            .clone_from(&app_statics.version);
         cfg
     }
 

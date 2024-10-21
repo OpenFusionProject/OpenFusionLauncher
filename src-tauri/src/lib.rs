@@ -29,12 +29,8 @@ fn get_assets_dir() -> Result<PathBuf> {
     let app_statics = get_app_statics();
     let assets_dir = app_statics.app_data_dir.join("assets");
     if !assets_dir.exists() {
-        let fresh_assets_dir = app_statics.resource_dir.join("assets");
-        fs_extra::dir::copy(
-            fresh_assets_dir,
-            &app_statics.app_data_dir,
-            &fs_extra::dir::CopyOptions::new(),
-        )?;
+        // likely first ever run
+        util::copy_resources(&app_statics.resource_dir, &app_statics.app_data_dir)?;
     }
     Ok(assets_dir)
 }
