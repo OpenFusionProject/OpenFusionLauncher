@@ -5,6 +5,7 @@ import ofLogo from "./img/of-dark.png";
 import startEasterEggs from "./easter-eggs";
 
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Container from "react-bootstrap/Container";
@@ -122,7 +123,12 @@ export default function Home() {
     if (serverUuid) {
       try {
         await invoke("connect_to_server", { uuid: serverUuid });
-        alertSuccess("Ready to launch");
+        await getCurrentWindow().hide();
+        const exit_code = await invoke("launch_game");
+        await getCurrentWindow().show();
+        if (exit_code != 0) {
+          alertError("Game exited with code " + exit_code);
+        }
       } catch (e: unknown) {
         alertError("Failed to prep launch (" + e + ")");
       }

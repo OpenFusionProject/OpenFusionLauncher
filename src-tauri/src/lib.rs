@@ -121,6 +121,27 @@ fn import_from_openfusionclient_internal(
     })
 }
 
+fn launch_game_internal() -> Result<i32> {
+    let asset_url = util::get_asset_url(&get_assets_dir()?)?;
+    let main_file_url = format!("{}main.unity3d", asset_url);
+    debug!("main file: {}", main_file_url);
+
+    let working_dir = &get_app_statics().app_data_dir;
+    let ffrunner_path = working_dir.join("ffrunner.exe");
+    let mut cmd = std::process::Command::new(ffrunner_path)
+        .arg(main_file_url)
+        .current_dir(working_dir)
+        .spawn()?;
+    let exit_code = cmd.wait()?;
+    Ok(exit_code.code().unwrap_or(0))
+}
+
+#[tauri::command]
+fn launch_game() -> CommandResult<i32> {
+    debug!("launch_game");
+    launch_game_internal().map_err(|e| e.to_string())
+}
+
 #[tauri::command]
 fn connect_to_server(app_handle: tauri::AppHandle, uuid: String) -> CommandResult<()> {
     debug!("connect_to_server {}", uuid);
@@ -184,7 +205,8 @@ pub fn run() {
             reload_state,
             get_servers,
             import_from_openfusionclient,
-            connect_to_server
+            connect_to_server,
+            launch_game
         ])
         .build(tauri::generate_context![])
         .unwrap()

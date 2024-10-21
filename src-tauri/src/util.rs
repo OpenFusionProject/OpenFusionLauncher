@@ -67,5 +67,16 @@ pub fn copy_resources(resource_dir: &Path, app_data_dir: &Path) -> Result<()> {
     let assets_dst = app_data_dir.join("assets");
     fs_extra::dir::copy(assets_src, assets_dst, &COPY_OPTIONS)?;
 
+    // binaries
+    let binaries_src = resource_dir.join("bin");
+    let binaries_dst = app_data_dir;
+    fs_extra::dir::copy(binaries_src, binaries_dst, &COPY_OPTIONS)?;
+
     Ok(())
+}
+
+pub fn get_asset_url(assets_dir: &Path) -> Result<String> {
+    let asset_info_path = assets_dir.join("assetInfo.php");
+    let asset_info = std::fs::read_to_string(asset_info_path)?;
+    Ok(asset_info)
 }
