@@ -1,0 +1,57 @@
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    clear: both;
+}
+
+.loading-screen-component {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.loading-screen-task {
+    width: 33%;
+}
+
+#loading-screen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    text-align: center;
+}
+
+#version-number-div {
+    position: fixed;
+    bottom: 4px;
+    right: 8px;
+}
+#about-button-div {
+    position: fixed;
+    bottom: 4px;
+    right: 8px;
+}
+
+#config-button-div {
+    position: fixed;
+    bottom: 4px;
+    left: 8px;
+}
+#alerts {
+    position: fixed;
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+    top: 0;
+    left: 0;
+    z-index: 2000;
+}

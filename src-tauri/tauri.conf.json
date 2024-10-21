@@ -38,6 +38,7 @@
     ],
     "resources": {
       "./resources/": "./"
-    }
+    },
+    "copyright": "2020 - 2024 OpenFusion Contributors"
   }
 }

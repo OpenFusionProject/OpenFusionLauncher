@@ -1,6 +1,7 @@
 "use client";
 
-import ofLogo from "./img/of-dark.png";
+import ofLogoLight from "./img/of-light.png";
+import ofLogoDark from "./img/of-dark.png";
 
 import startEasterEggs from "./easter-eggs";
 
@@ -152,7 +153,8 @@ export default function Home() {
       <Container id="serverselector-container">
         <Row id="of-logoheader" className="text-center mt-3">
           <Col>
-            <Image src={ofLogo} alt="OpenFusion logo" width={256} />
+            <Image id="of-logo-light" src={ofLogoLight} alt="OpenFusion Logo" width={256} />
+            <Image id="of-logo-dark" src={ofLogoDark} alt="OpenFusion Logo" width={256} />
             <p id="of-intro-text">
               Welcome to OpenFusion.
               <br />
@@ -161,7 +163,7 @@ export default function Home() {
           </Col>
         </Row>
         <Row
-          id="of-serverlist"
+          id="server-list"
           className="d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center"
         >
           <Col xs={8} className="mb-2">
@@ -219,6 +221,24 @@ export default function Home() {
           </Col>
         </Row>
       </Container>
+      <div id="about-button-div">
+        <Button
+          onClick={stub}
+          enabled={true}
+          variant="primary"
+          icon="info-circle"
+          tooltip="About OpenFusion Launcher"
+        />
+      </div>
+      <div id="config-button-div">
+        <Button
+          onClick={stub}
+          enabled={true}
+          variant="primary"
+          icon="cog"
+          tooltip="Edit Configuration"
+        />
+      </div>
     </>
   );
 }

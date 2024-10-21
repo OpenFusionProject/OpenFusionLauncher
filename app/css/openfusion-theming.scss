@@ -1,0 +1,159 @@
+@import "../../node_modules/bootstrap/scss/functions";
+
+/* Global */
+
+$body-bg: #f8f9fa;
+$body-bg-dark: #000;
+
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/variables-dark";
+@import "../../node_modules/bootstrap/scss/maps";
+@import "../../node_modules/bootstrap/scss/mixins";
+@import "../../node_modules/bootstrap/scss/root";
+
+/* Dark mode only */
+
+@include color-mode(dark) {
+    #server-table > .table-striped thead th {
+        background-color: #34476e;
+    }
+
+    #server-table > .table-striped tbody tr:nth-of-type(even) > td {
+        background-color: #34476e;
+    }
+
+    #server-table > .table-striped tbody tr:nth-of-type(odd) > td,
+    th {
+        background-color: #24314d;
+    }
+
+    #server-listing-placeholder > td {
+        background-color: #24314d;
+    }
+
+    #of-logo-light {
+        display: none;
+    }
+
+    #of-intro-text {
+        text-shadow: 1px 1px 8px #4349c4;
+        color: #4a76b7;
+        font-size: 18px;
+    }
+
+    .form-control, .form-control:focus {
+        border-color: #0099ff;
+        background-color: #000;
+        color: #fff;
+    }
+
+    select {
+        border-color: #0099ff;
+        background-color: #000;
+        color: #fff;
+    }
+
+    .table-active > td {
+        background-color: var(--bs-primary) !important;
+    }
+}
+
+/* Light mode only */
+
+@include color-mode(light) {
+    #server-table > .table-striped thead th {
+        background-color: $green-300;
+    }
+
+    #server-table > .table-striped tbody tr:nth-of-type(even) > td {
+        background-color: $green-300;
+    }
+
+    #server-table > .table-striped tbody tr:nth-of-type(odd) > td,
+    th {
+        background-color: $green-100;
+    }
+
+    #server-listing-placeholder > td {
+        background-color: $green-100;
+    }
+
+    #of-logo-dark {
+        display: none;
+    }
+
+    #of-intro-text {
+        text-shadow: 1px 1px 8px $green;
+        color: $green-400;
+        font-size: 18px;
+    }
+
+    .table-active > td {
+        background-color: $green !important;
+    }
+
+    .border-primary {
+        border-color: $green !important;
+    }
+}
+
+/* Global */
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+#server-table {
+    font-size: 14pt;
+    opacity: 0.9;
+}
+
+#loading-screen {
+    color: #fff;
+    font-size: 24pt;
+}
+
+#loading-screen-bg {
+    background-color: #000;
+    opacity: 0.5;
+}
+
+.btn {
+    color: $light !important;
+    font-size: 12pt;
+}
+
+.btn-primary {
+    background-image: url("../img/btn-primary-bg.png");
+    background-repeat: repeat;
+    box-shadow: inset 0 0 20px #2a9fd6;
+}
+
+.btn-success {
+    background-image: url("../img/btn-success-bg.png");
+    background-repeat: repeat;
+    box-shadow: inset 0 0 20px #a2ec00;
+}
+
+.btn-danger {
+    background-image: url("../img/btn-danger-bg.png");
+    background-repeat: repeat;
+    box-shadow: inset 0 0 20px red;
+}
+
+.btn-warning {
+    background-image: url("../img/btn-warning-bg.png");
+    background-repeat: repeat;
+    box-shadow: inset 0 0 20px yellow;
+}
+
+.modal {
+    overflow-y: auto;
+}
+
+.alert > span {
+    color: $light !important;
+    font-size: 12pt;
+}
