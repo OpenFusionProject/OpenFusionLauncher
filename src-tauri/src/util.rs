@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use dns_lookup::lookup_host;
 use log::*;
 
@@ -11,10 +13,6 @@ pub fn true_fn() -> bool {
 // for serde
 pub fn false_fn() -> bool {
     false
-}
-
-pub fn version_zero() -> String {
-    "0.0.0".to_string()
 }
 
 pub fn string_version_to_u32(version: &str) -> u32 {

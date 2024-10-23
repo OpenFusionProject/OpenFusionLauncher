@@ -52,6 +52,10 @@ impl AppStatics {
             cdn_url: CDN_URL.to_string(),
         }
     }
+
+    pub fn get_version(&self) -> &str {
+        &self.version
+    }
 }
 
 #[derive(Debug, Default)]
@@ -117,14 +121,6 @@ impl AppState {
             Ok(0)
         }
     }
-
-    fn backup(last_version: &str) -> Result<()> {
-        info!("Backing up app state from version {}", last_version);
-        Config::backup(last_version)?;
-        Versions::backup(last_version)?;
-        Servers::backup(last_version)?;
-        Ok(())
-    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -144,10 +140,6 @@ pub struct Config {
     #[serde(alias = "verify-offline-cache")]
     #[serde(default = "util::false_fn")]
     verify_offline_cache: bool,
-
-    #[serde(alias = "last-version-initialized")]
-    #[serde(default = "util::version_zero")]
-    last_version_initialized: String,
 }
 impl Default for Config {
     fn default() -> Self {
@@ -156,28 +148,15 @@ impl Default for Config {
             cache_swapping: true,
             enable_offline_cache: true,
             verify_offline_cache: false,
-            last_version_initialized: util::version_zero(),
         }
     }
 }
 impl Config {
     fn new() -> Self {
-        let mut cfg = match Self::load() {
+        match Self::load() {
             Ok(config) => config,
             Err(_) => Self::load_default(),
-        };
-        let app_statics = get_app_statics();
-        if util::string_version_to_u32(&cfg.last_version_initialized)
-            != util::string_version_to_u32(&app_statics.version)
-        {
-            // backup config, servers, and versions
-            if let Err(e) = AppState::backup(&cfg.last_version_initialized) {
-                warn!("Failed to backup app state: {}", e);
-            }
         }
-        cfg.last_version_initialized
-            .clone_from(&app_statics.version);
-        cfg
     }
 
     fn load() -> Result<Self> {
@@ -191,15 +170,6 @@ impl Config {
         let config_path = get_app_statics().app_data_dir.join("config.json");
         let config_str = serde_json::to_string_pretty(self)?;
         std::fs::write(config_path, config_str)?;
-        Ok(())
-    }
-
-    fn backup(version: &str) -> Result<()> {
-        let config_path = get_app_statics().app_data_dir.join("config.json");
-        let backup_path = get_app_statics()
-            .app_data_dir
-            .join(format!("config.json.bak.{}", version));
-        std::fs::copy(config_path, backup_path)?;
         Ok(())
     }
 
@@ -278,15 +248,6 @@ impl Versions {
         Ok(())
     }
 
-    fn backup(version: &str) -> Result<()> {
-        let versions_path = get_app_statics().app_data_dir.join("versions.json");
-        let backup_path = get_app_statics()
-            .app_data_dir
-            .join(format!("versions.json.bak.{}", version));
-        std::fs::copy(versions_path, backup_path)?;
-        Ok(())
-    }
-
     fn load_default() -> Self {
         info!("Loading default versions");
         let default_versions_path = get_app_statics()
@@ -360,15 +321,6 @@ impl Servers {
         let servers_path = get_app_statics().app_data_dir.join("servers.json");
         let servers_str = serde_json::to_string_pretty(self)?;
         std::fs::write(servers_path, servers_str)?;
-        Ok(())
-    }
-
-    fn backup(version: &str) -> Result<()> {
-        let servers_path = get_app_statics().app_data_dir.join("servers.json");
-        let backup_path = get_app_statics()
-            .app_data_dir
-            .join(format!("servers.json.bak.{}", version));
-        std::fs::copy(servers_path, backup_path)?;
         Ok(())
     }
 

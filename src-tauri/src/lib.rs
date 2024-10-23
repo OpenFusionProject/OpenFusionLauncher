@@ -164,6 +164,7 @@ pub fn run() {
             }
 
             state::init_app_statics(app);
+            info!("OpenFusion Launcher v{}", get_app_statics().get_version());
             // N.B. AppState::load depends on APP_STATICS
             let app_state = AppState::default();
             app.manage(Mutex::new(app_state));
