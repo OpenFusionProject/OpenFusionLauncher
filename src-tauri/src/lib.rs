@@ -2,9 +2,9 @@ mod state;
 mod util;
 
 use serde::Serialize;
-use state::{get_app_statics, AppState, Server, Servers, Version};
+use state::{get_app_statics, AppState, Servers, Version};
 
-use std::{path::PathBuf, sync::Mutex};
+use std::{env, path::PathBuf, sync::Mutex};
 
 use log::*;
 use tauri::Manager;
@@ -25,85 +25,69 @@ fn save_app_state(app_handle: &tauri::AppHandle) {
     app_state.save();
 }
 
-fn get_assets_dir() -> Result<PathBuf> {
-    let app_statics = get_app_statics();
-    let assets_dir = app_statics.app_data_dir.join("assets");
-    if !assets_dir.exists() {
-        // likely first ever run
-        util::copy_resources(&app_statics.resource_dir, &app_statics.app_data_dir)?;
-    }
-    Ok(assets_dir)
+fn get_cache_dir_for_version(version: &Version) -> Result<PathBuf> {
+    let mut cache_dir = get_app_statics().ff_cache_dir.clone();
+    cache_dir.push(&version.name);
+    std::fs::create_dir_all(&cache_dir)?;
+    Ok(cache_dir)
 }
 
-fn configure_for_server(server: &Server) -> Result<()> {
-    let assets_dir = get_assets_dir()?;
-
-    let login_info_path = assets_dir.join("loginInfo.php");
-    // if the address is not already an IP, resolve it.
-    // whether it's an IP or not, it will have :PORT appended to it
-    let addr = server.ip.clone();
-    debug!("Server address is {}", addr);
-    let (mut addr, port) = util::split_addr_port(&addr)?;
-    if addr.parse::<std::net::IpAddr>().is_err() {
-        addr = util::resolve_host(&addr)?;
-        debug!("Resolved server hostname to {}", addr);
-    }
-    let login_info_contents = format!("{}:{}", addr, port);
-    std::fs::write(login_info_path, login_info_contents.as_bytes())?;
-
-    // endpoint-specific stuff
-    let rankurl_path = assets_dir.join("rankurl.txt");
-    let images_path = assets_dir.join("images.php");
-    let sponsor_path = assets_dir.join("sponsor.php");
-
-    if let Some(endpoint) = &server.endpoint {
-        let endpoint = endpoint.trim_end_matches('/');
-
-        // rankurl.txt
-        let rankurl_contents = format!("http://{}/getranks", endpoint);
-        std::fs::write(rankurl_path, rankurl_contents.as_bytes())?;
-
-        // images.php
-        let images_contents = format!("http://{}/upsell/", endpoint);
-        std::fs::write(images_path, images_contents.as_bytes())?;
-
-        // sponsor.php
-        let sponsor_contents = format!("http://{}/upsell/sponsor.png", endpoint);
-        std::fs::write(sponsor_path, sponsor_contents.as_bytes())?;
-    } else {
-        // remove endpoint-specific files
-        std::fs::remove_file(rankurl_path).ok();
-        std::fs::remove_file(images_path).ok();
-        std::fs::remove_file(sponsor_path).ok();
-    }
-    Ok(())
-}
-
-fn configure_for_version(version: &Version) -> Result<()> {
-    let assets_dir = get_assets_dir()?;
-    let asset_info_path = assets_dir.join("assetInfo.php");
-    std::fs::write(asset_info_path, version.url.as_bytes())?;
-    Ok(())
-}
-
-fn connect_to_server_internal(app_handle: tauri::AppHandle, uuid: String) -> Result<()> {
+fn prep_launch_internal(state: tauri::State<Mutex<AppState>>, uuid: String) -> Result<()> {
     let uuid = Uuid::parse_str(&uuid)?;
-    let app_state = app_handle.state::<Mutex<AppState>>();
-    let app_state = app_state.lock().unwrap();
-    let server = app_state
+    let mut state = state.lock().unwrap();
+    let server = state
         .servers
         .get_entry(uuid)
         .ok_or(format!("Server {} not found", uuid))?;
-    configure_for_server(server)?;
 
     let version_name = &server.version;
-    let version = app_state
+    let version = state
         .versions
         .get_entry(version_name)
         .ok_or(format!("Version {} not found", version_name))?;
-    configure_for_version(version)?;
 
+    let cache_dir = get_cache_dir_for_version(version)?;
+    unsafe {
+        env::set_var("UNITY_FF_CACHE_DIR", cache_dir);
+    }
+
+    let asset_url = version.get_asset_url();
+    let main_url = format!("{}main.unity3d", asset_url);
+    let app_statics = get_app_statics();
+    let working_dir = &app_statics.resource_dir;
+    let mut ffrunner_path = working_dir.clone();
+    ffrunner_path.push("ffrunner.exe");
+    let log_file_path = &app_statics.ffrunner_log_path;
+
+    let mut cmd = std::process::Command::new(ffrunner_path);
+    cmd.current_dir(working_dir)
+        .args(["-m", &main_url])
+        .args(["-a", &util::resolve_server_addr(&server.ip)?])
+        .args(["--asseturl", &asset_url])
+        .args(["-l", log_file_path.to_str().ok_or("Invalid log file path")?]);
+
+    if let Some(endpoint_host) = &server.endpoint {
+        let rankurl = format!("http://{}/getranks", endpoint_host);
+        let images = format!("http://{}/upsell/", endpoint_host);
+        let sponsor = format!("http://{}/upsell/sponsor.png", endpoint_host);
+        cmd.args(["-r", &rankurl])
+            .args(["-i", &images])
+            .args(["-s", &sponsor]);
+    }
+
+    #[cfg(debug_assertions)]
+    cmd.arg("-v"); // verbose logging
+
+    state.launch_cmd = Some(cmd);
     Ok(())
+}
+
+fn do_launch_internal(state: tauri::State<Mutex<AppState>>) -> Result<i32> {
+    let mut state = state.lock().unwrap();
+    let mut cmd = state.launch_cmd.take().ok_or("No launch prepared")?;
+    let mut proc = cmd.spawn()?;
+    let exit_code = proc.wait()?;
+    Ok(exit_code.code().unwrap_or(0))
 }
 
 fn import_from_openfusionclient_internal(
@@ -121,31 +105,16 @@ fn import_from_openfusionclient_internal(
     })
 }
 
-fn launch_game_internal() -> Result<i32> {
-    let asset_url = util::get_asset_url(&get_assets_dir()?)?;
-    let main_file_url = format!("{}main.unity3d", asset_url);
-    debug!("main file: {}", main_file_url);
-
-    let working_dir = &get_app_statics().app_data_dir;
-    let ffrunner_path = working_dir.join("ffrunner.exe");
-    let mut cmd = std::process::Command::new(ffrunner_path)
-        .arg(main_file_url)
-        .current_dir(working_dir)
-        .spawn()?;
-    let exit_code = cmd.wait()?;
-    Ok(exit_code.code().unwrap_or(0))
+#[tauri::command]
+fn do_launch(state: tauri::State<Mutex<AppState>>) -> CommandResult<i32> {
+    debug!("do_launch");
+    do_launch_internal(state).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-fn launch_game() -> CommandResult<i32> {
-    debug!("launch_game");
-    launch_game_internal().map_err(|e| e.to_string())
-}
-
-#[tauri::command]
-fn connect_to_server(app_handle: tauri::AppHandle, uuid: String) -> CommandResult<()> {
-    debug!("connect_to_server {}", uuid);
-    connect_to_server_internal(app_handle, uuid).map_err(|e| e.to_string())
+fn prep_launch(state: tauri::State<Mutex<AppState>>, uuid: String) -> CommandResult<()> {
+    debug!("prep_launch {}", uuid);
+    prep_launch_internal(state, uuid).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -205,8 +174,8 @@ pub fn run() {
             reload_state,
             get_servers,
             import_from_openfusionclient,
-            connect_to_server,
-            launch_game
+            prep_launch,
+            do_launch
         ])
         .build(tauri::generate_context![])
         .unwrap()

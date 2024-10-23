@@ -1,0 +1,3 @@
+[submodule "resources/ffrunner"]
+	path = resources/ffrunner
+	url = git@github.com:OpenFusionProject/ffrunner.git

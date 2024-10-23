@@ -1,4 +1,4 @@
-use std::{path::PathBuf, sync::OnceLock};
+use std::{path::PathBuf, process::Command, sync::OnceLock};
 
 use log::*;
 use serde::{Deserialize, Serialize};
@@ -8,7 +8,6 @@ use uuid::Uuid;
 use crate::{util, Result};
 
 const CDN_URL: &str = "http://cdn.dexlabs.systems/ff/big";
-const UNITY_CACHE_PATH: &str = "LocalLow/Unity/Web Player/Cache";
 const OPENFUSIONCLIENT_PATH: &str = "OpenFusionClient";
 
 static APP_STATICS: OnceLock<AppStatics> = OnceLock::new();
@@ -28,7 +27,8 @@ pub struct AppStatics {
     version: String,
     pub app_data_dir: PathBuf,
     pub resource_dir: PathBuf,
-    unity_cache_dir: PathBuf,
+    pub ff_cache_dir: PathBuf,
+    pub ffrunner_log_path: PathBuf,
     cdn_url: String,
 }
 impl AppStatics {
@@ -36,17 +36,19 @@ impl AppStatics {
         let version = app.handle().package_info().version.to_string();
         let path_resolver = app.handle().path();
         let app_data_dir = path_resolver.app_data_dir().unwrap();
-        let resource_dir = path_resolver
-            .resolve("resources", BaseDirectory::Resource)
+        let resource_dir = path_resolver.resource_dir().unwrap();
+        let ff_cache_dir = path_resolver
+            .resolve("ffcache", BaseDirectory::AppCache)
             .unwrap();
-        let unity_cache_dir = path_resolver
-            .resolve(UNITY_CACHE_PATH, BaseDirectory::AppData)
+        let ffrunner_log_path = path_resolver
+            .resolve("ffrunner.log", BaseDirectory::AppCache)
             .unwrap();
         Self {
             version,
             app_data_dir,
             resource_dir,
-            unity_cache_dir,
+            ff_cache_dir,
+            ffrunner_log_path,
             cdn_url: CDN_URL.to_string(),
         }
     }
@@ -57,6 +59,8 @@ pub struct AppState {
     pub config: Config,
     pub versions: Versions,
     pub servers: Servers,
+    //
+    pub launch_cmd: Option<Command>,
 }
 impl AppState {
     pub fn load() -> Self {
@@ -67,6 +71,8 @@ impl AppState {
             config,
             versions,
             servers,
+            //
+            launch_cmd: None,
         }
     }
 
@@ -168,13 +174,6 @@ impl Config {
             if let Err(e) = AppState::backup(&cfg.last_version_initialized) {
                 warn!("Failed to backup app state: {}", e);
             }
-
-            // copy fresh resources
-            if let Err(e) =
-                util::copy_resources(&app_statics.resource_dir, &app_statics.app_data_dir)
-            {
-                warn!("Failed to copy fresh resources: {}", e);
-            }
         }
         cfg.last_version_initialized
             .clone_from(&app_statics.version);
@@ -215,8 +214,17 @@ impl Config {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Version {
-    name: String,
-    pub url: String,
+    pub name: String,
+    url: String,
+}
+impl Version {
+    pub fn get_asset_url(&self) -> String {
+        if self.url.ends_with('/') {
+            self.url.clone()
+        } else {
+            format!("{}/", self.url)
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]

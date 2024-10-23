@@ -36,7 +36,18 @@
       "icons/icon.ico"
     ],
     "resources": {
-      "./resources/": "./"
+      "../resources/defaults/*": "defaults/",
+      "../resources/assets/img/*": "assets/img/",
+      "../resources/ffrunner/ffrunner.exe": "ffrunner.exe",
+      "../resources/ffrunner/npUnity3D32.dll": "npUnity3D32.dll",
+      "../resources/ffrunner/loader/*": "loader/",
+      "../resources/ffrunner/player/fusion-2.x.x/*": "player/fusion-2.x.x/",
+      "../resources/ffrunner/player/fusion-2.x.x/Data/*": "player/fusion-2.x.x/Data/",
+      "../resources/ffrunner/player/fusion-2.x.x/Data/lib/*": "player/fusion-2.x.x/Data/lib/",
+      "../resources/ffrunner/mono/fusion-2.x.x/*": "mono/fusion-2.x.x/",
+      "../resources/ffrunner/mono/fusion-2.x.x/Data/*": "mono/fusion-2.x.x/Data/",
+      "../resources/ffrunner/mono/fusion-2.x.x/Data/lib/*": "mono/fusion-2.x.x/Data/lib/",
+      "../resources/ffrunner/mono/fusion-2.x.x/Data/etc/mono/2.0/*": "mono/fusion-2.x.x/Data/etc/mono/2.0/"
     },
     "copyright": "2020 - 2024 OpenFusion Contributors"
   }

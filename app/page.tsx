@@ -123,9 +123,9 @@ export default function Home() {
   const connectToServer = async (serverUuid?: string) => {
     if (serverUuid) {
       try {
-        await invoke("connect_to_server", { uuid: serverUuid });
+        await invoke("prep_launch", { uuid: serverUuid });
         await getCurrentWindow().hide();
-        const exit_code = await invoke("launch_game");
+        const exit_code = await invoke("do_launch");
         await getCurrentWindow().show();
         if (exit_code != 0) {
           alertError("Game exited with code " + exit_code);
@@ -153,8 +153,18 @@ export default function Home() {
       <Container id="serverselector-container">
         <Row id="of-logoheader" className="text-center mt-3">
           <Col>
-            <Image id="of-logo-light" src={ofLogoLight} alt="OpenFusion Logo" width={256} />
-            <Image id="of-logo-dark" src={ofLogoDark} alt="OpenFusion Logo" width={256} />
+            <Image
+              id="of-logo-light"
+              src={ofLogoLight}
+              alt="OpenFusion Logo"
+              width={256}
+            />
+            <Image
+              id="of-logo-dark"
+              src={ofLogoDark}
+              alt="OpenFusion Logo"
+              width={256}
+            />
             <p id="of-intro-text">
               Welcome to OpenFusion.
               <br />
