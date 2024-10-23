@@ -59,7 +59,24 @@ fn prep_launch_internal(state: tauri::State<Mutex<AppState>>, uuid: String) -> R
     ffrunner_path.push("ffrunner.exe");
     let log_file_path = &app_statics.ffrunner_log_path;
 
+    #[cfg(target_os = "linux")]
+    {
+        // ensure wine is installed
+        std::process::Command::new("wine")
+            .arg("--version")
+            .output()
+            .map_err(|e| format!("Wine not found: {}", e))?;
+    }
+
+    #[cfg(target_os = "linux")]
+    let mut cmd = std::process::Command::new("wine");
+
+    #[cfg(not(target_os = "windows"))]
+    cmd.arg(ffrunner_path);
+
+    #[cfg(target_os = "windows")]
     let mut cmd = std::process::Command::new(ffrunner_path);
+
     cmd.current_dir(working_dir)
         .args(["-m", &main_url])
         .args(["-a", &util::resolve_server_addr(&server.ip)?])
