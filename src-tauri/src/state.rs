@@ -36,7 +36,17 @@ impl AppStatics {
         let version = app.handle().package_info().version.to_string();
         let path_resolver = app.handle().path();
         let app_data_dir = path_resolver.app_data_dir().unwrap();
+
+        #[cfg(target_os = "windows")]
         let resource_dir = path_resolver.resource_dir().unwrap();
+
+        #[cfg(not(target_os = "windows"))]
+        let resource_dir = std::env::current_exe()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .to_path_buf();
+
         let ff_cache_dir = path_resolver
             .resolve("ffcache", BaseDirectory::AppCache)
             .unwrap();
