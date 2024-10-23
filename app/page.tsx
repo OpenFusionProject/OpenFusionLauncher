@@ -131,7 +131,8 @@ export default function Home() {
           alertError("Game exited with code " + exit_code);
         }
       } catch (e: unknown) {
-        alertError("Failed to prep launch (" + e + ")");
+        await getCurrentWindow().show();
+        alertError("Failed to launch (" + e + ")");
       }
     }
   };
