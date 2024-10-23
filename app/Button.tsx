@@ -19,7 +19,7 @@ export default function Button({
       className={"btn px-3 btn-" + variant + (enabled ? "" : " disabled")}
       data-bs-toggle="tooltip"
       data-bs-placement="top"
-      tabIndex="-1"
+      tabIndex={-1}
       title={tooltip}
       onClick={onClick}
     >

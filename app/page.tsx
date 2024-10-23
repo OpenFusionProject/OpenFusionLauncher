@@ -7,7 +7,7 @@ import startEasterEggs from "./easter-eggs";
 
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
