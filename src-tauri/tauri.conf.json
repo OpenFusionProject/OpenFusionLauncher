@@ -49,6 +49,11 @@
       "../resources/ffrunner/mono/fusion-2.x.x/Data/lib/*": "mono/fusion-2.x.x/Data/lib/",
       "../resources/ffrunner/mono/fusion-2.x.x/Data/etc/mono/2.0/*": "mono/fusion-2.x.x/Data/etc/mono/2.0/"
     },
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    },
     "copyright": "2020 - 2024 OpenFusion Contributors"
   }
 }
