@@ -56,11 +56,18 @@ export default function Home() {
   };
 
   const startLoading = (id: string, text?: string) => {
-    setLoadingTasks((tasks) => [...tasks, { id, text }]);
+    for (const task of loadingTasks) {
+      if (task.id == id) {
+        return;
+      }
+    }
+    const newTasks = [...loadingTasks, { id, text }];
+    setLoadingTasks(newTasks);
   };
 
   const stopLoading = (id: string) => {
-    setLoadingTasks((tasks) => tasks.filter((task) => task.id != id));
+    const newTasks = loadingTasks.filter((task) => task.id != id);
+    setLoadingTasks(newTasks);
   };
 
   const updateServers = async () => {
