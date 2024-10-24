@@ -113,6 +113,7 @@ export default function Home() {
     await importFromOpenFusionClient();
     await updateServers();
     window.addEventListener("keydown", handleKeydown);
+    await getCurrentWindow().show();
   };
 
   const doDeinit = () => {
