@@ -79,7 +79,7 @@ export default function Home() {
   };
 
   const importFromOpenFusionClient = async () => {
-    startLoading("import");
+    startLoading("import", "Importing");
     try {
       const counts: ImportCounts = await invoke("import_from_openfusionclient");
       if (counts.server_count == 0 && counts.version_count == 0) {
@@ -111,8 +111,10 @@ export default function Home() {
   };
 
   const doInit = async () => {
-    await invoke("reload_state");
-    await importFromOpenFusionClient();
+    const firstRun: boolean = await invoke("reload_state");
+    if (firstRun) {
+      await importFromOpenFusionClient();
+    }
     await updateServers();
     window.addEventListener("keydown", handleKeydown);
     await getCurrentWindow().show();

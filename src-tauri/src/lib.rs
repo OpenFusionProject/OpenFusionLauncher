@@ -114,11 +114,13 @@ fn import_from_openfusionclient(
 }
 
 #[tauri::command]
-fn reload_state(state: tauri::State<Mutex<AppState>>) {
+fn reload_state(state: tauri::State<Mutex<AppState>>) -> bool {
     debug!("reload_state");
+    let first_run = !get_app_statics().app_data_dir.exists();
     let mut app_state = state.lock().unwrap();
     *app_state = AppState::load();
     app_state.save();
+    first_run
 }
 
 #[tauri::command]
