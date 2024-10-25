@@ -1,8 +1,8 @@
 mod state;
 mod util;
 
-use serde::Serialize;
-use state::{get_app_statics, AppState, Servers};
+use serde::{Deserialize, Serialize};
+use state::{get_app_statics, AppState, Server, Servers, Versions};
 
 use std::{env, sync::Mutex};
 
@@ -17,6 +17,14 @@ type CommandResult<T> = std::result::Result<T, String>;
 struct ImportCounts {
     version_count: usize,
     server_count: usize,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct NewServerDetails {
+    description: String,
+    ip: String,
+    version: String,
+    endpoint: Option<String>,
 }
 
 fn save_app_state(app_handle: &tauri::AppHandle) {
@@ -39,9 +47,8 @@ fn do_launch(state: tauri::State<Mutex<AppState>>) -> CommandResult<i32> {
 }
 
 #[tauri::command]
-fn prep_launch(state: tauri::State<Mutex<AppState>>, uuid: String) -> CommandResult<()> {
+fn prep_launch(state: tauri::State<Mutex<AppState>>, uuid: Uuid) -> CommandResult<()> {
     let internal = || -> Result<()> {
-        let uuid = Uuid::parse_str(&uuid)?;
         let mut state = state.lock().unwrap();
         let server = state
             .servers
@@ -124,9 +131,41 @@ fn reload_state(state: tauri::State<Mutex<AppState>>) -> bool {
 }
 
 #[tauri::command]
-fn delete_server(state: tauri::State<Mutex<AppState>>, uuid: String) -> CommandResult<()> {
+fn add_server(
+    state: tauri::State<Mutex<AppState>>,
+    details: NewServerDetails,
+) -> CommandResult<Uuid> {
+    debug!("add_server {:?}", details);
+    let internal = || -> Result<Uuid> {
+        let mut state = state.lock().unwrap();
+
+        // validate the version
+        if state.versions.get_entry(&details.version).is_none() {
+            return Err(format!("Version {} not found", details.version).into());
+        }
+
+        let new_uuid = state.servers.add_entry(details);
+        state.save();
+        Ok(new_uuid)
+    };
+    internal().map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn update_server(state: tauri::State<Mutex<AppState>>, server_entry: Server) -> CommandResult<()> {
+    debug!("update_server {:?}", server_entry);
     let internal = || -> Result<()> {
-        let uuid = Uuid::parse_str(&uuid)?;
+        let mut state = state.lock().unwrap();
+        state.servers.update_entry(server_entry)?;
+        state.save();
+        Ok(())
+    };
+    internal().map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn delete_server(state: tauri::State<Mutex<AppState>>, uuid: Uuid) -> CommandResult<()> {
+    let internal = || -> Result<()> {
         let mut state = state.lock().unwrap();
         state.servers.remove_entry(uuid);
         state.save();
@@ -140,6 +179,12 @@ fn delete_server(state: tauri::State<Mutex<AppState>>, uuid: String) -> CommandR
 fn get_servers(state: tauri::State<Mutex<AppState>>) -> Servers {
     debug!("get_servers");
     state.lock().unwrap().servers.clone()
+}
+
+#[tauri::command]
+fn get_versions(state: tauri::State<Mutex<AppState>>) -> Versions {
+    debug!("get_versions");
+    state.lock().unwrap().versions.clone()
 }
 
 #[allow(clippy::single_match)]
@@ -170,7 +215,10 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             reload_state,
+            get_versions,
             get_servers,
+            add_server,
+            update_server,
             delete_server,
             import_from_openfusionclient,
             prep_launch,

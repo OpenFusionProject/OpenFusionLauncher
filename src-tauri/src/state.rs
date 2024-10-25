@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use tauri::{path::BaseDirectory, Manager};
 use uuid::Uuid;
 
-use crate::{util, Result};
+use crate::{util, NewServerDetails, Result};
 
 const CDN_URL: &str = "http://cdn.dexlabs.systems/ff/big";
 const OPENFUSIONCLIENT_PATH: &str = "OpenFusionClient";
@@ -338,5 +338,27 @@ impl Servers {
 
     pub fn remove_entry(&mut self, uuid: Uuid) {
         self.servers.retain(|s| s.uuid != uuid);
+    }
+
+    pub fn add_entry(&mut self, details: NewServerDetails) -> Uuid {
+        let uuid = Uuid::new_v4();
+        self.servers.push(Server {
+            uuid,
+            description: details.description,
+            ip: details.ip,
+            version: details.version,
+            endpoint: details.endpoint,
+        });
+        uuid
+    }
+
+    pub fn update_entry(&mut self, entry: Server) -> Result<()> {
+        for server in &mut self.servers {
+            if server.uuid == entry.uuid {
+                *server = entry;
+                return Ok(());
+            }
+        }
+        Err(format!("Server with UUID {} not found", entry.uuid).into())
     }
 }

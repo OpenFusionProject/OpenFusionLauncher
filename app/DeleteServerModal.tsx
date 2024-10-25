@@ -4,28 +4,13 @@ import Button from "./Button";
 
 import { ServerEntry } from "./types";
 
-const getServerName = (
-  servers: ServerEntry[],
-  selectedServer: string | undefined
-) => {
-  for (const server of servers) {
-    if (server.uuid == selectedServer) {
-      return '"' + server.description + '"';
-    }
-  }
-  // should never happen
-  return "this server";
-};
-
 export default function DeleteServerModal({
-  servers,
-  selectedServer,
+  server,
   show,
   setShow,
   deleteServer,
 }: {
-  servers: ServerEntry[];
-  selectedServer: string | undefined;
+  server?: ServerEntry;
   show: boolean;
   setShow: (newShow: boolean) => void;
   deleteServer: (uuid: string | undefined) => void;
@@ -36,7 +21,7 @@ export default function DeleteServerModal({
         <Modal.Title>Are you sure?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        Do you really want to delete {getServerName(servers, selectedServer)}?
+        Do you really want to delete {server?.description}?
         <br />
         <br />
         You could always re-add it later.
@@ -51,7 +36,7 @@ export default function DeleteServerModal({
         <Button
           onClick={() => {
             setShow(false);
-            deleteServer(selectedServer);
+            deleteServer(server?.uuid);
           }}
           variant="danger"
           text="Yes, Delete"

@@ -23,6 +23,6 @@ serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
 tauri = { version = "2.0.2", features = [] }
 tauri-plugin-log = "2.0.0-rc"
-uuid = { version = "1.10.0", features = ["serde"] }
+uuid = { version = "1.10.0", features = ["serde", "v4"] }
 dns-lookup = "2.0.4"
 fs_extra = "1.3.0"

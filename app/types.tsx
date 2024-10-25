@@ -1,9 +1,16 @@
 export type ServerEntry = {
-  uuid: string;
+  uuid?: string;
   description: string;
   ip: string;
   version: string;
-  endpoint: string;
+  endpoint?: string;
+};
+
+export type NewServerDetails = {
+  description: string;
+  ip: string;
+  version: string;
+  endpoint?: string;
 };
 
 export type Servers = {

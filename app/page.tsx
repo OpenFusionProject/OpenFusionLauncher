@@ -16,29 +16,46 @@ import Stack from "react-bootstrap/Stack";
 
 import {
   ServerEntry,
+  NewServerDetails,
   Servers,
   Alert,
   LoadingTask,
   ImportCounts,
+  VersionEntry,
+  Versions,
 } from "./types";
 import ServerList from "./ServerList";
 import AlertList from "./AlertList";
 import Button from "./Button";
 import LoadingScreen from "./LoadingScreen";
+import EditServerModal from "./EditServerModal";
 import DeleteServerModal from "./DeleteServerModal";
 
 const initTasks: LoadingTask[] = [
   {
-    id: "get-init-servers",
+    id: "initial-fetch",
   },
 ];
 
 export default function Home() {
+  const [versions, setVersions] = useState<VersionEntry[]>([]);
   const [servers, setServers] = useState<ServerEntry[]>([]);
   const [selectedServer, setSelectedServer] = useState<string | undefined>();
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>(initTasks);
+
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const getSelectedServer = () => {
+    for (const server of servers) {
+      if (server.uuid == selectedServer) {
+        return server;
+      }
+    }
+    return undefined;
+  };
 
   const pushAlert = (variant: string, text: string) => {
     const id = Math.floor(Math.random() * 1000000);
@@ -72,10 +89,12 @@ export default function Home() {
     setLoadingTasks(newTasks);
   };
 
-  const updateServers = async () => {
+  const initialFetch = async () => {
+    const versionData: Versions = await invoke("get_versions");
+    setVersions(versionData.versions);
     const serverData: Servers = await invoke("get_servers");
     setServers(serverData.servers);
-    stopLoading("get-init-servers");
+    stopLoading("initial-fetch");
   };
 
   const importFromOpenFusionClient = async () => {
@@ -115,7 +134,7 @@ export default function Home() {
     if (firstRun) {
       await importFromOpenFusionClient();
     }
-    await updateServers();
+    await initialFetch();
     window.addEventListener("keydown", handleKeydown);
     await getCurrentWindow().show();
   };
@@ -137,7 +156,7 @@ export default function Home() {
       try {
         await invoke("prep_launch", { uuid: serverUuid });
         await getCurrentWindow().hide();
-        const exit_code = await invoke("do_launch");
+        const exit_code: number = await invoke("do_launch");
         await getCurrentWindow().show();
         if (exit_code != 0) {
           alertError("Game exited with code " + exit_code);
@@ -146,6 +165,44 @@ export default function Home() {
         await getCurrentWindow().show();
         alertError("Failed to launch (" + e + ")");
       }
+    }
+  };
+
+  const addServer = async (details: NewServerDetails) => {
+    try {
+      const uuid: string = await invoke("add_server", { details: details });
+      const entry: ServerEntry = { ...details, uuid };
+      const newServers = [...servers, entry];
+      setServers(newServers);
+      setSelectedServer(uuid);
+      alertSuccess("Server added");
+    } catch (e: unknown) {
+      alertError("Failed to add server (" + e + ")");
+    }
+  };
+
+  const updateServer = async (details: NewServerDetails, uuid: string) => {
+    try {
+      const entry: ServerEntry = { ...details, uuid };
+      await invoke("update_server", { serverEntry: entry });
+      const newServers = servers.map((server) => {
+        if (server.uuid == uuid) {
+          return entry;
+        }
+        return server;
+      });
+      setServers(newServers);
+      alertSuccess("Server updated");
+    } catch (e: unknown) {
+      alertError("Failed to update server (" + e + ")");
+    }
+  };
+
+  const saveServer = async (details: NewServerDetails, uuid?: string) => {
+    if (uuid) {
+      await updateServer(details, uuid!);
+    } else {
+      await addServer(details);
     }
   };
 
@@ -221,14 +278,14 @@ export default function Home() {
           <Col xs={4}>
             <Stack gap={1} direction="horizontal">
               <Button
-                onClick={stub}
+                onClick={() => setShowAddModal(true)}
                 enabled={true}
                 variant="success"
                 icon="plus"
                 tooltip="Add server"
               />
               <Button
-                onClick={stub}
+                onClick={() => setShowEditModal(true)}
                 enabled={selectedServer ? true : false}
                 variant="primary"
                 icon="edit"
@@ -281,9 +338,24 @@ export default function Home() {
           tooltip="Edit Configuration"
         />
       </div>
+      <EditServerModal
+        server={undefined}
+        versions={versions}
+        isAdd={true}
+        show={showAddModal}
+        setShow={setShowAddModal}
+        saveServer={saveServer}
+      />
+      <EditServerModal
+        server={getSelectedServer()}
+        versions={versions}
+        isAdd={false}
+        show={showEditModal}
+        setShow={setShowEditModal}
+        saveServer={saveServer}
+      />
       <DeleteServerModal
-        servers={servers}
-        selectedServer={selectedServer}
+        server={getSelectedServer()}
         show={showDeleteModal}
         setShow={setShowDeleteModal}
         deleteServer={deleteServer}
