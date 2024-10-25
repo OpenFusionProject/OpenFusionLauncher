@@ -1,9 +1,14 @@
 #![allow(dead_code)]
 
+use std::path::PathBuf;
+
 use dns_lookup::lookup_host;
 use log::*;
 
-use crate::Result;
+use crate::{
+    state::{get_app_statics, Version},
+    Result,
+};
 
 // for serde
 pub fn true_fn() -> bool {
@@ -50,4 +55,11 @@ pub fn resolve_server_addr(addr: &str) -> Result<String> {
     let ip = resolve_host(&host)?;
     debug!("Resolved {} to {}", host, ip);
     Ok(format!("{}:{}", ip, port))
+}
+
+pub fn get_cache_dir_for_version(version: &Version) -> Result<PathBuf> {
+    let mut cache_dir = get_app_statics().ff_cache_dir.clone();
+    cache_dir.push(&version.name);
+    std::fs::create_dir_all(&cache_dir)?;
+    Ok(cache_dir)
 }
