@@ -9,7 +9,7 @@ export default function Button({
   onClick: () => void;
   enabled: boolean;
   variant: string;
-  icon: string;
+  icon?: string;
   tooltip?: string;
   text?: string;
 }) {
@@ -25,7 +25,7 @@ export default function Button({
       onClick={onClick}
     >
       {text && <span>{text}</span>}
-      <i className={"fas fa-" + icon}></i>
+      {icon && <i className={"fas fa-" + icon}></i>}
     </button>
   )
 }
