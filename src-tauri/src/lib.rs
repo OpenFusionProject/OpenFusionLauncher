@@ -122,6 +122,19 @@ fn reload_state(state: tauri::State<Mutex<AppState>>) {
 }
 
 #[tauri::command]
+fn delete_server(state: tauri::State<Mutex<AppState>>, uuid: String) -> CommandResult<()> {
+    let internal = || -> Result<()> {
+        let uuid = Uuid::parse_str(&uuid)?;
+        let mut state = state.lock().unwrap();
+        state.servers.remove_entry(uuid);
+        state.save();
+        Ok(())
+    };
+    debug!("delete_server {}", uuid);
+    internal().map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 fn get_servers(state: tauri::State<Mutex<AppState>>) -> Servers {
     debug!("get_servers");
     state.lock().unwrap().servers.clone()
@@ -156,6 +169,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             reload_state,
             get_servers,
+            delete_server,
             import_from_openfusionclient,
             prep_launch,
             do_launch

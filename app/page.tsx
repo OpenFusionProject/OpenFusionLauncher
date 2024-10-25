@@ -25,6 +25,7 @@ import ServerList from "./ServerList";
 import AlertList from "./AlertList";
 import Button from "./Button";
 import LoadingScreen from "./LoadingScreen";
+import DeleteServerModal from "./DeleteServerModal";
 
 const initTasks: LoadingTask[] = [
   {
@@ -37,6 +38,7 @@ export default function Home() {
   const [selectedServer, setSelectedServer] = useState<string | undefined>();
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>(initTasks);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const pushAlert = (variant: string, text: string) => {
     const id = Math.floor(Math.random() * 1000000);
@@ -145,6 +147,25 @@ export default function Home() {
     }
   };
 
+  const deleteServer = async (serverUuid?: string) => {
+    if (serverUuid) {
+      try {
+        await invoke("delete_server", { uuid: serverUuid });
+        setSelectedServer(undefined);
+        for (const server of servers) {
+          if (server.uuid == serverUuid) {
+            const newServers = servers.filter((s) => s.uuid != serverUuid);
+            setServers(newServers);
+            break;
+          }
+        }
+        alertSuccess("Server deleted");
+      } catch (e: unknown) {
+        alertError("Failed to delete server (" + e + ")");
+      }
+    }
+  };
+
   useEffect(() => {
     console.log("init");
     doInit();
@@ -212,7 +233,7 @@ export default function Home() {
                 tooltip="Edit server"
               />
               <Button
-                onClick={stub}
+                onClick={() => setShowDeleteModal(true)}
                 enabled={selectedServer ? true : false}
                 variant="danger"
                 icon="trash"
@@ -258,6 +279,13 @@ export default function Home() {
           tooltip="Edit Configuration"
         />
       </div>
+      <DeleteServerModal
+        servers={servers}
+        selectedServer={selectedServer}
+        show={showDeleteModal}
+        setShow={setShowDeleteModal}
+        deleteServer={deleteServer}
+      />
     </>
   );
 }

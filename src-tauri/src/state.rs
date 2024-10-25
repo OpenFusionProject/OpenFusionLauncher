@@ -335,4 +335,8 @@ impl Servers {
     pub fn get_entry(&self, uuid: Uuid) -> Option<&Server> {
         self.servers.iter().find(|s| s.uuid == uuid)
     }
+
+    pub fn remove_entry(&mut self, uuid: Uuid) {
+        self.servers.retain(|s| s.uuid != uuid);
+    }
 }
