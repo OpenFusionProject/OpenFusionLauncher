@@ -23,7 +23,6 @@ export default function DeleteServerModal({
       <Modal.Body>
         Do you really want to delete {server?.description}?
         <br />
-        <br />
         You could always re-add it later.
       </Modal.Body>
       <Modal.Footer>
