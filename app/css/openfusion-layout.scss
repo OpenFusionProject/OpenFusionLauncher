@@ -1,9 +1,22 @@
-body {
+html, body {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
     clear: both;
+}
+
+.launcher-page {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    transition: left 0.5s;
+}
+
+#page-config {
+    width: 100%;
+    height: 100%;
 }
 
 .loading-screen-component {
@@ -31,19 +44,19 @@ body {
 }
 
 #version-number-div {
-    position: fixed;
+    position: absolute;
     bottom: 4px;
     right: 8px;
 }
 
 #about-button-div {
-    position: fixed;
+    position: absolute;
     bottom: 4px;
     right: 8px;
 }
 
 #config-button-div {
-    position: fixed;
+    position: absolute;
     bottom: 4px;
     left: 8px;
 }
