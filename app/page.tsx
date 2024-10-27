@@ -6,6 +6,7 @@ import ofLogoDark from "./img/of-dark.png";
 import startEasterEggs from "./easter-eggs";
 
 import { invoke } from "@tauri-apps/api/core";
+import { getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useState, useEffect } from "react";
 import Image from "next/image";
@@ -32,6 +33,7 @@ import Button from "./Button";
 import LoadingScreen from "./LoadingScreen";
 import EditServerModal from "./EditServerModal";
 import DeleteServerModal from "./DeleteServerModal";
+import AboutModal from "./AboutModal";
 
 const initTasks: LoadingTask[] = [
   {
@@ -40,6 +42,8 @@ const initTasks: LoadingTask[] = [
 ];
 
 export default function Home() {
+  const [launcherVersion, setLauncherVersion] = useState("0.0.0");
+
   const [versions, setVersions] = useState<VersionEntry[]>([]);
   const [servers, setServers] = useState<ServerEntry[]>([]);
   const [selectedServer, setSelectedServer] = useState<string | undefined>();
@@ -49,6 +53,7 @@ export default function Home() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showAboutModal, setShowAboutModal] = useState(false);
 
   const [showConfigPage, setShowConfigPage] = useState(false);
 
@@ -135,6 +140,8 @@ export default function Home() {
   };
 
   const doInit = async () => {
+    const appVersion = await getVersion();
+    setLauncherVersion(appVersion);
     const firstRun: boolean = await invoke("reload_state");
     if (firstRun) {
       await importFromOpenFusionClient();
@@ -332,7 +339,7 @@ export default function Home() {
         </Container>
         <div id="about-button-div">
           <Button
-            onClick={stub}
+            onClick={() => setShowAboutModal(true)}
             enabled={true}
             variant="primary"
             icon="info-circle"
@@ -369,6 +376,11 @@ export default function Home() {
           show={showDeleteModal}
           setShow={setShowDeleteModal}
           deleteServer={deleteServer}
+        />
+        <AboutModal
+          show={showAboutModal}
+          setShow={setShowAboutModal}
+          version={launcherVersion}
         />
       </LauncherPage>
       <LauncherPage show={showConfigPage} inactiveX={-1}>
