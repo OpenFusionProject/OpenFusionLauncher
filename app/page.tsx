@@ -24,6 +24,8 @@ import {
   VersionEntry,
   Versions,
 } from "./types";
+
+import LauncherPage from "./LauncherPage";
 import ServerList from "./ServerList";
 import AlertList from "./AlertList";
 import Button from "./Button";
@@ -47,6 +49,8 @@ export default function Home() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const [showConfigPage, setShowConfigPage] = useState(false);
 
   const getSelectedServer = () => {
     for (const server of servers) {
@@ -126,6 +130,7 @@ export default function Home() {
   const handleKeydown = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
       setSelectedServer(undefined);
+      setShowConfigPage(false);
     }
   };
 
@@ -239,127 +244,138 @@ export default function Home() {
     <>
       <AlertList alerts={alerts} />
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
-      <Container id="serverselector-container">
-        <Row id="of-logoheader" className="text-center mt-3">
-          <Col>
-            <Image
-              id="of-logo-light"
-              src={ofLogoLight}
-              alt="OpenFusion Logo"
-              width={256}
-            />
-            <Image
-              id="of-logo-dark"
-              src={ofLogoDark}
-              alt="OpenFusion Logo"
-              width={256}
-            />
-            <p id="of-intro-text">
-              Welcome to OpenFusion.
-              <br />
-              Select a server from the list below to get started.
-            </p>
-          </Col>
-        </Row>
-        <Row
-          id="server-list"
-          className="d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center"
-        >
-          <Col xs={8} className="mb-2">
-            <ServerList
-              servers={servers}
-              selectedServer={selectedServer}
-              setSelectedServer={setSelectedServer}
-              connectToServer={connectToServer}
-            />
-          </Col>
-        </Row>
-        <Row className="justify-content-center mb-4">
-          <Col xs={4}>
-            <Stack gap={1} direction="horizontal">
-              <Button
-                onClick={() => setShowAddModal(true)}
-                enabled={true}
-                variant="success"
-                icon="plus"
-                tooltip="Add server"
+      <LauncherPage show={true} inactiveX={0}>
+        <Container id="serverselector-container">
+          <Row id="of-logoheader" className="text-center mt-3">
+            <Col>
+              <Image
+                id="of-logo-light"
+                src={ofLogoLight}
+                alt="OpenFusion Logo"
+                width={256}
               />
-              <Button
-                onClick={() => setShowEditModal(true)}
-                enabled={selectedServer ? true : false}
-                variant="primary"
-                icon="edit"
-                tooltip="Edit server"
+              <Image
+                id="of-logo-dark"
+                src={ofLogoDark}
+                alt="OpenFusion Logo"
+                width={256}
               />
-              <Button
-                onClick={() => setShowDeleteModal(true)}
-                enabled={selectedServer ? true : false}
-                variant="danger"
-                icon="trash"
-                tooltip="Delete server"
+              <p id="of-intro-text">
+                Welcome to OpenFusion.
+                <br />
+                Select a server from the list below to get started.
+              </p>
+            </Col>
+          </Row>
+          <Row
+            id="server-list"
+            className="d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center"
+          >
+            <Col xs={8} className="mb-2">
+              <ServerList
+                servers={servers}
+                selectedServer={selectedServer}
+                setSelectedServer={setSelectedServer}
+                connectToServer={connectToServer}
               />
-            </Stack>
-          </Col>
-          <Col xs={4}>
-            <Stack gap={1} direction="horizontal" className="flex-row-reverse">
-              <Button
-                onClick={() => connectToServer(selectedServer)}
-                enabled={selectedServer ? true : false}
-                variant="primary"
-                icon="angle-double-right"
-                text="Connect "
-              />
-              <Button
-                onClick={stub}
-                enabled={true}
-                variant="primary"
-                icon="database"
-                tooltip="Edit Game Builds"
-              />
-            </Stack>
-          </Col>
-        </Row>
-      </Container>
-      <div id="about-button-div">
-        <Button
-          onClick={stub}
-          enabled={true}
-          variant="primary"
-          icon="info-circle"
-          tooltip="About OpenFusion Launcher"
+            </Col>
+          </Row>
+          <Row className="justify-content-center mb-4">
+            <Col xs={4}>
+              <Stack gap={1} direction="horizontal">
+                <Button
+                  onClick={() => setShowAddModal(true)}
+                  enabled={true}
+                  variant="success"
+                  icon="plus"
+                  tooltip="Add server"
+                />
+                <Button
+                  onClick={() => setShowEditModal(true)}
+                  enabled={selectedServer ? true : false}
+                  variant="primary"
+                  icon="edit"
+                  tooltip="Edit server"
+                />
+                <Button
+                  onClick={() => setShowDeleteModal(true)}
+                  enabled={selectedServer ? true : false}
+                  variant="danger"
+                  icon="trash"
+                  tooltip="Delete server"
+                />
+              </Stack>
+            </Col>
+            <Col xs={4}>
+              <Stack
+                gap={1}
+                direction="horizontal"
+                className="flex-row-reverse"
+              >
+                <Button
+                  onClick={() => connectToServer(selectedServer)}
+                  enabled={selectedServer ? true : false}
+                  variant="primary"
+                  icon="angle-double-right"
+                  text="Connect "
+                />
+                <Button
+                  onClick={stub}
+                  enabled={true}
+                  variant="primary"
+                  icon="database"
+                  tooltip="Edit Game Builds"
+                />
+              </Stack>
+            </Col>
+          </Row>
+        </Container>
+        <div id="about-button-div">
+          <Button
+            onClick={stub}
+            enabled={true}
+            variant="primary"
+            icon="info-circle"
+            tooltip="About OpenFusion Launcher"
+          />
+        </div>
+        <div id="config-button-div">
+          <Button
+            onClick={() => setShowConfigPage(true)}
+            enabled={true}
+            variant="primary"
+            icon="cog"
+            tooltip="Edit Configuration"
+          />
+        </div>
+        <EditServerModal
+          server={undefined}
+          versions={versions}
+          isAdd={true}
+          show={showAddModal}
+          setShow={setShowAddModal}
+          saveServer={saveServer}
         />
-      </div>
-      <div id="config-button-div">
-        <Button
-          onClick={stub}
-          enabled={true}
-          variant="primary"
-          icon="cog"
-          tooltip="Edit Configuration"
+        <EditServerModal
+          server={getSelectedServer()}
+          versions={versions}
+          isAdd={false}
+          show={showEditModal}
+          setShow={setShowEditModal}
+          saveServer={saveServer}
         />
-      </div>
-      <EditServerModal
-        server={undefined}
-        versions={versions}
-        isAdd={true}
-        show={showAddModal}
-        setShow={setShowAddModal}
-        saveServer={saveServer}
-      />
-      <EditServerModal
-        server={getSelectedServer()}
-        versions={versions}
-        isAdd={false}
-        show={showEditModal}
-        setShow={setShowEditModal}
-        saveServer={saveServer}
-      />
-      <DeleteServerModal
-        server={getSelectedServer()}
-        show={showDeleteModal}
-        setShow={setShowDeleteModal}
-        deleteServer={deleteServer}
-      />
+        <DeleteServerModal
+          server={getSelectedServer()}
+          show={showDeleteModal}
+          setShow={setShowDeleteModal}
+          deleteServer={deleteServer}
+        />
+      </LauncherPage>
+      <LauncherPage show={showConfigPage} inactiveX={-1}>
+        <div id="page-config">
+          <div className="mx-auto text-center">hehe dong</div>
+        </div>
+      </LauncherPage>
     </>
   );
 }

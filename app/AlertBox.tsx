@@ -19,7 +19,7 @@ function variantToLabel(variant: string) {
 export default function AlertBox({
   variant,
   text,
-  timeout
+  timeout,
 }: {
   variant: string;
   text: string;
@@ -37,20 +37,19 @@ export default function AlertBox({
   }, []);
 
   return (
-    show && (
-      <Alert
-        variant={variant}
-        className={"mb-2 pr-0 border border-" + variant + " btn-" + variant}
-      >
-        <span className="align-middle">
-          <strong>{variantToLabel(variant)}:</strong> {text}
-        </span>
-        <button
-          type="button"
-          className="btn shadow-none float-end fas fa-times"
-          onClick={() => setShow(false)}
-        ></button>
-      </Alert>
-    )
+    <Alert
+      variant={variant}
+      className={"mb-2 pr-0 border border-" + variant + " btn-" + variant}
+      show={show}
+    >
+      <span className="align-middle">
+        <strong>{variantToLabel(variant)}:</strong> {text}
+      </span>
+      <button
+        type="button"
+        className="btn shadow-none float-end fas fa-times"
+        onClick={() => setShow(false)}
+      ></button>
+    </Alert>
   );
 }

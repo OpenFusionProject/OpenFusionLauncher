@@ -170,6 +170,10 @@ $body-bg-dark: #000;
     opacity: 0.5;
 }
 
+#page-config {
+    background-color: $body-bg-dark;
+}
+
 .btn {
     color: $light !important;
     font-size: 12pt;
