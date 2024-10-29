@@ -143,13 +143,17 @@ export default function Home() {
   };
 
   const doInit = async () => {
-    const appVersion = await getVersion();
-    setLauncherVersion(appVersion);
-    const firstRun: boolean = await invoke("reload_state");
-    if (firstRun) {
-      await importFromOpenFusionClient();
+    try {
+      const appVersion = await getVersion();
+      setLauncherVersion(appVersion);
+      const firstRun: boolean = await invoke("reload_state");
+      if (firstRun) {
+        await importFromOpenFusionClient();
+      }
+      await initialFetch();
+    } catch (e: unknown) {
+      alertError("Error during init (" + e + ")");
     }
-    await initialFetch();
     window.addEventListener("keydown", handleKeydown);
     await getCurrentWindow().show();
   };
