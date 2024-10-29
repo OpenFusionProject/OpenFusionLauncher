@@ -43,6 +43,9 @@ const initTasks: LoadingTask[] = [
 
 export default function Home() {
   const [launcherVersion, setLauncherVersion] = useState("0.0.0");
+  const [tagline, setTagline] = useState(
+    "Welcome to OpenFusion.\nSelect a server from the list below to get started."
+  );
 
   const [versions, setVersions] = useState<VersionEntry[]>([]);
   const [servers, setServers] = useState<ServerEntry[]>([]);
@@ -169,6 +172,7 @@ export default function Home() {
         await invoke("prep_launch", { uuid: serverUuid });
         await getCurrentWindow().hide();
         const exit_code: number = await invoke("do_launch");
+        setTagline("Thanks for playing!");
         await getCurrentWindow().show();
         if (exit_code != 0) {
           alertError("Game exited with code " + exit_code);
@@ -267,11 +271,11 @@ export default function Home() {
                 alt="OpenFusion Logo"
                 width={256}
               />
-              <p id="of-intro-text">
-                Welcome to OpenFusion.
-                <br />
-                Select a server from the list below to get started.
-              </p>
+              <div id="of-intro-text">
+                {tagline.split("\n").map((line, index) => (
+                  <p key={index}>{line}</p>
+                ))}
+              </div>
             </Col>
           </Row>
           <Row
