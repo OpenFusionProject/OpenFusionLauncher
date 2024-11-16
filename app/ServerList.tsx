@@ -38,8 +38,8 @@ export default function ServerList({
                   "server-listing-entry " +
                   (selectedServer == server.uuid ? "table-active" : "")
                 }
-                onClick={() => setSelectedServer(server.uuid)}
-                onDoubleClick={() => connectToServer(server.uuid)}
+                onClick={() => setSelectedServer(server.uuid!)}
+                onDoubleClick={() => connectToServer(server.uuid!)}
               >
                 <td>{server.description}</td>
                 <td className="font-monospace">{server.version}</td>

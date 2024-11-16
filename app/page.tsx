@@ -295,7 +295,7 @@ export default function Home() {
               />
             </Col>
           </Row>
-          <Row className="justify-content-center mb-4">
+          <Row className="justify-content-center pb-4">
             <Col xs={4}>
               <Stack gap={1} direction="horizontal">
                 <Button
