@@ -34,6 +34,7 @@ import LoadingScreen from "./LoadingScreen";
 import EditServerModal from "./EditServerModal";
 import DeleteServerModal from "./DeleteServerModal";
 import AboutModal from "./AboutModal";
+import LoginModal from "./LoginModal";
 
 const initTasks: LoadingTask[] = [
   {
@@ -50,12 +51,16 @@ export default function Home() {
   const [versions, setVersions] = useState<VersionEntry[]>([]);
   const [servers, setServers] = useState<ServerEntry[]>([]);
   const [selectedServer, setSelectedServer] = useState<string | undefined>();
+
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>(initTasks);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
   const [showAboutModal, setShowAboutModal] = useState(false);
 
   const [showConfigPage, setShowConfigPage] = useState(false);
@@ -170,21 +175,33 @@ export default function Home() {
     alertInfo("hehe dong");
   };
 
-  const connectToServer = async (serverUuid?: string) => {
-    if (serverUuid) {
-      try {
-        await invoke("prep_launch", { uuid: serverUuid });
-        await getCurrentWindow().hide();
-        const exit_code: number = await invoke("do_launch");
-        setTagline("Thanks for playing!");
-        await getCurrentWindow().show();
-        if (exit_code != 0) {
-          alertError("Game exited with code " + exit_code);
-        }
-      } catch (e: unknown) {
-        await getCurrentWindow().show();
-        alertError("Failed to launch (" + e + ")");
+  const connectToServer = async (serverUuid: string, username?: string, password?: string) => {
+    try {
+      await invoke("prep_launch", { uuid: serverUuid, username: username, password: password });
+      await getCurrentWindow().hide();
+      const exit_code: number = await invoke("do_launch");
+      setTagline("Thanks for playing!");
+      await getCurrentWindow().show();
+      if (exit_code != 0) {
+        alertError("Game exited with code " + exit_code);
       }
+    } catch (e: unknown) {
+      await getCurrentWindow().show();
+      alertError("Failed to launch (" + e + ")");
+    }
+  };
+
+  const showLoginOrConnect = async (serverUuid: string) => {
+    const server = servers.find((s) => s.uuid == serverUuid);
+    if (!server) {
+      alertError("Server not found");
+      return;
+    }
+
+    if (server.endpoint) {
+      setShowLoginModal(true);
+    } else {
+      await connectToServer(serverUuid);
     }
   };
 
@@ -290,7 +307,10 @@ export default function Home() {
                 servers={servers}
                 selectedServer={selectedServer}
                 setSelectedServer={setSelectedServer}
-                connectToServer={connectToServer}
+                onConnect={(serverUuid) => {
+                  setSelectedServer(serverUuid);
+                  showLoginOrConnect(serverUuid);
+                }}
               />
             </Col>
           </Row>
@@ -327,7 +347,7 @@ export default function Home() {
                 className="flex-row-reverse"
               >
                 <Button
-                  onClick={() => connectToServer(selectedServer)}
+                  onClick={() => showLoginOrConnect(selectedServer!)}
                   enabled={selectedServer ? true : false}
                   variant="primary"
                   icon="angle-double-right"
@@ -383,6 +403,12 @@ export default function Home() {
           show={showDeleteModal}
           setShow={setShowDeleteModal}
           deleteServer={deleteServer}
+        />
+        <LoginModal
+          server={getSelectedServer()}
+          show={showLoginModal}
+          setShow={setShowLoginModal}
+          onSubmit={connectToServer}
         />
         <AboutModal
           show={showAboutModal}

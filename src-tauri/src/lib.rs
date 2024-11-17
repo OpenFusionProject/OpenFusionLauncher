@@ -44,7 +44,12 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
 }
 
 #[tauri::command]
-async fn prep_launch(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<()> {
+async fn prep_launch(
+    app_handle: tauri::AppHandle,
+    uuid: Uuid,
+    username: Option<String>,
+    password: Option<String>,
+) -> CommandResult<()> {
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
         let mut state = state.lock().await;
@@ -80,12 +85,20 @@ async fn prep_launch(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<
             .args(["-l", log_file_path.to_str().ok_or("Invalid log file path")?]);
 
         if let Some(endpoint_host) = &server.endpoint {
+            if username.is_none() || password.is_none() {
+                return Err("Username and password required for endpoint".into());
+            }
+            let username = username.unwrap();
+            let password = password.unwrap();
+            let token = util::get_token(&username, &password, endpoint_host).await?;
             let rankurl = format!("http://{}/getranks", endpoint_host);
             let images = format!("http://{}/upsell/", endpoint_host);
             let sponsor = format!("http://{}/upsell/sponsor.png", endpoint_host);
             cmd.args(["-r", &rankurl])
                 .args(["-i", &images])
-                .args(["-s", &sponsor]);
+                .args(["-s", &sponsor])
+                .args(["-u", &username])
+                .args(["-t", &token]);
         }
 
         #[cfg(debug_assertions)]

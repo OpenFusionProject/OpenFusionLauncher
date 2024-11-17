@@ -4,12 +4,12 @@ export default function ServerList({
   servers,
   selectedServer,
   setSelectedServer,
-  connectToServer,
+  onConnect,
 }: {
   servers: ServerEntry[];
   selectedServer?: string;
   setSelectedServer: (server: string) => void;
-  connectToServer: (server: string) => void;
+  onConnect: (server: string) => void;
 }) {
   return (
     <div
@@ -39,7 +39,7 @@ export default function ServerList({
                   (selectedServer == server.uuid ? "table-active" : "")
                 }
                 onClick={() => setSelectedServer(server.uuid!)}
-                onDoubleClick={() => connectToServer(server.uuid!)}
+                onDoubleClick={() => onConnect(server.uuid!)}
               >
                 <td>{server.description}</td>
                 <td className="font-monospace">{server.version}</td>
