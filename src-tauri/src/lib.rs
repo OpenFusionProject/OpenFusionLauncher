@@ -1,3 +1,4 @@
+mod endpoint;
 mod state;
 mod util;
 
@@ -90,7 +91,11 @@ async fn prep_launch(
             }
             let username = username.unwrap();
             let password = password.unwrap();
-            let token = util::get_token(&username, &password, endpoint_host).await?;
+
+            // TODO cache this token somehow
+            let token = endpoint::get_token(&username, &password, endpoint_host).await?;
+            let cookie = endpoint::get_cookie(&token, endpoint_host).await?;
+
             let rankurl = format!("http://{}/getranks", endpoint_host);
             let images = format!("http://{}/upsell/", endpoint_host);
             let sponsor = format!("http://{}/upsell/sponsor.png", endpoint_host);
@@ -98,7 +103,7 @@ async fn prep_launch(
                 .args(["-i", &images])
                 .args(["-s", &sponsor])
                 .args(["-u", &username])
-                .args(["-t", &token]);
+                .args(["-t", &cookie]);
         }
 
         #[cfg(debug_assertions)]

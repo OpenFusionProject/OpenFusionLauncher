@@ -63,8 +63,3 @@ pub fn get_cache_dir_for_version(version: &Version) -> Result<PathBuf> {
     std::fs::create_dir_all(&cache_dir)?;
     Ok(cache_dir)
 }
-
-pub async fn get_token(username: &str, password: &str, endpoint_host: &str) -> Result<String> {
-    // TODO
-    Ok(password.to_string())
-}
