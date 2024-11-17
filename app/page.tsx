@@ -259,7 +259,6 @@ export default function Home() {
     <>
       <AlertList alerts={alerts} />
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
-      <LauncherPage show={true} inactiveX={0}>
         <Container id="serverselector-container">
           <Row id="of-logoheader" className="text-center mt-3">
             <Col>
@@ -390,7 +389,6 @@ export default function Home() {
           setShow={setShowAboutModal}
           version={launcherVersion}
         />
-      </LauncherPage>
       <LauncherPage show={showConfigPage} inactiveX={-1}>
         <div id="page-config">
           <div className="mx-auto text-center">hehe dong</div>
