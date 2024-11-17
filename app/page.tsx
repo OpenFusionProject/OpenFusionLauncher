@@ -177,7 +177,9 @@ export default function Home() {
 
   const connectToServer = async (serverUuid: string, username?: string, password?: string) => {
     try {
+      startLoading("launch");
       await invoke("prep_launch", { uuid: serverUuid, username: username, password: password });
+      stopLoading("launch");
       await getCurrentWindow().hide();
       const exit_code: number = await invoke("do_launch");
       setTagline("Thanks for playing!");
@@ -189,6 +191,7 @@ export default function Home() {
       await getCurrentWindow().show();
       alertError("Failed to launch (" + e + ")");
     }
+    stopLoading("launch");
   };
 
   const showLoginOrConnect = async (serverUuid: string) => {
