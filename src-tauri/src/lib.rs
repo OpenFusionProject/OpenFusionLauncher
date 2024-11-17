@@ -4,13 +4,15 @@ mod util;
 use serde::{Deserialize, Serialize};
 use state::{get_app_statics, AppState, Server, Servers, Versions};
 
-use std::{env, sync::Mutex};
+use std::env;
+use tokio::sync::Mutex;
 
 use log::*;
 use tauri::Manager;
 use uuid::Uuid;
 
-type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+type Error = Box<dyn std::error::Error>;
+type Result<T> = std::result::Result<T, Error>;
 type CommandResult<T> = std::result::Result<T, String>;
 
 #[derive(Debug, Serialize)]
@@ -27,29 +29,25 @@ struct NewServerDetails {
     endpoint: Option<String>,
 }
 
-fn save_app_state(app_handle: &tauri::AppHandle) {
-    let app_state = app_handle.state::<Mutex<AppState>>();
-    let app_state = app_state.lock().unwrap();
-    app_state.save();
-}
-
 #[tauri::command]
-fn do_launch(state: tauri::State<Mutex<AppState>>) -> CommandResult<i32> {
-    let internal = || -> Result<i32> {
-        let mut state = state.lock().unwrap();
+async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let mut state = state.lock().await;
         let mut cmd = state.launch_cmd.take().ok_or("No launch prepared")?;
         let mut proc = cmd.spawn()?;
         let exit_code = proc.wait()?;
         Ok(exit_code.code().unwrap_or(0))
     };
     debug!("do_launch");
-    internal().map_err(|e| e.to_string())
+    internal.await.map_err(|e: Error| e.to_string())
 }
 
 #[tauri::command]
-fn prep_launch(state: tauri::State<Mutex<AppState>>, uuid: Uuid) -> CommandResult<()> {
-    let internal = || -> Result<()> {
-        let mut state = state.lock().unwrap();
+async fn prep_launch(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<()> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let mut state = state.lock().await;
         let server = state
             .servers
             .get_entry(uuid)
@@ -97,15 +95,16 @@ fn prep_launch(state: tauri::State<Mutex<AppState>>, uuid: Uuid) -> CommandResul
         Ok(())
     };
     debug!("prep_launch {}", uuid);
-    internal().map_err(|e| e.to_string())
+    internal
+        .await
+        .map_err(|e: Box<dyn std::error::Error>| e.to_string())
 }
 
 #[tauri::command]
-fn import_from_openfusionclient(
-    state: tauri::State<Mutex<AppState>>,
-) -> CommandResult<ImportCounts> {
-    let internal = || -> Result<ImportCounts> {
-        let mut state = state.lock().unwrap();
+async fn import_from_openfusionclient(app_handle: tauri::AppHandle) -> CommandResult<ImportCounts> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let mut state = state.lock().await;
         let version_count = state.import_versions()?;
         let server_count = state.import_servers()?;
         if version_count > 0 || server_count > 0 {
@@ -117,27 +116,29 @@ fn import_from_openfusionclient(
         })
     };
     debug!("import_from_openfusionclient");
-    internal().map_err(|e| e.to_string())
+    internal.await.map_err(|e: Error| e.to_string())
 }
 
 #[tauri::command]
-fn reload_state(state: tauri::State<Mutex<AppState>>) -> bool {
+async fn reload_state(app_handle: tauri::AppHandle) -> bool {
     debug!("reload_state");
     let first_run = !get_app_statics().app_data_dir.exists();
-    let mut app_state = state.lock().unwrap();
-    *app_state = AppState::load();
-    app_state.save();
+    let state = app_handle.state::<Mutex<AppState>>();
+    let mut state = state.lock().await;
+    *state = AppState::load();
+    state.save();
     first_run
 }
 
 #[tauri::command]
-fn add_server(
-    state: tauri::State<Mutex<AppState>>,
+async fn add_server(
+    app_handle: tauri::AppHandle,
     details: NewServerDetails,
 ) -> CommandResult<Uuid> {
     debug!("add_server {:?}", details);
-    let internal = || -> Result<Uuid> {
-        let mut state = state.lock().unwrap();
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let mut state = state.lock().await;
 
         // validate the version
         if state.versions.get_entry(&details.version).is_none() {
@@ -148,43 +149,49 @@ fn add_server(
         state.save();
         Ok(new_uuid)
     };
-    internal().map_err(|e| e.to_string())
+    internal.await.map_err(|e: Error| e.to_string())
 }
 
 #[tauri::command]
-fn update_server(state: tauri::State<Mutex<AppState>>, server_entry: Server) -> CommandResult<()> {
+async fn update_server(app_handle: tauri::AppHandle, server_entry: Server) -> CommandResult<()> {
     debug!("update_server {:?}", server_entry);
-    let internal = || -> Result<()> {
-        let mut state = state.lock().unwrap();
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let mut state = state.lock().await;
         state.servers.update_entry(server_entry)?;
         state.save();
         Ok(())
     };
-    internal().map_err(|e| e.to_string())
+    internal.await.map_err(|e: Error| e.to_string())
 }
 
 #[tauri::command]
-fn delete_server(state: tauri::State<Mutex<AppState>>, uuid: Uuid) -> CommandResult<()> {
-    let internal = || -> Result<()> {
-        let mut state = state.lock().unwrap();
+async fn delete_server(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<()> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let mut state = state.lock().await;
         state.servers.remove_entry(uuid);
         state.save();
         Ok(())
     };
     debug!("delete_server {}", uuid);
-    internal().map_err(|e| e.to_string())
+    internal.await.map_err(|e: Error| e.to_string())
 }
 
 #[tauri::command]
-fn get_servers(state: tauri::State<Mutex<AppState>>) -> Servers {
+async fn get_servers(app_handle: tauri::AppHandle) -> Servers {
     debug!("get_servers");
-    state.lock().unwrap().servers.clone()
+    let state = app_handle.state::<Mutex<AppState>>();
+    let state = state.lock().await;
+    state.servers.clone()
 }
 
 #[tauri::command]
-fn get_versions(state: tauri::State<Mutex<AppState>>) -> Versions {
+async fn get_versions(app_handle: tauri::AppHandle) -> Versions {
     debug!("get_versions");
-    state.lock().unwrap().versions.clone()
+    let state = app_handle.state::<Mutex<AppState>>();
+    let state = state.lock().await;
+    state.versions.clone()
 }
 
 #[allow(clippy::single_match)]
@@ -226,8 +233,5 @@ pub fn run() {
         ])
         .build(tauri::generate_context![])
         .unwrap()
-        .run(|app_handle, event| match event {
-            tauri::RunEvent::Exit { .. } => save_app_state(app_handle),
-            _ => {}
-        });
+        .run(|_, _| ());
 }
