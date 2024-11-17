@@ -51,11 +51,17 @@ export default function LoginModal({
       </Modal.Body>
       <Modal.Footer>
         <Button
+          onClick={() => setShow(false)}
+          variant="primary"
+          text="Cancel"
+          enabled={true}
+        />
+        <Button
           onClick={() => {
             setShow(false);
             onSubmit(server!.uuid!, username, password);
           }}
-          variant="primary"
+          variant="success"
           text="Log In"
           enabled={username.length > 0 && password.length > 0}
         />
