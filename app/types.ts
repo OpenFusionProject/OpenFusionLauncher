@@ -1,5 +1,5 @@
 export type ServerEntry = {
-  uuid?: string;
+  uuid: string;
   description: string;
   ip: string;
   version: string;
