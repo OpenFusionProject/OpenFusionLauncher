@@ -492,8 +492,8 @@ impl Servers {
             ServerInfo::Endpoint(endpoint)
         } else {
             ServerInfo::Simple {
-                ip: details.ip,
-                version: details.version,
+                ip: details.ip.unwrap(),
+                version: details.version.unwrap(),
             }
         };
         self.servers.push(Server {

@@ -25,8 +25,8 @@ struct ImportCounts {
 #[derive(Debug, Serialize, Deserialize)]
 struct NewServerDetails {
     description: String,
-    ip: String,
-    version: String,
+    ip: Option<String>,
+    version: Option<String>,
     endpoint: Option<String>,
 }
 
@@ -188,9 +188,11 @@ async fn add_server(
         let mut state = state.lock().await;
 
         // validate the version
-        let version_uuid = Uuid::parse_str(&details.version)?;
-        if state.versions.get_entry(version_uuid).is_none() {
-            return Err(format!("Version {} not found", details.version).into());
+        if let Some(version) = &details.version {
+            let version_uuid = Uuid::parse_str(version)?;
+            if state.versions.get_entry(version_uuid).is_none() {
+                return Err(format!("Version {} not found", version).into());
+            }
         }
 
         let new_uuid = state.servers.add_entry(details);
