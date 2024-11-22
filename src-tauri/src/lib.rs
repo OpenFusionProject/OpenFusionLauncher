@@ -3,7 +3,7 @@ mod state;
 mod util;
 
 use serde::{Deserialize, Serialize};
-use state::{get_app_statics, AppState, FlatServers, Server, ServerInfo, Versions};
+use state::{get_app_statics, AppState, FlatServer, FlatServers, Server, ServerInfo, Versions};
 
 use std::env;
 use tokio::sync::Mutex;
@@ -199,12 +199,16 @@ async fn add_server(
 }
 
 #[tauri::command]
-async fn update_server(app_handle: tauri::AppHandle, server_entry: Server) -> CommandResult<()> {
+async fn update_server(
+    app_handle: tauri::AppHandle,
+    server_entry: FlatServer,
+) -> CommandResult<()> {
     debug!("update_server {:?}", server_entry);
     let internal = async {
+        let server: Server = server_entry.into();
         let state = app_handle.state::<Mutex<AppState>>();
         let mut state = state.lock().await;
-        state.servers.update_entry(server_entry)?;
+        state.servers.update_entry(server)?;
         state.save();
         Ok(())
     };
