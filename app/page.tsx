@@ -280,7 +280,7 @@ export default function Home() {
       <AlertList alerts={alerts} />
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
         <Container id="serverselector-container">
-          <Row id="of-logoheader" className="text-center mt-3">
+          <Row id="of-logoheader" className="text-center pt-3">
             <Col>
               <Image
                 id="of-logo-light"
