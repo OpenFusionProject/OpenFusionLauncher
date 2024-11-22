@@ -123,13 +123,13 @@ export default function Home() {
       } else {
         let text = "Imported ";
         if (counts.version_count > 0) {
-          text += counts.version_count + " versions ";
+          text += counts.version_count + (counts.version_count > 1 ? " versions " : " version ");
           if (counts.server_count > 0) {
             text += "and ";
           }
         }
         if (counts.server_count > 0) {
-          text += counts.server_count + " servers ";
+          text += counts.server_count + (counts.server_count > 1 ? " servers " : " server ");
         }
         text += "from OpenFusionClient";
         alertSuccess(text);
