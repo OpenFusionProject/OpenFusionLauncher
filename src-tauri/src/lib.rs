@@ -243,7 +243,8 @@ async fn get_versions(app_handle: tauri::AppHandle) -> Versions {
     debug!("get_versions");
     let state = app_handle.state::<Mutex<AppState>>();
     let state = state.lock().await;
-    state.versions.clone()
+    // we don't tell the frontend about versions marked hidden at all
+    state.versions.get_without_hidden()
 }
 
 #[allow(clippy::single_match)]

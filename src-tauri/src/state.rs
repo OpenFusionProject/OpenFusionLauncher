@@ -323,6 +323,17 @@ impl Versions {
         self.versions.iter().find(|v| v.get_uuid() == uuid)
     }
 
+    pub fn get_without_hidden(&self) -> Self {
+        Self {
+            versions: self
+                .versions
+                .iter()
+                .filter(|v| !v.is_hidden())
+                .cloned()
+                .collect(),
+        }
+    }
+
     pub fn get_entry_by_description(&self, description: &str) -> Option<&Version> {
         self.versions
             .iter()
