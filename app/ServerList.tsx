@@ -4,6 +4,19 @@ const findVersion = (versions: VersionEntry[], uuid: string) => {
   return versions.find((version) => version.uuid == uuid);
 }
 
+const getVersionLabelForServer = (versions: VersionEntry[], server: ServerEntry) => {
+  if (server.endpoint) {
+    // TODO this is a placeholder, make it update after hitting the API server
+    return "auto";
+  }
+  const version = findVersion(versions, server.version!);
+  if (version) {
+    const label = version.description ?? "custom";
+    return label;
+  }
+  return "???";
+}
+
 export default function ServerList({
   servers,
   versions,
@@ -48,7 +61,7 @@ export default function ServerList({
                 onDoubleClick={() => onConnect(server.uuid!)}
               >
                 <td>{server.description}</td>
-                <td className="font-monospace">{findVersion(versions, server.version)?.description ?? "???"}</td>
+                <td className="font-monospace">{getVersionLabelForServer(versions, server)}</td>
               </tr>
             ))
           )}

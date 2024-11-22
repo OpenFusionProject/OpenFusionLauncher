@@ -1,15 +1,15 @@
 export type ServerEntry = {
   uuid: string;
   description: string;
-  ip: string;
-  version: string;
+  ip?: string;
+  version?: string;
   endpoint?: string;
 };
 
 export type NewServerDetails = {
   description: string;
-  ip: string;
-  version: string;
+  ip?: string;
+  version?: string;
   endpoint?: string;
 };
 
@@ -20,7 +20,7 @@ export type Servers = {
 
 export type VersionEntry = {
   uuid: string;
-  description: string;
+  description?: string;
 };
 
 export type Versions = {

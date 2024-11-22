@@ -12,7 +12,7 @@
             "description": "OpenFusion Public Server - Academy",
             "ip": "play.dexlabs.systems:24000",
             "version": "6543a2bb-d154-4087-b9ee-3c8aa778580a",
-            "endpoint": "api.dexlabs.systems/academy"
+            "endpoint": "api.academy.dexlabs.systems"
         }
     ],
     "favorites": []

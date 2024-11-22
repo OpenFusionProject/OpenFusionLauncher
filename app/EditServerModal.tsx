@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
+import Tabs from "react-bootstrap/Tabs";
+import Tab from "react-bootstrap/Tab";
 
 import Button from "./Button";
 
@@ -60,37 +62,47 @@ export default function EditServerModal({
               placeholder="My OpenFusion Server"
             />
           </Form.Group>
-          <Form.Group className="mb-3" controlId="editServerIp">
-            <Form.Label>Server IP</Form.Label>
-            <Form.Control
-              type="text"
-              value={ip}
-              onChange={(e) => setIp(e.target.value)}
-              placeholder="localhost:23000"
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="editServerEndpoint">
-            <Form.Label>API Host (optional)</Form.Label>
-            <Form.Control
-              type="text"
-              value={endpoint}
-              onChange={(e) => setEndpoint(e.target.value)}
-              placeholder=""
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="editServerVersion">
-            <Form.Label>Server Version</Form.Label>
-            <Form.Select
-              value={version}
-              onChange={(e) => setVersion(e.target.value)}
-            >
-              {versions.map((version) => (
-                <option key={version.uuid} value={version.uuid}>
-                  {version.description}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
+          <Tabs
+            defaultActiveKey={server?.endpoint ? "endpoint" : "simple"}
+            className="mb-3"
+            fill
+          >
+            <Tab eventKey="simple" title="Simple Server">
+              <Form.Group className="mb-3" controlId="editServerIp">
+                <Form.Label>Server IP</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={ip}
+                  onChange={(e) => setIp(e.target.value)}
+                  placeholder="localhost:23000"
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="editServerVersion">
+                <Form.Label>Server Version</Form.Label>
+                <Form.Select
+                  value={version}
+                  onChange={(e) => setVersion(e.target.value)}
+                >
+                  {versions.map((version) => (
+                    <option key={version.uuid} value={version.uuid}>
+                      {version.description ?? version.uuid}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Tab>
+            <Tab eventKey="endpoint" title="Endpoint Server">
+            <Form.Group className="mb-3" controlId="editServerEndpoint">
+                <Form.Label>API Host</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={endpoint}
+                  onChange={(e) => setEndpoint(e.target.value)}
+                  placeholder="api.myserver.xyz"
+                />
+              </Form.Group>
+            </Tab>
+          </Tabs>
         </Form>
       </Modal.Body>
       <Modal.Footer>
