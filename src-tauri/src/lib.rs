@@ -3,7 +3,7 @@ mod state;
 mod util;
 
 use serde::{Deserialize, Serialize};
-use state::{get_app_statics, AppState, Server, Servers, Versions};
+use state::{get_app_statics, AppState, FlatServers, Server, ServerInfo, Versions};
 
 use std::env;
 use tokio::sync::Mutex;
@@ -57,13 +57,42 @@ async fn prep_launch(
         let server = state
             .servers
             .get_entry(uuid)
-            .ok_or(format!("Server {} not found", uuid))?;
+            .ok_or(format!("Server {} not found", uuid))?
+            .clone();
 
-        let version_uuid = Uuid::parse_str(&server.version)?;
-        let version = state
-            .versions
-            .get_entry(version_uuid)
-            .ok_or(format!("Version {} not found", version_uuid))?;
+        let (version_str, addr) = match &server.info {
+            ServerInfo::Simple { version, ip } => (version.clone(), ip.clone()),
+            ServerInfo::Endpoint(endpoint_host) => {
+                // Ask the endpoint server for the UUID of the current version
+                let live_version_endpoint = format!("https://{}/version", endpoint_host);
+                let version = util::do_simple_get(&live_version_endpoint).await?;
+                let server_address_endpoint = format!("https://{}/address", endpoint_host);
+                let addr = util::do_simple_get(&server_address_endpoint).await?;
+                let addr = addr.trim().to_string();
+                (version, addr)
+            }
+        };
+        let ip = util::resolve_server_addr(&addr)?;
+
+        let version_uuid = Uuid::parse_str(&version_str)?;
+        let version = if let Some(version) = state.versions.get_entry(version_uuid) {
+            version
+        } else if let ServerInfo::Endpoint(endpoint_host) = &server.info {
+            // Assume the endpoint server has the version we want; try to fetch it
+            match util::fetch_version_from_endpoint(endpoint_host, version_uuid).await {
+                Ok(version) => {
+                    // cache the version manifest
+                    if let Err(e) = util::import_versions(vec![version.clone()]) {
+                        warn!("Failed to cache version: {}", e);
+                    }
+                    state.versions.add_entry(version);
+                    state.versions.get_entry(version_uuid).unwrap()
+                }
+                Err(e) => return Err(format!("Failed to fetch version: {}", e).into()),
+            }
+        } else {
+            return Err(format!("Version {} not found", version_uuid).into());
+        };
 
         let cache_dir = util::get_cache_dir_for_version(version)?;
         unsafe {
@@ -81,11 +110,11 @@ async fn prep_launch(
         let mut cmd = std::process::Command::new(ffrunner_path);
         cmd.current_dir(working_dir)
             .args(["-m", &main_url])
-            .args(["-a", &util::resolve_server_addr(&server.ip)?])
+            .args(["-a", &ip])
             .args(["--asseturl", &format!("{}/", asset_url)])
             .args(["-l", log_file_path.to_str().ok_or("Invalid log file path")?]);
 
-        if let Some(endpoint_host) = &server.endpoint {
+        if let ServerInfo::Endpoint(endpoint_host) = &server.info {
             if username.is_none() || password.is_none() {
                 return Err("Username and password required for endpoint".into());
             }
@@ -198,11 +227,13 @@ async fn delete_server(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResul
 }
 
 #[tauri::command]
-async fn get_servers(app_handle: tauri::AppHandle) -> Servers {
+async fn get_servers(app_handle: tauri::AppHandle) -> FlatServers {
     debug!("get_servers");
     let state = app_handle.state::<Mutex<AppState>>();
     let state = state.lock().await;
-    state.servers.clone()
+    let servers = state.servers.clone();
+    let flat_servers: FlatServers = servers.into();
+    flat_servers
 }
 
 #[tauri::command]

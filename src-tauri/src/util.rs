@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use dns_lookup::lookup_host;
 use ffbuildtool::Version;
 use log::*;
+use uuid::Uuid;
 
 use crate::{state::get_app_statics, Result};
 
@@ -60,4 +61,48 @@ pub fn get_cache_dir_for_version(version: &Version) -> Result<PathBuf> {
     let build_dir = cache_dir.join(version.get_uuid().to_string());
     std::fs::create_dir_all(&build_dir)?;
     Ok(build_dir)
+}
+
+pub fn import_versions(to_import: Vec<Version>) -> Result<Vec<Version>> {
+    let versions_path = get_app_statics().app_data_dir.join("versions");
+    if !versions_path.exists() {
+        std::fs::create_dir_all(&versions_path)?;
+    }
+
+    let mut versions = Vec::new();
+    for version in to_import {
+        let version_path = versions_path.join(format!("{}.json", version.get_uuid()));
+        if let Err(e) = version.export_manifest(&version_path.to_string_lossy()) {
+            warn!("Failed to import version: {}", e);
+            continue;
+        }
+        debug!("Imported version to {}", version_path.to_string_lossy());
+        versions.push(version);
+    }
+    Ok(versions)
+}
+
+pub async fn do_simple_get(url: &str) -> Result<String> {
+    let client = reqwest::Client::new();
+    let response = client.get(url).send().await?;
+    let text = response.text().await?;
+    Ok(text)
+}
+
+pub async fn fetch_version_from_endpoint(
+    endpoint_host: &str,
+    version_uuid: Uuid,
+) -> Result<Version> {
+    let version_endpoint = format!("https://{}/version/{}", endpoint_host, version_uuid);
+    let version_json = do_simple_get(&version_endpoint).await?;
+    let version: Version = serde_json::from_str(&version_json)?;
+    if version.get_uuid() != version_uuid {
+        return Err(format!(
+            "Version UUID mismatch: expected {}, got {}",
+            version_uuid,
+            version.get_uuid()
+        )
+        .into());
+    }
+    Ok(version)
 }

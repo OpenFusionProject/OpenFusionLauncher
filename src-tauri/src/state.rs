@@ -107,8 +107,9 @@ impl AppState {
 
     pub fn import_servers(&mut self) -> Result<usize> {
         let imported_servers = Servers::load_from_openfusionclient()?;
-        if let Some(imported_servers) = imported_servers {
-            Ok(self.servers.merge(&imported_servers))
+        if let Some(mut servers) = imported_servers {
+            Self::fixup_server_versions(&mut servers, &self.versions);
+            Ok(self.servers.merge(&servers))
         } else {
             Ok(0)
         }
@@ -116,8 +117,10 @@ impl AppState {
 
     pub fn fixup_server_versions(servers: &mut Servers, versions: &Versions) {
         for server in &mut servers.servers {
-            if let Some(version) = versions.get_entry_by_description(&server.version) {
-                server.version = version.get_uuid().to_string();
+            if let ServerInfo::Simple { version, .. } = &mut server.info {
+                if let Some(correct_version) = versions.get_entry_by_description(version) {
+                    *version = correct_version.get_uuid().to_string();
+                }
             }
         }
     }
@@ -126,27 +129,9 @@ impl AppState {
         let versions = &mut self.versions.versions;
         let legacy_versions = Versions::load_from_openfusionclient()?;
         let to_import = Versions::calculate_merge(versions, legacy_versions);
-
-        let versions_path = get_app_statics().app_data_dir.join("versions");
-        if !versions_path.exists() {
-            std::fs::create_dir_all(&versions_path)?;
-        }
-
-        let mut num_imported = 0;
-        for version in to_import {
-            // Export the version to the versions folder
-            let version_path = versions_path.join(format!("{}.json", version.get_uuid()));
-            if let Err(e) = version.export_manifest(&version_path.to_string_lossy()) {
-                warn!("Failed to imported legacy version: {}", e);
-                continue;
-            }
-            debug!(
-                "Imported legacy version to {}",
-                version_path.to_string_lossy()
-            );
-            versions.push(version);
-            num_imported += 1;
-        }
+        let imported = util::import_versions(to_import)?;
+        let num_imported = imported.len();
+        versions.extend(imported);
         Ok(num_imported)
     }
 }
@@ -330,6 +315,10 @@ impl Versions {
         to_merge
     }
 
+    pub fn add_entry(&mut self, version: Version) {
+        self.versions.push(version);
+    }
+
     pub fn get_entry(&self, uuid: Uuid) -> Option<&Version> {
         self.versions.iter().find(|v| v.get_uuid() == uuid)
     }
@@ -342,12 +331,78 @@ impl Versions {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub enum ServerInfo {
+    Simple { ip: String, version: String },
+    Endpoint(String),
+}
+
+/// We store servers in a "flat" format for ease of serialization on disk and to the frontend
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct FlatServer {
+    uuid: Uuid,
+    description: Option<String>,
+    ip: Option<String>,
+    version: Option<String>,
+    endpoint: Option<String>,
+}
+impl From<Server> for FlatServer {
+    fn from(server: Server) -> Self {
+        let info = server.info;
+        match info {
+            ServerInfo::Simple { ip, version } => Self {
+                uuid: server.uuid,
+                description: server.description,
+                ip: Some(ip),
+                version: Some(version),
+                endpoint: None,
+            },
+            ServerInfo::Endpoint(endpoint) => Self {
+                uuid: server.uuid,
+                description: server.description,
+                ip: None,
+                version: None,
+                endpoint: Some(endpoint),
+            },
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct FlatServers {
+    servers: Vec<FlatServer>,
+    favorites: Vec<Uuid>,
+}
+impl From<Servers> for FlatServers {
+    fn from(servers: Servers) -> Self {
+        Self {
+            servers: servers.servers.into_iter().map(FlatServer::from).collect(),
+            favorites: servers.favorites,
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Server {
     uuid: Uuid,
-    description: String,
-    pub ip: String,
-    pub version: String,
-    pub endpoint: Option<String>,
+    description: Option<String>,
+    pub info: ServerInfo,
+}
+impl From<FlatServer> for Server {
+    fn from(flat: FlatServer) -> Self {
+        let info = if let Some(endpoint) = flat.endpoint {
+            ServerInfo::Endpoint(endpoint)
+        } else {
+            ServerInfo::Simple {
+                ip: flat.ip.unwrap(),
+                version: flat.version.unwrap(),
+            }
+        };
+        Self {
+            uuid: flat.uuid,
+            description: flat.description,
+            info,
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
@@ -365,8 +420,13 @@ impl Servers {
 
     fn load() -> Result<Self> {
         let servers_path = get_app_statics().app_data_dir.join("servers.json");
-        let servers_str = std::fs::read_to_string(servers_path)?;
-        let servers: Self = serde_json::from_str(&servers_str)?;
+        Self::load_internal(&servers_path.to_string_lossy())
+    }
+
+    fn load_internal(path: &str) -> Result<Self> {
+        let servers_str = std::fs::read_to_string(path)?;
+        let flat_servers: FlatServers = serde_json::from_str(&servers_str)?;
+        let servers: Self = flat_servers.into();
         Ok(servers)
     }
 
@@ -380,7 +440,9 @@ impl Servers {
             return Ok(None);
         }
         let servers_str = std::fs::read_to_string(servers_path)?;
-        let servers: Self = serde_json::from_str(&servers_str)?;
+        // OpenFusionClient legacy servers are stored flat
+        let flat_servers: FlatServers = serde_json::from_str(&servers_str)?;
+        let servers: Self = flat_servers.into();
         Ok(Some(servers))
     }
 
@@ -396,8 +458,9 @@ impl Servers {
     }
 
     fn save(&self) -> Result<()> {
+        let flat_servers: FlatServers = self.clone().into();
         let servers_path = get_app_statics().app_data_dir.join("servers.json");
-        let servers_str = serde_json::to_string_pretty(self)?;
+        let servers_str = serde_json::to_string_pretty(&flat_servers)?;
         std::fs::write(servers_path, servers_str)?;
         Ok(())
     }
@@ -405,9 +468,13 @@ impl Servers {
     fn load_default() -> Self {
         info!("Loading default servers");
         let default_servers_path = get_app_statics().resource_dir.join("defaults/servers.json");
-        let default_servers_str =
-            std::fs::read_to_string(default_servers_path).expect("Default servers not found");
-        serde_json::from_str(&default_servers_str).expect("Default servers are invalid")
+        match Self::load_internal(&default_servers_path.to_string_lossy()) {
+            Ok(servers) => servers,
+            Err(e) => {
+                warn!("Failed to load default servers: {}", e);
+                Self::default()
+            }
+        }
     }
 
     pub fn get_entry(&self, uuid: Uuid) -> Option<&Server> {
@@ -420,12 +487,19 @@ impl Servers {
 
     pub fn add_entry(&mut self, details: NewServerDetails) -> Uuid {
         let uuid = Uuid::new_v4();
+        let description = details.description;
+        let info = if let Some(endpoint) = details.endpoint {
+            ServerInfo::Endpoint(endpoint)
+        } else {
+            ServerInfo::Simple {
+                ip: details.ip,
+                version: details.version,
+            }
+        };
         self.servers.push(Server {
             uuid,
-            description: details.description,
-            ip: details.ip,
-            version: details.version,
-            endpoint: details.endpoint,
+            description: Some(description),
+            info,
         });
         uuid
     }
@@ -438,5 +512,14 @@ impl Servers {
             }
         }
         Err(format!("Server with UUID {} not found", entry.uuid).into())
+    }
+}
+
+impl From<FlatServers> for Servers {
+    fn from(flat: FlatServers) -> Self {
+        Self {
+            servers: flat.servers.into_iter().map(Server::from).collect(),
+            favorites: flat.favorites,
+        }
     }
 }
