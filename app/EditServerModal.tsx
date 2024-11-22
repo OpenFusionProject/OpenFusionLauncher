@@ -27,7 +27,7 @@ export default function EditServerModal({
 
   const getDefaultVersion = () => {
     if (versions.length > 0) {
-      return versions[0].name;
+      return versions[0].uuid;
     }
     return "";
   };
@@ -85,8 +85,8 @@ export default function EditServerModal({
               onChange={(e) => setVersion(e.target.value)}
             >
               {versions.map((version) => (
-                <option key={version.name} value={version.name}>
-                  {version.name}
+                <option key={version.uuid} value={version.uuid}>
+                  {version.description}
                 </option>
               ))}
             </Form.Select>

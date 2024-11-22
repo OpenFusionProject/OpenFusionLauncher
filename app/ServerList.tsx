@@ -1,12 +1,18 @@
-import { ServerEntry } from "./types";
+import { ServerEntry, VersionEntry } from "./types";
+
+const findVersion = (versions: VersionEntry[], uuid: string) => {
+  return versions.find((version) => version.uuid == uuid);
+}
 
 export default function ServerList({
   servers,
+  versions,
   selectedServer,
   setSelectedServer,
   onConnect,
 }: {
   servers: ServerEntry[];
+  versions: VersionEntry[];
   selectedServer?: string;
   setSelectedServer: (server: string) => void;
   onConnect: (server: string) => void;
@@ -42,7 +48,7 @@ export default function ServerList({
                 onDoubleClick={() => onConnect(server.uuid!)}
               >
                 <td>{server.description}</td>
-                <td className="font-monospace">{server.version}</td>
+                <td className="font-monospace">{findVersion(versions, server.version)?.description ?? "???"}</td>
               </tr>
             ))
           )}

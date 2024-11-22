@@ -19,8 +19,8 @@ export type Servers = {
 };
 
 export type VersionEntry = {
-  name: string;
-  url: string;
+  uuid: string;
+  description: string;
 };
 
 export type Versions = {

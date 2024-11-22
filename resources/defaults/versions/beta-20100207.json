@@ -1,0 +1,5432 @@
+{
+  "uuid": "3d18aab5-95a5-49cb-8cde-ddcf809ad623",
+  "asset_url": "http://cdn.dexlabs.systems/ff/big/beta-20100207",
+  "description": "beta-20100207",
+  "parent_uuid": "793ed605-9a36-490c-95e1-6d1df8d7568b",
+  "hidden": false,
+  "main_file_url": "http://cdn.dexlabs.systems/ff/big/beta-20100207/main.unity3d",
+  "main_file_info": {
+    "hash": "a9fc405ce570593f2555e88db461a9a45f7946a508ec2cb1ef8d59fc6e3ed6d0",
+    "size": 7776692
+  },
+  "total_compressed_size": 483725781,
+  "total_uncompressed_size": 1925292945,
+  "bundles": {
+    "Map_08_11.unity3d": {
+      "compressed_info": {
+        "hash": "19b27e30746f1d200cbfc4db20234b44702477cd2b1eb5c5a1bd29e06c3bac5a",
+        "size": 3831
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_08_11": {
+          "hash": "32092e6614e523a73fa2120a95fbdabe192d5e797791a2a1041abecc5824c931",
+          "size": 39200
+        },
+        "BuildPlayer-Map_08_11.sharedAssets": {
+          "hash": "d476ab2f85b30750b89e656dc54a6d2d6ae1ca40b028cc48a4fd573deb0eca40",
+          "size": 923
+        }
+      }
+    },
+    "Map_02_12.unity3d": {
+      "compressed_info": {
+        "hash": "59bb2fcd1af8397596c7008ee2251e97721832cac1127a0ef8ab43761a6d2124",
+        "size": 251279
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_02_12.sharedAssets": {
+          "hash": "21b3fe31ac3fa18063f6876c6d23ee7c84c962ca6c3430f5beb3e0c43277dd26",
+          "size": 7877
+        },
+        "BuildPlayer-Map_02_12": {
+          "hash": "85d7cdd46c8d59ed21588e3dc855abb914be9ea3fd049944c70ab0a34742d204",
+          "size": 2399384
+        }
+      }
+    },
+    "Map_18_13.unity3d": {
+      "compressed_info": {
+        "hash": "d68cc7a224737a75b1ce363ea6092c683a3bbb72d546d70b2311f29771c5dc3f",
+        "size": 36350
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_18_13": {
+          "hash": "45f01ef68ecca503a9b93dc5bf38b118b1bef48dd1353b93f92605b7e3b0e25a",
+          "size": 191947
+        },
+        "BuildPlayer-Map_18_13.sharedAssets": {
+          "hash": "edd2c416247e306bfe0422707389ad430546c1a026d81c741301f20e03b55ec6",
+          "size": 591
+        }
+      }
+    },
+    "DongResources_03_13.resourceFile": {
+      "compressed_info": {
+        "hash": "2ea81eddf0ed845ab0f6b6cde2bac3f96c0e179d78fe173173aa36ff23f86539",
+        "size": 1161824
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_03_13": {
+          "hash": "d93917a56b046a4610ae22542e30f9b0f00273fa3ef1909e156d8f2bd3be633a",
+          "size": 6564964
+        }
+      }
+    },
+    "DongResources_09_06.resourceFile": {
+      "compressed_info": {
+        "hash": "13fe14a816a36644b0fbd1f7eb9a27d66409fdf27a4a05dea6c548cafd5e7011",
+        "size": 3678756
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_09_06": {
+          "hash": "975cd82a5a06ef1946c0406a93431cb297c26093efb454cdc5a5b95899dfbc2e",
+          "size": 9382524
+        }
+      }
+    },
+    "DongResources_08_05.resourceFile": {
+      "compressed_info": {
+        "hash": "1f2de271fc281b1a1ce36a05e58cece78ee9e2c620878ae534dbe19b3513997a",
+        "size": 174669
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_08_05": {
+          "hash": "96bad9cd5a85183e22bf50fdafec67d8976bfe078024a77c856f7db9b876befb",
+          "size": 1225791
+        }
+      }
+    },
+    "Map_14_07.unity3d": {
+      "compressed_info": {
+        "hash": "79e1ade392bae34e69869c0129ff939c0ee73fd712dec7194a54af97a9119193",
+        "size": 67006
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_14_07.sharedAssets": {
+          "hash": "6cade761f50b1465e3b3bc30bc6b3f56ee7edf61b493e6defb4e635b288bafa0",
+          "size": 3931
+        },
+        "BuildPlayer-Map_14_07": {
+          "hash": "827e28a581a8a78469c50bd4382b4dd2c76f675e3ab39411309db888c48bdd60",
+          "size": 643538
+        }
+      }
+    },
+    "DongResources_10_00.resourceFile": {
+      "compressed_info": {
+        "hash": "d030df6bb8514424656d82cffe24aae5392ebae695e9daf4f510f39383a2cb29",
+        "size": 134055
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_10_00": {
+          "hash": "6698f78ae4727eb4c02d9ed2135bea3960b7c8c9b217a05c9228b3957b9b487f",
+          "size": 1226702
+        }
+      }
+    },
+    "DongResources_03_14.resourceFile": {
+      "compressed_info": {
+        "hash": "5f4563da6b56654122d00ac3c77d609815233faa1f1dd97edd695b529a9551f0",
+        "size": 215069
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_03_14": {
+          "hash": "15744cb11f046227b76973e2e9bf98d0cd9e871ae9ec808d66c78ec3a53a0c0e",
+          "size": 1618767
+        }
+      }
+    },
+    "DongResources_12_13.resourceFile": {
+      "compressed_info": {
+        "hash": "12d4e14c18fc0b744a104dae24660e359ddfdeb2b0a15643741b8952bae69b88",
+        "size": 2759146
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_12_13": {
+          "hash": "797e749bbd377d63ab9e79c1c47ca0a15f98a5c92c677da3560905823121b3e6",
+          "size": 14385388
+        }
+      }
+    },
+    "Effects.resourceFile": {
+      "compressed_info": {
+        "hash": "af7f59b7677c2fa796f0331f245917bf67fad2aad40c5b5cca50d9228aef14b6",
+        "size": 7905416
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-Effects": {
+          "hash": "d69c79f88729f885f2b1b52cfa854e4b465a23ba337d8cffc40b78a18b9da288",
+          "size": 29930948
+        }
+      }
+    },
+    "DongResources_07_05.resourceFile": {
+      "compressed_info": {
+        "hash": "b7c30269809c69f7eca509b792f534c63b5480d5bac234472069d52a498df892",
+        "size": 407228
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_07_05": {
+          "hash": "a03a8e2b3c85d8fc42d9a8aa78774c7f980624ce03dd98cc17950553838f4217",
+          "size": 1665625
+        }
+      }
+    },
+    "DongResources_15_12.resourceFile": {
+      "compressed_info": {
+        "hash": "fe0b1dda6c0c73ea75466058d1d0fe41c66dc71f9f55bc0c4862a406c9c74cfb",
+        "size": 3345296
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_15_12": {
+          "hash": "dd98b8103b656bd99457a25bfd338db936b679f67cb9beda0710df4d3ff5941f",
+          "size": 15970297
+        }
+      }
+    },
+    "Map_06_06.unity3d": {
+      "compressed_info": {
+        "hash": "ea477cb3172f5cc66276ad78893bf625df75bb42f3b8e77d9cd1c1bea23c2b9a",
+        "size": 147301
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_06_06.sharedAssets": {
+          "hash": "7ab0c0a45f9c514cc70eccba676a5af4d1b32cccc0cf313b62722d6e83437b53",
+          "size": 9589
+        },
+        "BuildPlayer-Map_06_06": {
+          "hash": "979b584174d891c3ce71b3241f990508d41588f8201fbafeca53074d7de6c832",
+          "size": 1475712
+        }
+      }
+    },
+    "FutureNano.resourceFile": {
+      "compressed_info": {
+        "hash": "a422c563816a266179032331a1f8580d46e124221755a01f9aef66cfd485bb1e",
+        "size": 1665856
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-FutureNano": {
+          "hash": "b6853732e82f8016ba77e57078aa6714684664f09c0fffc40049d83fc0602799",
+          "size": 4225287
+        }
+      }
+    },
+    "DongResources_07_03.resourceFile": {
+      "compressed_info": {
+        "hash": "bca5e98f0f47943f1663267ce04770163c7a75aaf09fc465fd8aca16c4fa34cb",
+        "size": 388009
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_07_03": {
+          "hash": "0774525b39c2ab267f32a5e263ae993d6b7beaf6a8ecccdad20994a8f5e18f28",
+          "size": 1618871
+        }
+      }
+    },
+    "Map_15_00.unity3d": {
+      "compressed_info": {
+        "hash": "8f16fa08b2e86e88e8ce539d11a7bcd88d063233be866a14acb3c2f973d029b0",
+        "size": 7697
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_15_00.sharedAssets": {
+          "hash": "c779a7dee2962005f780b2b2887290297903784753d69e385753437d3f34a9a4",
+          "size": 1010
+        },
+        "BuildPlayer-Map_15_00": {
+          "hash": "7f5015cd546b079cf166ec9e84461673d1cdb297cad035d18a29ae38a635b523",
+          "size": 54770
+        }
+      }
+    },
+    "TableData.resourceFile": {
+      "compressed_info": {
+        "hash": "5f3daa1f8ba8835a4431491d05a8fddebcca99e47852934e72cce5eb379746b2",
+        "size": 670207
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-TableData": {
+          "hash": "a8954ba044002efb9e7e6557f040843ee5ddf2c90c27f63781b3b49fd10915ae",
+          "size": 6233230
+        }
+      }
+    },
+    "Map_09_12.unity3d": {
+      "compressed_info": {
+        "hash": "70d912a1860f9d0283374be3f8be399744f9d443e944f36b2da9c5de0d462a1c",
+        "size": 172924
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_09_12.sharedAssets": {
+          "hash": "c09871413b099c0cb3497ad8a082b9c736734d77345a527c4b459d3161a96e7d",
+          "size": 6165
+        },
+        "BuildPlayer-Map_09_12": {
+          "hash": "8f5004d4a5be9354438ee9f12d987f1b47a4102a644a467239619a7b1182a371",
+          "size": 974950
+        }
+      }
+    },
+    "Map_03_12.unity3d": {
+      "compressed_info": {
+        "hash": "414eebff99ea70c813c4c3f236ed1ae4efd36c5676491e045fe3c5a280a7713e",
+        "size": 113613
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_03_12": {
+          "hash": "2f8a71f01ae0692bf1cd3e3903f220e2decd44742490490adcc1719aa99777b4",
+          "size": 1087114
+        },
+        "BuildPlayer-Map_03_12.sharedAssets": {
+          "hash": "8c60c3ba2903b4f265b497333235d9cdc767a62256f2b2bd0e1805e656b1dfa7",
+          "size": 7301
+        }
+      }
+    },
+    "Map_08_07.unity3d": {
+      "compressed_info": {
+        "hash": "bdf43b9ee2d5e0e198c847bc76e479df1a53268d17cf6005d0f4d9020b4f2805",
+        "size": 140996
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_08_07.sharedAssets": {
+          "hash": "84b7dee1892ad2bcafd7bcca3eba26c72a92c7c7d2fd0ac753c4a2cdab6ecd61",
+          "size": 10541
+        },
+        "BuildPlayer-Map_08_07": {
+          "hash": "aba7d73e0f67f936274874d9937a618b0030ca3bc42a8af5a8eb3b8d915f53c9",
+          "size": 1222034
+        }
+      }
+    },
+    "Map_05_12.unity3d": {
+      "compressed_info": {
+        "hash": "e7e26b5a4772d29dde9f54af6f0cf7d0fdbb29ed1a75f7bc7a52ccb745357c63",
+        "size": 135776
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_05_12": {
+          "hash": "968a9fccc7b9eb32b21abc83729c1b706f1db4af95d2f0385c72f2c979c55333",
+          "size": 1402988
+        },
+        "BuildPlayer-Map_05_12.sharedAssets": {
+          "hash": "0b873bcb472fbc1f55efd893f6263f005383f6e86a9a609ff75ab4cb8eb8b3e5",
+          "size": 6333
+        }
+      }
+    },
+    "Map_11_07.unity3d": {
+      "compressed_info": {
+        "hash": "1f787db3bc32c6ba7bfa5cf2fa68b278c38dd0974e18d57e38a0bdd37eba1ff0",
+        "size": 33291
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_11_07": {
+          "hash": "5db654442b7af26d1311da2fdcea2f0a25529d14d770d7deb8e5a4bc7cd11757",
+          "size": 253466
+        },
+        "BuildPlayer-Map_11_07.sharedAssets": {
+          "hash": "0cca3e80c922a671b8c2631c81b9a7708839f95727adc87da6e3689b5dafc630",
+          "size": 5108
+        }
+      }
+    },
+    "Map_01_14.unity3d": {
+      "compressed_info": {
+        "hash": "e6900e860784490c030acbe244a7f42dc4f35b75b1251e752ba694ed6423d54c",
+        "size": 3455
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_01_14.sharedAssets": {
+          "hash": "51ddd76f6c288e5ef70b8930b471e773e4e7a9b6731b5590789d906cc87fddb9",
+          "size": 923
+        },
+        "BuildPlayer-Map_01_14": {
+          "hash": "650bd1e7da2946c088cafc079bf4c995b7aafc36ed62ae462ad642e61b5a15b0",
+          "size": 37412
+        }
+      }
+    },
+    "DongResources_13_04.resourceFile": {
+      "compressed_info": {
+        "hash": "d251e33197c54ed9baf1e84b37d7cf495b28ba0c95a0d2ef582e660856d1a0f7",
+        "size": 14100
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_13_04": {
+          "hash": "0447e9c91015057833f40fd07b6e7bb9cc7f3d0f8337b56b62beb1b23ea20e47",
+          "size": 1226434
+        }
+      }
+    },
+    "Map_13_11.unity3d": {
+      "compressed_info": {
+        "hash": "443a26be27cbc0cef57445154b1d276a9b17ac5cf859107a3be441f239109340",
+        "size": 32741
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_13_11": {
+          "hash": "5bb3bb2d6613a5bbcba3fd8a07f93f26661d7c1477405fa7ab863bac26184b52",
+          "size": 210717
+        },
+        "BuildPlayer-Map_13_11.sharedAssets": {
+          "hash": "120a83c507d78b3723227f7c436639668deb6cf3a6eb8222984874cb1db05e1b",
+          "size": 979
+        }
+      }
+    },
+    "DongResources_06_11.resourceFile": {
+      "compressed_info": {
+        "hash": "bb7b7c7fdd3801b7d771ca7dd0784c67e7e472406c507ed543274ebd417467ea",
+        "size": 177533
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_06_11": {
+          "hash": "ed415027901fa406b82e8b52aa22ca5717c8f0c2645cb2bdd6392d9a67dcb558",
+          "size": 1225231
+        }
+      }
+    },
+    "DongResources_04_13.resourceFile": {
+      "compressed_info": {
+        "hash": "616f8744447039199bb5b688de7b2e479e59ddc6a37f8cbb61f15c3a41d527b2",
+        "size": 2747966
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_04_13": {
+          "hash": "1c053a27007d33b5af154650bc1e34fbb6a30f0398f2576b050c2ef9b7b6547d",
+          "size": 9178509
+        }
+      }
+    },
+    "Map_20_15.unity3d": {
+      "compressed_info": {
+        "hash": "7265c131e2b9e5a6abb5f401210b4c289482da935a787e766ceecccfdcaf8fb2",
+        "size": 35938
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_20_15.sharedAssets": {
+          "hash": "c9e02a92d033502ef98c3b5fde299f232ce5055c64415c1e092ab4f5b19e0ef2",
+          "size": 591
+        },
+        "BuildPlayer-Map_20_15": {
+          "hash": "a641964beb81d63ead9ad822ea9de37755ee8ecc2c2a2532f0d5a3cbaa2e4ea2",
+          "size": 186783
+        }
+      }
+    },
+    "DongResources_04_02.resourceFile": {
+      "compressed_info": {
+        "hash": "e77d6c8e274e8491e67068d44a21b2c77ca09d6cca7fb48da4a5bacc2bb94175",
+        "size": 4398692
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_04_02": {
+          "hash": "6b03f658cb25cb2f8b2f01a2d06cb6d5eb09427eec22b60194dd4b4586da19f4",
+          "size": 29920588
+        }
+      }
+    },
+    "DongResources_05_05.resourceFile": {
+      "compressed_info": {
+        "hash": "460aa43c2799364eb3bee53c6bb072d28474c22df64377b7a79f00fed40c7a73",
+        "size": 5535500
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_05_05": {
+          "hash": "0e29812e2ae95d3dc3033199cc39cf83aa02397cc08ccf5626500932662ac192",
+          "size": 21838133
+        }
+      }
+    },
+    "DongResources_12_12.resourceFile": {
+      "compressed_info": {
+        "hash": "87f513d3bfd426d78c8bea5417dccc473a79522b5e78c6aa9eddd795bd46f24c",
+        "size": 335374
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_12_12": {
+          "hash": "25251efe3c67a2df6b9eb5b52a1b70d62b3a99a97969cbd99b7109ad5b8f378c",
+          "size": 1926611
+        }
+      }
+    },
+    "DongResources_04_07.resourceFile": {
+      "compressed_info": {
+        "hash": "7c544d02da6fff537a516ec4b4f7894578ea81894cfcb21ad5c3e5b8d19083fa",
+        "size": 2739773
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_04_07": {
+          "hash": "ee0b01ae2f078f89a73c0359bc8fb95d8cba3a59a8bf935314c232950d9db4bc",
+          "size": 12467557
+        }
+      }
+    },
+    "DongResources_13_08.resourceFile": {
+      "compressed_info": {
+        "hash": "91a43b713d7355cfd859474415ab76c838fab5acc0ba0609176c295b43d9e1e0",
+        "size": 223110
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_13_08": {
+          "hash": "187e7994252ea7ad37a7ac94312ad32fd5cd604c8476ddbc1fd73d267048de96",
+          "size": 2641135
+        }
+      }
+    },
+    "DongResources_09_08.resourceFile": {
+      "compressed_info": {
+        "hash": "b1dbbd089ccba5e058381046eada1c851b2c1597badcd448f099abdc49554f9e",
+        "size": 3887213
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_09_08": {
+          "hash": "16b8770b8b9738476d7ce05e6d271f1dc2fca1360c9017d716f1437de4261f11",
+          "size": 16311324
+        }
+      }
+    },
+    "Map_14_15.unity3d": {
+      "compressed_info": {
+        "hash": "11e024013053e5e73a686fd8ae17aa6ef2dda01c0fa5a3339fe30e13b1580c09",
+        "size": 150704
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_14_15.sharedAssets": {
+          "hash": "7c07663d01c68173a070674a660783cfde7cc97acf166ee3032795ac71fad75e",
+          "size": 2758
+        },
+        "BuildPlayer-Map_14_15": {
+          "hash": "5c7d7e17cec0a6abf6ec7b6b588f16c42c68ef185b77d07891f6f1382d765fb2",
+          "size": 1455981
+        }
+      }
+    },
+    "World_shared_part5.resourceFile": {
+      "compressed_info": {
+        "hash": "eae01a5f6ae8de584ccb7b00d706692ae715bcbb601cc0ef8021a222423811cd",
+        "size": 12566021
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-World_shared_part5": {
+          "hash": "371b05ce4bacdfdabb3795731216548a67a8d02e0a5804ca7001c2120329073d",
+          "size": 29237157
+        }
+      }
+    },
+    "DongResources_13_10.resourceFile": {
+      "compressed_info": {
+        "hash": "6e38e1a55ac93c7241b7d96bca714f37800f5b8f7ec8718dcf6519ed30be1fb5",
+        "size": 280645
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_13_10": {
+          "hash": "c1f6796e175f9d82610c6b0be6196c43dba5ba5c782472f780f79dc3edbccfc0",
+          "size": 3015693
+        }
+      }
+    },
+    "Map_05_06.unity3d": {
+      "compressed_info": {
+        "hash": "63a11148b78c53a087ace42ce7b73e848908b4a5a1516f70d691c577856ce9cb",
+        "size": 60062
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_05_06": {
+          "hash": "53958d9625249b2f6a5678184ba5a6c33e363a5d25c451688e638931564d47d9",
+          "size": 527844
+        },
+        "BuildPlayer-Map_05_06.sharedAssets": {
+          "hash": "8515b0a78d15dfd599c563fbc65efef406b8d7cef19b39d68f24a681f5ddf822",
+          "size": 7861
+        }
+      }
+    },
+    "Map_03_13.unity3d": {
+      "compressed_info": {
+        "hash": "ed1685eea54c89af9c612edfafd7193b92dec872c9f5ddf03920162ec05a77b1",
+        "size": 111864
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_03_13.sharedAssets": {
+          "hash": "27f00308c628257c26b2470ceb11ce6636d053a9dbe6c21e2e241f9fe67bf37e",
+          "size": 6045
+        },
+        "BuildPlayer-Map_03_13": {
+          "hash": "d5ecdc37f174f1634b951d6f9a78bd96b8714516e83b31a807c325ab68770dc8",
+          "size": 1179042
+        }
+      }
+    },
+    "DongResources_09_10.resourceFile": {
+      "compressed_info": {
+        "hash": "e965d8166e466dcf30d35849b93242becb71e5bae6637edee4231b84e7fc2648",
+        "size": 1832460
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_09_10": {
+          "hash": "8cb875c70a52afe7ef088b27539090837f4c5a5b93bab098d0e57ad87ac96d26",
+          "size": 11698290
+        }
+      }
+    },
+    "DongResources_03_11.resourceFile": {
+      "compressed_info": {
+        "hash": "451f2c554a5aa735e54c4677cce1dd26db256ea8c1376dbfb496d24b218b39b4",
+        "size": 328247
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_03_11": {
+          "hash": "33b7e02a73ed15c56d948a87b650569072655dc57e46206d8431625e7b6d5b17",
+          "size": 1638776
+        }
+      }
+    },
+    "Map_08_08.unity3d": {
+      "compressed_info": {
+        "hash": "60e1d6ad84d446fb42486e7367dff391d32891ecead5b6c605b4070417db4bda",
+        "size": 3435
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_08_08": {
+          "hash": "78a50f08d6ed7beb91373c3eba3dd0cee6573579749372ca9b4c4562e00aec17",
+          "size": 37412
+        },
+        "BuildPlayer-Map_08_08.sharedAssets": {
+          "hash": "79dabd7f06b0b15e0614d52a5b27331f6b79d10692a7d6fc53b25bb3eec20a87",
+          "size": 899
+        }
+      }
+    },
+    "Map_06_02.unity3d": {
+      "compressed_info": {
+        "hash": "429c745a6365cfef8a31858c0bd377a1f54c0c00ccda6bbf5781395db4d083ff",
+        "size": 87872
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_06_02": {
+          "hash": "b97e0f3a9ec8d2606042aee139cfd1dfa48bd7108658cdcec86e23ac701daf26",
+          "size": 356608
+        },
+        "BuildPlayer-Map_06_02.sharedAssets": {
+          "hash": "1e30aa799c9b0007159ebd88402a8c0e90d03e5907bf8eacb0e8987a6f28b5f3",
+          "size": 907
+        }
+      }
+    },
+    "Map_13_14.unity3d": {
+      "compressed_info": {
+        "hash": "711c3bcaf590b67d88fb1737f318f3eae4fd326633dbbe2b0ce41b4ccb9969f9",
+        "size": 45471
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_13_14.sharedAssets": {
+          "hash": "c9cca5f8c69a2217560e7511b1147a34191bb6e016f8eafa5c88533624c0adf6",
+          "size": 3301
+        },
+        "BuildPlayer-Map_13_14": {
+          "hash": "49c0fb6fa3acd4cb20afdf8d3b45af76379e0913b81cd4443b87cd449a3518ef",
+          "size": 418657
+        }
+      }
+    },
+    "Map_04_06.unity3d": {
+      "compressed_info": {
+        "hash": "f4a45e3407d0f26d6a52b443a1e0fac723a5909d03bb595437da4bb24eaef106",
+        "size": 114489
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_04_06.sharedAssets": {
+          "hash": "4100b21949afc3ad434965d426571f070a5609929da0acb9ed5c36cf1cbb9fd2",
+          "size": 9293
+        },
+        "BuildPlayer-Map_04_06": {
+          "hash": "b189b2a95728ec8c6f3ce245000982691e3544c52f586f300c30a0733ad1f404",
+          "size": 1108764
+        }
+      }
+    },
+    "Map_09_13.unity3d": {
+      "compressed_info": {
+        "hash": "402ff99f0fd135fea1c043100b4cd65838122fd2e107d688be7eccd62ca378f8",
+        "size": 50981
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_09_13.sharedAssets": {
+          "hash": "f0cb7dc0f4086a14da5a013781dcf5cd60477ea5676ba1651d7317bcf4ca0700",
+          "size": 4420
+        },
+        "BuildPlayer-Map_09_13": {
+          "hash": "59e796621474b7e36b6ec3a429fcf5a11f50f268d17c4664f50fc49a1689b9f2",
+          "size": 346854
+        }
+      }
+    },
+    "Map_14_14.unity3d": {
+      "compressed_info": {
+        "hash": "02c08e1acaa56ba28102e67054a8068b278144af14a4c92af93b879fe5b1854a",
+        "size": 47740
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_14_14.sharedAssets": {
+          "hash": "6eee889d0a41d385f4010698236fa211b50f839c61aa5e6dc43e60dd372005fd",
+          "size": 3594
+        },
+        "BuildPlayer-Map_14_14": {
+          "hash": "04a4abb53ef6a062b0a27b8fd928c446488bdb574ee2fb73d95a816e1acd955f",
+          "size": 428570
+        }
+      }
+    },
+    "Map_13_08.unity3d": {
+      "compressed_info": {
+        "hash": "f6d99b39b8db2a34bb81bead366a1ec9c0af9311850e57a3ce6d5eb05aa6ed2c",
+        "size": 3648
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_13_08": {
+          "hash": "59afa683d71089d5b4e4aee24636547adede2e55adb84f239d90762b92544d7e",
+          "size": 38112
+        },
+        "BuildPlayer-Map_13_08.sharedAssets": {
+          "hash": "77ca7ac6adc9c56efa78d5764c515a629a979e46ecc71a4c57167b24fab9495d",
+          "size": 947
+        }
+      }
+    },
+    "Map_17_12.unity3d": {
+      "compressed_info": {
+        "hash": "df0b726c5cc09af2873155b3f2163ccba24901d07eade63414dafc05755e02d9",
+        "size": 39168
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_17_12": {
+          "hash": "1cef8c86ace2124a4ea2f555e6c488a5c65afe90a52f0234bc3b1680969e89b4",
+          "size": 215047
+        },
+        "BuildPlayer-Map_17_12.sharedAssets": {
+          "hash": "32b0cc42e5db95d2516d0c42ba6150c40663abc8810495d0e53ea4bd08c3d14f",
+          "size": 823
+        }
+      }
+    },
+    "Map_22_14.unity3d": {
+      "compressed_info": {
+        "hash": "0cbc423278661d79a9cd953f46c4c04819fa90e5470daaa452d07adf0b6aae48",
+        "size": 222817
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_22_14.sharedAssets": {
+          "hash": "7efa46b27b99767e23bf25c7a4f4e70ae273427070f33fe82b369446f5bc003f",
+          "size": 7095
+        },
+        "BuildPlayer-Map_22_14": {
+          "hash": "c82b7fcdc5e790faf178243a27aa43a2308a3a5819727756d4c7d969527be175",
+          "size": 1783995
+        }
+      }
+    },
+    "DongResources_07_13.resourceFile": {
+      "compressed_info": {
+        "hash": "c1a80365fc2363a94033facb0d392a2032b16d95c4338ed61321a70479ef7713",
+        "size": 329589
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_07_13": {
+          "hash": "d56d2af871146c3063f319acd89c2af39cdfdb924d7be6c294f15421557de38c",
+          "size": 1974937
+        }
+      }
+    },
+    "DongResources_13_11.resourceFile": {
+      "compressed_info": {
+        "hash": "4ea534d201f5c80c4e6d2ca20dea69f1342347134df7e5d42f7866d1a28989b5",
+        "size": 179334
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_13_11": {
+          "hash": "447f23af84f504f87138520bd86f4c6fb12bb87fea6318940e21688e2b296efa",
+          "size": 1576399
+        }
+      }
+    },
+    "Map_04_08.unity3d": {
+      "compressed_info": {
+        "hash": "9a8f0d93430e5d10c12d552bf6f798518e21604c475e6c8e44d892837799a84f",
+        "size": 3406
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_04_08": {
+          "hash": "b2fdf0059b02db0994aa068072819b151b62ff3345195a687f4d4373c0e1f93b",
+          "size": 37412
+        },
+        "BuildPlayer-Map_04_08.sharedAssets": {
+          "hash": "3f58785ca0a182dd83a29e2491066e601d088cfa515c099e617cc5218639b315",
+          "size": 875
+        }
+      }
+    },
+    "DongResources_01_04.resourceFile": {
+      "compressed_info": {
+        "hash": "d70bc784cab484d1aaed4d0bbe9cb75f3fed58999aa195d8bcdff710f87992a4",
+        "size": 185324
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_01_04": {
+          "hash": "555bea91301d8e96268a3cf72f0795d9d03ff4254d9dee034766b9cdaeb14bdf",
+          "size": 1574955
+        }
+      }
+    },
+    "Map_02_02.unity3d": {
+      "compressed_info": {
+        "hash": "f2cd0c4da25e71761e8ceddd1b06f26a25323b495b506c2f27c0342ceead10a4",
+        "size": 61167
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_02_02": {
+          "hash": "49a5dd88b3db6d6ccf44469c065d782b29a4e6f7827b2abefc790e1f00e861ec",
+          "size": 357805
+        },
+        "BuildPlayer-Map_02_02.sharedAssets": {
+          "hash": "e21015778df39f4c10d487115678f6ca7ee918606d0750b86b69fc4fc784efc8",
+          "size": 734
+        }
+      }
+    },
+    "Map_09_10.unity3d": {
+      "compressed_info": {
+        "hash": "22a08e46a26106679ad9554c9cb09b09a6df4864add4424c00437f13b5d0bb83",
+        "size": 52991
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_09_10": {
+          "hash": "aab435cba9a5d8276c5df1c347b891e7ea56654ab5a612ed0717320b69184b5b",
+          "size": 449406
+        },
+        "BuildPlayer-Map_09_10.sharedAssets": {
+          "hash": "03dba0b0c1ad77b6a54a23c2511a4b0ecdde306d985e7636c7e36108ec315059",
+          "size": 5509
+        }
+      }
+    },
+    "Map_10_02.unity3d": {
+      "compressed_info": {
+        "hash": "ee76dd87f1a2c98a0404e469b9e5ee772464adb5728e08feeef1efbe765001ea",
+        "size": 7764
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_10_02": {
+          "hash": "dce1778628eb06318044285e672917e52d5ca04e7aec65591a2c314b7df4823e",
+          "size": 54770
+        },
+        "BuildPlayer-Map_10_02.sharedAssets": {
+          "hash": "47e40fc64c5d75a89cea3b89e517e74152f4abc3258bbc2e6ff15854b1b17bd8",
+          "size": 1010
+        }
+      }
+    },
+    "Map_04_14.unity3d": {
+      "compressed_info": {
+        "hash": "1af970e9941df7056b57d8a4b6f83c890bfd98a26561bc0be7a8b9d2c8067624",
+        "size": 5173
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_04_14": {
+          "hash": "75db3de379ee79eec1a02062b30b83b3d6ae7253bbe9957164940a7de0b41bca",
+          "size": 51270
+        },
+        "BuildPlayer-Map_04_14.sharedAssets": {
+          "hash": "51b7b49d00ebe08330a802ecf555fd6c6162ebf8b720e39c8eb9927a2c510d19",
+          "size": 963
+        }
+      }
+    },
+    "Map_22_15.unity3d": {
+      "compressed_info": {
+        "hash": "d19c8c6ed94b102bc585ca34ea25214172574be88202972e46aade453b2ef614",
+        "size": 38908
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_22_15.sharedAssets": {
+          "hash": "185069021773f1f29de5710952dc58f78a793493a6cc987b49dd9fe421fea18c",
+          "size": 823
+        },
+        "BuildPlayer-Map_22_15": {
+          "hash": "3d1f33c1b318842a0431f1c4a83b94f206b182f8dd4f8b3a0264365d40f011fb",
+          "size": 215047
+        }
+      }
+    },
+    "Map_14_01.unity3d": {
+      "compressed_info": {
+        "hash": "db7fa07575994e9634e93ffd92d9a6849dd1efcecea7a6e9c48f0832151c309e",
+        "size": 180567
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_14_01": {
+          "hash": "1aa9b649766bee8ecbe8cd251da3c7169338410b02ceba69b12676f2b15a94c1",
+          "size": 1552493
+        },
+        "BuildPlayer-Map_14_01.sharedAssets": {
+          "hash": "76b59c510b6d5a5fec4a43c524efe0441a31f6c276765fe341f3cf6b989d509a",
+          "size": 6994
+        }
+      }
+    },
+    "DongResources_12_02.resourceFile": {
+      "compressed_info": {
+        "hash": "5ff6c334968465da1c7bd0df88f513b54ecce2583560ba2a6578fe791b960494",
+        "size": 2881183
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_12_02": {
+          "hash": "900fbb585dfc4e5d8476cc3815c2dd376c33216ee157c702bfcac116e83a36b3",
+          "size": 13940661
+        }
+      }
+    },
+    "DongResources_14_01.resourceFile": {
+      "compressed_info": {
+        "hash": "d5c69e30ccba8e3ec64ca3ab27f296205097b89e5b00b0e4b1b5893c7d375f42",
+        "size": 3827939
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_14_01": {
+          "hash": "093552a887fed57edcb66fa1d00343145add31021ce0fe152e5043e2e46f7bfb",
+          "size": 9181958
+        }
+      }
+    },
+    "Map_03_06.unity3d": {
+      "compressed_info": {
+        "hash": "68e0c78c8c91a7f55d7c0a3651120e5088d335f3e11d3a04d3b9ea8ebff88b37",
+        "size": 160301
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_03_06.sharedAssets": {
+          "hash": "9b7b965e76fb21c6842f933d7ac38f38b96eb78f701ffd157ff1b61fc10b558d",
+          "size": 10645
+        },
+        "BuildPlayer-Map_03_06": {
+          "hash": "ec346915d6884e5c6ab358feae0d92fc1c93ed1c58832de5093a3bb990c3b800",
+          "size": 1633359
+        }
+      }
+    },
+    "World_shared_part6.resourceFile": {
+      "compressed_info": {
+        "hash": "95dc2278e9b1e83ba498024b2f23954c65a8da5ace89911e1fa57b245725a98e",
+        "size": 860
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-World_shared_part6": {
+          "hash": "199f3b9328459ef8c034698494cd49e6124f69b78a85748d700f9c686d030515",
+          "size": 2223
+        }
+      }
+    },
+    "DongResources_13_00.resourceFile": {
+      "compressed_info": {
+        "hash": "0c7eb73331b66d73e60b7bd066df2c6137640595b224b28601df0a3d9f39d66f",
+        "size": 43918
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_13_00": {
+          "hash": "e18ea40a6d0f8685551b3776e9954a49267ddbcf591a2568763793c449e04d7e",
+          "size": 1226450
+        }
+      }
+    },
+    "DongResources_06_14.resourceFile": {
+      "compressed_info": {
+        "hash": "0991d2bdfdb841e3a4c6d2854430ca3500f98930b30fe85de1b59148e1a2fd19",
+        "size": 1233624
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_06_14": {
+          "hash": "3d83d114e8214f1b17f590833130595bfa79f8b38cc9ec4f3495c2033f1c531d",
+          "size": 4153350
+        }
+      }
+    },
+    "DongResources_12_11.resourceFile": {
+      "compressed_info": {
+        "hash": "aee6d45404eb83833bf88439d0e13a945aa2ed77e19dc9f9a611f0e64eef1edc",
+        "size": 351946
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_12_11": {
+          "hash": "75b07ec5eb1c410a027b9f608af1f5cfa9dd4d3d87cd91427633443944428526",
+          "size": 1926703
+        }
+      }
+    },
+    "DongResources_10_14.resourceFile": {
+      "compressed_info": {
+        "hash": "0950c85d9219776097b639ebe0126dba6f0b5db644cf93a5d479cb0b9a3b0166",
+        "size": 609847
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_10_14": {
+          "hash": "3f06208dd844a742c8f1a4f27da242368cde79f8705fed2bf27cb7245a86b6d6",
+          "size": 6345316
+        }
+      }
+    },
+    "DongResources_05_01.resourceFile": {
+      "compressed_info": {
+        "hash": "3149aaf71dee4945e4624b388d27e58ffe2478ac8cae39bea895cccbb1abd6e7",
+        "size": 251688
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_05_01": {
+          "hash": "ca9e24e3fd9c2b35bb063f36528943d327a3a26e51b4844fc650f1969a305312",
+          "size": 4909145
+        }
+      }
+    },
+    "Map_13_00.unity3d": {
+      "compressed_info": {
+        "hash": "d6016cd9f5b7daf870f3122d0aa2b32bd1793770dbce9af8d9b709abb9997384",
+        "size": 7728
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_13_00": {
+          "hash": "b96ec5d098d43084826847bbf79569b302dbde46ccec1a2f53fb48eced3aaf60",
+          "size": 54782
+        },
+        "BuildPlayer-Map_13_00.sharedAssets": {
+          "hash": "cb99006287775358f057f97254f20d0d6e8aed49cd408f03bc8d74116ded4044",
+          "size": 1010
+        }
+      }
+    },
+    "DongResources_13_09.resourceFile": {
+      "compressed_info": {
+        "hash": "fd41477b462ef7344616eddaada0614b45403df9e700615fec0a754408ace0bd",
+        "size": 235188
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_13_09": {
+          "hash": "55b698525ed3e271c657a49a507710a5828cc346625a836aadd6687f1a3d353b",
+          "size": 2644473
+        }
+      }
+    },
+    "Map_01_03.unity3d": {
+      "compressed_info": {
+        "hash": "009c0c1bb90182eefe2c39861b3eea764e2eedb8ac33a7a9f8f4fe6491f7a88d",
+        "size": 17371
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_01_03": {
+          "hash": "40113eb3f1b3d93b1614325d2da05aa23bd013a6cf4573319d78b85e99d64a35",
+          "size": 123053
+        },
+        "BuildPlayer-Map_01_03.sharedAssets": {
+          "hash": "c6eb10e1a872d8236467f2d98918b66f0fd51745cfc03226477e4d196cc1ed5e",
+          "size": 947
+        }
+      }
+    },
+    "Map_02_11.unity3d": {
+      "compressed_info": {
+        "hash": "0feadd69c74f979199db5a1fccae16ed19539b81dc7d4b14bf5c1bbe762a9530",
+        "size": 95019
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_02_11": {
+          "hash": "2dd3c218096df34306cf670507f94d5ef594f1084e1c2d60ed374104c1c5db24",
+          "size": 806698
+        },
+        "BuildPlayer-Map_02_11.sharedAssets": {
+          "hash": "2d6a9418a41575faaa2be22164c64c5190ae081b1938ac79624f19df4c5fcaf4",
+          "size": 3284
+        }
+      }
+    },
+    "World_shared_part1.resourceFile": {
+      "compressed_info": {
+        "hash": "3a860386da46e32f7be981466717bced27580cbe296745a80ad60450fffd5941",
+        "size": 11332098
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-World_shared_part1": {
+          "hash": "9c68d4c1c4dcbc2144c6dccad6ab0f6c796f589074338319bd00443e286f800e",
+          "size": 36622697
+        }
+      }
+    },
+    "DongResources_02_05.resourceFile": {
+      "compressed_info": {
+        "hash": "3f0967e5262565d9643ebcc7d3b03c64b237c3b24c5537db531c13cc90219d80",
+        "size": 387049
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_02_05": {
+          "hash": "f946d3bfabd23e20601fb7e5d1c5a0a60754448dc7f3c188e062e84b63692f14",
+          "size": 2777199
+        }
+      }
+    },
+    "Map_15_13.unity3d": {
+      "compressed_info": {
+        "hash": "4619ced9d3d43aed03fce89b755f80bd27e059d4b750b184bcc52eeab67351d9",
+        "size": 158843
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_15_13.sharedAssets": {
+          "hash": "8ab410a92d4dbf8b232dd240d8d57bb48cea5957b347494cf94e04de8c3de798",
+          "size": 3509
+        },
+        "BuildPlayer-Map_15_13": {
+          "hash": "4deb621ee0f284697e840dbf36582fd366a6757997ab5b6af9d445800fad1acd",
+          "size": 1483451
+        }
+      }
+    },
+    "DongResources_06_03.resourceFile": {
+      "compressed_info": {
+        "hash": "9b127392f2b425300e5ed27c28c8cc2e2946cd8696e1ddf2f43a2a82063a0e9a",
+        "size": 4916589
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_06_03": {
+          "hash": "16e2c0443074463e73bca858af5cedbdc4d14f7dab674c92e84c79df8426e4f5",
+          "size": 19181497
+        }
+      }
+    },
+    "DongResources_02_04.resourceFile": {
+      "compressed_info": {
+        "hash": "1f1633b91fb4f511585835e2b39a49b01e5cd12da927c64411f72c2f6ac44da6",
+        "size": 4245707
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_02_04": {
+          "hash": "2a11112b11555015f321528451a16696c13e89e06b6eb4486688fcdcf7aace73",
+          "size": 16177676
+        }
+      }
+    },
+    "Map_08_12.unity3d": {
+      "compressed_info": {
+        "hash": "18abe35268a4580720ab771dc786494c6b7674ab0843f1f2e1b21e09433cc9b7",
+        "size": 3482
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_08_12": {
+          "hash": "8d7930a2a5664161f73c1289727e62cad5958bafb423a7ace799eda349b4cc71",
+          "size": 37412
+        },
+        "BuildPlayer-Map_08_12.sharedAssets": {
+          "hash": "b41eb7096545f1c2472c392bdd12ce057c118adf27330aaddc08d487840e7ae2",
+          "size": 955
+        }
+      }
+    },
+    "DongResources_02_12.resourceFile": {
+      "compressed_info": {
+        "hash": "e9a78297bd079ff1d7bf7e1725866129cf72aa2ce7bf59c9957cb67b8b215302",
+        "size": 1037426
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_02_12": {
+          "hash": "76228405957162e29d58dcb925d28a2775b853ff0aa4a0c1de3d70d526cc9d74",
+          "size": 3976863
+        }
+      }
+    },
+    "PastMusic.resourceFile": {
+      "compressed_info": {
+        "hash": "96a3fddb5651decffa1ddb127e72c2d3eb5452d4a315f1c15ecc4e3bf4e55fcd",
+        "size": 22836640
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-PastMusic": {
+          "hash": "e43c97bd90e726f1148dc387bd24a2c506d3f8abbe80bc2624bae5ed039a37ae",
+          "size": 23472647
+        }
+      }
+    },
+    "DongResources_07_08.resourceFile": {
+      "compressed_info": {
+        "hash": "c22388db694b04ba8d0337a472d5a200697d8b4357dfae74464224933770d206",
+        "size": 3984685
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_07_08": {
+          "hash": "146f53552a2f0e8f72e4cc32fd9982899deb5822c2ff92342b30846f12488518",
+          "size": 16764828
+        }
+      }
+    },
+    "DongResources_13_01.resourceFile": {
+      "compressed_info": {
+        "hash": "d8982bb6d3bdc469c46718a1f3f10121a30186b19c34acbef75a5fc0baca73f2",
+        "size": 2982645
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_13_01": {
+          "hash": "d4cb895555c3b1b61246f2a59f74630b5582570f8eef106d17e1edf82b437e31",
+          "size": 12889589
+        }
+      }
+    },
+    "Map_08_09.unity3d": {
+      "compressed_info": {
+        "hash": "2c47831e69b31436441d76cbe0da411c06cde52d3e10e9ea81a1a7454ca670dc",
+        "size": 3425
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_08_09": {
+          "hash": "dab490c38fbb4d3448e8e471810a3f4097311a7ea2d6a88f49350ad0d6083688",
+          "size": 37412
+        },
+        "BuildPlayer-Map_08_09.sharedAssets": {
+          "hash": "b52a10e7d911337bf6328088de213b4b1ae94c94964cf571757d49d23988b087",
+          "size": 867
+        }
+      }
+    },
+    "DongResources_13_02.resourceFile": {
+      "compressed_info": {
+        "hash": "e4b1a8b5cf8c701391c2a67ff898bd7fb78c52fbdc1ba0c0118784b6fd663529",
+        "size": 4891946
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_13_02": {
+          "hash": "8ebf9744476c85604f0f05d77c5f62eca361eb58402e9fa4a21643f92aee320c",
+          "size": 17471007
+        }
+      }
+    },
+    "Map_04_02.unity3d": {
+      "compressed_info": {
+        "hash": "a52d4e2a42b721d75fc704ac6a918bf55feb6f67899aa14fb41c1df5e4005980",
+        "size": 213540
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_04_02": {
+          "hash": "91eb21033f398eee87dca4a327b6e05e145fc1b61ae9b3229ca7871ce9cdf007",
+          "size": 2132900
+        },
+        "BuildPlayer-Map_04_02.sharedAssets": {
+          "hash": "00dd7b740d118a2b0071cb4a4b15b91cefa322d05f834345a3f00f96befedb69",
+          "size": 12517
+        }
+      }
+    },
+    "Map_15_03.unity3d": {
+      "compressed_info": {
+        "hash": "1ca5f59dd72e1b7fe11e268a4324d8ca7a152a3ba71e5eb78d33e68e20d3c216",
+        "size": 7733
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_15_03": {
+          "hash": "513f65c50b21a729f009c8039131ef3e6a434e6907b525c4ed105b0dadfa48ce",
+          "size": 54770
+        },
+        "BuildPlayer-Map_15_03.sharedAssets": {
+          "hash": "f51158a60b3f1edf9a37ca3f1a34f080b380a9a74f3c6bc9000147845c56cf5f",
+          "size": 1010
+        }
+      }
+    },
+    "DongResources_10_09.resourceFile": {
+      "compressed_info": {
+        "hash": "67c8613da8f5fc46bd66643732d3f1ae381d27949dc479cb4abd83e687c7836c",
+        "size": 1466052
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_10_09": {
+          "hash": "b4fe2bc51602ab9a09ebe974d00d5083c2e685db2badd9648f49669b6b6e021a",
+          "size": 5848504
+        }
+      }
+    },
+    "Map_10_07.unity3d": {
+      "compressed_info": {
+        "hash": "233067f8ff6957e7ce2d4fa928cd8c3b87428d111ee3fd818318c82e28c337b1",
+        "size": 5065
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_10_07": {
+          "hash": "4b8c85c7380bc732a0a0020040049993adb3e0e684201e8b661bc330f9678103",
+          "size": 45530
+        },
+        "BuildPlayer-Map_10_07.sharedAssets": {
+          "hash": "70e199bb70eebea4a6746bc83c2c5710072a4a1819f94d8d6d542cb276ea1dfa",
+          "size": 1261
+        }
+      }
+    },
+    "Map_12_04.unity3d": {
+      "compressed_info": {
+        "hash": "cd08a8de88e7259998c50182e89a7f352a48b326937c362ef16c922ae0a7af37",
+        "size": 7774
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_12_04": {
+          "hash": "ee8356aa14f3ab90b82de0f7b67f089a48b54163321be764a18934137d212f2f",
+          "size": 54778
+        },
+        "BuildPlayer-Map_12_04.sharedAssets": {
+          "hash": "5c398d527ec8f6af573be567fc3d48bc3d8ae462eb925aea70fda4516bd427c1",
+          "size": 1010
+        }
+      }
+    },
+    "Map_00_02.unity3d": {
+      "compressed_info": {
+        "hash": "cfee2edfb2e086f87f5fa4c6b4b14fa866eb76d6f8ed8fa79443ec00927eed5b",
+        "size": 62963
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_00_02": {
+          "hash": "828889a521ab4f82f56c0c6becc44b3fb3aae930ad12d84f9a08309dd23e9de8",
+          "size": 357805
+        },
+        "BuildPlayer-Map_00_02.sharedAssets": {
+          "hash": "1a2655995182978b5c00d09350b872f7278f0b187aa50623739ed6f63eefd777",
+          "size": 734
+        }
+      }
+    },
+    "Map_13_09.unity3d": {
+      "compressed_info": {
+        "hash": "ec12bbc808e320ec0ef32b5df88bdfc44a93c716bb4c6643c08a17495f090074",
+        "size": 7093
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_13_09.sharedAssets": {
+          "hash": "c4d061c297946b5c08d3d408bcd2a64d9850cf43bd6281aac51329ca00ee0a18",
+          "size": 1197
+        },
+        "BuildPlayer-Map_13_09": {
+          "hash": "a5f2adbf5eebcf9619bd3a576b0fa4c95acac930d6647c5b23a5d3d4fbbbe731",
+          "size": 64602
+        }
+      }
+    },
+    "DongResources_11_06.resourceFile": {
+      "compressed_info": {
+        "hash": "054c49d478e592a6c44c80f0969296520dd49ea29cf4f4e1236529d4b30aacd6",
+        "size": 142334
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_11_06": {
+          "hash": "af2857e2187a7607eb0877e67775dacbf7dd3245db8239a2331536cb2cb53cc2",
+          "size": 1575835
+        }
+      }
+    },
+    "DongResources_06_09.resourceFile": {
+      "compressed_info": {
+        "hash": "bc7785ecaa5d7048007a321cf5de97659d7bbf9611d50299e2046fecda88ba62",
+        "size": 670008
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_06_09": {
+          "hash": "745dda0bda142cc4ac46939c04627a2436cc9d138198e5556c77a50aee53df92",
+          "size": 2474622
+        }
+      }
+    },
+    "DongResources_06_01.resourceFile": {
+      "compressed_info": {
+        "hash": "f7dcdb8132ea46d9df578940910a64e9fd1dd54599cd9c8937ffdf059fc2c5eb",
+        "size": 195017
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_06_01": {
+          "hash": "c19b3c93674b305fb81502706bc2d61aaf05c65374e25c713984e83f8952655d",
+          "size": 1225267
+        }
+      }
+    },
+    "Icons.resourceFile": {
+      "compressed_info": {
+        "hash": "d07bbcc33422444fce64abd20543aac438415026f06ffe2c4b80183029e8e907",
+        "size": 5188894
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-Icons": {
+          "hash": "15cb3ec13c146bea1e174fe9058b7b6c944981aef28a5a5ecf34afa582acaf35",
+          "size": 16236921
+        }
+      }
+    },
+    "Map_02_13.unity3d": {
+      "compressed_info": {
+        "hash": "fdd1746295cccdf00228bfe92f38804a95ced40bfc9315e85c69a298393d69db",
+        "size": 136195
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_02_13": {
+          "hash": "62d1c2d1f477deb9fd22c827888720ed49c4f25892b20a955e7317876bbfb4dc",
+          "size": 1526834
+        },
+        "BuildPlayer-Map_02_13.sharedAssets": {
+          "hash": "7071b5db35a8272e5e25aed658d86b1e5784532d9556ed1cede69d81f1fb31e6",
+          "size": 5541
+        }
+      }
+    },
+    "Map_01_02.unity3d": {
+      "compressed_info": {
+        "hash": "7b61f07edd7e5e46d140e19e33d5b491effa9ae9e7ec6d723680de671315110d",
+        "size": 62007
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_01_02": {
+          "hash": "dde15b9fa69e9f8c7ea82af7e8d706e35854e78bf59affd200e3a9df43593dd1",
+          "size": 357805
+        },
+        "BuildPlayer-Map_01_02.sharedAssets": {
+          "hash": "69496f6dec8fae5ee25847455b0fa2fe0fc811903b2486e7308110eb4cf8e838",
+          "size": 734
+        }
+      }
+    },
+    "DongResources_10_01.resourceFile": {
+      "compressed_info": {
+        "hash": "a2daee16f2643ed0310e7285899794be5eb895b0db7786af9f5ebada7fcda2f1",
+        "size": 14704
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_10_01": {
+          "hash": "174d93e88eb71376dcb46d36138a78d95397df41f9f0206c83b4dc4a077cedb2",
+          "size": 1225640
+        }
+      }
+    },
+    "Map_08_14.unity3d": {
+      "compressed_info": {
+        "hash": "e867871c730e1c4edef467cb7dc7431953d23d6ac29b92715590a7ed0e03706d",
+        "size": 65073
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_08_14.sharedAssets": {
+          "hash": "f97ee136004e3a591ded2d6fd40d33b41dcaf225e54399fa1fea549a16cb945a",
+          "size": 2732
+        },
+        "BuildPlayer-Map_08_14": {
+          "hash": "5e5f6d7055ac61338fda6080aee4deaa9f2e22bae3852899f83c98e74d83207a",
+          "size": 366654
+        }
+      }
+    },
+    "DongResources_07_07.resourceFile": {
+      "compressed_info": {
+        "hash": "f7282fd5d41e96ffc6b6d0034299d74b9b501b45a5dfaca90db38ebd039de031",
+        "size": 2324013
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_07_07": {
+          "hash": "96856517d25f9cb8fe1d4ea1a5176b126687b7ee3cf1dd8e81d462f5bc5cb8e7",
+          "size": 14280904
+        }
+      }
+    },
+    "DongResources_15_15.resourceFile": {
+      "compressed_info": {
+        "hash": "4c7f7d2a3df7ad72680a347b24d9b497ad57dcbaf218ef0691fb49a5909e7960",
+        "size": 2474645
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_15_15": {
+          "hash": "23fd987990791395413fadc9151bae6d74d385bda9bdf3825ac02e4010fa0c87",
+          "size": 12760456
+        }
+      }
+    },
+    "DongResources_13_03.resourceFile": {
+      "compressed_info": {
+        "hash": "e750736c4765a4f4f134cecb51bca520ede41876a74581f4b2449ad3584240b0",
+        "size": 135213
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_13_03": {
+          "hash": "5fba49dd687ac25b93e34c9e9cab6e79fb19a25d6b95abb6883c6acb828095f7",
+          "size": 1226702
+        }
+      }
+    },
+    "Map_23_12.unity3d": {
+      "compressed_info": {
+        "hash": "34b4ba693885054536fd368bbe30738c125b10e4485039a4b0da89e549a64a5f",
+        "size": 35056
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_23_12.sharedAssets": {
+          "hash": "428a4b338300fb3ddb592bc9141b25f753b7972abbf0caa8225cd33db0bef686",
+          "size": 591
+        },
+        "BuildPlayer-Map_23_12": {
+          "hash": "96c1f0bfd4dd86c3e825844deee5ca32901c40898ca8f1411f0517334169b110",
+          "size": 180935
+        }
+      }
+    },
+    "DongResources_15_03.resourceFile": {
+      "compressed_info": {
+        "hash": "5fa5bede0d244e69ff2af129f2084157ff860fc6e8fc490421f3fb2e3d7f4f27",
+        "size": 14532
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_15_03": {
+          "hash": "c3edf75098ef15beb770de801236d7c311bd29fc73716dafe330d6b46d65d94b",
+          "size": 1226434
+        }
+      }
+    },
+    "Map_06_11.unity3d": {
+      "compressed_info": {
+        "hash": "8d355cb261c8b34ceb822e653bd67375ebdd9c4b2aa815d63900a91c2c31efb9",
+        "size": 3407
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_06_11": {
+          "hash": "96c82eb6b42151aba7c14b12e3c83e3917fb74853f57d594d1b9097b25aba726",
+          "size": 37408
+        },
+        "BuildPlayer-Map_06_11.sharedAssets": {
+          "hash": "f4b42418a4cd3d5d8edd51ab5f0bfe521baa00efe94d40d9e97b354f77e0a934",
+          "size": 875
+        }
+      }
+    },
+    "Map_06_13.unity3d": {
+      "compressed_info": {
+        "hash": "41df056ce40042f0cb20eaf3e8e71e14108827f0846cf28e9a0dcbf8130e91ab",
+        "size": 3399
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_06_13.sharedAssets": {
+          "hash": "695ea927eddce134e11c2c048425f9ac302ef02df6f4e758dbda6a4ce235020d",
+          "size": 859
+        },
+        "BuildPlayer-Map_06_13": {
+          "hash": "dfc3a65073a3dc3a8e2a139cf8e7708904b868d0d752e8f45b326a475396c00d",
+          "size": 37412
+        }
+      }
+    },
+    "Map_11_00.unity3d": {
+      "compressed_info": {
+        "hash": "702567081b5d92c7328dd2d8eba242ba47bd50752dfd72ddbe3d08289be426ad",
+        "size": 7744
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_11_00.sharedAssets": {
+          "hash": "42e40249ae25315fdfe99f2749d1646fe5f8880dbe5a6fbddd950fe9e648be64",
+          "size": 1010
+        },
+        "BuildPlayer-Map_11_00": {
+          "hash": "8512755e36a2b1825911fb99b316bb2faa4b50fe1e983837b8700e47f847de27",
+          "size": 54782
+        }
+      }
+    },
+    "DongResources_11_02.resourceFile": {
+      "compressed_info": {
+        "hash": "ef2b7fc57cc4254fee4501b0fa60e62c427ad9db05301b723a17712d75d9faa9",
+        "size": 128631
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_11_02": {
+          "hash": "e71528d26c130da75d53fb938d7aa72c16a1b9fffcd6085dc610d00f8c39b793",
+          "size": 1226690
+        }
+      }
+    },
+    "Map_02_04.unity3d": {
+      "compressed_info": {
+        "hash": "2dc55f2abed85c1b5d9d658a94751b27cd366ef9cd9513d014acb156b878cdf5",
+        "size": 182270
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_02_04": {
+          "hash": "ad317541ac81de0589b0880935863b434f9ad3b2bbbfc14534e7be4102295974",
+          "size": 1851251
+        },
+        "BuildPlayer-Map_02_04.sharedAssets": {
+          "hash": "698b3c3df964d6eb30bff35279bf0c72786ebdadb8caf6c6e12c7f259ecff3f2",
+          "size": 11373
+        }
+      }
+    },
+    "Map_05_10.unity3d": {
+      "compressed_info": {
+        "hash": "c9f458172ad6ef23bcda78073ee21aae8864f0113d48bb6cad6b270672948b38",
+        "size": 179291
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_05_10.sharedAssets": {
+          "hash": "ffae3f2c413a776fea2fa5645636fbf31f9ea20bc0bc94472f6a441dafc0d91b",
+          "size": 6877
+        },
+        "BuildPlayer-Map_05_10": {
+          "hash": "6a1eac2bef3e31aee596185bcee1d164e9dd3bbf52f18bca1bf3cf8b2bfb3bc4",
+          "size": 1542624
+        }
+      }
+    },
+    "Map_16_13.unity3d": {
+      "compressed_info": {
+        "hash": "16b334855ba5acd35c56b549aea3021516f28ffc3debcd449a165520d562c380",
+        "size": 37539
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_16_13.sharedAssets": {
+          "hash": "814187da1903a8ea79b23fd3a46a10898f5bbbff154a04236a39e2b6993bf95d",
+          "size": 711
+        },
+        "BuildPlayer-Map_16_13": {
+          "hash": "d20bd8e9900d5c4a3bf5aefe892e92e5b260ecb50d2d5ac7d43031259da3e442",
+          "size": 203943
+        }
+      }
+    },
+    "Map_07_09.unity3d": {
+      "compressed_info": {
+        "hash": "22965747c018bba0441ed4200d61e7fc32172bfd59f7f00e7606724d0a03caf3",
+        "size": 34838
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_07_09": {
+          "hash": "81d7c9e95192927b126b05556249308d340d958a75441968eaa41f7b3cd76eba",
+          "size": 157315
+        },
+        "BuildPlayer-Map_07_09.sharedAssets": {
+          "hash": "2ce8e4bac1283005ba3eed560874320108685b8455a2b7fbbcd79449b3dbc2de",
+          "size": 1075
+        }
+      }
+    },
+    "Map_09_14.unity3d": {
+      "compressed_info": {
+        "hash": "1416ca1eeddc3cd7c6b722180bbc8f1c5c5f1944544f456bc3e9e6dd73371e18",
+        "size": 128753
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_09_14.sharedAssets": {
+          "hash": "a30ea10722545c21b4d768bc16a3afa9e5c58cc7a744f4ca7f711044b22fa63a",
+          "size": 3028
+        },
+        "BuildPlayer-Map_09_14": {
+          "hash": "6f6094e809c8247a6f4dcdb1d563e9138924b45b57a095f4d31c36402e5f46e2",
+          "size": 833445
+        }
+      }
+    },
+    "Map_04_11.unity3d": {
+      "compressed_info": {
+        "hash": "135506cf3c84485bc48427d0bd77dba25cc11b466a3e905f632d18dd17887c4f",
+        "size": 3407
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_04_11": {
+          "hash": "ab7a50cc25dad82f17d3767b394a0ba4bb9d686a620dca3897559066179572bd",
+          "size": 37408
+        },
+        "BuildPlayer-Map_04_11.sharedAssets": {
+          "hash": "b9b944ed7a06d74808b968c433fbbb0a1776d0d60f4ab1f0d9a7e8d047a80d0e",
+          "size": 867
+        }
+      }
+    },
+    "Map_03_14.unity3d": {
+      "compressed_info": {
+        "hash": "b79c7684228cce8f8905bf476fe68cf4077b6ac004a28023673796d37c4b6ff9",
+        "size": 3634
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_03_14": {
+          "hash": "344266600d93b6174fd5709c87e03911b9662670fab4a5ec5a6286bd7b42d566",
+          "size": 37740
+        },
+        "BuildPlayer-Map_03_14.sharedAssets": {
+          "hash": "0c633dfbbf1e6ba8453183da1963e923707432d7fd1a9d25a19e799c736070a2",
+          "size": 891
+        }
+      }
+    },
+    "DongResources_08_11.resourceFile": {
+      "compressed_info": {
+        "hash": "f84c8fb4db4ef8944a7e29bda2ca5740674846e3617ab4c89a1b407335a196a3",
+        "size": 387563
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_08_11": {
+          "hash": "4d974c163e25cd45529ac28b864cdea6424b515592e00c52c9b6f86ef0b88c04",
+          "size": 1924899
+        }
+      }
+    },
+    "DongResources_06_04.resourceFile": {
+      "compressed_info": {
+        "hash": "687a4111d3363331f358e53fcff4d1ce638368d52c5f1d19852c2d58d4217bbd",
+        "size": 5123984
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_06_04": {
+          "hash": "229398289286648a9a835391c3d62ab7cfa2763b545897770f52373c58247a4f",
+          "size": 15178179
+        }
+      }
+    },
+    "DongResources_08_09.resourceFile": {
+      "compressed_info": {
+        "hash": "b071239ece6398f44d95cbbc527be4fa80e9b3ed2af54e79d5c494d29c4ab006",
+        "size": 175072
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_08_09": {
+          "hash": "8fc91ef47ce1a4b690f70cee821042621de26a3235ba594ae4991324c3e3d9e0",
+          "size": 1225143
+        }
+      }
+    },
+    "DongResources_04_09.resourceFile": {
+      "compressed_info": {
+        "hash": "7c4922ce22f0609b6004f299d264babcf98e25c5915460f68b107043f3b05ba9",
+        "size": 372319
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_04_09": {
+          "hash": "9f178ac277be59599d64a38d4ea607c8967d6e8e35eee9c01221195f6ffc5059",
+          "size": 1924959
+        }
+      }
+    },
+    "DongResources_13_15.resourceFile": {
+      "compressed_info": {
+        "hash": "6ac4391e933549f02c600b57ff15e39d70c53448d7bbfff83ea8a97d1e806a0e",
+        "size": 592286
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_13_15": {
+          "hash": "fa87571015b8f729f75ec7cb99c3395e7181674314090aba8df4680b8c1287ae",
+          "size": 5296463
+        }
+      }
+    },
+    "Map_12_11.unity3d": {
+      "compressed_info": {
+        "hash": "6b0018f4e6a3824d95e4ddd340a8d77f4b3ee23146ea3e782ea92e4e339dfbac",
+        "size": 32619
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_12_11.sharedAssets": {
+          "hash": "88447cb401534aeb224033d5592eb9c30e2190f54f81bfe60ff3314fe142f392",
+          "size": 1051
+        },
+        "BuildPlayer-Map_12_11": {
+          "hash": "52f902e30dcefdc0aa5a268fb04ff244cfaf4b69638efdb7e973eab41b956416",
+          "size": 165525
+        }
+      }
+    },
+    "DongResources_11_10.resourceFile": {
+      "compressed_info": {
+        "hash": "f6b79b9704695aa96e4cd7a20feccaec6b1f3766a017999220386984a2d73210",
+        "size": 1923547
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_11_10": {
+          "hash": "cbded1f0bcc0d31fcc47b0a0dcf9925538b9528d9c1f642d53ff393c8a013f6c",
+          "size": 11028090
+        }
+      }
+    },
+    "Map_07_04.unity3d": {
+      "compressed_info": {
+        "hash": "090306506444fed142a95e00d729fa32477f592ca7b0adf235abee3ce78ac671",
+        "size": 85677
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_07_04.sharedAssets": {
+          "hash": "e542d193944153906bc20fd5c41e88607f6b6c557aca4c0b87db6faefbca10fa",
+          "size": 891
+        },
+        "BuildPlayer-Map_07_04": {
+          "hash": "8a0e85133dbd7f72ae9ac25aee1d9ac5865eb84b6d04a4539901c56bff55de98",
+          "size": 370520
+        }
+      }
+    },
+    "DongResources_01_13.resourceFile": {
+      "compressed_info": {
+        "hash": "1ed5c132dc0296cb7e90b37b44282f458b4ef3468e537fe313efae66b6cb4e43",
+        "size": 231533
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_01_13": {
+          "hash": "5a0035e460a7a284cb2bd2bdd0c27e9bae0aae98d0d81b5654094d5179a14417",
+          "size": 1575587
+        }
+      }
+    },
+    "DongResources_02_11.resourceFile": {
+      "compressed_info": {
+        "hash": "e3e1fac207bfd835e93b3d158f06ef847ad9ad6f84e2223a1cfa05725379a4c8",
+        "size": 287981
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_02_11": {
+          "hash": "65c2c4c817447dc58887c54b823d19788624fac78ca51c8a0fedb8839730c130",
+          "size": 1666618
+        }
+      }
+    },
+    "Map_22_13.unity3d": {
+      "compressed_info": {
+        "hash": "65fb206112ef9dbe3c127c32296675bbe1404384818a07fce93895948a6af1ac",
+        "size": 118039
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_22_13": {
+          "hash": "34fc43f10e14044553278accbbd64dfc6e2ebb94e8940fdf52843291917f8ba4",
+          "size": 846807
+        },
+        "BuildPlayer-Map_22_13.sharedAssets": {
+          "hash": "e89408e9aecd1d09fcd5aeb3291c4f0111179e3afe3e3b98cf0017d9a0929d4e",
+          "size": 6271
+        }
+      }
+    },
+    "Map_10_13.unity3d": {
+      "compressed_info": {
+        "hash": "ae9f2c553c5f1c52555210412368f3e54811515ab01c07f1084d0df602cf4627",
+        "size": 87458
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_10_13": {
+          "hash": "5e9f2c4bb65af44bde6a29b96f137a0f88fa4e41e8937b061e35f74899ecee43",
+          "size": 484128
+        },
+        "BuildPlayer-Map_10_13.sharedAssets": {
+          "hash": "41fdfdf4fd838ea3bb22e9078328523d9e4c338e9b8d075810809ef83612611f",
+          "size": 1011
+        }
+      }
+    },
+    "FUSound.resourceFile": {
+      "compressed_info": {
+        "hash": "6dcb7ca7cb8c919a0b4ab7d0ec946cd3dad7a4a168b4d70d2e5dfb756e8028e8",
+        "size": 2702887
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-FUSound": {
+          "hash": "5fbff4693e78a2bb46712d62b88c39b4eddf2e917b7673c020a3e2f3467e5a93",
+          "size": 3034775
+        }
+      }
+    },
+    "Map_19_15.unity3d": {
+      "compressed_info": {
+        "hash": "194ae33a883aa1e4b9c668f49eed2f8d5ac591f0b7a0ff1a4b5318bdc8421d21",
+        "size": 35038
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_19_15.sharedAssets": {
+          "hash": "f2dfc6934047c77f76778e988ae33559c55cbc7a2f4157777aaf83c4ea013eb7",
+          "size": 591
+        },
+        "BuildPlayer-Map_19_15": {
+          "hash": "eb82fe3f9ec3650ac7ef8474d54604bd0f9a6b13a2a59db999b29967d3b68b98",
+          "size": 180267
+        }
+      }
+    },
+    "DongResources_07_04.resourceFile": {
+      "compressed_info": {
+        "hash": "25145ce101c8d430d192ffc5c939ed515c9445023a1d69e852d739f91880ea89",
+        "size": 378497
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_07_04": {
+          "hash": "1380d5105e56414404b059466a16688a800d40fcb67effee9a48360bf92a526f",
+          "size": 1574967
+        }
+      }
+    },
+    "Map_11_09.unity3d": {
+      "compressed_info": {
+        "hash": "83542955f884d68320dbd6ccd688310bb1b3460c1ccff305745fee8db4ca7bb9",
+        "size": 53933
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_11_09": {
+          "hash": "94d4c4f00417b945f05822fc69ece4880d5d042361d8c068e6e9823624095e68",
+          "size": 459862
+        },
+        "BuildPlayer-Map_11_09.sharedAssets": {
+          "hash": "f6b66f1fef72763ef4b3662f2691de986bda8dd55c2673197bf43f271513e75f",
+          "size": 3717
+        }
+      }
+    },
+    "DongResources_15_00.resourceFile": {
+      "compressed_info": {
+        "hash": "43a9356a70e8b1f4635e85cfea32e61e973ab8b11797b465884892093e2857e2",
+        "size": 14015
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_15_00": {
+          "hash": "ee582a3af658874da3b6295f6ad77af52a5d9f78d4f16e6e91e9273eccfbdfde",
+          "size": 1226434
+        }
+      }
+    },
+    "Map_21_14.unity3d": {
+      "compressed_info": {
+        "hash": "c27d92cd9c9b675f063c4c9848502dbe683ed1083abd04d1ce3bba2d5c964376",
+        "size": 35243
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_21_14": {
+          "hash": "b05fadb21666ee216d98f335f0cef6487d30578d51c67085f963ff1d4d1cdb30",
+          "size": 183163
+        },
+        "BuildPlayer-Map_21_14.sharedAssets": {
+          "hash": "f8391199685f722c3f58e30b4eff85e6d3cd26765f1b0460fa991ffcb7a36b52",
+          "size": 591
+        }
+      }
+    },
+    "Map_20_14.unity3d": {
+      "compressed_info": {
+        "hash": "34f6674170ea5c834c293ad109b81d083efc1aa3ebc670486706cce2bcdad20f",
+        "size": 36022
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_20_14.sharedAssets": {
+          "hash": "4429854db502181bd7415a56c769f90cbcf322e50a0798c0863384f8ebdb92be",
+          "size": 591
+        },
+        "BuildPlayer-Map_20_14": {
+          "hash": "ba2572e983e9f4c274d03102ddf59ab5ee159d8457b4cb41dff435b80126db99",
+          "size": 191951
+        }
+      }
+    },
+    "DongResources_11_12.resourceFile": {
+      "compressed_info": {
+        "hash": "e41b2d36a85214b5ed64ae6421546169cde63287dbad5b68be343568e3d2d3aa",
+        "size": 266050
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_11_12": {
+          "hash": "b23f0f6f69070aa656f6a5967e556ab4b3e336dce9e3343d0c59d1a8da3b2a41",
+          "size": 1925139
+        }
+      }
+    },
+    "DongResources_03_04.resourceFile": {
+      "compressed_info": {
+        "hash": "8c0a6e1c0a60828d3eb8d4566c11187562b8a79777ad029a7d57c526cf91ac94",
+        "size": 3924321
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_03_04": {
+          "hash": "dc2406b1717d06a2b615400776e4cdcd5e0784137fb0f3f8c1a65446a71664e8",
+          "size": 19352996
+        }
+      }
+    },
+    "Map_09_07.unity3d": {
+      "compressed_info": {
+        "hash": "9d0b736599bc3417e0589621d7e2b2a27740e36309dbb2fc4fbad892ffd48788",
+        "size": 134795
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_09_07.sharedAssets": {
+          "hash": "7e0e12bbdf36d3c641f63850f03e481a0171786ce3883e57e257e45e4a677e98",
+          "size": 9405
+        },
+        "BuildPlayer-Map_09_07": {
+          "hash": "e111786f5c3f546047cf796ce76411e00e06c870a318d34161b7bd25cbf8369c",
+          "size": 1274475
+        }
+      }
+    },
+    "DongResources_12_03.resourceFile": {
+      "compressed_info": {
+        "hash": "a30062b2d8cb2f60a134a21ab750ce4fd5f512a0378465717b90956a2150e33b",
+        "size": 3630842
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_12_03": {
+          "hash": "e9d8f6363bd676a546c70644fe5ef5419cce7fff0f3d17b15d12b25d1812db7d",
+          "size": 14229088
+        }
+      }
+    },
+    "DongResources_02_13.resourceFile": {
+      "compressed_info": {
+        "hash": "cd651c42b271cc6f182ed080929931785aba52d4f1ab801764384518663ba496",
+        "size": 1497290
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_02_13": {
+          "hash": "c47c0cd7f53b0996dfd49722b53f77d837311d91c87a35eb39777393c7e78ff6",
+          "size": 5595868
+        }
+      }
+    },
+    "DongResources_04_14.resourceFile": {
+      "compressed_info": {
+        "hash": "cfef4b9157097cdf5c113186f492def75b4eb6a5416765a4a01a30438fd9f03a",
+        "size": 97860
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_04_14": {
+          "hash": "862f2d4761ad13f03db1fb2fda165eca53a7e7c5fa24e63e679889adbd8b2fb7",
+          "size": 1576091
+        }
+      }
+    },
+    "Map_05_13.unity3d": {
+      "compressed_info": {
+        "hash": "4a71f4c6c1575e5da48fe7e7de79a1d63740560a20c855e0052643e6e00fd02c",
+        "size": 3394
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_05_13.sharedAssets": {
+          "hash": "af75db87bb7b0c074b7f38c2bb78b0aaee69981477d1397136eaabdd090298ed",
+          "size": 859
+        },
+        "BuildPlayer-Map_05_13": {
+          "hash": "cb5d5d889e3e6d82d5553b43c77361b4bc9f6a79cb5095d42862c3ac3b490a6c",
+          "size": 37412
+        }
+      }
+    },
+    "DongResources_15_13.resourceFile": {
+      "compressed_info": {
+        "hash": "7cc6947c57c4aff4d8e4917e379d13f0d592a62f52b2e4140e9b8d261a2f430f",
+        "size": 1757012
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_15_13": {
+          "hash": "dfa912661b50e70ab3ead7646c70341f9cf434e2d15a1e6837570eca41fde4d5",
+          "size": 10862188
+        }
+      }
+    },
+    "DongResources_03_02.resourceFile": {
+      "compressed_info": {
+        "hash": "fee88daa5b9829072ba462472ac0c74765d0db56aa0f247c76292f58273b2006",
+        "size": 61887
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_03_02": {
+          "hash": "30b8d714606001ed33c49e928e988334611d5c85159da3433d46dfbba4a94d49",
+          "size": 1225695
+        }
+      }
+    },
+    "DongResources_12_10.resourceFile": {
+      "compressed_info": {
+        "hash": "f2a5cde1500aaa68823b4d2e9eec95e04edd54bce7aadf34c06194023bb593b3",
+        "size": 4399436
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_12_10": {
+          "hash": "a9f617fa91cca298d91cea9bb13630ac11d16156d9634f9a7c888c3c5589cd38",
+          "size": 12718718
+        }
+      }
+    },
+    "DongResources_05_12.resourceFile": {
+      "compressed_info": {
+        "hash": "bdf502b60d7813297c7adedac2accd284b15e1b7e76a52a2e434077801acf47c",
+        "size": 1273436
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_05_12": {
+          "hash": "f829ecd49bfa4273f423cc8fc0ad5c0240d99b67fcc33ff4b635ab447cecaf3f",
+          "size": 4506853
+        }
+      }
+    },
+    "Map_05_07.unity3d": {
+      "compressed_info": {
+        "hash": "4ca85bb1e562ae351127a349a72cf65b2a338ea109e0b8dfcd1d0403e2e7baf3",
+        "size": 170490
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_05_07.sharedAssets": {
+          "hash": "45a05129ebc977a904ca8971bbc5612fb3c4d32b5c7f726d4bcb1b27ad869211",
+          "size": 7429
+        },
+        "BuildPlayer-Map_05_07": {
+          "hash": "74a93b977aab5a29a45fb5cf0db6ef7cb6184b23e2070ffc9babc4f78aa5d7e9",
+          "size": 1742656
+        }
+      }
+    },
+    "Map_10_01.unity3d": {
+      "compressed_info": {
+        "hash": "13c37063df6ec846c1d825dc8f2400f21b48d2e2ec1e52aec11c6e1044f67879",
+        "size": 7376
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_10_01": {
+          "hash": "08a0c5dbb36a2e78aae7401d9257d0f30f74bfef240959dd531988c3034277dd",
+          "size": 53123
+        },
+        "BuildPlayer-Map_10_01.sharedAssets": {
+          "hash": "5497eaee8d576087edcfd3bd11d49f88e3b1285e66aad70e864c228f1273af7b",
+          "size": 888
+        }
+      }
+    },
+    "Map_12_01.unity3d": {
+      "compressed_info": {
+        "hash": "dd1d1e2a9dde33f28c4d32221cabdd57db9128fa97086c299a2513be6a0e8aeb",
+        "size": 97523
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_12_01.sharedAssets": {
+          "hash": "544db430f7d598edfcf743f61250a6b8c153a58d2577552f7520a329b400737f",
+          "size": 8370
+        },
+        "BuildPlayer-Map_12_01": {
+          "hash": "1b88cc91dd40c9241939ddb5d495ba2f2cad1642888348744d706c6a8532554c",
+          "size": 891327
+        }
+      }
+    },
+    "NpcTexture.resourceFile": {
+      "compressed_info": {
+        "hash": "6a887027c0ce3c0020d80c549c6d0da784cc3cab46c9910ffb550703f5d55bf3",
+        "size": 9438984
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-NpcTexture": {
+          "hash": "a84ab804a34cbcc932520a9b9e86badc51d4dd9d5c0a15239fde054f9d1dbbb5",
+          "size": 22743544
+        }
+      }
+    },
+    "Map_14_12.unity3d": {
+      "compressed_info": {
+        "hash": "70d5e1dd3faa4682cedc0d38b91e52f29880e764d6578b9f850d6d3aefb3d5e9",
+        "size": 45461
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_14_12.sharedAssets": {
+          "hash": "5e6af861561a6e34166c1fdad280fccde418b63e42294cc8c0de317e452c48ca",
+          "size": 3922
+        },
+        "BuildPlayer-Map_14_12": {
+          "hash": "7146227857e3fc867025d896fc8dd93a474764d05e6aa5813aa806e993fa3618",
+          "size": 420802
+        }
+      }
+    },
+    "DongResources_08_10.resourceFile": {
+      "compressed_info": {
+        "hash": "1581ae67801e0cee962089041a509ac7d12f1d129b64d28ccfc7fea0d2cd8a98",
+        "size": 152615
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_08_10": {
+          "hash": "dd526f0b510c968776baef04884ad4867d70d0a071379247c056e6a62d8aac6a",
+          "size": 1574899
+        }
+      }
+    },
+    "Map_09_06.unity3d": {
+      "compressed_info": {
+        "hash": "767ec503602d16b797bf302d42607202af8c217edb9d271c51bd5555c556c215",
+        "size": 181417
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_09_06": {
+          "hash": "5608a68f6f2e1ebf90d3c3a00d08e14493bfd1e4cffe76aba2de4aedb4c6154b",
+          "size": 1961972
+        },
+        "BuildPlayer-Map_09_06.sharedAssets": {
+          "hash": "c4c79d06a49f85cd1cabaf3279bea206dc2c69b6a82e796e1cbde9880233d95d",
+          "size": 7197
+        }
+      }
+    },
+    "Map_11_01.unity3d": {
+      "compressed_info": {
+        "hash": "9bf95c5cb394185e33def63abd38fa4f9dc0db8e0d2e58b7510fef69c8de1974",
+        "size": 148140
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_11_01": {
+          "hash": "092bff1d6a2390ada03d64081654d0439864c3dde8064d37eb42b7bd1e735268",
+          "size": 1393517
+        },
+        "BuildPlayer-Map_11_01.sharedAssets": {
+          "hash": "b27d4b0cefbd872c51fb3447fa4051c88cb7453b64554a611fdca72ec144dd26",
+          "size": 11178
+        }
+      }
+    },
+    "DongResources_15_11.resourceFile": {
+      "compressed_info": {
+        "hash": "c9a3245136b42a29f1775e2ff371e1c3252af155e2e82ea1eb146d7a660cc1ac",
+        "size": 1258828
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_15_11": {
+          "hash": "e7f9f6663c85ace620683e6b1cd07883e81ed5a8e23de7ab2f314f9444921146",
+          "size": 6586350
+        }
+      }
+    },
+    "Map_04_07.unity3d": {
+      "compressed_info": {
+        "hash": "5eb53b11fc3231e04c1f3511bb1acdc56b08b8385544b04a0f60359fbd0cb5de",
+        "size": 194294
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_04_07.sharedAssets": {
+          "hash": "0b8befc22cf0c3d8a0bb364ea946d50503e570f3b91d1eed3478edba12fef110",
+          "size": 9221
+        },
+        "BuildPlayer-Map_04_07": {
+          "hash": "16ee158ad4469a3c9d7a7e9de0c5fabd787ae5926e607cf566245deefc57a7c6",
+          "size": 1929596
+        }
+      }
+    },
+    "DongResources_11_08.resourceFile": {
+      "compressed_info": {
+        "hash": "81de618192b7757ea4a33e1961b768e602156ed87ef67692c55dc84f041fab53",
+        "size": 1524735
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_11_08": {
+          "hash": "6179bfb32fa5f0021a4fdb576419c16d34b645c4f7997469a28ac5649ab6c062",
+          "size": 12724711
+        }
+      }
+    },
+    "Map_03_11.unity3d": {
+      "compressed_info": {
+        "hash": "4fb6aa328e2118927d4d1befad4fa7ff3f7440e821167d638ac2da1558837013",
+        "size": 42497
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_03_11": {
+          "hash": "6508fbfbf22effd0783d1669faae630e7046ba77bfc3dea670b4de10750327f1",
+          "size": 268562
+        },
+        "BuildPlayer-Map_03_11.sharedAssets": {
+          "hash": "db8ee63c06a881c7488e1a0ba76d54cb8eb5b84ae02400832ef3383725d64a9a",
+          "size": 2444
+        }
+      }
+    },
+    "Map_11_06.unity3d": {
+      "compressed_info": {
+        "hash": "62992ddd5d7fd36c72e5de89b77df3f1fdbd3daa823089347fb0a1d868ae71fd",
+        "size": 3649
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_11_06": {
+          "hash": "471e1c3f54a8e19fc666ab2ec0c0c0141677c653f0c98d1af73f28c985daf1b9",
+          "size": 38112
+        },
+        "BuildPlayer-Map_11_06.sharedAssets": {
+          "hash": "2e5c11feb1bdf851a8f7d36158421d6742d00df31c2cad463b87e1281db93659",
+          "size": 955
+        }
+      }
+    },
+    "Map_12_10.unity3d": {
+      "compressed_info": {
+        "hash": "1b766047f400d50e9bedb9de63eeca8a3c11876f3e09d1fedb19b2cf5befbeea",
+        "size": 135487
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_12_10": {
+          "hash": "69945f5ea7ecc6e0baf06534737bee4254254107f526a7f72afa9ba56cfdc796",
+          "size": 1306668
+        },
+        "BuildPlayer-Map_12_10.sharedAssets": {
+          "hash": "a79fca93026b6a6753222dca85a7923cb9a5f990f37335617cb89c99c4a5030c",
+          "size": 7477
+        }
+      }
+    },
+    "Map_15_09.unity3d": {
+      "compressed_info": {
+        "hash": "33ae37edbf8df32994063da0fc4066ade8c502940bd0e3641ed59ef185e1df23",
+        "size": 177342
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_15_09.sharedAssets": {
+          "hash": "32f56a5c6fb85272eab528b16cdad2a4ab51bb818ca4a1a35598685c63292ffc",
+          "size": 5677
+        },
+        "BuildPlayer-Map_15_09": {
+          "hash": "fa23cf7c1e99e54e196330b852ae32f1f89949381e46a7dd3ee63716308b0441",
+          "size": 1712842
+        }
+      }
+    },
+    "DongResources_08_07.resourceFile": {
+      "compressed_info": {
+        "hash": "7f19928c7e7e7642027a9287af652441941611828a645adf0fbccbb9a562433b",
+        "size": 5934654
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_08_07": {
+          "hash": "91fcf0cc31d77f45083c29a038032d4be3d64449738a3ded7a51b6b8a2864ce5",
+          "size": 19972756
+        }
+      }
+    },
+    "DongResources_03_05.resourceFile": {
+      "compressed_info": {
+        "hash": "63998d0475372c1b9f5016a5c165e3b1ccdb172906353025807c432be989f183",
+        "size": 2225133
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_03_05": {
+          "hash": "ea32e54f70f0fef6d805b5abfe7361117c7ff8b930f6a5e900eca9fdb67ccba2",
+          "size": 12778982
+        }
+      }
+    },
+    "DongResources_14_00.resourceFile": {
+      "compressed_info": {
+        "hash": "8eaf7cd22afeaa625e17da8f92157a9a89998db9890c65c012d51d81aa41e390",
+        "size": 128024
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_14_00": {
+          "hash": "5062d017bc1b6dc93073d91a798d4bbcc57389a59808a9394cd82dcc53e5f259",
+          "size": 1226702
+        }
+      }
+    },
+    "DongResources_05_13.resourceFile": {
+      "compressed_info": {
+        "hash": "887f859aacc239ab6a2467a00cda9e503a9457973eaabb56f8bce1e80a330a76",
+        "size": 174383
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_05_13": {
+          "hash": "a0123a9de79ee88fc5badaca534306e885bde0b72a2ad563156287242fa2fe8d",
+          "size": 1225063
+        }
+      }
+    },
+    "Map_11_08.unity3d": {
+      "compressed_info": {
+        "hash": "e133e9a9f4aedf65e8486dc9d65e2a8afccf52d33da190ff532c942128307f20",
+        "size": 44991
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_11_08": {
+          "hash": "324abdd14facd9eae2ff6dcb60cb15cda16f67b6de494150dc7724dd9f331fe9",
+          "size": 364006
+        },
+        "BuildPlayer-Map_11_08.sharedAssets": {
+          "hash": "6dd559fac1cbef64a7db6a67a6f80f63831e0ce3b808554663fdedf5c49555f3",
+          "size": 5276
+        }
+      }
+    },
+    "DongResources_14_03.resourceFile": {
+      "compressed_info": {
+        "hash": "ae475cee9c73c9817c76d7740c4a4a9c2de035ca0577042c62f28270cd2ab6f8",
+        "size": 127922
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_14_03": {
+          "hash": "90d39920f7ea4c54ce0386a9e29e8693d03b793dc9a97b838c8050065c53c506",
+          "size": 1226686
+        }
+      }
+    },
+    "DongResources_03_03.resourceFile": {
+      "compressed_info": {
+        "hash": "f9f6cd59c327db4d317f5d3e055ebc0057b5c881e637e433b59a6c7a4d1cd980",
+        "size": 338163
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_03_03": {
+          "hash": "8c609ec20dc9158c8030b44e3d085322fe2d118d2e55963efa60a432a4b907a8",
+          "size": 1620331
+        }
+      }
+    },
+    "DongResources_05_09.resourceFile": {
+      "compressed_info": {
+        "hash": "efe0ce16c428e18c0cad2548a2f96a143e6598aa26b25f1af82a07364fa4822f",
+        "size": 456269
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_05_09": {
+          "hash": "0c0e4abdacc44c3946f587803a33cfa34088e7f16e895a700d8a480bd78f16f0",
+          "size": 1931132
+        }
+      }
+    },
+    "Map_12_12.unity3d": {
+      "compressed_info": {
+        "hash": "3fca3c856eb7e127f63523d67b4e531f4870db0610fb6c788f5135bdc60c1d7e",
+        "size": 31041
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_12_12": {
+          "hash": "6e0bede21d6bbd959db6f00bc8842ed771b285f1cbe19d7dbc333166e5526636",
+          "size": 148485
+        },
+        "BuildPlayer-Map_12_12.sharedAssets": {
+          "hash": "d9582253bf86186019290e8184e3a5d839dedaf8405bd35dfa02d4f40b83a468",
+          "size": 1043
+        }
+      }
+    },
+    "DongResources_02_03.resourceFile": {
+      "compressed_info": {
+        "hash": "d839c6b4ad1e8773eed6331be87aa54203de8ee753e18cbdf0d81ae7eb7ec399",
+        "size": 263021
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_02_03": {
+          "hash": "c381f2c9955f5b324e06f3e86c282c5e5420d3931d3912060984fad861e94a9b",
+          "size": 2645265
+        }
+      }
+    },
+    "Map_07_13.unity3d": {
+      "compressed_info": {
+        "hash": "d30bc735ac368724ebc98ba4ab828a2d32d0c5921215715dfbcb351c6005ff2f",
+        "size": 34295
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_07_13": {
+          "hash": "14893bbaddf0cfd9dc9e44520132f351a375512618df4d1c0bf6738881031fb1",
+          "size": 166965
+        },
+        "BuildPlayer-Map_07_13.sharedAssets": {
+          "hash": "215aca0c8eeaac83749de98dcc58fdd50c648698f5f8cc869654e83359623c51",
+          "size": 1373
+        }
+      }
+    },
+    "DongResources_09_12.resourceFile": {
+      "compressed_info": {
+        "hash": "71aa672cf5aefd40512c18bb253c846e23e7abef85655a5b2608c6124e739945",
+        "size": 2167549
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_09_12": {
+          "hash": "ba9da83e04f0be6e66529e937fcede3b6d3ffa1613e9e0d4dbf78df30981b9de",
+          "size": 18422010
+        }
+      }
+    },
+    "DongResources_13_13.resourceFile": {
+      "compressed_info": {
+        "hash": "6d7de0e74cb2d8811a58abe8f3083f29608f19dcee3bea25d1b1bec0b92315b3",
+        "size": 2166248
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_13_13": {
+          "hash": "8491eb28d2409baee65f35d44b9f0115124aa4d3a684de1d9b3db35e35535a5b",
+          "size": 11710303
+        }
+      }
+    },
+    "DongResources_14_14.resourceFile": {
+      "compressed_info": {
+        "hash": "2f68d7900d1ca4ca561476d5749aa815514be66eab449517bd87f63aa29157df",
+        "size": 1351427
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_14_14": {
+          "hash": "5bda5338a41fa859bb52e17d5938e9dd0ff25e9b2d188d01f9843bdfc02f6b96",
+          "size": 8014588
+        }
+      }
+    },
+    "DongResources_11_01.resourceFile": {
+      "compressed_info": {
+        "hash": "d70cc7ec3c1f9448826aba47d1ef5d43f6095da7b5eff6fbe9e332ecab48bcf9",
+        "size": 3044282
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_11_01": {
+          "hash": "789ae3d6e2175c25a96d0a767bf6bb7cb0f863490e84e57a6824e64b440e53a6",
+          "size": 12663375
+        }
+      }
+    },
+    "Map_10_00.unity3d": {
+      "compressed_info": {
+        "hash": "4ce773e531ceba5ee6dddaa08d177732381b9131676b9ae27d2512648b664cb6",
+        "size": 7708
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_10_00": {
+          "hash": "b4ffcf3bc14d9549a70bb5e4ae68a27c8078aaa20450220ce3e21d10be3a54e9",
+          "size": 54778
+        },
+        "BuildPlayer-Map_10_00.sharedAssets": {
+          "hash": "9196ab6f6b6070f00812c5c4666be64103d5a57008a63a944b853a4ae62138be",
+          "size": 1034
+        }
+      }
+    },
+    "Map_14_03.unity3d": {
+      "compressed_info": {
+        "hash": "940f354941662a33741b2e3159ce782a25c251b126648295b9eb303d7f3cd1f9",
+        "size": 7739
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_14_03.sharedAssets": {
+          "hash": "abae36b398c3dddf0d664b7befe804380ce12cd5701d5232cfaa0f586058819e",
+          "size": 1034
+        },
+        "BuildPlayer-Map_14_03": {
+          "hash": "f7976c9b6d5870f4ab004338aee36809da1960a76b0f31d67fdb82bb484a62cc",
+          "size": 54782
+        }
+      }
+    },
+    "Map_11_11.unity3d": {
+      "compressed_info": {
+        "hash": "481f22ec784cec15a4c4265cd879c15ff2c839fb58f77ae623b634900f445ded",
+        "size": 160465
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_11_11.sharedAssets": {
+          "hash": "e5859bc5c4846886d65dc7d34e0e3c73e0508a3e97965a0cdd128e73c99ac0e0",
+          "size": 9189
+        },
+        "BuildPlayer-Map_11_11": {
+          "hash": "cec062453f82aa72e20f804e3e16fb95f98d505464c6cfd5840c7cbd96697192",
+          "size": 1383620
+        }
+      }
+    },
+    "DongResources_15_02.resourceFile": {
+      "compressed_info": {
+        "hash": "df1920b3f68df1f6ac69db6b513496fb99e7fd93e2d614c2783f4efc7bedd5e2",
+        "size": 139075
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_15_02": {
+          "hash": "2c17674a50c5a705700635b8a05fac41e529f78d3aad5dff1c4464ecdb602b12",
+          "size": 1226686
+        }
+      }
+    },
+    "DongResources_05_14.resourceFile": {
+      "compressed_info": {
+        "hash": "2ccad0eb1531f20bc565502171dbcf4d30407de1cf223b12a26489a555e5a317",
+        "size": 32689
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_05_14": {
+          "hash": "dbc6a6fb37a7a4d190a3e06a0d694d1cbc16d4d67a7188f6831bcce8f7bc529a",
+          "size": 1225067
+        }
+      }
+    },
+    "DongResources_05_03.resourceFile": {
+      "compressed_info": {
+        "hash": "499e40baba1f592d6fdb1e88ba4ce14618c212cb366e58086c4b864417f8c2ee",
+        "size": 2043838
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_05_03": {
+          "hash": "d09a8b27cab4c745ce04081b69ebfc3a2fc9837989fbfd730f1e83afa5603550",
+          "size": 13703150
+        }
+      }
+    },
+    "Map_10_10.unity3d": {
+      "compressed_info": {
+        "hash": "8324dfb411a148063fb7c3d9d38112f62f3be227cd434c3634a5c1a6d95141f8",
+        "size": 163761
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_10_10": {
+          "hash": "6254995e8cd09167b4c650e2fbd131ae4d6c7a752052f33698f333490f73c724",
+          "size": 1484379
+        },
+        "BuildPlayer-Map_10_10.sharedAssets": {
+          "hash": "e10c4aba0eedeb6968397d1b1991cee8ff73d553ecd3ac64148655148c46c51f",
+          "size": 10173
+        }
+      }
+    },
+    "Map_13_13.unity3d": {
+      "compressed_info": {
+        "hash": "42d1983074e3bcfb437c37374e39a5b72fde9b1f3b97ef265ec11dc030029423",
+        "size": 146950
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_13_13": {
+          "hash": "6fc321876321391e5ce0908c18f675055b1a9a5ef5e253b4e6232e15d32bf3ab",
+          "size": 1471745
+        },
+        "BuildPlayer-Map_13_13.sharedAssets": {
+          "hash": "65a46d63a0b4fb755e4c4842482a6d3e9062203249711dd68aabd1a083e31584",
+          "size": 2845
+        }
+      }
+    },
+    "Map_06_12.unity3d": {
+      "compressed_info": {
+        "hash": "590088b57a9b3210e13fd8d2a2e3e89201f1cf28a9d5c5700d9a56a338f35bbb",
+        "size": 3416
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_06_12.sharedAssets": {
+          "hash": "4fdb50d5a45817e4d627e0ef0e9c82b7820eb104f200de0592c70cb4a19db044",
+          "size": 875
+        },
+        "BuildPlayer-Map_06_12": {
+          "hash": "a6f2c8659ec4500ba1a2b065dbeaf97eff9656180b277d16c85a440bc7297633",
+          "size": 37412
+        }
+      }
+    },
+    "Map_03_05.unity3d": {
+      "compressed_info": {
+        "hash": "08be6e9ae67ecfa9a9ca537a6a23e3714f10b47911531b64c523f5a9377a6724",
+        "size": 97190
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_03_05.sharedAssets": {
+          "hash": "41924b6ca040c13829ec7e33b16e9f81f73a4a94bae96a1c1283254fd9ff940f",
+          "size": 6437
+        },
+        "BuildPlayer-Map_03_05": {
+          "hash": "c2112ebbe1883defea057bc36c00a4463dc24118e3966dd321e9740ec2f02b2f",
+          "size": 786942
+        }
+      }
+    },
+    "Map_09_08.unity3d": {
+      "compressed_info": {
+        "hash": "ec4246641c8f72c917e3c7d58cfdd9d0e198e88c01dbea4f6bd5a098073f02e6",
+        "size": 89457
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_09_08": {
+          "hash": "641fe73522323369722ffec51011e246f94e6d86bc1354416ae5cd1ddd81949d",
+          "size": 894215
+        },
+        "BuildPlayer-Map_09_08.sharedAssets": {
+          "hash": "65f597336a9476b2e6700e7e331f1097ae069971331fe38f6a4f9e56331e4640",
+          "size": 6821
+        }
+      }
+    },
+    "DongResources_04_05.resourceFile": {
+      "compressed_info": {
+        "hash": "25255b77ee48ad8fee10f4c9a2cf834ecd11204172ab4e954727258ef53d953d",
+        "size": 3866909
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_04_05": {
+          "hash": "11febf04194dfa1a50236ef142846e8ae5b11ffceefc853331e88083e988292b",
+          "size": 21522809
+        }
+      }
+    },
+    "Map_18_14.unity3d": {
+      "compressed_info": {
+        "hash": "06b7269f9eee2c6e4de80825df7bf518dfb91a3051dc9e80def0b072c910a649",
+        "size": 32961
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_18_14": {
+          "hash": "d8e5349c3b6aee4053dfe432a681e7793a4f08a7754e3d43e0d2aba572d26745",
+          "size": 168515
+        },
+        "BuildPlayer-Map_18_14.sharedAssets": {
+          "hash": "0a624ca1eb964e4b1e579914682f72ba30ff42c489983fe841f87bb989c6c5cf",
+          "size": 471
+        }
+      }
+    },
+    "Map_21_15.unity3d": {
+      "compressed_info": {
+        "hash": "1f8c0232a36862b296d3b99a8e9267ae4c62bf0551cf666ff120888e3c0d8331",
+        "size": 37973
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_21_15": {
+          "hash": "b6dc3202de8ed1ebbd278b34addefcbdab293f0200c0a1b0fd620d9981efc0e0",
+          "size": 203111
+        },
+        "BuildPlayer-Map_21_15.sharedAssets": {
+          "hash": "3d6695451a67b80a4421d5847f1e6ce5f4a2bf1a0fd31aef5b007304aef4a0c0",
+          "size": 799
+        }
+      }
+    },
+    "Map_10_12.unity3d": {
+      "compressed_info": {
+        "hash": "ac6dc2aeafcc8bfd520a59e9faf3d4dd8ffb060ab95829b36ae50fd8d8d8cac7",
+        "size": 3526
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_10_12": {
+          "hash": "a730c4e7d665ba335e8913cb68df9a1ac0a52ffe406142462e91cd466115a242",
+          "size": 37412
+        },
+        "BuildPlayer-Map_10_12.sharedAssets": {
+          "hash": "7afe85d1cba66c56087155e6dd0f5f4dfc28cc7c393adf0fa94eaf6eaec0be46",
+          "size": 971
+        }
+      }
+    },
+    "Map_23_14.unity3d": {
+      "compressed_info": {
+        "hash": "2961384f6659f5c9dc847046a892821df98bab6027d41bdc8c0e5cdc7587beba",
+        "size": 37734
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_23_14.sharedAssets": {
+          "hash": "73f1e1359b491ef2e5839b549e40ded88c595bc5662779f86dd129da2b6b603d",
+          "size": 711
+        },
+        "BuildPlayer-Map_23_14": {
+          "hash": "b342b94c47259423579d88bd85de8ad1d0eda503e944de9cd9e0291ea159d6bd",
+          "size": 203939
+        }
+      }
+    },
+    "Map_11_04.unity3d": {
+      "compressed_info": {
+        "hash": "4668b411697061d2491bb3f84c46c6300cd6c3669e565ec47d9a492c64bb6a65",
+        "size": 7739
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_11_04": {
+          "hash": "be5962160bee63a1c378efe45ab8ceeb944904e5b953ff42cc406d39f32d2c31",
+          "size": 54778
+        },
+        "BuildPlayer-Map_11_04.sharedAssets": {
+          "hash": "d0492709433009153b6160defd44381ab33fab297292452e924e293d600814c7",
+          "size": 1010
+        }
+      }
+    },
+    "Map_15_12.unity3d": {
+      "compressed_info": {
+        "hash": "b877a2a8c0e7d132aada68b0430c209bb583bae478f70b959fa9fa9c60f7db70",
+        "size": 157720
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_15_12.sharedAssets": {
+          "hash": "520060afedaaf47726af765b6c963e7cea3733750f20bf91f25ee388e99316fb",
+          "size": 3722
+        },
+        "BuildPlayer-Map_15_12": {
+          "hash": "ea67e0391dcdcfa3413359644e894942ff3a7d4ee5417b9521cf9d456450bd6d",
+          "size": 1480940
+        }
+      }
+    },
+    "Map_15_11.unity3d": {
+      "compressed_info": {
+        "hash": "e9c0197f66f141edf719d9732f98d791db5dbd4d61c24cd476d4f8263debc670",
+        "size": 81445
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_15_11": {
+          "hash": "eecee6d54ac8b7231f3aaa063156dbbf703e6e6a5739bcd8ef6780f1f21ae95d",
+          "size": 696305
+        },
+        "BuildPlayer-Map_15_11.sharedAssets": {
+          "hash": "6ba9639683683816ae83f260089727dda83457ed2ce53ba1866b2f6eb0d33b9a",
+          "size": 3981
+        }
+      }
+    },
+    "Map_14_02.unity3d": {
+      "compressed_info": {
+        "hash": "61e0d010df02d32011287c0e1cfdd409b381993cc12e10c4a146fdda62708654",
+        "size": 132777
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_14_02": {
+          "hash": "7189a6f34b5337d8328fc1c128885cc278ba28ad5e3027930405b4d9998cc6ca",
+          "size": 1273670
+        },
+        "BuildPlayer-Map_14_02.sharedAssets": {
+          "hash": "d37b7c21d08d31b824ccd6b9e42b99161881cdd74655289f72e77750723a469a",
+          "size": 9082
+        }
+      }
+    },
+    "DongResources_12_00.resourceFile": {
+      "compressed_info": {
+        "hash": "3d01c2d9770d4302275b895541696f1f751563955967270d5c26047d80371758",
+        "size": 139366
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_12_00": {
+          "hash": "a88c1b204a936e4124830936ff3f30527486451cccebd5caacc83b7b31c80423",
+          "size": 1226690
+        }
+      }
+    },
+    "DongResources_05_11.resourceFile": {
+      "compressed_info": {
+        "hash": "238198fbb39e06bbc00bc66dc6b6a8da2059bd1061fbfa5deaf3d7164fb3a90c",
+        "size": 1739684
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_05_11": {
+          "hash": "f3035c3d7217ee789946c5653b779f4bb2a6c0e6caab7be86daa20ff9ab38154",
+          "size": 6923290
+        }
+      }
+    },
+    "Map_07_08.unity3d": {
+      "compressed_info": {
+        "hash": "91030bf4313954a449ec34b7470398f373fccd0710c897bd03afab4a7126058b",
+        "size": 103670
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_07_08.sharedAssets": {
+          "hash": "add9d8826bcf5c51bb1de636555c321de99ee694dd383343c0a35b145d4adf63",
+          "size": 9012
+        },
+        "BuildPlayer-Map_07_08": {
+          "hash": "5f57b6f9bd2284f13ebf8a341db277c63c7c7e592baef5284467ac18ad1bd67e",
+          "size": 964622
+        }
+      }
+    },
+    "Map_07_14.unity3d": {
+      "compressed_info": {
+        "hash": "3ff483eaab74e5fd09ed5d21e806bca2d2b8d73cc9b9d8309817fed89380dfa9",
+        "size": 23864
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_07_14.sharedAssets": {
+          "hash": "3ed5634e0aec5f9ebaa5c0caed25dbd020b8574c85509f0d5acbd393af681a39",
+          "size": 1532
+        },
+        "BuildPlayer-Map_07_14": {
+          "hash": "4a95331b8bef5405eae606eddb8011d80a020105d6d7f38fd9152154eba2bd27",
+          "size": 126665
+        }
+      }
+    },
+    "Map_01_00.unity3d": {
+      "compressed_info": {
+        "hash": "7f5cd828d9dba9c82d9271b6a8f9eaefb07fbef45de0469310318a8292346fef",
+        "size": 65243
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_01_00": {
+          "hash": "f9c90302f8d2378bef08ac57c91a0c78aee70b40aea1076c78f23493308a3b09",
+          "size": 362053
+        },
+        "BuildPlayer-Map_01_00.sharedAssets": {
+          "hash": "9d51ac4f567f6928012c80d27e765489e3e7b84ed6e211113ac64256f24cf808",
+          "size": 992
+        }
+      }
+    },
+    "Map_05_14.unity3d": {
+      "compressed_info": {
+        "hash": "7e549e64fbe5efa2646651b85d04d6d43ef981f8b13d4173a8240bc1aa767633",
+        "size": 3399
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_05_14.sharedAssets": {
+          "hash": "8e1d6e891525f45b979b8a8040e9f9f9569020507b5258de8acdf58240a7d189",
+          "size": 859
+        },
+        "BuildPlayer-Map_05_14": {
+          "hash": "0ae1a290847ad911c48b851b8e57bc30cd77988e92317dfaf7a5754e5fd8622d",
+          "size": 37412
+        }
+      }
+    },
+    "Map_12_09.unity3d": {
+      "compressed_info": {
+        "hash": "6d69410e681375512cb4a6f7966754bbd6304ac6614968203a57032814e64b18",
+        "size": 36951
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_12_09": {
+          "hash": "80914ed4e0b61f7b77f57978fc4c225283846a26582dcb11fbd90458ded7be57",
+          "size": 319694
+        },
+        "BuildPlayer-Map_12_09.sharedAssets": {
+          "hash": "611f725a47ff95b26fd9670937b6912204e8689a74bc90d29b2a3308183ce819",
+          "size": 3652
+        }
+      }
+    },
+    "DongResources_15_10.resourceFile": {
+      "compressed_info": {
+        "hash": "21384802afa8c9d7ba985472bd515206ea37267ad49b1088f4c4e06c9f06cf0a",
+        "size": 725452
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_15_10": {
+          "hash": "fdd99e8024d23cac87ebedbd1eef9c0c0e04a6cf71ca80e42edc646b625bac2f",
+          "size": 4691937
+        }
+      }
+    },
+    "Map_04_10.unity3d": {
+      "compressed_info": {
+        "hash": "47f105c5d39cacad4d3da037b3c72528ddf35b1e867a833b083d8092db216a16",
+        "size": 3459
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_04_10": {
+          "hash": "1f910daed4e13c6adf286274b298de7cc9723f9aa0a327a33a30bdaf83fbd091",
+          "size": 37408
+        },
+        "BuildPlayer-Map_04_10.sharedAssets": {
+          "hash": "90eed6d6d5ae85d2b00232a123f77f4a9a7e2f2b04634ab2b18962f789b99924",
+          "size": 931
+        }
+      }
+    },
+    "Map_14_13.unity3d": {
+      "compressed_info": {
+        "hash": "6f4fd7b50572843b757e68362dec477460516f0909d7701385a0b3b5ec5ee46d",
+        "size": 153934
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_14_13": {
+          "hash": "c72c7fbc77f2b2f05c1492560020fb97aeb4ef46498126fe3c991154c68bd400",
+          "size": 1480111
+        },
+        "BuildPlayer-Map_14_13.sharedAssets": {
+          "hash": "3ff211a5dc418737e506f12f44bbdf5f0d75edd473b8f52fec4152cd4da18c0d",
+          "size": 2838
+        }
+      }
+    },
+    "Map_08_13.unity3d": {
+      "compressed_info": {
+        "hash": "59bc05393d1058c4729a953d50cf74fe7cea0597c5bfef32d0f1bf5a22ed6917",
+        "size": 86377
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_08_13": {
+          "hash": "5274fd05c119e94cccc9a0cdd958bb53efe770548c6769a353e4676a5c25d1ca",
+          "size": 828872
+        },
+        "BuildPlayer-Map_08_13.sharedAssets": {
+          "hash": "39daee819d8db042c7871a4ac01b2a58bccf04e21733723847fab6647065bbcb",
+          "size": 5629
+        }
+      }
+    },
+    "Map_04_03.unity3d": {
+      "compressed_info": {
+        "hash": "1242a57ecde5b8ee01a14fb4e48222b7301719ea0efbd362f6e7c89d292efa84",
+        "size": 201994
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_04_03": {
+          "hash": "baca66df5963ebfe9026c5339ec23de0b8e6c58ff3fbf0d7bbe2e74f29720c69",
+          "size": 1986312
+        },
+        "BuildPlayer-Map_04_03.sharedAssets": {
+          "hash": "d9d83ee9e0cf243950e7872727aaf89e644a50e809d6bc7ffbd6edc2d11fcab3",
+          "size": 12789
+        }
+      }
+    },
+    "Map_12_07.unity3d": {
+      "compressed_info": {
+        "hash": "690cc038d6fea00493d4c837c47e1f5ce5af343fdf9e07dc81cc47280dd7a073",
+        "size": 3646
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_12_07": {
+          "hash": "010e444826600b95448ea0df1e6af9f3b2f055af1de9033d300720477c4a5bf1",
+          "size": 38116
+        },
+        "BuildPlayer-Map_12_07.sharedAssets": {
+          "hash": "da48827d9ee06b7e47d157d3d640078f14a46b0d852f550f1037564562c50522",
+          "size": 971
+        }
+      }
+    },
+    "DongResources_13_14.resourceFile": {
+      "compressed_info": {
+        "hash": "9bc43738918981bc486ebef5a2ec71310a643ad4094604aaa83aad4f5614345a",
+        "size": 1054854
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_13_14": {
+          "hash": "21dc153202392038be28017f6dcd19f90640c1f3b273c5acb57c913fcca1af6d",
+          "size": 6675928
+        }
+      }
+    },
+    "Map_06_03.unity3d": {
+      "compressed_info": {
+        "hash": "40e5b3fde6d93135cbefa22b22ac541e868266cf6bf197ad0e1d94f3717f17fa",
+        "size": 277566
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_06_03.sharedAssets": {
+          "hash": "37bd63e3f89366ab5103ef9d491af586ff6bb593647184c1e5638a4c92ccf072",
+          "size": 10693
+        },
+        "BuildPlayer-Map_06_03": {
+          "hash": "f75ef5d2854443a1e645e9d81294d1c59d0844a3ecf91740388a597b3f851f51",
+          "size": 2947437
+        }
+      }
+    },
+    "Map_04_13.unity3d": {
+      "compressed_info": {
+        "hash": "e46248d25d9a496dc22317d091d2e21e750d3c24ae666752a4af2e9d8bbaf29a",
+        "size": 221274
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_04_13.sharedAssets": {
+          "hash": "c7a244bde270449233b8e3b63653903292efdffadd6944419600e634301983f0",
+          "size": 7997
+        },
+        "BuildPlayer-Map_04_13": {
+          "hash": "fa13c7a45a5c7c4955a2375cd50319968ec77544fc961f0e919ee319956b0af9",
+          "size": 2270736
+        }
+      }
+    },
+    "Map_06_04.unity3d": {
+      "compressed_info": {
+        "hash": "30607cd74fc70a51d07a3be8068a1d574ab85b76d30b4948d465f66874f5550d",
+        "size": 207807
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_06_04.sharedAssets": {
+          "hash": "2ccb09d9531a7192d3bbf71affafab41ef58ae2685dcece578b27e3dcd23aebd",
+          "size": 11413
+        },
+        "BuildPlayer-Map_06_04": {
+          "hash": "84b77af66a106b2215634846faf799bbd0202f99ad49801001c0e814392e5f98",
+          "size": 2174198
+        }
+      }
+    },
+    "Map_04_09.unity3d": {
+      "compressed_info": {
+        "hash": "334ec143fd8acbb7d660d171fa382891ec85f496723bc1d4e08dd116ff59da6b",
+        "size": 49220
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_04_09": {
+          "hash": "ed4757da7b869e3389dc838c23b62921a13fe5f7ae0261f8443eacd0aef11701",
+          "size": 214696
+        },
+        "BuildPlayer-Map_04_09.sharedAssets": {
+          "hash": "58a4a2521fed43d73b5bd30cf4c6eae5cf6e4a03008268517a6475ea57aee9b7",
+          "size": 931
+        }
+      }
+    },
+    "Map_11_12.unity3d": {
+      "compressed_info": {
+        "hash": "ed3d7ae6d1e37e2d8040e35fc13b3d401d08603a7f0e66ca8b1617057acfc009",
+        "size": 3499
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_11_12.sharedAssets": {
+          "hash": "ec71d405e56205b04065cb857873b3c925c4370ab85780f46bdabf55bbafa393",
+          "size": 947
+        },
+        "BuildPlayer-Map_11_12": {
+          "hash": "090f1253357e0250c95c880339747572a86271231fe3d3198b2b38d49a75117c",
+          "size": 37408
+        }
+      }
+    },
+    "Map_12_14.unity3d": {
+      "compressed_info": {
+        "hash": "13b8aa635fc65c6660310117b0d1e7a106aceff6e3f7217e11edbc3df4133fa3",
+        "size": 44607
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_12_14.sharedAssets": {
+          "hash": "1d0f6646fb4027c44c95df08c8436821ee056da37de7fae2f792bded0f2b0d00",
+          "size": 3389
+        },
+        "BuildPlayer-Map_12_14": {
+          "hash": "72134a48e25cb7b72a70ef6e726f6e6c750f3a2d468b4b6e30bd2160ffc95ac3",
+          "size": 421133
+        }
+      }
+    },
+    "Map_01_13.unity3d": {
+      "compressed_info": {
+        "hash": "7e2898012a6ccf180fb8b27ed02920bb8512c6624d594daf0248aa9eafae3f07",
+        "size": 3629
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_01_13.sharedAssets": {
+          "hash": "694d69538284d008cf30b58e7db609ac10c7349de964e65d2895b985cd95b235",
+          "size": 931
+        },
+        "BuildPlayer-Map_01_13": {
+          "hash": "c84a0cce36c148e9dc59faf0f6b9ec5c977bca7583ee626325fdd60266741d3d",
+          "size": 38112
+        }
+      }
+    },
+    "Map_23_13.unity3d": {
+      "compressed_info": {
+        "hash": "e70bce2ad6fda3955e79c4b11dcffd00f31e60687de69a601717a03df6a799dc",
+        "size": 34569
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_23_13": {
+          "hash": "5813dff7215e98acd4ffbc1b4aae86ecd5abc62d07b014f9f737ab24c961a08e",
+          "size": 180267
+        },
+        "BuildPlayer-Map_23_13.sharedAssets": {
+          "hash": "b700219b964baffcdad514f5d85fbad21e1d622efb3068291cf01f4aadb41438",
+          "size": 591
+        }
+      }
+    },
+    "Map_06_01.unity3d": {
+      "compressed_info": {
+        "hash": "b8e47e8a47e2e365ef14a84157ce5eca6ca1cd9306ebe4582dcc9daf0122d6b7",
+        "size": 15563
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_06_01.sharedAssets": {
+          "hash": "a6b4e0b958251d2fcffa26c68994f3c3bb276aa149c7be7b375cb9fc8f08648a",
+          "size": 875
+        },
+        "BuildPlayer-Map_06_01": {
+          "hash": "eb327357bc8beee722e5fd0999b382457714bbce87d199fbe0978c8e83fb46d2",
+          "size": 82256
+        }
+      }
+    },
+    "Map_08_10.unity3d": {
+      "compressed_info": {
+        "hash": "3452b3a236a1c918f6e4ae49b943898300071416765cb166841bebc5f86a81ad",
+        "size": 3428
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_08_10": {
+          "hash": "5c5a5f841c39748811dfc39c1d9637796ad308f6a6eaf5a854510a11966a0dfc",
+          "size": 37408
+        },
+        "BuildPlayer-Map_08_10.sharedAssets": {
+          "hash": "40615938f0a89a93e7171b765d63a64409951fa82b9627692375428ff217d8ce",
+          "size": 883
+        }
+      }
+    },
+    "Map_12_02.unity3d": {
+      "compressed_info": {
+        "hash": "666158828c6f2d03e7361e9651c959a9ac8e5714f4478233c396e8ed4fc440dc",
+        "size": 129454
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_12_02.sharedAssets": {
+          "hash": "3f2fac764bc6ae9dd480879138973ef9ef8de665377dbf1b2c1abdcbee58b25d",
+          "size": 11594
+        },
+        "BuildPlayer-Map_12_02": {
+          "hash": "40688fdb253296b6b9346078f54a181a9cea039acc6b76f92d8e9e6f23640506",
+          "size": 1213490
+        }
+      }
+    },
+    "DongResources_04_01.resourceFile": {
+      "compressed_info": {
+        "hash": "4e10d3865606f3e619d0fe796069f390112e9a59392766e21aeefc977699be6f",
+        "size": 156222
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_04_01": {
+          "hash": "204e0ae36bdd5feaa0acbb69b828caaf04679aa148309a5407b55d079d592b6d",
+          "size": 1227661
+        }
+      }
+    },
+    "Map_14_00.unity3d": {
+      "compressed_info": {
+        "hash": "e16cf6b1fde2ee3cd8ab086dda79280ba64566450eb879dfb9f0b0a4ee82a9d5",
+        "size": 7724
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_14_00.sharedAssets": {
+          "hash": "7429ddddce1fcb3e21e531a3db91ff010cae997483ab5dd237a61bb9c8e3005f",
+          "size": 1034
+        },
+        "BuildPlayer-Map_14_00": {
+          "hash": "e1c9bae3b3d2cd5acb2b56d5f6416aba82e8ccd00113b5500b797b086087d23b",
+          "size": 54782
+        }
+      }
+    },
+    "Map_12_08.unity3d": {
+      "compressed_info": {
+        "hash": "2a42c601783952e0871b8dcbd910347914bed4dee3e56ebff6e565d970ccf6d9",
+        "size": 10475
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_12_08.sharedAssets": {
+          "hash": "19678b3cdb25cf03a72d114076f7ef38b20eb69aab8edd12c08cb6f2c825967a",
+          "size": 1613
+        },
+        "BuildPlayer-Map_12_08": {
+          "hash": "3ba5661036e29bf1dbd1c4911ca308ceabb93554162e1592c6a2196b9c300ac6",
+          "size": 93182
+        }
+      }
+    },
+    "Map_20_13.unity3d": {
+      "compressed_info": {
+        "hash": "2aaa72bd045e1017aefea0848564369e1115a04e7540a34af1b893cfa8a78dd0",
+        "size": 33003
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_20_13.sharedAssets": {
+          "hash": "dcec3b340099b6bd040d96aa61389508b168998a7fe7e8a4157e5e4301146874",
+          "size": 471
+        },
+        "BuildPlayer-Map_20_13": {
+          "hash": "b268161a8a56342ea5f354e2150ed0470bbc05df320407dba5e8a32f7b69c971",
+          "size": 168519
+        }
+      }
+    },
+    "DongResources_09_09.resourceFile": {
+      "compressed_info": {
+        "hash": "2e9977e62c33ab253f633f5002286d8ebd736b5b0dd3ceab38a514643fa2cf35",
+        "size": 768587
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_09_09": {
+          "hash": "fded9a6ddb2f4bd6b491ca0bf326778a0f238785cd924bd8d3170b20c0eb8d98",
+          "size": 9445200
+        }
+      }
+    },
+    "DongResources_01_12.resourceFile": {
+      "compressed_info": {
+        "hash": "975297c696890991d3dd0a8e0496bcf73613c7beade347a124d1c226d76d6a19",
+        "size": 141847
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_01_12": {
+          "hash": "a6e647174793de7d9cf47aa7bc7f372214141adeb3a4b6ae59fa36797e412b21",
+          "size": 1226623
+        }
+      }
+    },
+    "DongResources_00_09.resourceFile": {
+      "compressed_info": {
+        "hash": "219efb1014d6c7b88051355eb10bfc814a96baa062cacfcf52de2e4beddd5e58",
+        "size": 8482
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_00_09": {
+          "hash": "7316e9d8dbe965f0044a7562eff87da9a31b2788990fb4503fa830f6dfd1d938",
+          "size": 1224913
+        }
+      }
+    },
+    "Map_05_03.unity3d": {
+      "compressed_info": {
+        "hash": "052a01fe77a6a59edccde0b8b1f8c571b85604c9a7b2ba6f495753d5c85d129e",
+        "size": 165781
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_05_03.sharedAssets": {
+          "hash": "5b0b7d0eec654fc92c35fe56766fc7f86bc2d6c36dc7bf77769a54c9d007815f",
+          "size": 9605
+        },
+        "BuildPlayer-Map_05_03": {
+          "hash": "94c625011597206ab403aebf96f62f99f15c83423fa30a0e29f22fb36a38dd54",
+          "size": 1712240
+        }
+      }
+    },
+    "Map_10_08.unity3d": {
+      "compressed_info": {
+        "hash": "cd3a39432d45c46ba98c409f787ba36cd73093bc21006cbd1325dea6f841e152",
+        "size": 62273
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_10_08": {
+          "hash": "273203b5a0e88a94f2e4a357f5bdb71a9dc31aec540f70111f795897cecd1745",
+          "size": 531377
+        },
+        "BuildPlayer-Map_10_08.sharedAssets": {
+          "hash": "4c4cef9f0c5aabb475d33507bcf3ef3caebf72b85c409c2c21a20b8d7b7c9268",
+          "size": 4348
+        }
+      }
+    },
+    "Map_01_04.unity3d": {
+      "compressed_info": {
+        "hash": "b6bf6211bae77c11ffde5abb6626dcbce30d3b43fd7c89dac92bf60e2dfca07d",
+        "size": 120890
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_01_04": {
+          "hash": "b44a6842940f04be51a75550ce9a06b8a2579f12a1b870d2db083e9f5644e46a",
+          "size": 690344
+        },
+        "BuildPlayer-Map_01_04.sharedAssets": {
+          "hash": "051aa90add8fb0c802514c60a3f8dc3512b01f1e50c542107f0614b62ce3e223",
+          "size": 891
+        }
+      }
+    },
+    "Map_13_03.unity3d": {
+      "compressed_info": {
+        "hash": "94686fecd29fdfa27507fb52d559dea27f2cad31bf57bcbabe7169b6621476b5",
+        "size": 7776
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_13_03": {
+          "hash": "5ee8342cf8a88f2468ab8f4352d6521beb39ca43823b4f5c91cdf4db21a0073e",
+          "size": 54782
+        },
+        "BuildPlayer-Map_13_03.sharedAssets": {
+          "hash": "f089f8efeaf0734825199bd7cec8525be77324068df7584c6f03f350a58d9f5c",
+          "size": 1034
+        }
+      }
+    },
+    "Map_23_15.unity3d": {
+      "compressed_info": {
+        "hash": "d837355e4e8df0670a0cdcf0f6b277022d1ae1c997427ec3a9e5b5494cc4df73",
+        "size": 35119
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_23_15.sharedAssets": {
+          "hash": "50f945576f42550b2867a0653cd5899c6021da9fb552f8c5473738ab0490100f",
+          "size": 591
+        },
+        "BuildPlayer-Map_23_15": {
+          "hash": "a9e76f4c78e62fddf5cf2d815666c7f992a4979e87621ff2696c2f8abe5e11ae",
+          "size": 180935
+        }
+      }
+    },
+    "DongResources_04_10.resourceFile": {
+      "compressed_info": {
+        "hash": "a3752b5ac3add0527a4b5cf9c9d029e350c85e3302a30474e0bbf8dbd520fc87",
+        "size": 187435
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_04_10": {
+          "hash": "2b811f79436304bd3ff7ca92611e13a216e7a5906e0366c0747946ea41042c94",
+          "size": 1924959
+        }
+      }
+    },
+    "DongResources_06_06.resourceFile": {
+      "compressed_info": {
+        "hash": "c11ff89146e485b5ce2695471c70123fc3f7152b513533e186644b5861f1ecf1",
+        "size": 2731195
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_06_06": {
+          "hash": "f8273c9741064d97a43d95db8ac9ad983e0c51e34f328898ced3042b007b9c5e",
+          "size": 13072866
+        }
+      }
+    },
+    "Map_01_01.unity3d": {
+      "compressed_info": {
+        "hash": "fc8645ace0b34a5364fad49255e8cd2c1e4b68ffb104397b9755206c7e4920e2",
+        "size": 94156
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_01_01": {
+          "hash": "11bc0aaa1bf89f965610438a8df8c8bf1d5e8d6f8c8e46f55cc3f35f49e637f2",
+          "size": 689993
+        },
+        "BuildPlayer-Map_01_01.sharedAssets": {
+          "hash": "e95ec6f2591ae54bccc824a369b5a2f9b0672e07d6d4a0c3cf85c958e072670b",
+          "size": 7233
+        }
+      }
+    },
+    "DongResources_09_13.resourceFile": {
+      "compressed_info": {
+        "hash": "e7cb56f74c7c3ea9af34bfe07041c28834b55a35931c34965f60ca964c180a15",
+        "size": 1248558
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_09_13": {
+          "hash": "1718391c9216934f6f3eba7da5c42b97af745d82cff118c7c79a14306a1b1b48",
+          "size": 6576260
+        }
+      }
+    },
+    "DongResources_03_12.resourceFile": {
+      "compressed_info": {
+        "hash": "05acef274fa6c7ac2efa5cdb51666798256e6572b50eda6a60031bbc09fbdbe9",
+        "size": 1474550
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_03_12": {
+          "hash": "557de8916ff6c332424bc5528932023e593f2a9a4c1a15037ca1f63b64c97716",
+          "size": 7134294
+        }
+      }
+    },
+    "DongResources_10_12.resourceFile": {
+      "compressed_info": {
+        "hash": "1b9a6eb7712b213390e256675f07789a0232bde4f4005e408e3265e860a5f1f3",
+        "size": 392407
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_10_12": {
+          "hash": "04e8e4cdf266cbf4908a1ea49144fbff5ede491d432b31ea81e28508752f7686",
+          "size": 4056127
+        }
+      }
+    },
+    "Tutorial.resourceFile": {
+      "compressed_info": {
+        "hash": "1f4ddd181ae0e0e5ac17e6afbd03204e1cd1a437e8d47d11a29cfaeb64a29ccd",
+        "size": 30646294
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-Tutorial": {
+          "hash": "63fa6129d3570e0333105449c57118f278a0f3169b1e640d512fe482dcce7fcc",
+          "size": 110135657
+        }
+      }
+    },
+    "Map_19_12.unity3d": {
+      "compressed_info": {
+        "hash": "e3e6978c2b7a5cea7535307dd50717fa1471c681853de3ee6116b853f6f2a2c8",
+        "size": 37519
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_19_12.sharedAssets": {
+          "hash": "5b7a1e4e7b7b18569b7b1065512dea3abcd9ee3620f899453f615062d9fc01d1",
+          "size": 799
+        },
+        "BuildPlayer-Map_19_12": {
+          "hash": "4d2791a0a2aaada89daf88c9827d7cba4ec6a6bd4fd7e76cd2ed09b9899d28ee",
+          "size": 203115
+        }
+      }
+    },
+    "Map_11_03.unity3d": {
+      "compressed_info": {
+        "hash": "eb320fc2f2f5f259dc90315225c71a2a6b1e86bd9f5a91465e32bfc50aee7e7d",
+        "size": 7737
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_11_03.sharedAssets": {
+          "hash": "cc9d5cc738f0ed290bcec6469e8be111415071a64c0a4a3c38305934bcf52de4",
+          "size": 1010
+        },
+        "BuildPlayer-Map_11_03": {
+          "hash": "41b81a183377633c4dbb584b2d8c16bc8e8cc9dd615684e41b49f3c541d3e9ad",
+          "size": 54782
+        }
+      }
+    },
+    "Map_02_00.unity3d": {
+      "compressed_info": {
+        "hash": "1b15cff353cd8e48c73be84343f6b80bd66c4ddc0163f617eb572577a0e36f4a",
+        "size": 62013
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_02_00": {
+          "hash": "8fb2eb768bed9c0ee2bf67766e94b7f3848d8eab37271efabb7b8ae2588c93cb",
+          "size": 357805
+        },
+        "BuildPlayer-Map_02_00.sharedAssets": {
+          "hash": "a79848d7a76a994c8e532607faf8be9c9bead42b602549104ddc2aff88d393bc",
+          "size": 734
+        }
+      }
+    },
+    "Map_07_07.unity3d": {
+      "compressed_info": {
+        "hash": "edfd6fd0813aa568413fbc539377ae509f5f16dda1fe0a90c2ad275106fb64bc",
+        "size": 172696
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_07_07": {
+          "hash": "26aa62d7ac715849f865abaa5841d6bf8278f708607136f65661a0ba5307138c",
+          "size": 1729219
+        },
+        "BuildPlayer-Map_07_07.sharedAssets": {
+          "hash": "6f8af838f254f40fc4c11364668097351fc83e446f4706a02f15593890cd919d",
+          "size": 11693
+        }
+      }
+    },
+    "Map_08_06.unity3d": {
+      "compressed_info": {
+        "hash": "8c6de6c78dc1db4ed6e733419298c7faf27b255621758def82d806be295721f2",
+        "size": 155089
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_08_06.sharedAssets": {
+          "hash": "5800e3631f9accf4df5919897fd40a6c74dc13683c4f28a6f2e34e782e06c5a1",
+          "size": 8325
+        },
+        "BuildPlayer-Map_08_06": {
+          "hash": "e7809a07f6c83f7482acafeb08c47c696238fcfe92cc27a53287a04a3009b891",
+          "size": 1403392
+        }
+      }
+    },
+    "Map_15_14.unity3d": {
+      "compressed_info": {
+        "hash": "5148f0d166e53c9f2cfcf7032607ec8435df274e66525bbfd073d96a70c7c9b2",
+        "size": 155064
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_15_14": {
+          "hash": "67c99b38bb45fbed724cffa4dc537d65758d34db44dc2985d40fc1a93de6f46c",
+          "size": 1487515
+        },
+        "BuildPlayer-Map_15_14.sharedAssets": {
+          "hash": "7f75673db9beb99195f0069dde22dcb67d72f68db5479b35f1a4b2c168d03115",
+          "size": 2949
+        }
+      }
+    },
+    "Map_00_01.unity3d": {
+      "compressed_info": {
+        "hash": "bb2e1780909c0e6320e72db916f2795c55e0873cd710254c9200a70fcf0042c7",
+        "size": 64341
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_00_01.sharedAssets": {
+          "hash": "adf99143ce0f8dfa614bdf596cbf77f661406d79ce22ca45e3aed251e9cd33b4",
+          "size": 1112
+        },
+        "BuildPlayer-Map_00_01": {
+          "hash": "590ac63d68297e72410f8996d6e6fdf268f02cd1ab909c581a47d8bc707629d4",
+          "size": 364789
+        }
+      }
+    },
+    "Map_05_01.unity3d": {
+      "compressed_info": {
+        "hash": "9bae11f1c2ea25f3ea0711366e9882f8f21bf3708f09898f265bf3af074e7a34",
+        "size": 42079
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_05_01": {
+          "hash": "615ad8fca5954e4463e17727a00e2fa3ed99b940ce48439364d034cd1def755b",
+          "size": 210962
+        },
+        "BuildPlayer-Map_05_01.sharedAssets": {
+          "hash": "07936b90ad50e7c9c9f4f2984672e72fa85bfd3618ed74f75d6b637cdb1b6514",
+          "size": 1357
+        }
+      }
+    },
+    "Freearea_shared.resourceFile": {
+      "compressed_info": {
+        "hash": "9160ef7928ae2d7b7a2317b2c6ac14cf0729b8801b9bc3ba2db2a4c30854d957",
+        "size": 13510383
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-Freearea_shared": {
+          "hash": "9dbc800b7183ef9d2f9b80316432f514c57f5f9910706d3d86dc377eab5dea59",
+          "size": 31240213
+        }
+      }
+    },
+    "Map_07_05.unity3d": {
+      "compressed_info": {
+        "hash": "22197b66b551b6d07b8a486174399f49658bd8e1733cb19aa151b640207deb6e",
+        "size": 12435
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_07_05": {
+          "hash": "41f821dd80846e01f8bdcaf0b907378aca77d3ca71e64eeeaef7af57ea15f94e",
+          "size": 77758
+        },
+        "BuildPlayer-Map_07_05.sharedAssets": {
+          "hash": "04744d26fa7220f9cdf06a7e0ccf269cdf0b92b0950153b423e31217ed65aaef",
+          "size": 1133
+        }
+      }
+    },
+    "World_shared_part2.resourceFile": {
+      "compressed_info": {
+        "hash": "1644f917535d57c0412e0be06e98bd782dc6ebd7dcf08b69b061b05cb33032e6",
+        "size": 16701789
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-World_shared_part2": {
+          "hash": "9870dfb47198647eaa25eab863a5ccf717ff2168b1356ea9a8215c0fd5fe1382",
+          "size": 36512162
+        }
+      }
+    },
+    "DongResources_12_07.resourceFile": {
+      "compressed_info": {
+        "hash": "07cc1978507f0912a6f8850c28594326bdf3800fb97a9b64621b056c21a0a8b2",
+        "size": 329360
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_12_07": {
+          "hash": "eafdb021aab3ef81c75243044a75899223181464adb5e0aa1945adcdc1501354",
+          "size": 1925547
+        }
+      }
+    },
+    "Map_05_04.unity3d": {
+      "compressed_info": {
+        "hash": "f5fb2989abc0ab94582dc791ccbf3556285c91f4c12045a96abe7d463feb2c3c",
+        "size": 98612
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_05_04": {
+          "hash": "2b9bae86a16036529a381e31df503a85011f74350598fa6617e3b948d0897c34",
+          "size": 1004379
+        },
+        "BuildPlayer-Map_05_04.sharedAssets": {
+          "hash": "7708e7b71d12fd697c0b78b1deb5896af55b160f724f316fdb19e520a8209963",
+          "size": 7509
+        }
+      }
+    },
+    "DongResources_06_02.resourceFile": {
+      "compressed_info": {
+        "hash": "5c0a4b990460e89a7649201d3d56414034e15887e6f4d05afdea2ba5558b6fa7",
+        "size": 358930
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_06_02": {
+          "hash": "d211f82aaa02ca107596b2d33036bc1e2a3bc0eb627bca59cf1e7b97564a7de0",
+          "size": 1575199
+        }
+      }
+    },
+    "DongResources_04_11.resourceFile": {
+      "compressed_info": {
+        "hash": "e1a187e53b33967c2212decb2d2d01f5d7f459f1cf2548ce003295e2fe3ab4a2",
+        "size": 172353
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_04_11": {
+          "hash": "97caf2b1fd363cbd155505f0e02e228bd684dd6fc214821f652ed05e8a0dc86e",
+          "size": 1225155
+        }
+      }
+    },
+    "DongResources_05_04.resourceFile": {
+      "compressed_info": {
+        "hash": "2040afbef9a2458599fdddbc3f9af787737b62b8945313f4378922165e4304a5",
+        "size": 2389082
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_05_04": {
+          "hash": "0eab0cadab9a7fa5c5658f4db33bd0782568763d6bcfff5287b830d470c0d177",
+          "size": 10886856
+        }
+      }
+    },
+    "Map_10_14.unity3d": {
+      "compressed_info": {
+        "hash": "0b7c5b5ec796ea97f91aab468c7eb5dd812976ce6ef0a513415f3b60584a0733",
+        "size": 16952
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_10_14.sharedAssets": {
+          "hash": "cf44ad230683da541c843d468ac9d386dece4c4a39e3e7f62d2d44aa140db1e2",
+          "size": 1629
+        },
+        "BuildPlayer-Map_10_14": {
+          "hash": "a994ba91d58e0c47562532b4f2922429e5d3b3266cac76a162a58d6c7cc5c58c",
+          "size": 118989
+        }
+      }
+    },
+    "Map_12_00.unity3d": {
+      "compressed_info": {
+        "hash": "1b20d502a4fec5f9edf643b1b51c29289e17f60b2cb0fbf0eee20ab3d1147307",
+        "size": 7755
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_12_00.sharedAssets": {
+          "hash": "e6a51762fe1d2312beef84dad9acc7cd0e3336b16d8122c7e8bce75c7bb5b909",
+          "size": 1034
+        },
+        "BuildPlayer-Map_12_00": {
+          "hash": "096c003b7e1b7f25a2a1d8540418404b621b7facec13f5577080da22f08c0173",
+          "size": 54770
+        }
+      }
+    },
+    "Map_13_02.unity3d": {
+      "compressed_info": {
+        "hash": "ba5b40a88c33a719297deb75442088ade77309d0ec12a33aff9e097cfc98d2a5",
+        "size": 114477
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_13_02.sharedAssets": {
+          "hash": "fe63ce0a330517d9e9e424304b9f76d00111d24fa8abce8ceb76594450381d67",
+          "size": 9250
+        },
+        "BuildPlayer-Map_13_02": {
+          "hash": "760b393022b77ab7f234ad461003a9876581ba95a847e522cb980fe829e301b9",
+          "size": 969833
+        }
+      }
+    },
+    "Map_18_12.unity3d": {
+      "compressed_info": {
+        "hash": "5597ba03be3282a10666f662658ed20ff5b78ff10393b1d86b7281f35b99c71c",
+        "size": 35807
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_18_12": {
+          "hash": "c2f6093148005acb36528943c88906351aedee2c15296d26920bb8a41e97368f",
+          "size": 186103
+        },
+        "BuildPlayer-Map_18_12.sharedAssets": {
+          "hash": "6e4ad2ffcc3258b2a85074250b729505cf20ed95570bf50abd2c03bd76f92d73",
+          "size": 591
+        }
+      }
+    },
+    "DongResources_07_09.resourceFile": {
+      "compressed_info": {
+        "hash": "cd0f1ff0facc929a56c7c51399b190d094ffaeeebde94d1d70b8b54c4f28d5be",
+        "size": 501899
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_07_09": {
+          "hash": "67a74cda61566fb321a104d55e59772be3b9c692efd01bd8e419e0e1a951233e",
+          "size": 3498610
+        }
+      }
+    },
+    "DongResources_07_14.resourceFile": {
+      "compressed_info": {
+        "hash": "1b6a2ca48ae703499ea30f07bd79291d6f5f29129560427429c0a2fbbf4c899f",
+        "size": 243105
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_07_14": {
+          "hash": "0cc30b875e84262976bfffcd229a4091f35e098f5f2817cf6d23d589de803df1",
+          "size": 1954023
+        }
+      }
+    },
+    "DongResources_08_14.resourceFile": {
+      "compressed_info": {
+        "hash": "aba3d001261c724fbe493d58a75e6a2bdc65a9a2ba23e94e2bc054e997eca1a0",
+        "size": 613141
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_08_14": {
+          "hash": "9be6e036998d14764e4ec76b6aef3819d2795b34f58d12f1ca44b45f7869e4c0",
+          "size": 2292343
+        }
+      }
+    },
+    "Map_15_01.unity3d": {
+      "compressed_info": {
+        "hash": "058e899d5b7a04a73f79c45b83a1e701ad351b361fa3b90e3138cfb2f13135db",
+        "size": 7706
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_15_01.sharedAssets": {
+          "hash": "d442b8926de92d7817cb29f6e5a5524419fa08189c4d9f66dda8f52e724f5b0b",
+          "size": 1010
+        },
+        "BuildPlayer-Map_15_01": {
+          "hash": "2a0063de2d3a27adee14832018d9c8130f6339a2491156ade0535740567f73c7",
+          "size": 54778
+        }
+      }
+    },
+    "Map_20_12.unity3d": {
+      "compressed_info": {
+        "hash": "a8ec56cf36fa01b40ebc338a180197c6ad9b36c07c23828c625466e484aeec64",
+        "size": 34265
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_20_12": {
+          "hash": "58e530bd6978a6775072d98de4224b6cb667c41b10beaabd1b167a7a8d5596ac",
+          "size": 180271
+        },
+        "BuildPlayer-Map_20_12.sharedAssets": {
+          "hash": "ac96fbaa65835b24f2474223cd06a31387ceeec62663d91d743dec13a98c7acf",
+          "size": 591
+        }
+      }
+    },
+    "DongResources_02_14.resourceFile": {
+      "compressed_info": {
+        "hash": "e652dac6fd53916bc120eca8dd96c8b44dc05a305cbf21bba3678488c2c49003",
+        "size": 289333
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_02_14": {
+          "hash": "a96c0c928339dfb5683523d8f6015cf782e8646bbeb3a9ce9c4616f3378deee5",
+          "size": 1575671
+        }
+      }
+    },
+    "Map_10_09.unity3d": {
+      "compressed_info": {
+        "hash": "381d8b346753f142016c6ca42307b47e9cec9c70cc907538024379c379f444ab",
+        "size": 156604
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_10_09": {
+          "hash": "5b4da155e97754c7658fa2f9c0c4dcbee576a03a39e34058a8d46c4d53b2c0c7",
+          "size": 1311988
+        },
+        "BuildPlayer-Map_10_09.sharedAssets": {
+          "hash": "aeec5cd5e15e7bf232adf42eb2db12096607878f7e268dc0cbbc487c1146e6ba",
+          "size": 7461
+        }
+      }
+    },
+    "Map_04_01.unity3d": {
+      "compressed_info": {
+        "hash": "e0d9e5cb054a04fec88131d26578367747bfb9951ae9476c6260b15b843d282a",
+        "size": 10336
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_04_01.sharedAssets": {
+          "hash": "ea8de70d3be058bc9d3a6ff416f31e08f9a798dba7ce91d9794839697a019ca4",
+          "size": 1085
+        },
+        "BuildPlayer-Map_04_01": {
+          "hash": "b8957180408c6864fcdeae8002496bd3a2334a4dfbda87439bfbc66cd3c5fb21",
+          "size": 64130
+        }
+      }
+    },
+    "Map_11_02.unity3d": {
+      "compressed_info": {
+        "hash": "77d09bb36bc0d710c61cbd77e604307dc92cbebae4f0ba1fd41874a02026693d",
+        "size": 7787
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_11_02.sharedAssets": {
+          "hash": "6b9644b1a73f42d0abe9c14f4129a35131ecb63db708a6ecfc825d0138e106fc",
+          "size": 1034
+        },
+        "BuildPlayer-Map_11_02": {
+          "hash": "65c1137441a1ecc5737773078c80abf2520b4355af3012c291cc6539df5a371d",
+          "size": 54727
+        }
+      }
+    },
+    "Map_03_02.unity3d": {
+      "compressed_info": {
+        "hash": "e6bada642b408650f30dabbe8f3c010f0213177a399268d3308640a36ddf6347",
+        "size": 5033
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_03_02.sharedAssets": {
+          "hash": "302c623d7523d6911e31f1d818f0e3ccc45a89b8152548be9c3ecf8ac923ce5c",
+          "size": 899
+        },
+        "BuildPlayer-Map_03_02": {
+          "hash": "0f8afc4f3cc309cb1d1b28e40a9d0b86c202050c1fb15f300603fed4ba7a5f47",
+          "size": 44544
+        }
+      }
+    },
+    "DongResources_09_14.resourceFile": {
+      "compressed_info": {
+        "hash": "f56ae6bb3375d5ef8ec70f78b9ac70329272ef77533a42e8a9957cc1509c7da8",
+        "size": 949803
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_09_14": {
+          "hash": "7e460b136575067e8e925a09805ce597b3185304c2fc648526c4bdfef4323ffa",
+          "size": 2963746
+        }
+      }
+    },
+    "DongResources_10_07.resourceFile": {
+      "compressed_info": {
+        "hash": "23d035767a7c7f67ba50e75b8e79ba849b14d07c6ee0ec8ca7745ca9df1c74ac",
+        "size": 326474
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_10_07": {
+          "hash": "0fe5ba82710d3a4464a0108df6646f16dc9e4a8ab70ca74a270917af769cf802",
+          "size": 2994441
+        }
+      }
+    },
+    "DongResources_07_06.resourceFile": {
+      "compressed_info": {
+        "hash": "7b4ae62a893a6fd9e0c726f20bc9c859f408b61243c5b8db31765bfc60edb374",
+        "size": 2127897
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_07_06": {
+          "hash": "e2386b22a0bbc5732cbef3fc82ebf6bec203ecf9f353bbba0f1fb3138eec3dbe",
+          "size": 12576009
+        }
+      }
+    },
+    "DongResources_04_03.resourceFile": {
+      "compressed_info": {
+        "hash": "76037002aa29d4278933dded78e4ac3a9d263701630a52d8782d713bfe19f9ef",
+        "size": 3086210
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_04_03": {
+          "hash": "1276cb463d0b75bba301416b959f1bf34f4019f5207af71345102b984caac8a7",
+          "size": 14468935
+        }
+      }
+    },
+    "DongResources_05_07.resourceFile": {
+      "compressed_info": {
+        "hash": "784b5b7c0629002a5b82922bfbc50709af4d4ca53a9d95322593c5e895b00c87",
+        "size": 1306839
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_05_07": {
+          "hash": "2f877741f3b66a636cd0b83b0b34508f258b9c09adcbae2c443163e2326bff8c",
+          "size": 7255894
+        }
+      }
+    },
+    "DongResources_04_06.resourceFile": {
+      "compressed_info": {
+        "hash": "7658680acb8d6e0a6c8cf0cdb28c6508d287f946d59d3f1155f83c5f0247f1e7",
+        "size": 3048374
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_04_06": {
+          "hash": "0ad53eb827fe7c718a670094cbc9d41cf8b1f2fcd113e39d55cbb38f59800c68",
+          "size": 14713199
+        }
+      }
+    },
+    "DongResources_05_02.resourceFile": {
+      "compressed_info": {
+        "hash": "72147e061ce6a64a10d0c53a66ac58a45880c2e1fea74e402c6bf5032c965a53",
+        "size": 2997935
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_05_02": {
+          "hash": "f2576c9ff9e9c15b6183aecf8c6b452e1353793819176dc523e3f14d5c9eeb9f",
+          "size": 17370014
+        }
+      }
+    },
+    "Map_02_03.unity3d": {
+      "compressed_info": {
+        "hash": "c6b22f0cc6c2825bce75c7d7289a4f061b792148babc8ed8e3a25cccb26a46fe",
+        "size": 46699
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_02_03.sharedAssets": {
+          "hash": "f4bdb9d060de3d3496d7aa92cc7ab88c02188a1df2a737ea915d1271f8e11277",
+          "size": 1293
+        },
+        "BuildPlayer-Map_02_03": {
+          "hash": "4d389f6ad5aa479611efe8e39692957e63d6a9abb053aef5b75824d2f85dc2cf",
+          "size": 345597
+        }
+      }
+    },
+    "DongResources_01_14.resourceFile": {
+      "compressed_info": {
+        "hash": "5d16bd2de5dad276625d7765bdd1471d7b0fa136e88082a3d0087423770e910c",
+        "size": 341644
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_01_14": {
+          "hash": "33056f18aa667a84129b32554b27af737fe31b445813b72eecd5c160599f0824",
+          "size": 1968679
+        }
+      }
+    },
+    "DongResources_09_11.resourceFile": {
+      "compressed_info": {
+        "hash": "4789c356a1677522ed61c89e503911396fee6b9ab6a663942db1e1214e0b43cf",
+        "size": 963915
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_09_11": {
+          "hash": "f9fc7f273c55baf4a6e10dd9dbadbc705a6b4cd6efe0c85a228795bb005ca31d",
+          "size": 8922688
+        }
+      }
+    },
+    "DongResources_11_00.resourceFile": {
+      "compressed_info": {
+        "hash": "14bd1e914f7b0eb3c7a4ffcd46cf1c67d74fded3f054d0a2c22e563f384e5471",
+        "size": 14534
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_11_00": {
+          "hash": "47334274e48d0ecd6523df8f98e9d5b839f5816d72a58688495a1707a7ac20d8",
+          "size": 1226426
+        }
+      }
+    },
+    "DongResources_04_12.resourceFile": {
+      "compressed_info": {
+        "hash": "7837bd37134625ac4fc07b64a6188adcf61621c4dc442d3cc7b33f2fe944558c",
+        "size": 1522639
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_04_12": {
+          "hash": "973a7bcea584a032f29c3eb3a3a8f1cecc29e85551ef7a6dcfadc2dc52ed25a0",
+          "size": 6935145
+        }
+      }
+    },
+    "DongResources_08_13.resourceFile": {
+      "compressed_info": {
+        "hash": "98b055823b85675ef5bf8eab7084b4fb21b0cd9b8f6e19a61ffcd5211102dcc5",
+        "size": 1640451
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_08_13": {
+          "hash": "27eb561f80077103c50fdefe395a3c1d8295fcd6743f06dc2b520d48a5414379",
+          "size": 4151841
+        }
+      }
+    },
+    "Map_00_09.unity3d": {
+      "compressed_info": {
+        "hash": "5b876505c9bd40f9fa8ed99dc2efd3218d060f9f553a75213c8c6d0b782f497a",
+        "size": 105696
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_00_09.sharedAssets": {
+          "hash": "b877dcf4c7c076ff3c4ddf3b6da3d4a96421943f9290234da69a8c18a14924f1",
+          "size": 793
+        },
+        "BuildPlayer-Map_00_09": {
+          "hash": "22be1c02aba3cfcfa239833d7c09e6d1664fe0047f2d95a232478d716dd02b87",
+          "size": 665272
+        }
+      }
+    },
+    "Map_04_12.unity3d": {
+      "compressed_info": {
+        "hash": "fbd349387579b4ef810d074983ca69ae12b43e511744993107694392bb6f6bbe",
+        "size": 112759
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_04_12": {
+          "hash": "25abc91e4bc21f03be377b1d72a09e98d63b302f3c388aabaa4e0cf4f5667008",
+          "size": 1079133
+        },
+        "BuildPlayer-Map_04_12.sharedAssets": {
+          "hash": "5f72a435317710f111ca52f435e18d71404c658cacbdc54fdb4eab1604afa143",
+          "size": 5693
+        }
+      }
+    },
+    "Map_10_11.unity3d": {
+      "compressed_info": {
+        "hash": "27d737d36805b05c4ee90313cc9b82c72cc0df746de44e0a7b4b6391918dcdd1",
+        "size": 89346
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_10_11": {
+          "hash": "35fe93c627799d9e0c042044d931da3aa6d2e2f4d3e09b4254a0c5c7504db030",
+          "size": 723614
+        },
+        "BuildPlayer-Map_10_11.sharedAssets": {
+          "hash": "a3c464ad22316ce16c378513214acd9fcd7203b25f1729513c4593d463ff313b",
+          "size": 4429
+        }
+      }
+    },
+    "DongResources_15_09.resourceFile": {
+      "compressed_info": {
+        "hash": "868e63544d3830902fd7c91a35303a3e3ad7bbfbb482f83971e4d9ee6b20aa31",
+        "size": 3787471
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_15_09": {
+          "hash": "7763638383d8f375e4bbe6ac1f8f51118fecbb283121f31c95c06c2ad20d019a",
+          "size": 15673311
+        }
+      }
+    },
+    "Map_09_11.unity3d": {
+      "compressed_info": {
+        "hash": "6ae6111e6f12554956b4baae70d52da7751ea428d3d4d399ffdadbdc790af147",
+        "size": 153614
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_09_11.sharedAssets": {
+          "hash": "4b4fcad26a5e889eca806af205c6ba222cd7867f2ee27ac154527a0c472308de",
+          "size": 7421
+        },
+        "BuildPlayer-Map_09_11": {
+          "hash": "b12d85805b72447647f91731d4e78fbba89e100d3e9e383b6a2dddcc40b773a8",
+          "size": 1379727
+        }
+      }
+    },
+    "Map_05_09.unity3d": {
+      "compressed_info": {
+        "hash": "94083b5231efce3cd048db07322c2fd5ec6d6418d26584deb0c65cc450439c0f",
+        "size": 18760
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_05_09.sharedAssets": {
+          "hash": "506cccf333cca7e2ce55a2dd13191749457e2ec10139cf4a828e78db77065b01",
+          "size": 1420
+        },
+        "BuildPlayer-Map_05_09": {
+          "hash": "3baa7f5bac56d01ee31042e5f3f3447da4ee7b07a66e04592218fba10fac0c78",
+          "size": 136961
+        }
+      }
+    },
+    "Map_16_14.unity3d": {
+      "compressed_info": {
+        "hash": "594900a1f2500ca0221fef2b5a15a674eaf2cab4d5a333f62da9e3d17a4fddc3",
+        "size": 35221
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_16_14": {
+          "hash": "59c27486fb80ac01bfd97a33df8e7c2d096032c366471ba026cd1ebc6480f10f",
+          "size": 180271
+        },
+        "BuildPlayer-Map_16_14.sharedAssets": {
+          "hash": "1f1a1a4badfc1f3536917cfe09cf41b54d2b256712e2dbcb4ae8019f1e2c5b57",
+          "size": 591
+        }
+      }
+    },
+    "Map_02_05.unity3d": {
+      "compressed_info": {
+        "hash": "88f05f462a634b49ccfc25314504033314c02d4de4090dcf5216dc36c2751cc6",
+        "size": 4162
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_02_05.sharedAssets": {
+          "hash": "58b83e964acf2beab5f25b747afefa61b55e232aeb1ae252861a4efd8848f920",
+          "size": 1101
+        },
+        "BuildPlayer-Map_02_05": {
+          "hash": "0f45de9a583522e7020b478c3740a50cc268f41e297351d62c002dfa8a44d050",
+          "size": 40948
+        }
+      }
+    },
+    "Map_18_15.unity3d": {
+      "compressed_info": {
+        "hash": "df3b41dee7a0479614e317ec829681d27a80ffda107a02eb8142a99c3a11c89c",
+        "size": 38784
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_18_15": {
+          "hash": "22fe85a65a3b2cda8da19ceee0650f9d87782391697e5fcbdf740c2b9bda3151",
+          "size": 215051
+        },
+        "BuildPlayer-Map_18_15.sharedAssets": {
+          "hash": "9f85de64e13ab07bcecb6521601bfe98c2e82237525f1f51f638af1b420beedb",
+          "size": 823
+        }
+      }
+    },
+    "Map_21_12.unity3d": {
+      "compressed_info": {
+        "hash": "359956be56aff35de7f24100d18e44e37ccc72f45411741cf5199780a2ce9938",
+        "size": 38927
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_21_12.sharedAssets": {
+          "hash": "a5c78116821d87201f482e8793bd100e1a98e484c39f8d0f8c63ad754f94d300",
+          "size": 823
+        },
+        "BuildPlayer-Map_21_12": {
+          "hash": "4e5d9fd3b8fe9dc5d353e0be11443b8f743ff2021e15ab5ddfa0182022adfe33",
+          "size": 215051
+        }
+      }
+    },
+    "DongResources_06_12.resourceFile": {
+      "compressed_info": {
+        "hash": "075acd88dd9220603a1251eb060af94ba8eb7c0975d270e1126e1fc8caf7b5ee",
+        "size": 137203
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_06_12": {
+          "hash": "ad800a3ccdbe12076de5f7f798d5b19ddeac7fecec6153b3e11535199982970c",
+          "size": 1225239
+        }
+      }
+    },
+    "DongResources_14_02.resourceFile": {
+      "compressed_info": {
+        "hash": "52af904c4319df0449e56d36084ce1aa6277924901825d8000a420496708db8b",
+        "size": 2693820
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_14_02": {
+          "hash": "b1863b5d401a4cd43f905df37d58a0cf0975b5cfd713297d0cfba84fd7a37fcc",
+          "size": 14242123
+        }
+      }
+    },
+    "CharacterSelection.resourceFile": {
+      "compressed_info": {
+        "hash": "0e3d1ec99718ace9c0ab694ef8ed6da0e3811cf50d864ba683f86869919b6370",
+        "size": 22776123
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-CharacterSelection": {
+          "hash": "92c9b2cae7952790d5d0dda7af85d2c8b38eb41507fb205bec13ea118de592ec",
+          "size": 90640935
+        }
+      }
+    },
+    "DongResources_12_14.resourceFile": {
+      "compressed_info": {
+        "hash": "ad41f2c398e081367cdb3f3f43cb999d37eb7ed136228e328c2c741b54b34631",
+        "size": 1452756
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_12_14": {
+          "hash": "883621905ed7a3973a97e1d1c212af48e1b2367b4983357a7e371fb3cb365594",
+          "size": 8232288
+        }
+      }
+    },
+    "Map_02_14.unity3d": {
+      "compressed_info": {
+        "hash": "ad3e4827608c0d5370bcdf7a410aee0fd13ea399b11288d009fd83e645b668a9",
+        "size": 4032
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_02_14.sharedAssets": {
+          "hash": "bbb586cae95b6f8e74b1368d2d35cf5e3d51517baa7cd7ffdca83b1d2d5cc66e",
+          "size": 939
+        },
+        "BuildPlayer-Map_02_14": {
+          "hash": "cf7035588d93acdf6e1538fb566b4fc4126a296b98cf964ba7010817db7e0bfb",
+          "size": 38816
+        }
+      }
+    },
+    "DongResources_04_04.resourceFile": {
+      "compressed_info": {
+        "hash": "731b4e5b63741aec22a95e3abab9d200a981001e6b266d5d69694e20bd3763c0",
+        "size": 1816256
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_04_04": {
+          "hash": "f1b2e102eef08f38992025f41f958c1d1fe14d9269b626c3bee163053c9a7a95",
+          "size": 12187881
+        }
+      }
+    },
+    "Map_07_03.unity3d": {
+      "compressed_info": {
+        "hash": "f491b79e04d4eaacf2bd3b43137c651c733d6e47f2b92e1daf6a1595abe4f68a",
+        "size": 11310
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_07_03.sharedAssets": {
+          "hash": "3daf01c93d23efb599311f8103535cb9adaf61ded717fd26ddff1bd46a6d9a17",
+          "size": 899
+        },
+        "BuildPlayer-Map_07_03": {
+          "hash": "4e9f61826eef7beea7576bb59372abe3d0250b8ce8bc03577a16151eb1f38fac",
+          "size": 65536
+        }
+      }
+    },
+    "Map_01_12.unity3d": {
+      "compressed_info": {
+        "hash": "c7dd75ea02630beca91e21878655cadd9761fd97f18961cc7f66bfdb2fe1bb72",
+        "size": 9643
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_01_12.sharedAssets": {
+          "hash": "718aea27b90a80176d42be4474cad96b051fbe6751bf4a9e08c5e51eaf855cd4",
+          "size": 971
+        },
+        "BuildPlayer-Map_01_12": {
+          "hash": "5fec28f5d70990a4384892f33ed35db25128960865183bca5fd2f282ceb392ee",
+          "size": 68365
+        }
+      }
+    },
+    "DongResources_05_10.resourceFile": {
+      "compressed_info": {
+        "hash": "e54ae9b186114aaacda7f005c69dd47cc783fcc3267eccbef582b06ca5cbd8db",
+        "size": 1080412
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_05_10": {
+          "hash": "5ef954ce291bc17b95321dabfcc8c82f0669671727a88ae429ad37d1b586c1e4",
+          "size": 14518964
+        }
+      }
+    },
+    "DongResources_06_05.resourceFile": {
+      "compressed_info": {
+        "hash": "5ecaff767c171d1ab7e0f4ca34e73cb56f53553ca24c897c068b97737f06f43c",
+        "size": 1624024
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_06_05": {
+          "hash": "8309fb574d316ffce2c02f566ceae21674fe95cd1f131d5bad6cfc7f44924234",
+          "size": 11512919
+        }
+      }
+    },
+    "Map_15_10.unity3d": {
+      "compressed_info": {
+        "hash": "918baf6a0cd5e63d3c71f142ba0128b06a974cec5cb7ee6924246684c67e076c",
+        "size": 62200
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_15_10.sharedAssets": {
+          "hash": "1d0ebc2d0e0669becbcc46263caa96c1a4d9cb60345081403bc0cff4478ae150",
+          "size": 2812
+        },
+        "BuildPlayer-Map_15_10": {
+          "hash": "18274b01291ef6a1b5c926bfb932fa2e5ffb41e58c79a72b1ad8f3a706cbfec3",
+          "size": 543670
+        }
+      }
+    },
+    "DongResources_14_13.resourceFile": {
+      "compressed_info": {
+        "hash": "05a48f9e70d86579fb11491499e1583c281c94c7a359ae843f2c68757252cd25",
+        "size": 2146495
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_14_13": {
+          "hash": "5705f47dd7846ef83f9a49138efb223294d6dcc029b6a7bb5d0598036dba45c9",
+          "size": 12869002
+        }
+      }
+    },
+    "DongResources_10_02.resourceFile": {
+      "compressed_info": {
+        "hash": "db5eea50b4fc2354ecd72ca223589c5bf5202b7e5f344264647fd7e240ff4798",
+        "size": 14426
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_10_02": {
+          "hash": "5cbbb7c4d062e7ce2addce34bed059ba63d570dfbee0465b0433cbbbe6756762",
+          "size": 1226434
+        }
+      }
+    },
+    "DongResources_01_03.resourceFile": {
+      "compressed_info": {
+        "hash": "59310b97d87600832c50b846bcfdd24266089c3c2be0e6446c332a659c0799dc",
+        "size": 154870
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_01_03": {
+          "hash": "c02dadbb5a0bf2a995fc0d5376f75dbe2acb032b0b07c30184072661800c5741",
+          "size": 1663343
+        }
+      }
+    },
+    "Map_07_06.unity3d": {
+      "compressed_info": {
+        "hash": "264011e565a7a5a4b8d57b30ca4a2e917b68d41e462fff01ad757cea9e013201",
+        "size": 76092
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_07_06": {
+          "hash": "6534b5db4b4992a039d843abe8ee7b056fb4501dcb93bf4f9e1baeab3923a2ea",
+          "size": 709302
+        },
+        "BuildPlayer-Map_07_06.sharedAssets": {
+          "hash": "a42df8ad202340456f8075fa4f5b36d357bb2c28510f8b8bbc16d9c735cdcc5b",
+          "size": 8093
+        }
+      }
+    },
+    "Map_16_15.unity3d": {
+      "compressed_info": {
+        "hash": "715e529e653365733c86763a92501d7875791ddb0d2e6985ae5d72420ead8e1e",
+        "size": 35427
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_16_15": {
+          "hash": "8926a48560ee90dd502cb4bc87273a8ff84c00ca5f5d53656fda22acc7ed42d3",
+          "size": 180931
+        },
+        "BuildPlayer-Map_16_15.sharedAssets": {
+          "hash": "60270f4c6a35bc37ef7bd3bae563a7aa73bdf2b7c857027e96b841e214f2590b",
+          "size": 591
+        }
+      }
+    },
+    "DongResources_10_08.resourceFile": {
+      "compressed_info": {
+        "hash": "82bbda11690c227abcd3481178668257a6b0d3608d00741fee56b5487094233b",
+        "size": 764088
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_10_08": {
+          "hash": "9fdc20f1749b6e17f0c73061177fdeb2d65fde95cb0a5a3d072280222f768f61",
+          "size": 5348374
+        }
+      }
+    },
+    "DongResources_08_08.resourceFile": {
+      "compressed_info": {
+        "hash": "e530060db307eb9e16215234fac0ee4bf38940047bc2b7535f49941edf537ba7",
+        "size": 269037
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_08_08": {
+          "hash": "be43c811df6a89c95e337e31b329b8dbe7473fff886be381ee4474eb0422fa6b",
+          "size": 1575051
+        }
+      }
+    },
+    "DongResources_14_15.resourceFile": {
+      "compressed_info": {
+        "hash": "91d3ee8827a73dcc09e5564b4a6517888241b38063f80c7273df0a7eeebb8021",
+        "size": 2498413
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_14_15": {
+          "hash": "86a5fbe53eb1812d1356832b43e713c771ec11916e132fa65fe5a7bc75dcde33",
+          "size": 13897525
+        }
+      }
+    },
+    "DongResources_10_13.resourceFile": {
+      "compressed_info": {
+        "hash": "d49a798cc37210db4af07c856eb24d9d4e069041f4c633faec03e717dd9b41e9",
+        "size": 461760
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_10_13": {
+          "hash": "167a70fa368dccd219f9aef36994522e13a3f0896b9f9ea241054cffb4227a10",
+          "size": 1926207
+        }
+      }
+    },
+    "FutureMusic.resourceFile": {
+      "compressed_info": {
+        "hash": "a653ed62e7a5847d8cf2d93d8fb5c68abc65bd55bb202fa3d1dbb5a3552315f1",
+        "size": 6299194
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-FutureMusic": {
+          "hash": "b9055d641df133c9e96fa5271edf48021b048c77865b2a549b4bd419a03d4e6a",
+          "size": 6427059
+        }
+      }
+    },
+    "Map_09_09.unity3d": {
+      "compressed_info": {
+        "hash": "9801b2b9fb413e8246ad110021078f48725a37b1d9a37501cf8722c26d5e268a",
+        "size": 56348
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_09_09.sharedAssets": {
+          "hash": "1c55b43b7dc5045176d55c470994dc2f7e40854b977f09b8eff7f612cf51b5cf",
+          "size": 4916
+        },
+        "BuildPlayer-Map_09_09": {
+          "hash": "2f332944e5da1e63d535fdad75d6654a09cfa5eeb69f30d0b1947caf4715ce2c",
+          "size": 437278
+        }
+      }
+    },
+    "DongResources_04_08.resourceFile": {
+      "compressed_info": {
+        "hash": "597fc69d501a555a3c19ad9c150517de77717e87a2a48340aa9d98d04013c674",
+        "size": 279386
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_04_08": {
+          "hash": "788dfe2fe789fa350e11862459edfc30c8ab7fe0a778247c4bc4f31ec7bbe860",
+          "size": 1225243
+        }
+      }
+    },
+    "DongResources_06_10.resourceFile": {
+      "compressed_info": {
+        "hash": "d0fcbe1913b37c55b88ea18434baf0fb24f51ae7d2177c754852639d7c68348d",
+        "size": 3382981
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_06_10": {
+          "hash": "a0c4bfd6656afb65b69098a06893bc8c5445010d35264e226610b5d707bb0e36",
+          "size": 20041832
+        }
+      }
+    },
+    "Map_04_04.unity3d": {
+      "compressed_info": {
+        "hash": "eb4f7bcf26fccaddeff1dd0bffb02d946718d1857bc75ab48315193f457af54b",
+        "size": 115387
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_04_04.sharedAssets": {
+          "hash": "d082e010191208a50f22bad4251f7aa27edf0a0908c0872cd6ed7683934158f8",
+          "size": 10789
+        },
+        "BuildPlayer-Map_04_04": {
+          "hash": "413afe6db017cccc20291b5aec15beeb97799dc64513f4b76cfb7807c48d0def",
+          "size": 1082858
+        }
+      }
+    },
+    "Map_21_13.unity3d": {
+      "compressed_info": {
+        "hash": "fc3d4e7acdb8cdfc248d75461f6d9e4ab8a41e028aa530dda131d0701fb89577",
+        "size": 33466
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_21_13.sharedAssets": {
+          "hash": "480356d5ef80fa464a4f188665d78e5ea4d921995217fb1b5d7e42a4b150a10a",
+          "size": 471
+        },
+        "BuildPlayer-Map_21_13": {
+          "hash": "0a17502faf682e4ddd657337f4348358899c62689c96fc2f39ee576c1abcf408",
+          "size": 168519
+        }
+      }
+    },
+    "Map_05_05.unity3d": {
+      "compressed_info": {
+        "hash": "e20f74d6223f477fcc1d3b919d05676e8d0b5d6a2f087e0d0f6cfe8110265737",
+        "size": 231470
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_05_05.sharedAssets": {
+          "hash": "84d9ffdd97925354f17bbd7233147fc72c226866704078dc8d710b1cc6f56caf",
+          "size": 11597
+        },
+        "BuildPlayer-Map_05_05": {
+          "hash": "7aff3b25b2afa4fe323e5c1592df33075d7d21bd45f0ae8786d78cb0a6584841",
+          "size": 2185856
+        }
+      }
+    },
+    "DongResources_11_11.resourceFile": {
+      "compressed_info": {
+        "hash": "9ba250b2b6e447ed4704dacc48ef5deb7b3104c7d84b952c88fe3dd7491fd48c",
+        "size": 3448286
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_11_11": {
+          "hash": "1bc48c8ec4667a7e9775a5a5cb9e8418a5ee337bc04fe11e52f30cae0a2a9a53",
+          "size": 17378012
+        }
+      }
+    },
+    "DongResources_06_13.resourceFile": {
+      "compressed_info": {
+        "hash": "98a30baaf367da048fceeed86a0b8e026be4ee4073a7f70057ff35b826fb11c4",
+        "size": 33524
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_06_13": {
+          "hash": "80f14e1a4af276960b41082a8ec2a2039061984741a474936141e2267f3f48cf",
+          "size": 1225067
+        }
+      }
+    },
+    "DongResources_11_07.resourceFile": {
+      "compressed_info": {
+        "hash": "3c4ec6f19a41c73db21b7f72931667ebfed6e19af66ff2131846e2a1aae1be9e",
+        "size": 1093725
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_11_07": {
+          "hash": "fd2992eee37e5231f69e252719739c767df578c9278a2741bdac84b857e58b3d",
+          "size": 9249200
+        }
+      }
+    },
+    "Map_06_10.unity3d": {
+      "compressed_info": {
+        "hash": "6054a0383d2fa742837ee6572bc0b8c27dc39f70861703f9110fc4f7ce705b02",
+        "size": 70671
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_06_10": {
+          "hash": "cfad2362e76f971ab5ffc837306c41d88c7676b1ebc6f311836253615cdb6001",
+          "size": 489127
+        },
+        "BuildPlayer-Map_06_10.sharedAssets": {
+          "hash": "ae142ea59bde76526dc9db6a7c03478c86e209e74edbe87efe205d3ca457d29a",
+          "size": 6196
+        }
+      }
+    },
+    "Map_05_11.unity3d": {
+      "compressed_info": {
+        "hash": "4cf434b4da9c5debb5a050a49505ec35b4bb5412deaae28438e8b3a01823c2c4",
+        "size": 79062
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_05_11": {
+          "hash": "bf14a41a4a26c8b8fae77922d31e6039256aada272649091eaf8c4538b3fabbf",
+          "size": 726409
+        },
+        "BuildPlayer-Map_05_11.sharedAssets": {
+          "hash": "827894801c308e49372c84631ed75f36b9b21fc8021270de3c99d83f11a9aefc",
+          "size": 6092
+        }
+      }
+    },
+    "DongResources_11_09.resourceFile": {
+      "compressed_info": {
+        "hash": "30d08997258d6a858fe21c09726b56fe832a506508b2c7274fa01e6ac96bd319",
+        "size": 855426
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_11_09": {
+          "hash": "ba7382473e5a725efefe7d0b0759f302554cef2c04f72a32573a5a428f457b6d",
+          "size": 4898932
+        }
+      }
+    },
+    "CharacterCreation.resourceFile": {
+      "compressed_info": {
+        "hash": "d6c85d99df878bd7727c0bbd40a602f1489141b095f3ec5bba987bdbcf1eb2e5",
+        "size": 8103104
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-CharacterCreation": {
+          "hash": "94beeb0c8f0064efec30746b88779b1c4a89dc69b80369bcf377b8fbaa5911ab",
+          "size": 18021876
+        }
+      }
+    },
+    "Map_06_14.unity3d": {
+      "compressed_info": {
+        "hash": "96d7c99c7c96f3b15a8c3692f0cead78ed3734b57fd5dba6cb488b264521b405",
+        "size": 11745
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_06_14.sharedAssets": {
+          "hash": "51ac898c3c6667dd2f47c948d5fa5cd39a583dad3dfee993b9a7fda0d93e9cdc",
+          "size": 2084
+        },
+        "BuildPlayer-Map_06_14": {
+          "hash": "0c28852b58fa893ab44dcc7c5d940cd970a0bfd0edfb3de9bf2a80281bd85aca",
+          "size": 100013
+        }
+      }
+    },
+    "DongResources_05_06.resourceFile": {
+      "compressed_info": {
+        "hash": "075fb603e27aeb7fafb67c5eda52413aaa970258ddee3599b7d1b7bf9ab986ce",
+        "size": 1291488
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_05_06": {
+          "hash": "e71d1e69ed28a37291046fa611a6740d0586969a7b781143c1454e61f2abd757",
+          "size": 15445567
+        }
+      }
+    },
+    "World_shared_part4.resourceFile": {
+      "compressed_info": {
+        "hash": "887af24ced58a5af1dd521762d72e4f9ab790a3323b6fbbef62d332c697c66e1",
+        "size": 17001857
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-World_shared_part4": {
+          "hash": "b3fe77f7824aa1128b1635140f9fdd588325fa9610fcd16f28585aa33dc5d8c7",
+          "size": 41224571
+        }
+      }
+    },
+    "Map_13_01.unity3d": {
+      "compressed_info": {
+        "hash": "0fe827dc03b31fd2e5b135a642fd4447845a631ff7cb6ffce68b8b191131e59f",
+        "size": 94326
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_13_01.sharedAssets": {
+          "hash": "9c30512ee42fbc54acb79af929da35f6a7142135de522132a2c169fb9c9043ca",
+          "size": 6426
+        },
+        "BuildPlayer-Map_13_01": {
+          "hash": "d944e0bf5c6fac07d01b5477415de7699d0e8e1a478ca37f05f37a45b7beae1c",
+          "size": 688013
+        }
+      }
+    },
+    "Map_05_02.unity3d": {
+      "compressed_info": {
+        "hash": "099dd39ee1e76227f92a1f2b662114417c2d69e7a327b5c6dc54a018d9a7bc47",
+        "size": 251326
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_05_02.sharedAssets": {
+          "hash": "04938c7a240a674c3f2a436b5f5ed1fc3bcddfdb58cc8d1ee91ffc70c1b2cf95",
+          "size": 12021
+        },
+        "BuildPlayer-Map_05_02": {
+          "hash": "864acff6143069316e8aea81c0a2b0d8c128a8d5ee06dd6a5e490a2f2ca5a1b1",
+          "size": 2609925
+        }
+      }
+    },
+    "Map_17_14.unity3d": {
+      "compressed_info": {
+        "hash": "f35d809e0c99e808db8a35f0b634cd6efb9691097fb7166a65a98fb0ee380485",
+        "size": 63178
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_17_14.sharedAssets": {
+          "hash": "5577cc017c37d042dfc5688c421e6deae610b1ee3d08e824119396e4a0a091e8",
+          "size": 5159
+        },
+        "BuildPlayer-Map_17_14": {
+          "hash": "64ecdfcd8acb3a6492efda57052394d53b45d17aab98857820fdf87f83fb3788",
+          "size": 549879
+        }
+      }
+    },
+    "DongResources_03_01.resourceFile": {
+      "compressed_info": {
+        "hash": "43e0efacc8415626b78c685ff1ac3a17f2ddfa4efce53e0072537a139cb4faeb",
+        "size": 25678
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_03_01": {
+          "hash": "ccbaef4c885e4a49c1aa67bdad5033f0446747de46e9dd17fbfe4ade35448305",
+          "size": 1225611
+        }
+      }
+    },
+    "Map_13_04.unity3d": {
+      "compressed_info": {
+        "hash": "217ac902904f0b3225b8cbf5f2012eb23ad0704cf7ec9731360bc919e705a219",
+        "size": 7753
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_13_04": {
+          "hash": "bbcac27c99bb1f1c2378ca4e98562631c4cdb7a7cfbe5d993ac32ca5a4f1c0d2",
+          "size": 54770
+        },
+        "BuildPlayer-Map_13_04.sharedAssets": {
+          "hash": "65a53d40e3452def96d718d8f8b7e53d400b6f03a76999a71cd40c225aabb925",
+          "size": 1010
+        }
+      }
+    },
+    "DongResources_11_04.resourceFile": {
+      "compressed_info": {
+        "hash": "06d1a4ae9c77f8ebe36b4d76ce9d3794f30ff3287ac13f7a5a1d8313311d6504",
+        "size": 14383
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_11_04": {
+          "hash": "0a23f3931204292b614acdf9ebe855efee32a042218a06ae8e8ca46e408f915d",
+          "size": 1226450
+        }
+      }
+    },
+    "DongResources_12_04.resourceFile": {
+      "compressed_info": {
+        "hash": "e37b88ee2ec71f18afb693d0c52275645fd728edc1ed556adab67614419e190c",
+        "size": 14958
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_12_04": {
+          "hash": "755ae898ec73c7765aa653e6916c277a0b86350638142e90882e46d1b640239d",
+          "size": 1226450
+        }
+      }
+    },
+    "Map_17_13.unity3d": {
+      "compressed_info": {
+        "hash": "6218f78cd18fffb9cd838b20134b124cd4d505b51543184c190720a0fb2cee6d",
+        "size": 124685
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_17_13.sharedAssets": {
+          "hash": "6fd74f08095aaa92cb6c06e9c4d902785ac7b24474b95c676603dc89ab26e936",
+          "size": 6487
+        },
+        "BuildPlayer-Map_17_13": {
+          "hash": "4ec0ad43642941da400fefa0e0cb1ec24df32ea6453b3a244e104d33274239fd",
+          "size": 1178719
+        }
+      }
+    },
+    "DongResources_14_12.resourceFile": {
+      "compressed_info": {
+        "hash": "d22ff8ffbdaf7e81389d42eb1258908e4035a676ea398a9894df1822249d4247",
+        "size": 264949
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_14_12": {
+          "hash": "2b24d3ea0457f62c011940acdb3dc67dd063bc5b4c629850482ab6d95b39a437",
+          "size": 4122686
+        }
+      }
+    },
+    "DongResources_12_09.resourceFile": {
+      "compressed_info": {
+        "hash": "9ae1d7376fa8b24e81a641275df3ec17411fe38663b557359df4055667ab1309",
+        "size": 1236087
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_12_09": {
+          "hash": "7f8ff1c0a1904aec509aeaa79619be03f9271ae8a0ce0ba93de37c8eb275b757",
+          "size": 7022043
+        }
+      }
+    },
+    "DongResources_10_10.resourceFile": {
+      "compressed_info": {
+        "hash": "61c49d25244493ece20295678dcf921c10d4262c9274be3379f5bb41444fa494",
+        "size": 4806733
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_10_10": {
+          "hash": "728b4343b3a173b977561ae606df155ecb7c4c696145fe10b619edd7015ad498",
+          "size": 22530929
+        }
+      }
+    },
+    "DongResources_12_01.resourceFile": {
+      "compressed_info": {
+        "hash": "9923aead4c4553018da8098d1f72200f2cc23bd4974d4c9daae13b21a692beac",
+        "size": 2339900
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_12_01": {
+          "hash": "0a5adace9a90a4f34130f7a33bd31f39bc313f7f196e8c99f4bbc29dcb80d7d5",
+          "size": 12896654
+        }
+      }
+    },
+    "DongResources_11_03.resourceFile": {
+      "compressed_info": {
+        "hash": "89cffc5d615ba5f5cd3c29a65d4fac98f160398a4bee84322121fda7f58c9a83",
+        "size": 15127
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_11_03": {
+          "hash": "53a8b8038a2f3053bfa40192b46672980d5077d9ac91ee0c055aebe8cbfe6545",
+          "size": 1226426
+        }
+      }
+    },
+    "Map_06_05.unity3d": {
+      "compressed_info": {
+        "hash": "3886511d7b2c7ce1d972270e910e0d6816fb9dfafd099152e1d5783d2fabf740",
+        "size": 156139
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_06_05.sharedAssets": {
+          "hash": "3b8bb042647601f6abf94593c80229e26977eae05e30064a467d87406c61f9f7",
+          "size": 7453
+        },
+        "BuildPlayer-Map_06_05": {
+          "hash": "4d5a4d91922f29014a98e2be30c2180a0e6276a1df0643d07c37f76612af5123",
+          "size": 1760932
+        }
+      }
+    },
+    "Map_00_00.unity3d": {
+      "compressed_info": {
+        "hash": "47612b15c1b10f1098f22f946e148956ab28338c7b8dbea5c6fb643cbdf8c803",
+        "size": 3346
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_00_00": {
+          "hash": "af2df4aa008eba1273b629b0cc31461abdfb4aaff66dc4356b6c3db8d044c7c9",
+          "size": 37353
+        },
+        "BuildPlayer-Map_00_00.sharedAssets": {
+          "hash": "0ac954733f21125341bd3c7af2c98266037c11919f343587e850fd1544dab9e7",
+          "size": 734
+        }
+      }
+    },
+    "Map_08_05.unity3d": {
+      "compressed_info": {
+        "hash": "59feeaaa2ba334fbe9c2981c3cf62448404aaf081419a853a4b715cdd954ef0b",
+        "size": 151122
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_08_05": {
+          "hash": "2fd18d4e6092341770cf4b7c9135c98db69ea4893859be4f500b012a0a6f4931",
+          "size": 849056
+        },
+        "BuildPlayer-Map_08_05.sharedAssets": {
+          "hash": "48d281848774bd98f948f7e6402a8fba27da9f51d984204a975bb9024021f305",
+          "size": 907
+        }
+      }
+    },
+    "Map_03_04.unity3d": {
+      "compressed_info": {
+        "hash": "bafb53755d70cb81810bba5a40a3500b6c6de181868fc218e7a62c4435ff30c9",
+        "size": 114084
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_03_04.sharedAssets": {
+          "hash": "7ec74e57187a6a45b37109661894c0855d11be00f20a0422041bd4985c37d26b",
+          "size": 9077
+        },
+        "BuildPlayer-Map_03_04": {
+          "hash": "834d3cfc83dbabfc8d23ffe37ab876dd5bd7c650765c1fc05de983a870fca4ad",
+          "size": 1159059
+        }
+      }
+    },
+    "DongResources_15_14.resourceFile": {
+      "compressed_info": {
+        "hash": "7df101f9325add113f5f376bdc48107b04bdacb50070f152f70c3cda88e7fb83",
+        "size": 2055968
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_15_14": {
+          "hash": "14450a15c28e4e3d163d93d1ba0734cbfe118b08c489d47f5a40c71edc4f02ab",
+          "size": 11914528
+        }
+      }
+    },
+    "Map_19_14.unity3d": {
+      "compressed_info": {
+        "hash": "1ff8d257e1588723278d73f41eac281bc9c1e50f386105785aa34788c3550118",
+        "size": 65392
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_19_14.sharedAssets": {
+          "hash": "2431d0c69743b1de7b9762e7bef16751a476e19e1e176cb356fce6bd02dd1e95",
+          "size": 1311
+        },
+        "BuildPlayer-Map_19_14": {
+          "hash": "6b20bb8d54da799688e5fdeaf53fa30fefdaf084a5d496a777a5cd87ed52f36a",
+          "size": 286847
+        }
+      }
+    },
+    "Map_02_01.unity3d": {
+      "compressed_info": {
+        "hash": "ab8e9d2421f0c985d0b5cd491499382852554828c250474a7f04b556e309b31e",
+        "size": 63840
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_02_01": {
+          "hash": "34c11435f95d5de5968a2e9207e48631f0481630a4393f783d8eed6f66bfb221",
+          "size": 368750
+        },
+        "BuildPlayer-Map_02_01.sharedAssets": {
+          "hash": "a487735e3d61939528f637a8704b6e1d96af699b14387a7dd26747009f52ba73",
+          "size": 1160
+        }
+      }
+    },
+    "DongResources_09_07.resourceFile": {
+      "compressed_info": {
+        "hash": "abe70e0c8d1065467daaa9d6045ccd943c618c5c7f6084aefb202f34b122f9d6",
+        "size": 2675360
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_09_07": {
+          "hash": "15ae22fa491d2be034adad32ad1e754659bd1f7906e29798fffc68c8b4ced2df",
+          "size": 13483099
+        }
+      }
+    },
+    "Map_19_13.unity3d": {
+      "compressed_info": {
+        "hash": "80ad0f5e2121e4f44f08da2e89fe936b96e320e99673748c87b23b93fc1893f8",
+        "size": 33679
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_19_13.sharedAssets": {
+          "hash": "90e214fc4f9a9777f5090845584d1514540856258e5e6b572497ea033da703d9",
+          "size": 471
+        },
+        "BuildPlayer-Map_19_13": {
+          "hash": "1039df75df56db3fce96d2115888db390b588d34fe4283f21bfc51ea30451361",
+          "size": 168519
+        }
+      }
+    },
+    "Map_13_15.unity3d": {
+      "compressed_info": {
+        "hash": "31aa89a4ef3c303990fe5a160e0c3911a2ae844284af695d24345a11c14e8069",
+        "size": 45420
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_13_15": {
+          "hash": "ed3960a9eebc6d391945ab6159a8f40b39f52028c180b534d6a25a572c98b3a3",
+          "size": 418653
+        },
+        "BuildPlayer-Map_13_15.sharedAssets": {
+          "hash": "cedd4151d6e955a67d91575dabb0830c7b63b37d17c97c6c09df16c2f2be0edc",
+          "size": 3301
+        }
+      }
+    },
+    "DongResources_01_11.resourceFile": {
+      "compressed_info": {
+        "hash": "de771e65f8a3bbf1e5cac3570f405d6da96c4dc9c94fc8263582fc15fbf72c00",
+        "size": 277380
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_01_11": {
+          "hash": "dd520db3b031483a3fac5029016837ce7652789d45ed05ebcb52541d57a70a75",
+          "size": 1579494
+        }
+      }
+    },
+    "DongResources_15_01.resourceFile": {
+      "compressed_info": {
+        "hash": "2d20fcaccc842edd0652c1556d721aa9299f9bdbc62e7163d8fedbecd299dcf7",
+        "size": 14303
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_15_01": {
+          "hash": "13986b7d801e6cea07581b48ee62579834836b7e3541f49f241560e67156bf4e",
+          "size": 1226446
+        }
+      }
+    },
+    "World_shared_part3.resourceFile": {
+      "compressed_info": {
+        "hash": "497256c8fa55b4aaaff2960154a3f761c711941204b43a90f29aede9dc1e76eb",
+        "size": 20014483
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-World_shared_part3": {
+          "hash": "40ab9a27e23460d03f661ac611e531a9f721e6da4070559c4b1bf6456ecd7b49",
+          "size": 44701914
+        }
+      }
+    },
+    "Map_03_03.unity3d": {
+      "compressed_info": {
+        "hash": "da54ef978e264bbcdf4e1d0ec5618fe3075e20fb0cb49e2f4ca3b7828a0ce604",
+        "size": 35205
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_03_03.sharedAssets": {
+          "hash": "564bbdf0b8c0c8295f264a638a8da4bc6241d8872db7e2d3c34f2f2bfb235438",
+          "size": 1003
+        },
+        "BuildPlayer-Map_03_03": {
+          "hash": "7571e48abbe07432638a5c35d65be57603812c10262bc5773e2b1986ddc0fd45",
+          "size": 296193
+        }
+      }
+    },
+    "Map_15_15.unity3d": {
+      "compressed_info": {
+        "hash": "e9ea72cd061b7bf395d9f0c871b7928982d9e4480d12c1bd790a1bde7106199d",
+        "size": 151105
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_15_15": {
+          "hash": "0956691002b5537c2aa686cc40a822b7c769d65f3f6ace0957a0a1d5ce9ac107",
+          "size": 1485723
+        },
+        "BuildPlayer-Map_15_15.sharedAssets": {
+          "hash": "d71d4e7aa7bdd06d6f05dba706177933c91e96a5ab544fb45b813009bd35ff3f",
+          "size": 3013
+        }
+      }
+    },
+    "DongResources_14_07.resourceFile": {
+      "compressed_info": {
+        "hash": "5a669d8793f620a95ece4d7dbbacd56a71979c1d2d6db4b2f7af9389637d5b37",
+        "size": 1708245
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_14_07": {
+          "hash": "07e598f5f0bca0870c43f1eac5677c0fd503954a8d4753d5317bc14a74b9a7cb",
+          "size": 4983351
+        }
+      }
+    },
+    "Map_12_15.unity3d": {
+      "compressed_info": {
+        "hash": "aef7e1a5229b4f8703773dadcd9bfb8c0c34d0b50cc848d02732e4a851c0c332",
+        "size": 53768
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_12_15.sharedAssets": {
+          "hash": "5e8451ac53796e96e7f48ceccca3ef0414754d083ef5f8b645afef637337b8cb",
+          "size": 4469
+        },
+        "BuildPlayer-Map_12_15": {
+          "hash": "93789f87e38b7cd66e4d9a0fee2bad8a127656f78ad0f5b440981be6605f81a9",
+          "size": 517523
+        }
+      }
+    },
+    "Map_12_13.unity3d": {
+      "compressed_info": {
+        "hash": "a24a212dd039a9511c951abd14b214c75b5bf8231c356fdaf41ef0559b49d3ad",
+        "size": 153826
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_12_13": {
+          "hash": "cc455cc68a2da105246049c695b6d04dd48ca91cf3967925dc591e266b365f58",
+          "size": 1480043
+        },
+        "BuildPlayer-Map_12_13.sharedAssets": {
+          "hash": "47b81de6b5df5cccda95bc607a9a4e8be79f32703d9e66de1d1d35c4babc1687",
+          "size": 3005
+        }
+      }
+    },
+    "Map_15_02.unity3d": {
+      "compressed_info": {
+        "hash": "16a791b23b4f0518f329af301dfc8f2255a9bf5e6e56df02c6f5fa298d73d950",
+        "size": 7749
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_15_02": {
+          "hash": "37a10643271937ef1f7892e7cd0296afeb653e3e8b0620242d76abbdbab204d8",
+          "size": 54778
+        },
+        "BuildPlayer-Map_15_02.sharedAssets": {
+          "hash": "401d26c2c5df80d7c64a232402bff99b704670e0bd0e43614d34cf45fe8c5d60",
+          "size": 1034
+        }
+      }
+    },
+    "Map_04_05.unity3d": {
+      "compressed_info": {
+        "hash": "0f174b4bc4bdd4daf90418dba1bac9ac6d95cd08c48b6efb25402aed48c800d4",
+        "size": 170864
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_04_05.sharedAssets": {
+          "hash": "182665afec25553a1edc1e06c0424cd82f92c14cdef3579744a1a71631a07fe1",
+          "size": 11717
+        },
+        "BuildPlayer-Map_04_05": {
+          "hash": "574f0c20477843d982596488acd14ce448e520ded6b86572309ad11477490b34",
+          "size": 1680568
+        }
+      }
+    },
+    "Map_07_10.unity3d": {
+      "compressed_info": {
+        "hash": "811ed640681f8dddd3d775d682d9abce3c3a5d71ccfa1aa046dbf3111f767d1d",
+        "size": 6829
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_07_10": {
+          "hash": "6da64c659f90f262faa1ce6d972cc3a8cd19221b3a22e2282937e4c5ab93c755",
+          "size": 53327
+        },
+        "BuildPlayer-Map_07_10.sharedAssets": {
+          "hash": "502a5d663ef08baa429617fa75fcb54c4fff158bd1e115654615d1629067d81d",
+          "size": 1003
+        }
+      }
+    },
+    "Map_12_03.unity3d": {
+      "compressed_info": {
+        "hash": "01f3b265ac33c6ec6b3c5cb07a0147c2e926f838215d4a9510237d530acea16a",
+        "size": 127480
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_12_03": {
+          "hash": "0c066199cfd4c87a236c0bf3aa1ef648196397f26936686555a807170a78d98a",
+          "size": 1104250
+        },
+        "BuildPlayer-Map_12_03.sharedAssets": {
+          "hash": "d79f264a0a4047642ca1672695b2501a2d7396ae15d7c2bc22e8779af4f6e98e",
+          "size": 11010
+        }
+      }
+    },
+    "Map_06_09.unity3d": {
+      "compressed_info": {
+        "hash": "c055dfced6c8219739480661c9a4318038747f8632cc9db19d52f24e0dca4a3d",
+        "size": 12937
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_06_09.sharedAssets": {
+          "hash": "eb0d63f172efc2389188b7efac66c8200f23a61364b4ce1cc7665aa29d8166d1",
+          "size": 1316
+        },
+        "BuildPlayer-Map_06_09": {
+          "hash": "2f73764c22b52e00c011f06faa97d2bc7ce95e6042a760b900dece6e9b2b47ad",
+          "size": 73849
+        }
+      }
+    },
+    "Map_17_15.unity3d": {
+      "compressed_info": {
+        "hash": "a1f87f57a3928d6f171703d252aff2b32a964e37b4b691818d3f66b82cedc60b",
+        "size": 37473
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_17_15.sharedAssets": {
+          "hash": "3ef6c8ced465c8e349e350fa35f8f02fc81a036f69001213da7dadb7fb7807f3",
+          "size": 799
+        },
+        "BuildPlayer-Map_17_15": {
+          "hash": "9caa0bf59f664575ce9a070e44870d23d896b128b53192e1573e4a14cd1ffe2c",
+          "size": 203115
+        }
+      }
+    },
+    "Map_22_12.unity3d": {
+      "compressed_info": {
+        "hash": "87f5a1531466d7a4ae45a84cf1d1aee8849436ac30ffdf4298ae0d72835f02f5",
+        "size": 37533
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_22_12": {
+          "hash": "b19f28e54cb65d816d0e2647356061be65952541c21f407c549ede3aac53b785",
+          "size": 203111
+        },
+        "BuildPlayer-Map_22_12.sharedAssets": {
+          "hash": "9140be323b7f0aa39d8dd78622f23ded025826d312af618ef0a056cdf444a975",
+          "size": 799
+        }
+      }
+    },
+    "DongResources_12_08.resourceFile": {
+      "compressed_info": {
+        "hash": "d429476a56abe8c24e202409f622d5abc096c3649b2fea96973b0155184e77ea",
+        "size": 474112
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_12_08": {
+          "hash": "d3f5cfa2416430a39962ba5bd30943a5b1f61351090dab1042af999c40192eda",
+          "size": 4200543
+        }
+      }
+    },
+    "DongResources_07_10.resourceFile": {
+      "compressed_info": {
+        "hash": "2479b18f4ff8b0c93def90657a73a30b9aec91c892d29bdb9c8512c5878e982c",
+        "size": 306309
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_07_10": {
+          "hash": "e53e1944dd10fe286fb6ab14467f29fb947f0c213dcc70f115908537ccf85743",
+          "size": 2087733
+        }
+      }
+    },
+    "DongResources_08_06.resourceFile": {
+      "compressed_info": {
+        "hash": "093f3e2d9404503e80c81e9521c88b62e831fa91814ff2441512c1dd2be2d715",
+        "size": 2962417
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_08_06": {
+          "hash": "e485e29446a973d829ebf68b96857af7a66242833d52edc19eb14896d65daf88",
+          "size": 13163127
+        }
+      }
+    },
+    "DongResources_08_12.resourceFile": {
+      "compressed_info": {
+        "hash": "662041edc73b28e3599a1aad862ce16d4cc07e117ab180f11ffcd10eda2055af",
+        "size": 503309
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_08_12": {
+          "hash": "d667667f88a29e3bb46237e7b6c03f07b3004072f5cd37ef7b4adf9b2fb55594",
+          "size": 1969023
+        }
+      }
+    },
+    "DongResources_10_11.resourceFile": {
+      "compressed_info": {
+        "hash": "665e1242db9fefaa11e0b184e0187df35c90fb45b4d519088771ca5b1ee1d159",
+        "size": 951172
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_10_11": {
+          "hash": "ce8b53ac6dc67a612fe7cec1178e1173f8316a9c2fa1d9cebd2361429d97b2d0",
+          "size": 9016163
+        }
+      }
+    },
+    "Map_11_10.unity3d": {
+      "compressed_info": {
+        "hash": "0cc61e8f7761d74d33184acd5e06fd63f1b004188c64cebfdf3eb9e67f921fa8",
+        "size": 80167
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_11_10": {
+          "hash": "7045000a547c9fba5bd7387e34e8599bcab23923f71ca08d49e8e2280629214e",
+          "size": 684142
+        },
+        "BuildPlayer-Map_11_10.sharedAssets": {
+          "hash": "843a71f2ce19217a7403c64a6559ad9a01d85d3a2433ce40855c05e6010dc901",
+          "size": 3972
+        }
+      }
+    },
+    "DongResources_03_06.resourceFile": {
+      "compressed_info": {
+        "hash": "5595165cee49b87e2cef146c498798010ab32a74d2ccde6b588f64903c64e95b",
+        "size": 3053405
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_03_06": {
+          "hash": "f3e42dfd1d2ec13ed77c452591f0713501124c8d10c34c3b672487cf1831f781",
+          "size": 15151497
+        }
+      }
+    },
+    "CharTexture.resourceFile": {
+      "compressed_info": {
+        "hash": "077dd1091671e8c997eedbb31b248ee0bdde99e50a7e8eca66027d288eeff214",
+        "size": 14285357
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-CharTexture": {
+          "hash": "282bcb9b66519f04efd3dab88564ad31ca713040d8e222724e179930c552634c",
+          "size": 53490287
+        }
+      }
+    },
+    "Map_16_12.unity3d": {
+      "compressed_info": {
+        "hash": "a91c4ea5ef5d7993d17cc85fb5d3c77e209dedf14d73f190bc12ea8e72c76f7d",
+        "size": 34451
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_16_12.sharedAssets": {
+          "hash": "f5df5a139192d50c93f5684152812e16243d4294dd00061fb195ce52072146c1",
+          "size": 591
+        },
+        "BuildPlayer-Map_16_12": {
+          "hash": "b24b2e6221d0780bb96e824d0a25ef6ec648c85543449fdb229d8dcfca8bb283",
+          "size": 180931
+        }
+      }
+    },
+    "Nano.resourceFile": {
+      "compressed_info": {
+        "hash": "b9e021fcbc9e00d73d985257d2addec0822077993a420bb315c6f670eb83202c",
+        "size": 24554271
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-Nano": {
+          "hash": "ad98e953b514f8f7f1847f08adf234eb0c8528dbed89b07e2411dbb27252a011",
+          "size": 64139896
+        }
+      }
+    },
+    "DongResources_12_15.resourceFile": {
+      "compressed_info": {
+        "hash": "137302f6082eb37c22dcee98fa25d4faeae8e501426dafc007051fe62ddf8710",
+        "size": 4595417
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-DongResources_12_15": {
+          "hash": "3c4bc97aaa3f478c95b8e0842fc6dca2f324247f3768451709dfe2259f75aa5c",
+          "size": 16365379
+        }
+      }
+    },
+    "Map_01_11.unity3d": {
+      "compressed_info": {
+        "hash": "a2197372487b6afcdc5e08cb547a04b649756aa71ccec893c65f916c29ff1117",
+        "size": 30649
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_01_11": {
+          "hash": "cb67ac2ddb4104dfe9145b0c98cf2f0bd04419b5cb73de2343ca019a6af4c3f9",
+          "size": 200613
+        },
+        "BuildPlayer-Map_01_11.sharedAssets": {
+          "hash": "6c93b16e6e7127f385d7eabc795c66f639d19abca06e52161c3c5c870266226a",
+          "size": 1370
+        }
+      }
+    },
+    "Map_13_10.unity3d": {
+      "compressed_info": {
+        "hash": "89264fc1ebf0a9c313e3a4d6fd95dd62949192fa3b2081eb0f34aa8ee5c44d5d",
+        "size": 14920
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_13_10.sharedAssets": {
+          "hash": "32efd7a57045bb59ec27fc60b33c425114598f98c120606edb3300cd65e77035",
+          "size": 1242
+        },
+        "BuildPlayer-Map_13_10": {
+          "hash": "3909667cec20a9e3ba3aa4a5557c3cacface4074dae0cc4d0887dfd2af52c02f",
+          "size": 136841
+        }
+      }
+    },
+    "Map_03_01.unity3d": {
+      "compressed_info": {
+        "hash": "fec2e987b1b3209f2e71e47a22e2ef3088b393f364084940d5c2b5cb1df66416",
+        "size": 17625
+      },
+      "uncompressed_info": {
+        "BuildPlayer-Map_03_01": {
+          "hash": "31c64af9c5df9429c67c79ddca267a1b683fa39b8bb20a7890557342fa318676",
+          "size": 91008
+        },
+        "BuildPlayer-Map_03_01.sharedAssets": {
+          "hash": "5f00be65a8def914cd27815a039f671911d6b1fdf514948a069a6c68effe753a",
+          "size": 891
+        }
+      }
+    },
+    "LobbyMusic.resourceFile": {
+      "compressed_info": {
+        "hash": "35002342b490964f0e79317e5aed63ad9f0d61dd79b21bc373dddeeb59de8704",
+        "size": 1044805
+      },
+      "uncompressed_info": {
+        "CustomAssetBundle-LobbyMusic": {
+          "hash": "f15d4d0a16ab48d906164db58234ef25633becf91f44b3ca564184551896232e",
+          "size": 1055351
+        }
+      }
+    }
+  }
+}

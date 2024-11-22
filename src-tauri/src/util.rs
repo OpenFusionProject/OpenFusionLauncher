@@ -3,12 +3,10 @@
 use std::path::PathBuf;
 
 use dns_lookup::lookup_host;
+use ffbuildtool::Version;
 use log::*;
 
-use crate::{
-    state::{get_app_statics, Version},
-    Result,
-};
+use crate::{state::get_app_statics, Result};
 
 // for serde
 pub fn true_fn() -> bool {
@@ -58,8 +56,8 @@ pub fn resolve_server_addr(addr: &str) -> Result<String> {
 }
 
 pub fn get_cache_dir_for_version(version: &Version) -> Result<PathBuf> {
-    let mut cache_dir = get_app_statics().ff_cache_dir.clone();
-    cache_dir.push(&version.name);
-    std::fs::create_dir_all(&cache_dir)?;
-    Ok(cache_dir)
+    let cache_dir = get_app_statics().ff_cache_dir.clone();
+    let build_dir = cache_dir.join(version.get_uuid().to_string());
+    std::fs::create_dir_all(&build_dir)?;
+    Ok(build_dir)
 }

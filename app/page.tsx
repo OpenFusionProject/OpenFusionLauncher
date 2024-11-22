@@ -135,7 +135,7 @@ export default function Home() {
         alertSuccess(text);
       }
     } catch (e: unknown) {
-      console.log("Failed to import (" + e + ")");
+      alertError("Failed to import from OpenFusionClient (" + e + ")");
     }
     stopLoading("import");
   };
@@ -308,6 +308,7 @@ export default function Home() {
             <Col xs={8} className="mb-2">
               <ServerList
                 servers={servers}
+                versions={versions}
                 selectedServer={selectedServer}
                 setSelectedServer={setSelectedServer}
                 onConnect={(serverUuid) => {

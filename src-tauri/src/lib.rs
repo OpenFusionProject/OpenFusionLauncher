@@ -59,11 +59,11 @@ async fn prep_launch(
             .get_entry(uuid)
             .ok_or(format!("Server {} not found", uuid))?;
 
-        let version_name = &server.version;
+        let version_uuid = Uuid::parse_str(&server.version)?;
         let version = state
             .versions
-            .get_entry(version_name)
-            .ok_or(format!("Version {} not found", version_name))?;
+            .get_entry(version_uuid)
+            .ok_or(format!("Version {} not found", version_uuid))?;
 
         let cache_dir = util::get_cache_dir_for_version(version)?;
         unsafe {
@@ -71,7 +71,7 @@ async fn prep_launch(
         }
 
         let asset_url = version.get_asset_url();
-        let main_url = format!("{}main.unity3d", asset_url);
+        let main_url = format!("{}/main.unity3d", asset_url);
         let app_statics = get_app_statics();
         let working_dir = &app_statics.resource_dir;
         let mut ffrunner_path = working_dir.clone();
@@ -82,7 +82,7 @@ async fn prep_launch(
         cmd.current_dir(working_dir)
             .args(["-m", &main_url])
             .args(["-a", &util::resolve_server_addr(&server.ip)?])
-            .args(["--asseturl", &asset_url])
+            .args(["--asseturl", &format!("{}/", asset_url)])
             .args(["-l", log_file_path.to_str().ok_or("Invalid log file path")?]);
 
         if let Some(endpoint_host) = &server.endpoint {
@@ -140,9 +140,9 @@ async fn import_from_openfusionclient(app_handle: tauri::AppHandle) -> CommandRe
 #[tauri::command]
 async fn reload_state(app_handle: tauri::AppHandle) -> bool {
     debug!("reload_state");
-    let first_run = !get_app_statics().app_data_dir.exists();
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
+    let first_run = !get_app_statics().app_data_dir.exists();
     *state = AppState::load();
     state.save();
     first_run
@@ -159,7 +159,8 @@ async fn add_server(
         let mut state = state.lock().await;
 
         // validate the version
-        if state.versions.get_entry(&details.version).is_none() {
+        let version_uuid = Uuid::parse_str(&details.version)?;
+        if state.versions.get_entry(version_uuid).is_none() {
             return Err(format!("Version {} not found", details.version).into());
         }
 

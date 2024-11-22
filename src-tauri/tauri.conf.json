@@ -38,6 +38,7 @@
     ],
     "resources": {
       "../resources/defaults/*": "defaults/",
+      "../resources/defaults/versions/*": "defaults/versions/",
       "../resources/assets/img/*": "assets/img/",
       "../resources/ffrunner/ffrunner.exe": "ffrunner.exe",
       "../resources/ffrunner/loader/*": "loader/",

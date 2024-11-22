@@ -1,5 +1,6 @@
 use std::{path::PathBuf, process::Command, sync::OnceLock};
 
+use ffbuildtool::Version;
 use log::*;
 use serde::{Deserialize, Serialize};
 use tauri::{path::BaseDirectory, Manager};
@@ -7,7 +8,6 @@ use uuid::Uuid;
 
 use crate::{util, NewServerDetails, Result};
 
-const CDN_URL: &str = "http://cdn.dexlabs.systems/ff/big";
 const OPENFUSIONCLIENT_PATH: &str = "OpenFusionClient";
 
 static APP_STATICS: OnceLock<AppStatics> = OnceLock::new();
@@ -29,7 +29,6 @@ pub struct AppStatics {
     pub resource_dir: PathBuf,
     pub ff_cache_dir: PathBuf,
     pub ffrunner_log_path: PathBuf,
-    cdn_url: String,
 }
 impl AppStatics {
     fn load(app: &mut tauri::App) -> Self {
@@ -49,7 +48,6 @@ impl AppStatics {
             resource_dir,
             ff_cache_dir,
             ffrunner_log_path,
-            cdn_url: CDN_URL.to_string(),
         }
     }
 
@@ -70,7 +68,13 @@ impl AppState {
     pub fn load() -> Self {
         let config = Config::new();
         let versions = Versions::new();
-        let servers = Servers::new();
+        let mut servers = Servers::new();
+
+        // Old server entries use the version description instead of the UUID.
+        // This migrates them to use the UUID instead.
+        // The fixed entries will be written out on save.
+        Self::fixup_server_versions(&mut servers, &versions);
+
         Self {
             config,
             versions,
@@ -96,9 +100,6 @@ impl AppState {
         if let Err(e) = self.config.save() {
             warn!("Failed to save config: {}", e);
         }
-        if let Err(e) = self.versions.save() {
-            warn!("Failed to save versions: {}", e);
-        }
         if let Err(e) = self.servers.save() {
             warn!("Failed to save servers: {}", e);
         }
@@ -113,13 +114,40 @@ impl AppState {
         }
     }
 
-    pub fn import_versions(&mut self) -> Result<usize> {
-        let imported_versions = Versions::load_from_openfusionclient()?;
-        if let Some(imported_versions) = imported_versions {
-            Ok(self.versions.merge(&imported_versions))
-        } else {
-            Ok(0)
+    pub fn fixup_server_versions(servers: &mut Servers, versions: &Versions) {
+        for server in &mut servers.servers {
+            if let Some(version) = versions.get_entry_by_description(&server.version) {
+                server.version = version.get_uuid().to_string();
+            }
         }
+    }
+
+    pub fn import_versions(&mut self) -> Result<usize> {
+        let versions = &mut self.versions.versions;
+        let legacy_versions = Versions::load_from_openfusionclient()?;
+        let to_import = Versions::calculate_merge(versions, legacy_versions);
+
+        let versions_path = get_app_statics().app_data_dir.join("versions");
+        if !versions_path.exists() {
+            std::fs::create_dir_all(&versions_path)?;
+        }
+
+        let mut num_imported = 0;
+        for version in to_import {
+            // Export the version to the versions folder
+            let version_path = versions_path.join(format!("{}.json", version.get_uuid()));
+            if let Err(e) = version.export_manifest(&version_path.to_string_lossy()) {
+                warn!("Failed to imported legacy version: {}", e);
+                continue;
+            }
+            debug!(
+                "Imported legacy version to {}",
+                version_path.to_string_lossy()
+            );
+            versions.push(version);
+            num_imported += 1;
+        }
+        Ok(num_imported)
     }
 }
 
@@ -182,18 +210,30 @@ impl Config {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct Version {
-    pub name: String,
+#[derive(Debug, Deserialize)]
+struct LegacyVersions {
+    versions: Vec<LegacyVersion>,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+struct LegacyVersion {
+    name: String,
     url: String,
 }
-impl Version {
-    pub fn get_asset_url(&self) -> String {
-        if self.url.ends_with('/') {
-            self.url.clone()
-        } else {
-            format!("{}/", self.url)
+impl LegacyVersion {
+    fn get_asset_url(&self) -> String {
+        let mut url = self.url.clone();
+        if url.ends_with('/') {
+            url.pop();
         }
+        url
+    }
+}
+impl From<LegacyVersion> for Version {
+    fn from(version: LegacyVersion) -> Self {
+        let asset_url = version.get_asset_url();
+        let description = version.name;
+        Version::build_barebones(&asset_url, Some(&description))
     }
 }
 
@@ -203,63 +243,101 @@ pub struct Versions {
 }
 impl Versions {
     fn new() -> Self {
-        match Self::load() {
-            Ok(versions) => versions,
-            Err(_) => Self::load_default(),
+        let mut versions = Vec::new();
+
+        match Self::load_builtins() {
+            Ok(builtins) => {
+                info!("Loaded {} built-in versions", builtins.len());
+                versions.extend(builtins);
+            }
+            Err(e) => warn!("Failed to load built-in versions: {}", e),
         }
+
+        match Self::load_appdata() {
+            Ok(loaded) => {
+                let to_merge = Self::calculate_merge(&versions, loaded);
+                info!("Loaded {} versions from app data", to_merge.len());
+                versions.extend(to_merge);
+            }
+            Err(e) => warn!("Failed to load versions: {}", e),
+        };
+
+        Self { versions }
     }
 
-    fn load() -> Result<Self> {
-        let versions_path = get_app_statics().app_data_dir.join("versions.json");
-        let versions_str = std::fs::read_to_string(versions_path)?;
-        let versions: Self = serde_json::from_str(&versions_str)?;
+    fn load_internal(path: &str) -> Result<Vec<Version>> {
+        if !std::fs::exists(path)? {
+            return Ok(Vec::new());
+        }
+
+        let files = std::fs::read_dir(path)?;
+        let mut versions = Vec::new();
+        for file in files {
+            let file = file?;
+            let path = file.path();
+            if path.is_file() && path.extension().is_some_and(|ext| ext == "json") {
+                match Version::from_manifest_file(&path.to_string_lossy()) {
+                    Ok(version) => versions.push(version),
+                    Err(e) => {
+                        warn!("Failed to load version: {}", e);
+                    }
+                };
+            }
+        }
         Ok(versions)
     }
 
-    fn load_from_openfusionclient() -> Result<Option<Self>> {
+    fn load_appdata() -> Result<Vec<Version>> {
+        let versions_path = get_app_statics().app_data_dir.join("versions");
+        Self::load_internal(&versions_path.to_string_lossy())
+    }
+
+    fn load_builtins() -> Result<Vec<Version>> {
+        let builtins_path = get_app_statics().resource_dir.join("defaults/versions");
+        Self::load_internal(&builtins_path.to_string_lossy())
+    }
+
+    fn load_from_openfusionclient() -> Result<Vec<Version>> {
         let versions_path = get_app_statics()
             .app_data_dir
             .join("../")
             .join(OPENFUSIONCLIENT_PATH)
             .join("versions.json");
         if !versions_path.exists() {
-            return Ok(None);
+            return Ok(Vec::new());
         }
-        let versions_str = std::fs::read_to_string(versions_path)?;
-        let versions: Self = serde_json::from_str(&versions_str)?;
-        Ok(Some(versions))
+        let legacy_versions: LegacyVersions =
+            serde_json::from_str(&std::fs::read_to_string(versions_path)?)?;
+        let versions: Vec<Version> = legacy_versions
+            .versions
+            .into_iter()
+            .map(Version::from)
+            .collect();
+        Ok(versions)
     }
 
-    fn merge(&mut self, other: &Self) -> usize {
-        let mut count = 0;
-        for version in &other.versions {
-            if !self.versions.iter().any(|v| v.name == version.name) {
-                self.versions.push(version.clone());
-                count += 1;
+    fn calculate_merge(a: &[Version], b: Vec<Version>) -> Vec<Version> {
+        let mut to_merge = Vec::with_capacity(b.len());
+        for version in b {
+            if !a.iter().any(|v| v.get_uuid() == version.get_uuid())
+                && !a
+                    .iter()
+                    .any(|v| v.get_asset_url() == version.get_asset_url())
+            {
+                to_merge.push(version);
             }
         }
-        count
+        to_merge
     }
 
-    fn save(&self) -> Result<()> {
-        let versions_path = get_app_statics().app_data_dir.join("versions.json");
-        let versions_str = serde_json::to_string_pretty(self)?;
-        std::fs::write(versions_path, versions_str)?;
-        Ok(())
+    pub fn get_entry(&self, uuid: Uuid) -> Option<&Version> {
+        self.versions.iter().find(|v| v.get_uuid() == uuid)
     }
 
-    fn load_default() -> Self {
-        info!("Loading default versions");
-        let default_versions_path = get_app_statics()
-            .resource_dir
-            .join("defaults/versions.json");
-        let default_versions_str =
-            std::fs::read_to_string(default_versions_path).expect("Default versions not found");
-        serde_json::from_str(&default_versions_str).expect("Default versions are invalid")
-    }
-
-    pub fn get_entry(&self, name: &str) -> Option<&Version> {
-        self.versions.iter().find(|v| v.name == name)
+    pub fn get_entry_by_description(&self, description: &str) -> Option<&Version> {
+        self.versions
+            .iter()
+            .find(|v| v.get_description() == Some(description))
     }
 }
 
