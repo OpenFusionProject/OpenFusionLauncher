@@ -64,12 +64,8 @@ async fn prep_launch(
             ServerInfo::Simple { version, ip } => (version.clone(), ip.clone()),
             ServerInfo::Endpoint(endpoint_host) => {
                 // Ask the endpoint server for the UUID of the current version
-                let live_version_endpoint = format!("https://{}/version", endpoint_host);
-                let version = util::do_simple_get(&live_version_endpoint).await?;
-                let server_address_endpoint = format!("https://{}/address", endpoint_host);
-                let addr = util::do_simple_get(&server_address_endpoint).await?;
-                let addr = addr.trim().to_string();
-                (version, addr)
+                let api_info = endpoint::get_info(endpoint_host).await?;
+                (api_info.game_version, api_info.login_address)
             }
         };
         let ip = util::resolve_server_addr(&addr)?;
@@ -79,7 +75,7 @@ async fn prep_launch(
             version
         } else if let ServerInfo::Endpoint(endpoint_host) = &server.info {
             // Assume the endpoint server has the version we want; try to fetch it
-            match util::fetch_version_from_endpoint(endpoint_host, version_uuid).await {
+            match endpoint::fetch_version(endpoint_host, version_uuid).await {
                 Ok(version) => {
                     // cache the version manifest
                     if let Err(e) = util::import_versions(vec![version.clone()]) {
