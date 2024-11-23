@@ -50,7 +50,9 @@ fn resolve_host(host: &str) -> Result<String> {
 
 pub fn resolve_server_addr(addr: &str) -> Result<String> {
     let (host, port) = split_addr_port(addr)?;
-    let ip = resolve_host(&host)?;
+    let Ok(ip) = resolve_host(&host) else {
+        return Err(format!("Failed to resolve game server address {}", addr).into());
+    };
     debug!("Resolved {} to {}", host, ip);
     Ok(format!("{}:{}", ip, port))
 }
