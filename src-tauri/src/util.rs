@@ -82,8 +82,10 @@ pub fn import_versions(to_import: Vec<Version>) -> Result<Vec<Version>> {
 }
 
 pub async fn do_simple_get(url: &str) -> Result<String> {
+    debug!("=> GET {}", url);
     let client = reqwest::Client::new();
     let response = client.get(url).send().await?;
     let text = response.text().await?;
+    debug!("<= {}", text);
     Ok(text)
 }

@@ -64,7 +64,9 @@ async fn prep_launch(
             ServerInfo::Simple { version, ip } => (version.clone(), ip.clone()),
             ServerInfo::Endpoint(endpoint_host) => {
                 // Ask the endpoint server for the UUID of the current version
-                let api_info = endpoint::get_info(endpoint_host).await?;
+                let Ok(api_info) = endpoint::get_info(endpoint_host).await else {
+                    return Err("Failed to contact API server".into());
+                };
                 (api_info.game_version, api_info.login_address)
             }
         };
