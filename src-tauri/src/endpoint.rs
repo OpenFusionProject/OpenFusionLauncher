@@ -3,6 +3,7 @@ use reqwest::StatusCode;
 use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
+use log::*;
 
 use crate::util;
 use crate::Error;
@@ -32,8 +33,8 @@ pub struct CookieResponse {
     expires: u64,
 }
 
-fn make_api_error(status: StatusCode, body: &str) -> Error {
-    format!("API error {}: {}", status, body).into()
+fn make_api_error(url: &str, status: StatusCode, body: &str) -> Error {
+    format!("API error {}: {} [{}]", status, body, url).into()
 }
 
 pub async fn get_info(endpoint_host: &str) -> Result<InfoResponse> {
@@ -43,14 +44,15 @@ pub async fn get_info(endpoint_host: &str) -> Result<InfoResponse> {
 }
 
 pub async fn get_token(username: &str, password: &str, endpoint_host: &str) -> Result<String> {
+    debug!("Getting token for {}", username);
     let req = AuthRequest {
         username: username.to_string(),
         password: password.to_string(),
     };
-
+    let url = format!("https://{}/auth", endpoint_host);
     let client = reqwest::Client::new();
     let res = client
-        .post(format!("https://{}/auth", endpoint_host))
+        .post(&url)
         .json(&req)
         .send()
         .await?;
@@ -60,14 +62,16 @@ pub async fn get_token(username: &str, password: &str, endpoint_host: &str) -> R
     if status.is_success() {
         Ok(body)
     } else {
-        Err(make_api_error(status, &body))
+        Err(make_api_error(&url, status, &body))
     }
 }
 
 pub async fn get_cookie(token: &str, endpoint_host: &str) -> Result<String> {
+    debug!("Getting cookie");
+    let url = format!("https://{}/cookie", endpoint_host);
     let client = reqwest::Client::new();
     let res = client
-        .post(format!("https://{}/cookie", endpoint_host))
+        .post(&url)
         .header("Authorization", format!("Bearer {}", token))
         .send()
         .await?;
@@ -75,13 +79,14 @@ pub async fn get_cookie(token: &str, endpoint_host: &str) -> Result<String> {
     let status = res.status();
     let body = res.text().await?;
     if !status.is_success() {
-        return Err(make_api_error(status, &body));
+        return Err(make_api_error(&url, status, &body));
     }
     let cookie: CookieResponse = serde_json::from_str(&body)?;
     Ok(cookie.cookie)
 }
 
 pub async fn fetch_version(endpoint_host: &str, version_uuid: Uuid) -> Result<Version> {
+    debug!("Fetching version {}", version_uuid);
     let version_endpoint = format!("https://{}/versions/{}", endpoint_host, version_uuid);
     let version_json = util::do_simple_get(&version_endpoint).await?;
     let version: Version = serde_json::from_str(&version_json)?;

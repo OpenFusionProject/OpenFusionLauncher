@@ -8,7 +8,7 @@
         {
             "uuid": "b84f6859-f500-41f2-bdfa-8e3746639ee9",
             "description": "OpenFusion Public Server - Academy",
-            "endpoint": "api.academy.dexlabs.systems"
+            "endpoint": "api.dexlabs.systems/academy"
         }
     ],
     "favorites": []

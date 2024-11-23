@@ -74,6 +74,7 @@ async fn prep_launch(
 
         let version_uuid = Uuid::parse_str(&version_str)?;
         let version = if let Some(version) = state.versions.get_entry(version_uuid) {
+            debug!("Using cached version {}", version.get_uuid());
             version
         } else if let ServerInfo::Endpoint(endpoint_host) = &server.info {
             // Assume the endpoint server has the version we want; try to fetch it

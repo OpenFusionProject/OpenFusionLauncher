@@ -44,7 +44,7 @@ const validateAddress = (address: string) => {
   if (addressTrimmed == "") {
     return true; // fine; we have a default
   }
-  
+
   // check for port colon
   const colon_index = addressTrimmed.indexOf(":");
   if (colon_index == -1) {
@@ -53,6 +53,23 @@ const validateAddress = (address: string) => {
     const hostname = addressTrimmed.substring(0, colon_index);
     const port = addressTrimmed.substring(colon_index + 1);
     return validateHostname(hostname) && validatePort(port);
+  }
+}
+
+const validateEndpoint = (endpoint: string) => {
+  const endpointTrimmed = endpoint.trim();
+  if (endpointTrimmed == "") {
+    return false;
+  }
+
+  // check for slash
+  const slash_index = endpointTrimmed.indexOf("/");
+  if (slash_index == -1) {
+    return validateHostname(endpointTrimmed);
+  } else {
+    const hostname = endpointTrimmed.substring(0, slash_index);
+    const path = endpointTrimmed.substring(slash_index);
+    return validateHostname(hostname) && path != "" && !path.endsWith("/");
   }
 }
 
@@ -174,7 +191,7 @@ export default function EditServerModal({
                   value={endpoint}
                   onChange={(e) => setEndpoint(e.target.value)}
                   placeholder="api.myserver.xyz"
-                  isInvalid={!validateHostname(endpoint)}
+                  isInvalid={!validateEndpoint(endpoint)}
                 />
               </Form.Group>
             </Tab>
@@ -201,7 +218,7 @@ export default function EditServerModal({
               return validateAddress(ip) && version != "";
             }
             if (tab == TAB_ENDPOINT) {
-              return validateHostname(endpoint);
+              return validateEndpoint(endpoint);
             }
             return false;
           })()}
