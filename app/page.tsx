@@ -3,7 +3,7 @@
 import ofLogoLight from "./img/of-light.png";
 import ofLogoDark from "./img/of-dark.png";
 
-import startEasterEggs from "./easter-eggs";
+import { startEasterEggs, stopEasterEggs } from "./easter-eggs";
 
 import { invoke } from "@tauri-apps/api/core";
 import { getVersion } from "@tauri-apps/api/app";
@@ -271,6 +271,7 @@ export default function Home() {
     startEasterEggs();
     return () => {
       console.log("deinit");
+      stopEasterEggs();
       doDeinit();
     };
   }, []);
