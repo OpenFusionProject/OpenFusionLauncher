@@ -1,9 +1,9 @@
 use ffbuildtool::Version;
+use log::*;
 use reqwest::StatusCode;
 use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
-use log::*;
 
 use crate::util;
 use crate::Error;
@@ -16,6 +16,11 @@ pub struct InfoResponse {
     pub secure_apis_enabled: bool,
     pub game_version: String,
     pub login_address: String,
+}
+
+#[derive(Deserialize)]
+pub struct StatusResponse {
+    pub player_count: usize,
 }
 
 #[derive(Serialize)]
@@ -43,6 +48,12 @@ pub async fn get_info(endpoint_host: &str) -> Result<InfoResponse> {
     Ok(info)
 }
 
+pub async fn get_status(endpoint_host: &str) -> Result<StatusResponse> {
+    let status_json = util::do_simple_get(&format!("https://{}/status", endpoint_host)).await?;
+    let status: StatusResponse = serde_json::from_str(&status_json)?;
+    Ok(status)
+}
+
 pub async fn get_token(username: &str, password: &str, endpoint_host: &str) -> Result<String> {
     debug!("Getting token for {}", username);
     let req = AuthRequest {
@@ -51,11 +62,7 @@ pub async fn get_token(username: &str, password: &str, endpoint_host: &str) -> R
     };
     let url = format!("https://{}/auth", endpoint_host);
     let client = reqwest::Client::new();
-    let res = client
-        .post(&url)
-        .json(&req)
-        .send()
-        .await?;
+    let res = client.post(&url).json(&req).send().await?;
 
     let status = res.status();
     let body = res.text().await?;

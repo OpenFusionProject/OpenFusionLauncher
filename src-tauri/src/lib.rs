@@ -177,6 +177,50 @@ async fn reload_state(app_handle: tauri::AppHandle) -> bool {
 }
 
 #[tauri::command]
+async fn get_version_for_server(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<String> {
+    debug!("get_version_for_server {}", uuid);
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
+        match &server.info {
+            ServerInfo::Simple { version, .. } => Ok(version.clone()),
+            ServerInfo::Endpoint(endpoint_host) => {
+                let api_info = endpoint::get_info(endpoint_host).await?;
+                let version_uuid = Uuid::parse_str(&api_info.game_version)?;
+                if let Some(version) = state.versions.get_entry(version_uuid) {
+                    let desc = version.get_description().unwrap_or("auto");
+                    return Ok(desc.to_string());
+                }
+                let version_fetched = endpoint::fetch_version(endpoint_host, version_uuid).await?;
+                let desc = version_fetched.get_description().unwrap_or("auto");
+                Ok(desc.to_string())
+            }
+        }
+    };
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
+async fn get_player_count_for_server(
+    app_handle: tauri::AppHandle,
+    uuid: Uuid,
+) -> CommandResult<usize> {
+    debug!("get_player_count_for_server {}", uuid);
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
+        let ServerInfo::Endpoint(endpoint_host) = &server.info else {
+            return Err("Server is not an endpoint server".into());
+        };
+        let status = endpoint::get_status(endpoint_host).await?;
+        Ok(status.player_count)
+    };
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
 async fn add_server(
     app_handle: tauri::AppHandle,
     details: NewServerDetails,
@@ -283,6 +327,8 @@ pub fn run() {
             add_server,
             update_server,
             delete_server,
+            get_version_for_server,
+            get_player_count_for_server,
             import_from_openfusionclient,
             prep_launch,
             do_launch
