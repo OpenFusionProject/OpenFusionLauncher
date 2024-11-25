@@ -24,6 +24,18 @@ export default function BackgroundImages({
   servers: ServerEntry[];
   selectedServer?: ServerEntry;
 }) {
+
+  // Preload images
+  useEffect(() => {
+    servers.forEach((server) => {
+      const imageUrl = getBackgroundImageUrlForServer(server);
+      if (imageUrl) {
+        const img = new Image();
+        img.src = imageUrl;
+      }
+    });
+  }, [servers]);
+
   return (
     <>
       {servers.map((server) => {
