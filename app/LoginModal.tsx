@@ -12,6 +12,27 @@ import { ServerEntry } from "./types";
 const TAB_LOGIN = "login";
 const TAB_REGISTER = "register";
 
+const validateUsername = (username: string) => {
+  // From OpenFusion:
+  // Login has to be 4 - 32 characters long and can't contain
+  // special characters other than dash and underscore
+  const regex = /^[a-zA-Z0-9_-]{4,32}$/;
+  return regex.test(username);
+}
+
+const validatePassword = (password: string) => {
+  // From OpenFusion:
+  // Password has to be 8 - 32 characters long
+  const regex = /^.{8,32}$/;
+  return regex.test(password);
+}
+
+const validateEmail = (email: string) => {
+  // normal email regex
+  const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return regex.test(email);
+}
+
 export default function LoginModal({
   server,
   show,
@@ -33,6 +54,15 @@ export default function LoginModal({
 
   const validateLogin = () => {
     return username.length > 0 && password.length > 0;
+  }
+
+  const validateRegister = () => {
+    return (
+      validateUsername(username) &&
+      validatePassword(password) &&
+      password === confirmPassword &&
+      validateEmail(email)
+    );
   }
 
   const clear = () => {
@@ -78,28 +108,31 @@ export default function LoginModal({
               </Form.Group>
             </Tab>
             <Tab eventKey={TAB_REGISTER} title="Register">
-              <Form.Group className="mb-3" controlId="username">
+              <Form.Group className="mb-3" controlId="newUsername">
                 <Form.Control
                   type="text"
                   placeholder="Username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  isInvalid={username.length > 0 && !validateUsername(username)}
                 />
               </Form.Group>
-              <Form.Group className="mb-3" controlId="password">
+              <Form.Group className="mb-3" controlId="newPassword">
                 <Form.Control
                   type="password"
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  isInvalid={password.length > 0 && !validatePassword(password)}
                 />
               </Form.Group>
               <Form.Group className="mb-3" controlId="confirmPassword">
                 <Form.Control
-                  type="confirmPassword"
+                  type="password"
                   placeholder="Confirm Password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  isInvalid={password !== confirmPassword}
                 />
               </Form.Group>
               <Form.Group className="mb-3" controlId="email">
@@ -108,6 +141,7 @@ export default function LoginModal({
                   placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  isInvalid={email.length > 0 && !validateEmail(email)}
                 />
               </Form.Group>
             </Tab>
@@ -130,7 +164,7 @@ export default function LoginModal({
           }}
           variant="success"
           text={tab === TAB_LOGIN ? "Log In" : "Register"}
-          enabled={tab === TAB_LOGIN ? validateLogin() : false}
+          enabled={tab === TAB_LOGIN ? validateLogin() : validateRegister()}
         />
       </Modal.Footer>
     </Modal>

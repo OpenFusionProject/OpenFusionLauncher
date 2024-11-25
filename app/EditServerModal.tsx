@@ -191,7 +191,7 @@ export default function EditServerModal({
                   value={endpoint}
                   onChange={(e) => setEndpoint(e.target.value)}
                   placeholder="api.myserver.xyz"
-                  isInvalid={!validateEndpoint(endpoint)}
+                  isInvalid={endpoint.length > 0 && !validateEndpoint(endpoint)}
                 />
               </Form.Group>
             </Tab>

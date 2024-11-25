@@ -211,3 +211,7 @@ $body-bg-dark: #000;
     color: $light !important;
     font-size: 12pt;
 }
+
+input.is-invalid {
+    border-color: red !important;
+}
