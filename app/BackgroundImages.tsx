@@ -1,9 +1,11 @@
 import { CSSProperties, useEffect, useState } from "react";
 import { ServerEntry } from "./types";
+import get_seed from "./seed";
 
 const getBackgroundImageUrlForServer = (server?: ServerEntry) => {
   if (server?.endpoint) {
-    return "http://" + server.endpoint + "/launcher/background.png";
+    // HACK: add the counter to the url as a parameter to prevent caching across launches
+    return "http://" + server.endpoint + "/launcher/background.png?seed=" + get_seed();
   }
   return undefined;
 };
