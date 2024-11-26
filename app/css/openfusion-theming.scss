@@ -197,6 +197,14 @@ $body-bg-dark: #000;
     box-shadow: inset 0 0 20px yellow;
 }
 
+.text-success {
+    color: #a2ec00 !important;
+}
+
+.text-danger {
+    color: red !important;
+}
+
 .modal {
     overflow-y: auto;
 }

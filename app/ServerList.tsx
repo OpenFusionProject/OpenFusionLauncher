@@ -145,7 +145,7 @@ export default function ServerList({
                 <td className="font-monospace">
                   <VersionLabel versions={versions} server={server} />
                 </td>
-                <td>
+                <td className="font-monospace">
                   <PlayerCount server={server} />
                 </td>
               </tr>
