@@ -26,29 +26,35 @@ const validateUsername = (username: string) => {
   // special characters other than dash and underscore
   const regex = /^[a-zA-Z0-9_-]{4,32}$/;
   return regex.test(username);
-}
+};
 
 const validatePassword = (password: string) => {
   // From OpenFusion:
   // Password has to be 8 - 32 characters long
   const regex = /^.{8,32}$/;
   return regex.test(password);
-}
+};
 
 const validateEmail = (email: string) => {
   // normal email regex
   const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return regex.test(email);
-}
+};
 
-function RequirementsTooltip ({ focusedControlId, controlId, children }: { focusedControlId: string | null, controlId: string, children: any }) {
+function RequirementsTooltip({
+  focusedControlId,
+  controlId,
+  children,
+}: {
+  focusedControlId: string | null;
+  controlId: string;
+  children: any;
+}) {
   const target = document.getElementById(controlId);
   const show = !!(focusedControlId && focusedControlId === controlId);
   return (
     <Overlay target={target} show={show} placement="right">
-      <Tooltip id={controlId + "Tooltip"}>
-        {children}
-      </Tooltip>
+      <Tooltip id={controlId + "Tooltip"}>{children}</Tooltip>
     </Overlay>
   );
 }
@@ -64,7 +70,6 @@ export default function LoginModal({
   setShow: (newShow: boolean) => void;
   onSubmit: (serverUuid: string, username?: string, password?: string) => void;
 }) {
-
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -77,7 +82,7 @@ export default function LoginModal({
 
   const validateLogin = () => {
     return username.length > 0 && password.length > 0;
-  }
+  };
 
   const validateRegister = () => {
     return (
@@ -86,7 +91,7 @@ export default function LoginModal({
       password === confirmPassword &&
       validateEmail(email)
     );
-  }
+  };
 
   const clear = () => {
     setUsername("");
@@ -99,13 +104,28 @@ export default function LoginModal({
     clear();
   }, [server]);
 
+  const canSubmit = (tab: string) => {
+    return tab === TAB_LOGIN ? validateLogin() : validateRegister();
+  }
+
+  const submitForm = () => {
+    if (!canSubmit(tab)) return;
+    setShow(false);
+    if (tab === TAB_LOGIN) {
+      onSubmit(server!.uuid!, username, password);
+    } // TODO: Register
+  }
+
   return (
     <Modal show={show} onHide={() => setShow(false)} centered={true}>
-      <Modal.Header>
-        <Modal.Title>{server?.description}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form>
+      <Form onSubmit={(e) => {
+        e.preventDefault();
+        submitForm();
+      }}>
+        <Modal.Header>
+          <Modal.Title>{server?.description}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
           <Tabs
             activeKey={tab}
             onSelect={(k) => setTab(k ?? TAB_LOGIN)}
@@ -153,7 +173,10 @@ export default function LoginModal({
                   isInvalid={password.length > 0 && !validatePassword(password)}
                 />
               </Form.Group>
-              <Form.Group className="mb-3" controlId={CONTROL_ID_CONFIRM_PASSWORD}>
+              <Form.Group
+                className="mb-3"
+                controlId={CONTROL_ID_CONFIRM_PASSWORD}
+              >
                 <Form.Control
                   type="password"
                   placeholder="Confirm Password"
@@ -173,40 +196,43 @@ export default function LoginModal({
                   isInvalid={email.length > 0 && !validateEmail(email)}
                 />
               </Form.Group>
-              <RequirementsTooltip focusedControlId={activeControl} controlId={CONTROL_ID_NEW_USERNAME}>
+              <RequirementsTooltip
+                focusedControlId={activeControl}
+                controlId={CONTROL_ID_NEW_USERNAME}
+              >
                 <div className="text-start lh-small">
-                • 4 - 32 characters long<br />
-                • No special characters besides - and _
+                  • 4 - 32 characters long
+                  <br />• No special characters besides - and _
                 </div>
               </RequirementsTooltip>
-              <RequirementsTooltip focusedControlId={activeControl} controlId={CONTROL_ID_NEW_PASSWORD}>
+              <RequirementsTooltip
+                focusedControlId={activeControl}
+                controlId={CONTROL_ID_NEW_PASSWORD}
+              >
                 <div className="text-start lh-small">
-                • 8 - 32 characters long
+                  • 8 - 32 characters long
                 </div>
               </RequirementsTooltip>
             </Tab>
           </Tabs>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button
-          onClick={() => setShow(false)}
-          variant="primary"
-          text="Cancel"
-          enabled={true}
-        />
-        <Button
-          onClick={() => {
-            setShow(false);
-            if (tab === TAB_LOGIN) {
-              onSubmit(server!.uuid!, username, password);
-            } // TODO: Register
-          }}
-          variant="success"
-          text={tab === TAB_LOGIN ? "Log In" : "Register"}
-          enabled={tab === TAB_LOGIN ? validateLogin() : validateRegister()}
-        />
-      </Modal.Footer>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            onClick={() => setShow(false)}
+            variant="primary"
+            text="Cancel"
+            enabled={true}
+          />
+          <Button
+            onClick={submitForm}
+            variant="success"
+            text={tab === TAB_LOGIN ? "Log In" : "Register"}
+            enabled={canSubmit(tab)}
+          />
+          {/* Hidden submit button */}
+          <button type="submit" style={{ display: "none" }} />
+        </Modal.Footer>
+      </Form>
     </Modal>
   );
 }
