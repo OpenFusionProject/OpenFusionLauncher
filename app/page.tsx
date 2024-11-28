@@ -1,15 +1,11 @@
 "use client";
 
-import ofLogoLight from "./img/of-light.png";
-import ofLogoDark from "./img/of-dark.png";
-
 import { startEasterEggs, stopEasterEggs } from "./easter-eggs";
 
 import { invoke } from "@tauri-apps/api/core";
 import { getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -36,6 +32,7 @@ import DeleteServerModal from "./DeleteServerModal";
 import AboutModal from "./AboutModal";
 import LoginModal from "./LoginModal";
 import BackgroundImages from "./BackgroundImages";
+import LogoImages from "./LogoImages";
 
 const initTasks: LoadingTask[] = [
   {
@@ -300,18 +297,7 @@ export default function Home() {
       <Container id="serverselector-container">
         <Row id="of-logoheader" className="text-center pt-3">
           <Col>
-            <Image
-              id="of-logo-light"
-              src={ofLogoLight}
-              alt="OpenFusion Logo"
-              width={256}
-            />
-            <Image
-              id="of-logo-dark"
-              src={ofLogoDark}
-              alt="OpenFusion Logo"
-              width={256}
-            />
+            <LogoImages servers={servers} selectedServer={getSelectedServer()} />
             <div id="of-intro-text">
               {tagline.split("\n").map((line, index) => (
                 <p className="fw-bold" key={index}>

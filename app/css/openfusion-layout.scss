@@ -45,6 +45,18 @@ html, body {
     transition: opacity 0.5s;
 }
 
+.logo-image-container {
+    width: 100%;
+    min-height: 256px;
+    display: flex;
+    justify-content: center;
+}
+
+.logo-image {
+    display: block;
+    margin: auto;
+}
+
 #loading-screen {
     position: fixed;
     width: 100%;

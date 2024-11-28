@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ServerEntry } from "./types";
 import get_seed from "./seed";
 
