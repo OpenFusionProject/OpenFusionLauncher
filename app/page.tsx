@@ -48,7 +48,7 @@ export default function Home() {
 
   const [versions, setVersions] = useState<VersionEntry[]>([]);
   const [servers, setServers] = useState<ServerEntry[]>([]);
-  const [selectedServer, setSelectedServer] = useState<string | undefined>();
+  const [selectedIdx, setSelectedIdx] = useState<number>(-1);
 
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>(initTasks);
@@ -64,13 +64,22 @@ export default function Home() {
   const [showConfigPage, setShowConfigPage] = useState(false);
 
   const getSelectedServer = () => {
-    for (const server of servers) {
-      if (server.uuid == selectedServer) {
-        return server;
-      }
+    if (selectedIdx >= 0 && selectedIdx < servers.length) {
+      return servers[selectedIdx];
     }
     return undefined;
   };
+
+  const setSelectedServer = (uuid?: string) => {
+    if (uuid) {
+      const idx = servers.findIndex((server) => server.uuid == uuid);
+      if (idx >= 0) {
+        setSelectedIdx(idx);
+      }
+    } else {
+      setSelectedIdx(-1);
+    }
+  }
 
   const pushAlert = (variant: string, text: string) => {
     const id = Math.floor(Math.random() * 1000000);
@@ -147,6 +156,17 @@ export default function Home() {
       setSelectedServer(undefined);
       setShowConfigPage(false);
     }
+
+    // Server selector controls
+    const modulo = servers.length;
+    if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+      const newIdx = (selectedIdx <= 0 ? modulo - 1 : (selectedIdx - 1));
+      setSelectedIdx(newIdx);
+    }
+    if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+      const newIdx = (selectedIdx + 1) % modulo;
+      setSelectedIdx(newIdx);
+    }
   };
 
   const doInit = async () => {
@@ -161,7 +181,6 @@ export default function Home() {
     } catch (e: unknown) {
       alertError("Error during init (" + e + ")");
     }
-    window.addEventListener("keydown", handleKeydown);
     await getCurrentWindow().show();
   };
 
@@ -170,7 +189,6 @@ export default function Home() {
     setSelectedServer("");
     setAlerts([]);
     setLoadingTasks(initTasks);
-    window.removeEventListener("keydown", handleKeydown);
   };
 
   const stub = () => {
@@ -286,6 +304,14 @@ export default function Home() {
     };
   }, []);
 
+  // Keyboard event listener needs to be separate since it depends on state
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeydown);
+    return () => {
+      window.removeEventListener("keydown", handleKeydown);
+    };
+  }, [servers, selectedIdx]);
+
   return (
     <>
       <AlertList alerts={alerts} />
@@ -315,7 +341,7 @@ export default function Home() {
             <ServerList
               servers={servers}
               versions={versions}
-              selectedServer={selectedServer}
+              selectedServer={getSelectedServer()?.uuid}
               setSelectedServer={setSelectedServer}
               onConnect={(serverUuid) => {
                 setSelectedServer(serverUuid);
@@ -336,14 +362,14 @@ export default function Home() {
               />
               <Button
                 onClick={() => setShowEditModal(true)}
-                enabled={selectedServer ? true : false}
+                enabled={getSelectedServer() ? true : false}
                 variant="primary"
                 icon="edit"
                 tooltip="Edit server"
               />
               <Button
                 onClick={() => setShowDeleteModal(true)}
-                enabled={selectedServer ? true : false}
+                enabled={getSelectedServer() ? true : false}
                 variant="danger"
                 icon="trash"
                 tooltip="Delete server"
@@ -353,8 +379,8 @@ export default function Home() {
           <Col xs={4}>
             <Stack gap={1} direction="horizontal" className="flex-row-reverse">
               <Button
-                onClick={() => showLoginOrConnect(selectedServer!)}
-                enabled={selectedServer ? true : false}
+                onClick={() => showLoginOrConnect(getSelectedServer()!.uuid)}
+                enabled={getSelectedServer() ? true : false}
                 variant="primary"
                 icon="angle-double-right"
                 text="Connect "
