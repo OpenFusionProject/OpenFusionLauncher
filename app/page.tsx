@@ -124,13 +124,17 @@ export default function Home() {
       } else {
         let text = "Imported ";
         if (counts.version_count > 0) {
-          text += counts.version_count + (counts.version_count > 1 ? " versions " : " version ");
+          text +=
+            counts.version_count +
+            (counts.version_count > 1 ? " versions " : " version ");
           if (counts.server_count > 0) {
             text += "and ";
           }
         }
         if (counts.server_count > 0) {
-          text += counts.server_count + (counts.server_count > 1 ? " servers " : " server ");
+          text +=
+            counts.server_count +
+            (counts.server_count > 1 ? " servers " : " server ");
         }
         text += "from OpenFusionClient";
         alertSuccess(text);
@@ -176,10 +180,18 @@ export default function Home() {
     alertInfo("hehe dong");
   };
 
-  const connectToServer = async (serverUuid: string, username?: string, password?: string) => {
+  const connectToServer = async (
+    serverUuid: string,
+    username?: string,
+    password?: string
+  ) => {
     try {
       startLoading("launch");
-      await invoke("prep_launch", { uuid: serverUuid, username: username, password: password });
+      await invoke("prep_launch", {
+        uuid: serverUuid,
+        username: username,
+        password: password,
+      });
       stopLoading("launch");
       await getCurrentWindow().hide();
       const exit_code: number = await invoke("do_launch");
@@ -281,7 +293,10 @@ export default function Home() {
     <>
       <AlertList alerts={alerts} />
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
-      <BackgroundImages servers={servers} selectedServer={getSelectedServer()} />
+      <BackgroundImages
+        servers={servers}
+        selectedServer={getSelectedServer()}
+      />
       <Container id="serverselector-container">
         <Row id="of-logoheader" className="text-center pt-3">
           <Col>
@@ -299,7 +314,9 @@ export default function Home() {
             />
             <div id="of-intro-text">
               {tagline.split("\n").map((line, index) => (
-                <p className="fw-bold" key={index}>{line}</p>
+                <p className="fw-bold" key={index}>
+                  {line}
+                </p>
               ))}
             </div>
           </Col>
@@ -348,11 +365,7 @@ export default function Home() {
             </Stack>
           </Col>
           <Col xs={4}>
-            <Stack
-              gap={1}
-              direction="horizontal"
-              className="flex-row-reverse"
-            >
+            <Stack gap={1} direction="horizontal" className="flex-row-reverse">
               <Button
                 onClick={() => showLoginOrConnect(selectedServer!)}
                 enabled={selectedServer ? true : false}
