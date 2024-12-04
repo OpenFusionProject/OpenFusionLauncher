@@ -258,15 +258,16 @@ export default function Home() {
 
   const addServer = async (details: NewServerDetails) => {
     try {
+      startLoading("add_server", "Adding server");
       const uuid: string = await invoke("add_server", { details: details });
-      const entry: ServerEntry = { ...details, uuid, versions: details.endpoint ? [] : [details.version!] };
-      const newServers = [...servers, entry];
-      setServers(newServers);
+      const newServers: Servers = await invoke("get_servers");
+      setServers(newServers.servers);
       setSelectedServer(uuid);
       alertSuccess("Server added");
     } catch (e: unknown) {
       alertError("Failed to add server (" + e + ")");
     }
+    stopLoading("add_server");
   };
 
   const updateServer = async (details: NewServerDetails, uuid: string) => {
