@@ -92,18 +92,38 @@ pub async fn get_cookie(token: &str, endpoint_host: &str) -> Result<String> {
     Ok(cookie.cookie)
 }
 
+// need to use std result here for future safety
+async fn fetch_version_internal(
+    endpoint_host: &str,
+    filename: &str,
+) -> std::result::Result<Version, String> {
+    let version_endpoint = format!("https://{}/versions/{}", endpoint_host, filename);
+    let version_json = util::do_simple_get(&version_endpoint)
+        .await
+        .map_err(|e| e.to_string())?;
+    let version: Version = serde_json::from_str(&version_json).map_err(|e| e.to_string())?;
+    Ok(version)
+}
+
 pub async fn fetch_version(endpoint_host: &str, version_uuid: Uuid) -> Result<Version> {
     debug!("Fetching version {}", version_uuid);
-    let version_endpoint = format!("https://{}/versions/{}", endpoint_host, version_uuid);
-    let version_json = util::do_simple_get(&version_endpoint).await?;
-    let version: Version = serde_json::from_str(&version_json)?;
-    if version.get_uuid() != version_uuid {
-        return Err(format!(
-            "Version UUID mismatch: expected {}, got {}",
-            version_uuid,
-            version.get_uuid()
-        )
-        .into());
+    let mut version = fetch_version_internal(endpoint_host, &version_uuid.to_string()).await;
+    if version.is_err() {
+        // try with .json extension
+        version = fetch_version_internal(endpoint_host, &format!("{}.json", version_uuid)).await;
     }
-    Ok(version)
+    match version {
+        Ok(v) => {
+            if v.get_uuid() != version_uuid {
+                return Err(
+                    format!("Version mismatch: {} != {}", v.get_uuid(), version_uuid).into(),
+                );
+            }
+            Ok(v)
+        }
+        Err(e) => {
+            error!("Failed to fetch version {}: {}", version_uuid, e);
+            Err(e.to_string().into())
+        }
+    }
 }
