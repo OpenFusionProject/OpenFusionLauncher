@@ -29,6 +29,12 @@ export default function SelectVersionModal({
   };
   const [selected, setSelected] = useState<string | undefined>(undefined);
 
+  useEffect(() => {
+    if (server) {
+      setSelected(server.versions[0]);
+    }
+  }, [server]);
+
   return (
     <Modal show={show} onHide={() => doHide()} centered={true}>
       <Modal.Header>
