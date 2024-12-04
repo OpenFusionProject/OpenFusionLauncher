@@ -1,7 +1,7 @@
 {
   "uuid": "b3d94727-906d-4d94-ab8b-2360bf15cca1",
   "asset_url": "http://cdn.dexlabs.systems/ff/big/beta-20100307",
-  "description": "beta-20100307",
+  "name": "beta-20100307",
   "parent_uuid": "3d18aab5-95a5-49cb-8cde-ddcf809ad623",
   "hidden": false,
   "main_file_url": "http://cdn.dexlabs.systems/ff/big/beta-20100307/main.unity3d",

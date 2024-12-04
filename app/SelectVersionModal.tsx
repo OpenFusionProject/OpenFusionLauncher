@@ -11,6 +11,18 @@ const findVersion = (versions: VersionEntry[], uuid: string) => {
   return versions.find((version) => version.uuid == uuid);
 }
 
+const getLabelForVersion = (version: VersionEntry) => {
+  if (version.name) {
+    let label = "";
+    label += version.name;
+    if (version.description) {
+      label += ": " + version.description;
+    }
+    return label;
+  }
+  return version.uuid;
+}
+
 export default function SelectVersionModal({
   server,
   versions,
@@ -54,7 +66,7 @@ export default function SelectVersionModal({
                 key={version}
                 type="radio"
                 name="version"
-                label={versionEntry.description ?? version}
+                label={getLabelForVersion(versionEntry)}
                 checked={selected === version}
                 onChange={() => setSelected(version)}
               />

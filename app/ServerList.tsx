@@ -124,7 +124,7 @@ export default function ServerList({
                           </span>
                         );
                       }
-                      const label = versionEntry.description ?? "auto";
+                      const label = versionEntry.name ?? versionEntry.uuid;
                       return (
                         <span
                           key={version}

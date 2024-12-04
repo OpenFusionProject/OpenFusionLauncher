@@ -20,6 +20,7 @@ export type Servers = {
 
 export type VersionEntry = {
   uuid: string;
+  name?: string;
   description?: string;
   hidden?: boolean;
 };

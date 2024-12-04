@@ -27,4 +27,4 @@ uuid = { version = "1.10.0", features = ["serde", "v4"] }
 dns-lookup = "2.0.4"
 tokio = { version =  "1.41.1", features = ["sync"] }
 reqwest = "0.12.9"
-ffbuildtool = { git = "https://github.com/OpenFusionProject/ffbuildtool.git", version = "1.1.0", default-features = false }
+ffbuildtool = { git = "https://github.com/OpenFusionProject/ffbuildtool.git", version = "2.0.0", default-features = false }

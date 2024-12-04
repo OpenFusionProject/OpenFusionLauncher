@@ -156,6 +156,10 @@ export default function Home() {
       setShowConfigPage(false);
     }
 
+    if (e.key === "V") {
+      setShowSelectVersionModal(true);
+    }
+
     // Server selector controls
     const modulo = servers.length;
     if (e.key === "ArrowUp" || e.key === "ArrowLeft") {

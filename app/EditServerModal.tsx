@@ -177,7 +177,7 @@ export default function EditServerModal({
                 >
                     {versions.filter(version => !version.hidden).map(version => (
                     <option key={version.uuid} value={version.uuid}>
-                      {version.description || version.uuid}
+                      {version.name || version.uuid}
                     </option>
                     ))}
                 </Form.Select>
