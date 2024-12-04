@@ -14,7 +14,7 @@ use crate::Result;
 pub struct InfoResponse {
     pub api_version: String,
     pub secure_apis_enabled: bool,
-    pub game_version: String,
+    pub game_versions: Vec<String>,
     pub login_address: String,
 }
 
@@ -119,6 +119,7 @@ pub async fn fetch_version(endpoint_host: &str, version_uuid: Uuid) -> Result<Ve
                     format!("Version mismatch: {} != {}", v.get_uuid(), version_uuid).into(),
                 );
             }
+
             Ok(v)
         }
         Err(e) => {

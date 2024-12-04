@@ -30,15 +30,10 @@ import LoadingScreen from "./LoadingScreen";
 import EditServerModal from "./EditServerModal";
 import DeleteServerModal from "./DeleteServerModal";
 import AboutModal from "./AboutModal";
+import SelectVersionModal from "./SelectVersionModal";
 import LoginModal from "./LoginModal";
 import BackgroundImages from "./BackgroundImages";
 import LogoImages from "./LogoImages";
-
-const initTasks: LoadingTask[] = [
-  {
-    id: "initial-fetch",
-  },
-];
 
 export default function Home() {
   const [launcherVersion, setLauncherVersion] = useState("0.0.0");
@@ -46,17 +41,21 @@ export default function Home() {
     "Welcome to OpenFusion.\nSelect a server from the list below to get started."
   );
 
-  const [versions, setVersions] = useState<VersionEntry[]>([]);
+  const [initialFetchDone, setInitialFetchDone] = useState(false);
   const [servers, setServers] = useState<ServerEntry[]>([]);
   const [selectedIdx, setSelectedIdx] = useState<number>(-1);
 
+  const [versions, setVersions] = useState<VersionEntry[]>([]);
+  const [selectedVersionUuid, setSelectedVersionUuid] = useState<string | undefined>(undefined);
+
   const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>(initTasks);
+  const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>([]);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  const [showSelectVersionModal, setShowSelectVersionModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const [showAboutModal, setShowAboutModal] = useState(false);
@@ -114,11 +113,11 @@ export default function Home() {
   };
 
   const initialFetch = async () => {
-    const versionData: Versions = await invoke("get_versions");
-    setVersions(versionData.versions);
     const serverData: Servers = await invoke("get_servers");
     setServers(serverData.servers);
-    stopLoading("initial-fetch");
+    const versionData: Versions = await invoke("get_versions");
+    setVersions(versionData.versions);
+    setInitialFetchDone(true);
   };
 
   const importFromOpenFusionClient = async () => {
@@ -177,18 +176,21 @@ export default function Home() {
       if (firstRun) {
         await importFromOpenFusionClient();
       }
+      await getCurrentWindow().show();
       await initialFetch();
     } catch (e: unknown) {
+      await getCurrentWindow().show();
       alertError("Error during init (" + e + ")");
     }
-    await getCurrentWindow().show();
   };
 
   const doDeinit = () => {
     setServers([]);
     setSelectedServer("");
+    setVersions([]);
+    setInitialFetchDone(false);
     setAlerts([]);
-    setLoadingTasks(initTasks);
+    setLoadingTasks([]);
   };
 
   const stub = () => {
@@ -197,13 +199,15 @@ export default function Home() {
 
   const connectToServer = async (
     serverUuid: string,
+    versionUuid: string,
     username?: string,
     password?: string
   ) => {
     try {
       startLoading("launch");
       await invoke("prep_launch", {
-        uuid: serverUuid,
+        serverUuid: serverUuid,
+        versionUuid: versionUuid,
         username: username,
         password: password,
       });
@@ -222,24 +226,36 @@ export default function Home() {
     stopLoading("launch");
   };
 
-  const showLoginOrConnect = async (serverUuid: string) => {
+  const onConnect = async (serverUuid: string) => {
     const server = servers.find((s) => s.uuid == serverUuid);
     if (!server) {
       alertError("Server not found");
       return;
     }
 
-    if (server.endpoint) {
-      setShowLoginModal(true);
-    } else {
-      await connectToServer(serverUuid);
+    if (!server.versions || server.versions.length < 1) {
+      alertError("No versions available for server");
+      return;
     }
+
+    if (server.versions.length > 1) {
+      setShowSelectVersionModal(true);
+      return;
+    }
+
+    if (server.endpoint) {
+      setSelectedVersionUuid(server.versions[0]);
+      setShowLoginModal(true);
+      return;
+    }
+
+    await connectToServer(serverUuid, server.versions[0]);
   };
 
   const addServer = async (details: NewServerDetails) => {
     try {
       const uuid: string = await invoke("add_server", { details: details });
-      const entry: ServerEntry = { ...details, uuid };
+      const entry: ServerEntry = { ...details, uuid, versions: details.endpoint ? [] : [details.version!] };
       const newServers = [...servers, entry];
       setServers(newServers);
       setSelectedServer(uuid);
@@ -251,7 +267,7 @@ export default function Home() {
 
   const updateServer = async (details: NewServerDetails, uuid: string) => {
     try {
-      const entry: ServerEntry = { ...details, uuid };
+      const entry: ServerEntry = { ...details, uuid, versions: details.endpoint ? [] : [details.version!] };
       await invoke("update_server", { serverEntry: entry });
       const newServers = servers.map((server) => {
         if (server.uuid == uuid) {
@@ -339,13 +355,13 @@ export default function Home() {
         >
           <Col xs={8} className="mb-2">
             <ServerList
-              servers={servers}
+              servers={initialFetchDone ? servers : undefined}
               versions={versions}
               selectedServer={getSelectedServer()?.uuid}
               setSelectedServer={setSelectedServer}
               onConnect={(serverUuid) => {
                 setSelectedServer(serverUuid);
-                showLoginOrConnect(serverUuid);
+                onConnect(serverUuid);
               }}
             />
           </Col>
@@ -379,7 +395,7 @@ export default function Home() {
           <Col xs={4}>
             <Stack gap={1} direction="horizontal" className="flex-row-reverse">
               <Button
-                onClick={() => showLoginOrConnect(getSelectedServer()!.uuid)}
+                onClick={() => onConnect(getSelectedServer()!.uuid)}
                 enabled={getSelectedServer() ? true : false}
                 variant="primary"
                 icon="angle-double-right"
@@ -436,11 +452,23 @@ export default function Home() {
         setShow={setShowDeleteModal}
         deleteServer={deleteServer}
       />
+      <SelectVersionModal
+        server={getSelectedServer()}
+        versions={versions}
+        show={showSelectVersionModal}
+        setShow={setShowSelectVersionModal}
+        onSelect={(uuid) => {
+          setSelectedVersionUuid(uuid);
+          setShowLoginModal(true);
+        }}
+      />
       <LoginModal
         server={getSelectedServer()}
         show={showLoginModal}
         setShow={setShowLoginModal}
-        onSubmit={connectToServer}
+        onSubmit={(username, password) => {
+          connectToServer(getSelectedServer()!.uuid, selectedVersionUuid!, username, password);
+        }}
       />
       <AboutModal
         show={showAboutModal}

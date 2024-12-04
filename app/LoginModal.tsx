@@ -68,7 +68,7 @@ export default function LoginModal({
   server?: ServerEntry;
   show: boolean;
   setShow: (newShow: boolean) => void;
-  onSubmit: (serverUuid: string, username?: string, password?: string) => void;
+  onSubmit: (username?: string, password?: string) => void;
 }) {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -112,7 +112,7 @@ export default function LoginModal({
     if (!canSubmit(tab)) return;
     setShow(false);
     if (tab === TAB_LOGIN) {
-      onSubmit(server!.uuid!, username, password);
+      onSubmit(username, password);
     } // TODO: Register
   }
 

@@ -2,7 +2,7 @@ export type ServerEntry = {
   uuid: string;
   description: string;
   ip?: string;
-  version?: string;
+  versions: string[];
   endpoint?: string;
 };
 
@@ -21,6 +21,7 @@ export type Servers = {
 export type VersionEntry = {
   uuid: string;
   description?: string;
+  hidden?: boolean;
 };
 
 export type Versions = {

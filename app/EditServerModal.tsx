@@ -111,7 +111,7 @@ export default function EditServerModal({
     setDescription(server?.description || "");
     setTab(server?.endpoint ? TAB_ENDPOINT : TAB_SIMPLE);
     setIp(server?.ip || "");
-    setVersion(server?.version || getDefaultVersion());
+    setVersion(server?.versions?.at(0) || getDefaultVersion());
     setEndpoint(server?.endpoint || "");
   }, [server, versions]);
 
@@ -175,11 +175,11 @@ export default function EditServerModal({
                   onChange={(e) => setVersion(e.target.value)}
                   isInvalid={version == ""}
                 >
-                  {versions.map((version) => (
+                    {versions.filter(version => !version.hidden).map(version => (
                     <option key={version.uuid} value={version.uuid}>
-                      {version.description ?? version.uuid}
+                      {version.description || version.uuid}
                     </option>
-                  ))}
+                    ))}
                 </Form.Select>
               </Form.Group>
             </Tab>

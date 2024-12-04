@@ -3,7 +3,7 @@ mod state;
 mod util;
 
 use serde::{Deserialize, Serialize};
-use state::{get_app_statics, AppState, FlatServer, FlatServers, Server, ServerInfo, Versions};
+use state::{get_app_statics, AppState, FlatServer, FrontendServers, Server, ServerInfo, Versions};
 
 use std::env;
 use tokio::sync::Mutex;
@@ -47,7 +47,8 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
 #[tauri::command]
 async fn prep_launch(
     app_handle: tauri::AppHandle,
-    uuid: Uuid,
+    server_uuid: Uuid,
+    version_uuid: Uuid,
     username: Option<String>,
     password: Option<String>,
 ) -> CommandResult<()> {
@@ -56,40 +57,23 @@ async fn prep_launch(
         let mut state = state.lock().await;
         let server = state
             .servers
-            .get_entry(uuid)
-            .ok_or(format!("Server {} not found", uuid))?
+            .get_entry(server_uuid)
+            .ok_or(format!("Server {} not found", server_uuid))?
             .clone();
 
-        let (version_str, addr) = match &server.info {
-            ServerInfo::Simple { version, ip } => (version.clone(), ip.clone()),
+        let addr = match &server.info {
+            ServerInfo::Simple { ip, .. } => ip.clone(),
             ServerInfo::Endpoint(endpoint_host) => {
                 // Ask the endpoint server for the UUID of the current version
                 let Ok(api_info) = endpoint::get_info(endpoint_host).await else {
                     return Err("Failed to contact API server".into());
                 };
-                (api_info.game_version, api_info.login_address)
+                api_info.login_address
             }
         };
         let ip = util::resolve_server_addr(&addr)?;
 
-        let version_uuid = Uuid::parse_str(&version_str)?;
-        let version = if let Some(version) = state.versions.get_entry(version_uuid) {
-            debug!("Using cached version {}", version.get_uuid());
-            version
-        } else if let ServerInfo::Endpoint(endpoint_host) = &server.info {
-            // Assume the endpoint server has the version we want; try to fetch it
-            match endpoint::fetch_version(endpoint_host, version_uuid).await {
-                Ok(version) => {
-                    // cache the version manifest
-                    if let Err(e) = util::import_versions(vec![version.clone()]) {
-                        warn!("Failed to cache version: {}", e);
-                    }
-                    state.versions.add_entry(version);
-                    state.versions.get_entry(version_uuid).unwrap()
-                }
-                Err(e) => return Err(format!("Failed to fetch version: {}", e).into()),
-            }
-        } else {
+        let Some(version) = state.versions.get_entry(version_uuid) else {
             return Err(format!("Version {} not found", version_uuid).into());
         };
 
@@ -140,7 +124,10 @@ async fn prep_launch(
         state.launch_cmd = Some(cmd);
         Ok(())
     };
-    debug!("prep_launch {}", uuid);
+    debug!(
+        "prep_launch server {} version {}",
+        server_uuid, version_uuid
+    );
     internal
         .await
         .map_err(|e: Box<dyn std::error::Error>| e.to_string())
@@ -174,31 +161,6 @@ async fn reload_state(app_handle: tauri::AppHandle) -> bool {
     *state = AppState::load();
     state.save();
     first_run
-}
-
-#[tauri::command]
-async fn get_version_for_server(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<String> {
-    debug!("get_version_for_server {}", uuid);
-    let internal = async {
-        let state = app_handle.state::<Mutex<AppState>>();
-        let state = state.lock().await;
-        let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
-        match &server.info {
-            ServerInfo::Simple { version, .. } => Ok(version.clone()),
-            ServerInfo::Endpoint(endpoint_host) => {
-                let api_info = endpoint::get_info(endpoint_host).await?;
-                let version_uuid = Uuid::parse_str(&api_info.game_version)?;
-                if let Some(version) = state.versions.get_entry(version_uuid) {
-                    let desc = version.get_description().unwrap_or("auto");
-                    return Ok(desc.to_string());
-                }
-                let version_fetched = endpoint::fetch_version(endpoint_host, version_uuid).await?;
-                let desc = version_fetched.get_description().unwrap_or("auto");
-                Ok(desc.to_string())
-            }
-        }
-    };
-    internal.await.map_err(|e: Error| e.to_string())
 }
 
 #[tauri::command]
@@ -276,12 +238,13 @@ async fn delete_server(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResul
 }
 
 #[tauri::command]
-async fn get_servers(app_handle: tauri::AppHandle) -> FlatServers {
+async fn get_servers(app_handle: tauri::AppHandle) -> FrontendServers {
     debug!("get_servers");
     let state = app_handle.state::<Mutex<AppState>>();
-    let state = state.lock().await;
+    let mut state = state.lock().await;
     let servers = state.servers.clone();
-    let flat_servers: FlatServers = servers.into();
+    let mut flat_servers: FrontendServers = servers.into();
+    flat_servers.refresh_all(&mut state.versions).await;
     flat_servers
 }
 
@@ -290,8 +253,7 @@ async fn get_versions(app_handle: tauri::AppHandle) -> Versions {
     debug!("get_versions");
     let state = app_handle.state::<Mutex<AppState>>();
     let state = state.lock().await;
-    // we don't tell the frontend about versions marked hidden at all
-    state.versions.get_without_hidden()
+    state.versions.clone()
 }
 
 #[allow(clippy::single_match)]
@@ -327,7 +289,6 @@ pub fn run() {
             add_server,
             update_server,
             delete_server,
-            get_version_for_server,
             get_player_count_for_server,
             import_from_openfusionclient,
             prep_launch,
