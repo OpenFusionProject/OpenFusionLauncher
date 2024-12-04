@@ -14,8 +14,20 @@ use crate::Result;
 pub struct InfoResponse {
     pub api_version: String,
     pub secure_apis_enabled: bool,
-    pub game_versions: Vec<String>,
+    game_version: Option<String>,
+    game_versions: Option<Vec<String>>,
     pub login_address: String,
+}
+impl InfoResponse {
+    pub fn get_supported_versions(&self) -> Vec<String> {
+        if let Some(versions) = &self.game_versions {
+            versions.clone()
+        } else if let Some(version) = &self.game_version {
+            vec![version.clone()]
+        } else {
+            vec![]
+        }
+    }
 }
 
 #[derive(Deserialize)]

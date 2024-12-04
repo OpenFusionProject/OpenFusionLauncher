@@ -443,7 +443,7 @@ impl FrontendServer {
     async fn refresh(&mut self, versions: &mut Versions) -> Result<()> {
         if let Some(endpoint_host) = &self.endpoint {
             self.versions.clear();
-            let server_versions = endpoint::get_info(endpoint_host).await?.game_versions;
+            let server_versions = endpoint::get_info(endpoint_host).await?.get_supported_versions();
             let mut to_import = Vec::with_capacity(server_versions.len());
 
             for version in server_versions {
