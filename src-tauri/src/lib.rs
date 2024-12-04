@@ -61,16 +61,25 @@ async fn prep_launch(
             .ok_or(format!("Server {} not found", server_uuid))?
             .clone();
 
-        let addr = match &server.info {
-            ServerInfo::Simple { ip, .. } => ip.clone(),
+        let (addr, versions) = match &server.info {
+            ServerInfo::Simple { ip, version } => (ip.clone(), vec![version.clone()]),
             ServerInfo::Endpoint(endpoint_host) => {
                 // Ask the endpoint server for the UUID of the current version
                 let Ok(api_info) = endpoint::get_info(endpoint_host).await else {
                     return Err("Failed to contact API server".into());
                 };
-                api_info.login_address
+                (
+                    api_info.login_address.clone(),
+                    api_info.get_supported_versions(),
+                )
             }
         };
+
+        // Ensure the version is supported
+        if !versions.contains(&version_uuid.to_string()) {
+            return Err(format!("Version {} not supported by server", version_uuid).into());
+        }
+
         let ip = util::resolve_server_addr(&addr)?;
 
         let Some(version) = state.versions.get_entry(version_uuid) else {
