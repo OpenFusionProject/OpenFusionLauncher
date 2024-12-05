@@ -108,23 +108,22 @@ async fn prep_launch(
 
         if let ServerInfo::Endpoint(endpoint_host) = &server.info {
             if username.is_none() || password.is_none() {
-                return Err("Username and password required for endpoint".into());
+                warn!("No username or password provided for endpoint server");
+            } else {
+                let username = username.unwrap();
+                let password = password.unwrap();
+                // TODO cache this token somehow
+                let token = endpoint::get_token(&username, &password, endpoint_host).await?;
+                let cookie = endpoint::get_cookie(&token, endpoint_host).await?;
+                cmd.args(["-u", &username]).args(["-t", &cookie]);
             }
-            let username = username.unwrap();
-            let password = password.unwrap();
-
-            // TODO cache this token somehow
-            let token = endpoint::get_token(&username, &password, endpoint_host).await?;
-            let cookie = endpoint::get_cookie(&token, endpoint_host).await?;
 
             let rankurl = format!("http://{}/getranks", endpoint_host);
             let images = format!("http://{}/upsell/", endpoint_host);
             let sponsor = format!("http://{}/upsell/sponsor.png", endpoint_host);
             cmd.args(["-r", &rankurl])
                 .args(["-i", &images])
-                .args(["-s", &sponsor])
-                .args(["-u", &username])
-                .args(["-t", &cookie]);
+                .args(["-s", &sponsor]);
         }
 
         #[cfg(debug_assertions)]
