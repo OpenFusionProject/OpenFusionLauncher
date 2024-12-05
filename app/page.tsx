@@ -156,10 +156,6 @@ export default function Home() {
       setShowConfigPage(false);
     }
 
-    if (e.key === "V") {
-      setShowSelectVersionModal(true);
-    }
-
     // Server selector controls
     const modulo = servers.length;
     if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
@@ -358,7 +354,7 @@ export default function Home() {
           id="server-list"
           className="d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center"
         >
-          <Col xs={8} className="mb-2">
+          <Col xs={8} className="mb-2 main-col">
             <ServerList
               servers={initialFetchDone ? servers : undefined}
               versions={versions}
@@ -372,7 +368,7 @@ export default function Home() {
           </Col>
         </Row>
         <Row className="justify-content-center pb-4">
-          <Col xs={4}>
+          <Col xs={4} className="side-col">
             <Stack gap={1} direction="horizontal">
               <Button
                 onClick={() => setShowAddModal(true)}
@@ -397,7 +393,7 @@ export default function Home() {
               />
             </Stack>
           </Col>
-          <Col xs={4}>
+          <Col xs={4} className="side-col">
             <Stack gap={1} direction="horizontal" className="flex-row-reverse">
               <Button
                 onClick={() => onConnect(getSelectedServer()!.uuid)}

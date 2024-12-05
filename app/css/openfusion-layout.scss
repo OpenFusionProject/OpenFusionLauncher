@@ -105,6 +105,32 @@ html, body {
     z-index: 2000;
 }
 
+#server-table {
+    overflow: hidden;
+}
+
 #server-table .server-listing-entry {
     vertical-align: middle;
+}
+
+.main-col {
+    min-width: 720px;
+}
+
+.side-col {
+    // ensure this is half of the main-col width
+    min-width: 360px;
+}
+
+#server-table .table .name-column {
+    width: 1%;
+    max-width: 340px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#server-table .table .fit {
+    white-space: nowrap;
+    width: 1%;
 }

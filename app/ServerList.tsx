@@ -73,15 +73,15 @@ export default function ServerList({
 }) {
   return (
     <div
-      className="table-responsive text-center border rounded border-primary"
+      className="text-center border rounded border-primary"
       id="server-table"
     >
       <table className="table table-striped table-hover mb-0">
         <thead>
           <tr>
-            <th>Description</th>
+            <th className="text-start name-column">Server Name</th>
             <th>Game Versions</th>
-            <th>Status</th>
+            <th className="text-end fit">Status</th>
           </tr>
         </thead>
         <tbody id="server-tablebody">
@@ -110,7 +110,7 @@ export default function ServerList({
                 onClick={() => setSelectedServer(server.uuid!)}
                 onDoubleClick={() => onConnect(server.uuid!)}
               >
-                <td>{server.description}</td>
+                <td className="text-start name-column">{server.description}</td>
                 <td className="font-monospace">
                   {server.versions.length === 0 ? (
                     <span className="badge bg-danger me-1">no versions</span>
@@ -140,7 +140,7 @@ export default function ServerList({
                     })
                   )}
                 </td>
-                <td className="font-monospace">
+                <td className="font-monospace text-end fit">
                   <PlayerCount server={server} />
                 </td>
               </tr>
