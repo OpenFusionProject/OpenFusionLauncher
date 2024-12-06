@@ -109,8 +109,32 @@ html, body {
     overflow: hidden;
 }
 
+#server-table table {
+    table-layout: fixed;
+    width: 100%;
+}
+
 #server-table .server-listing-entry {
     vertical-align: middle;
+}
+
+#server-table table .name-column {
+    min-width: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 15px;
+}
+
+#server-table table .versions-column {
+    width: fit-content
+}
+
+#server-table table .status-column {
+    width: 150px;
+    white-space: nowrap;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .main-col {
@@ -120,17 +144,4 @@ html, body {
 .side-col {
     // ensure this is half of the main-col width
     min-width: 360px;
-}
-
-#server-table .table .name-column {
-    width: 1%;
-    max-width: 340px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-#server-table .table .fit {
-    white-space: nowrap;
-    width: 1%;
 }
