@@ -112,11 +112,15 @@ export default function Home() {
     setLoadingTasks(newTasks);
   };
 
-  const initialFetch = async () => {
+  const syncServersAndVersions = async () => {
     const serverData: Servers = await invoke("get_servers");
     setServers(serverData.servers);
     const versionData: Versions = await invoke("get_versions");
     setVersions(versionData.versions);
+  }
+
+  const initialFetch = async () => {
+    await syncServersAndVersions();
     setInitialFetchDone(true);
   };
 
@@ -254,10 +258,16 @@ export default function Home() {
 
   const addServer = async (details: NewServerDetails) => {
     try {
-      startLoading("add_server", "Adding server");
       const uuid: string = await invoke("add_server", { details: details });
-      const newServers: Servers = await invoke("get_servers");
-      setServers(newServers.servers);
+      if (!details.endpoint) {
+        // in this case, we can instantly update the frontend
+        const entry: ServerEntry = { ...details, uuid, versions: [details.version!] };
+        const newServers = [...servers, entry];
+        setServers(newServers);
+      } else {
+        startLoading("add_server", "Adding server");
+        await syncServersAndVersions();
+      }
       setSelectedServer(uuid);
       alertSuccess("Server added");
     } catch (e: unknown) {
@@ -270,17 +280,25 @@ export default function Home() {
     try {
       const entry: ServerEntry = { ...details, uuid, versions: details.endpoint ? [] : [details.version!] };
       await invoke("update_server", { serverEntry: entry });
-      const newServers = servers.map((server) => {
-        if (server.uuid == uuid) {
-          return entry;
-        }
-        return server;
-      });
-      setServers(newServers);
+      if (!details.endpoint) {
+        // in this case, we can instantly update the frontend
+        const newServers = servers.map((server) => {
+          if (server.uuid == uuid) {
+            return entry;
+          }
+          return server;
+        });
+        setServers(newServers);
+      } else {
+        // API servers might introduce new versions, so we need to do a full refresh
+        startLoading("update_server", "Updating server");
+        await syncServersAndVersions();
+      }
       alertSuccess("Server updated");
     } catch (e: unknown) {
       alertError("Failed to update server (" + e + ")");
     }
+    stopLoading("update_server");
   };
 
   const saveServer = async (details: NewServerDetails, uuid?: string) => {
