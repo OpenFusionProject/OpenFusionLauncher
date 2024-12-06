@@ -157,15 +157,15 @@ export default function Home() {
     }
 
     // Server selector controls
-    const modulo = servers.length;
-    if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-      const newIdx = (selectedIdx <= 0 ? modulo - 1 : (selectedIdx - 1));
-      setSelectedIdx(newIdx);
-    }
-    if (e.key === "ArrowDown" || e.key === "ArrowRight") {
-      const newIdx = (selectedIdx + 1) % modulo;
-      setSelectedIdx(newIdx);
-    }
+    // const modulo = servers.length;
+    // if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+    //   const newIdx = (selectedIdx <= 0 ? modulo - 1 : (selectedIdx - 1));
+    //   setSelectedIdx(newIdx);
+    // }
+    // if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+    //   const newIdx = (selectedIdx + 1) % modulo;
+    //   setSelectedIdx(newIdx);
+    // }
   };
 
   const doInit = async () => {
