@@ -26,6 +26,11 @@ pub fn string_version_to_u32(version: &str) -> u32 {
     (major << 16) | (minor << 8) | patch
 }
 
+pub fn get_timestamp() -> u64 {
+    let now = std::time::SystemTime::now();
+    now.duration_since(std::time::UNIX_EPOCH).unwrap().as_secs()
+}
+
 fn split_addr_port(addr_port: &str) -> Result<(String, u16)> {
     const DEFAULT_PORT: u16 = 23000;
     let mut parts = addr_port.split(':');

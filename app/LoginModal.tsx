@@ -68,7 +68,7 @@ export default function LoginModal({
   server?: ServerEntry;
   show: boolean;
   setShow: (newShow: boolean) => void;
-  onSubmit: (username?: string, password?: string) => void;
+  onSubmit: (username: string, password: string) => void;
 }) {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");

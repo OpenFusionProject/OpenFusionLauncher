@@ -41,12 +41,17 @@ pub struct AuthRequest {
     password: String,
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct Session {
+    username: String,
+    session_token: String,
+}
+
 #[allow(dead_code)]
 #[derive(Deserialize)]
 pub struct CookieResponse {
+    username: String,
     cookie: String,
-    // we don't know what timezone the server is in so we can't check this,
-    // but it should be valid at retrieval time
     expires: u64,
 }
 
@@ -66,7 +71,11 @@ pub async fn get_status(endpoint_host: &str) -> Result<StatusResponse> {
     Ok(status)
 }
 
-pub async fn get_token(username: &str, password: &str, endpoint_host: &str) -> Result<String> {
+pub async fn get_refresh_token(
+    username: &str,
+    password: &str,
+    endpoint_host: &str,
+) -> Result<String> {
     debug!("Getting token for {}", username);
     let req = AuthRequest {
         username: username.to_string(),
@@ -85,7 +94,27 @@ pub async fn get_token(username: &str, password: &str, endpoint_host: &str) -> R
     }
 }
 
-pub async fn get_cookie(token: &str, endpoint_host: &str) -> Result<String> {
+pub async fn get_session(refresh_token: &str, endpoint_host: &str) -> Result<Session> {
+    debug!("Getting session");
+    let url = format!("https://{}/auth/session", endpoint_host);
+    let client = reqwest::Client::new();
+    let res = client
+        .post(&url)
+        .header("Authorization", format!("Bearer {}", refresh_token))
+        .send()
+        .await?;
+
+    let status = res.status();
+    let body = res.text().await?;
+    if status.is_success() {
+        let session: Session = serde_json::from_str(&body)?;
+        Ok(session)
+    } else {
+        Err(make_api_error(&url, status, &body))
+    }
+}
+
+pub async fn get_cookie(token: &str, endpoint_host: &str) -> Result<(String, String)> {
     debug!("Getting cookie");
     let url = format!("https://{}/cookie", endpoint_host);
     let client = reqwest::Client::new();
@@ -101,7 +130,13 @@ pub async fn get_cookie(token: &str, endpoint_host: &str) -> Result<String> {
         return Err(make_api_error(&url, status, &body));
     }
     let cookie: CookieResponse = serde_json::from_str(&body)?;
-    Ok(cookie.cookie)
+
+    let time_now = util::get_timestamp();
+    if cookie.expires < time_now {
+        return Err("Cookie expired".into());
+    }
+
+    Ok((cookie.username, cookie.cookie))
 }
 
 // need to use std result here for future safety

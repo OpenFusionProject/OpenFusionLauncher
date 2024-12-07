@@ -1,4 +1,4 @@
-use std::{path::PathBuf, process::Command, sync::OnceLock};
+use std::{collections::HashMap, path::PathBuf, process::Command, sync::OnceLock};
 
 use ffbuildtool::Version;
 use log::*;
@@ -61,6 +61,7 @@ pub struct AppState {
     pub config: Config,
     pub versions: Versions,
     pub servers: Servers,
+    pub tokens: Tokens,
     //
     pub launch_cmd: Option<Command>,
 }
@@ -69,6 +70,7 @@ impl AppState {
         let config = Config::new();
         let versions = Versions::new();
         let mut servers = Servers::new();
+        let tokens = Tokens::new();
 
         // Old server entries use the version description instead of the UUID.
         // This migrates them to use the UUID instead.
@@ -79,6 +81,7 @@ impl AppState {
             config,
             versions,
             servers,
+            tokens,
             //
             launch_cmd: None,
         }
@@ -102,6 +105,9 @@ impl AppState {
         }
         if let Err(e) = self.servers.save() {
             warn!("Failed to save servers: {}", e);
+        }
+        if let Err(e) = self.tokens.save() {
+            warn!("Failed to save tokens: {}", e);
         }
     }
 
@@ -464,6 +470,8 @@ impl FrontendServer {
                     };
                     versions.add_entry(version.clone());
                     to_import.push(version);
+                } else {
+                    debug!("Version {} already cached", version);
                 }
                 self.versions.push(version);
             }
@@ -617,5 +625,38 @@ impl From<FlatServers> for Servers {
             servers: flat.servers.into_iter().map(Server::from).collect(),
             favorites: flat.favorites,
         }
+    }
+}
+
+/// Refresh tokens for each server
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct Tokens {
+    tokens: HashMap<Uuid, String>,
+}
+impl Tokens {
+    fn new() -> Self {
+        Self::load().unwrap_or_default()
+    }
+
+    fn load() -> Result<Self> {
+        let tokens_path = get_app_statics().app_data_dir.join("tokens.json");
+        let tokens_str = std::fs::read_to_string(tokens_path)?;
+        let tokens: Self = serde_json::from_str(&tokens_str)?;
+        Ok(tokens)
+    }
+
+    fn save(&self) -> Result<()> {
+        let tokens_path = get_app_statics().app_data_dir.join("tokens.json");
+        let tokens_str = serde_json::to_string_pretty(self)?;
+        std::fs::write(tokens_path, tokens_str)?;
+        Ok(())
+    }
+
+    pub fn save_token(&mut self, server_uuid: Uuid, token: &str) {
+        self.tokens.insert(server_uuid, token.to_string());
+    }
+
+    pub fn get_token(&self, server_uuid: Uuid) -> Option<&str> {
+        self.tokens.get(&server_uuid).map(|t| t.as_str())
     }
 }

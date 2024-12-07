@@ -44,3 +44,8 @@ export type ImportCounts = {
   version_count: number;
   server_count: number;
 };
+
+export type LoginSession = {
+  username: string;
+  session_token: string;
+}

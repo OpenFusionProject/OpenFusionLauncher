@@ -2,6 +2,7 @@ mod endpoint;
 mod state;
 mod util;
 
+use endpoint::Session;
 use serde::{Deserialize, Serialize};
 use state::{get_app_statics, AppState, FlatServer, FrontendServers, Server, ServerInfo, Versions};
 
@@ -45,12 +46,65 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
 }
 
 #[tauri::command]
+async fn do_login(
+    app_handle: tauri::AppHandle,
+    server_uuid: Uuid,
+    username: String,
+    password: String,
+) -> CommandResult<()> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let mut state = state.lock().await;
+        let server = state
+            .servers
+            .get_entry(server_uuid)
+            .ok_or(format!("Server {} not found", server_uuid))?;
+
+        let ServerInfo::Endpoint(endpoint_host) = &server.info else {
+            return Err("Server is not an endpoint server".into());
+        };
+
+        let refresh_token =
+            endpoint::get_refresh_token(&username, &password, endpoint_host).await?;
+        state.tokens.save_token(server_uuid, &refresh_token);
+        state.save();
+        Ok(())
+    };
+    debug!("do_login");
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
+async fn get_session(app_handle: tauri::AppHandle, server_uuid: Uuid) -> CommandResult<Session> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let server = state
+            .servers
+            .get_entry(server_uuid)
+            .ok_or(format!("Server {} not found", server_uuid))?;
+
+        let ServerInfo::Endpoint(endpoint_host) = &server.info else {
+            return Err("Server is not an endpoint server".into());
+        };
+
+        let Some(refresh_token) = state.tokens.get_token(server_uuid) else {
+            return Err("Not logged in".into());
+        };
+
+        let session = endpoint::get_session(refresh_token, endpoint_host).await?;
+        Ok(session)
+    };
+    debug!("get_session");
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
 async fn prep_launch(
     app_handle: tauri::AppHandle,
     server_uuid: Uuid,
     version_uuid: Uuid,
-    username: Option<String>,
-    password: Option<String>,
+    session_token: Option<String>,
 ) -> CommandResult<()> {
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
@@ -107,16 +161,15 @@ async fn prep_launch(
             .args(["-l", log_file_path.to_str().ok_or("Invalid log file path")?]);
 
         if let ServerInfo::Endpoint(endpoint_host) = &server.info {
-            if username.is_none() || password.is_none() {
-                warn!("No username or password provided for endpoint server");
-            } else {
-                let username = username.unwrap();
-                let password = password.unwrap();
-                // TODO cache this token somehow
-                let token = endpoint::get_token(&username, &password, endpoint_host).await?;
-                let cookie = endpoint::get_cookie(&token, endpoint_host).await?;
-                cmd.args(["-u", &username]).args(["-t", &cookie]);
-            }
+            match session_token {
+                None => {
+                    warn!("No session token provided for endpoint server");
+                }
+                Some(token) => {
+                    let (username, cookie) = endpoint::get_cookie(&token, endpoint_host).await?;
+                    cmd.args(["-u", &username]).args(["-t", &cookie]);
+                }
+            };
 
             let rankurl = format!("http://{}/getranks", endpoint_host);
             let images = format!("http://{}/upsell/", endpoint_host);
@@ -299,6 +352,8 @@ pub fn run() {
             delete_server,
             get_player_count_for_server,
             import_from_openfusionclient,
+            do_login,
+            get_session,
             prep_launch,
             do_launch
         ])

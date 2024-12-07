@@ -20,6 +20,7 @@ import {
   ImportCounts,
   VersionEntry,
   Versions,
+  LoginSession,
 } from "./types";
 
 import LauncherPage from "./LauncherPage";
@@ -46,7 +47,6 @@ export default function Home() {
   const [selectedIdx, setSelectedIdx] = useState<number>(-1);
 
   const [versions, setVersions] = useState<VersionEntry[]>([]);
-  const [selectedVersionUuid, setSelectedVersionUuid] = useState<string | undefined>(undefined);
 
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>([]);
@@ -55,7 +55,6 @@ export default function Home() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const [showSelectVersionModal, setShowSelectVersionModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const [showAboutModal, setShowAboutModal] = useState(false);
@@ -204,16 +203,14 @@ export default function Home() {
   const connectToServer = async (
     serverUuid: string,
     versionUuid: string,
-    username?: string,
-    password?: string
+    sessionToken?: string,
   ) => {
     try {
       startLoading("launch");
       await invoke("prep_launch", {
         serverUuid: serverUuid,
         versionUuid: versionUuid,
-        username: username,
-        password: password,
+        sessionToken: sessionToken,
       });
       stopLoading("launch");
       await getCurrentWindow().hide();
@@ -230,6 +227,20 @@ export default function Home() {
     stopLoading("launch");
   };
 
+  const onLogin = async (serverUuid: string, username: string, password: string) => {
+    try {
+      await invoke("do_login", {
+        serverUuid: serverUuid,
+        username: username,
+        password: password,
+      });
+    } catch (e: unknown) {
+      alertError("Failed to login (" + e + ")");
+      return;
+    }
+    onConnect(serverUuid);
+  }
+
   const onConnect = async (serverUuid: string) => {
     const server = servers.find((s) => s.uuid == serverUuid);
     if (!server) {
@@ -242,18 +253,21 @@ export default function Home() {
       return;
     }
 
-    if (server.versions.length > 1) {
-      setShowSelectVersionModal(true);
-      return;
-    }
-
+    let sessionToken: string | undefined = undefined;
     if (server.endpoint) {
-      setSelectedVersionUuid(server.versions[0]);
-      setShowLoginModal(true);
-      return;
+      try {
+        const loginSession: LoginSession = await invoke("get_session", { serverUuid: serverUuid });
+        sessionToken = loginSession.session_token;
+        alertSuccess("Logged in as " + loginSession.username);
+      } catch (e: unknown) {
+        // If we can't get a session token for ANY REASON, we'll grab a new refresh token
+        // by making the user log in again
+        setShowLoginModal(true);
+        return;
+      }
     }
 
-    await connectToServer(serverUuid, server.versions[0]);
+    connectToServer(serverUuid, server.versions[0], sessionToken);
   };
 
   const addServer = async (details: NewServerDetails) => {
@@ -471,22 +485,12 @@ export default function Home() {
         setShow={setShowDeleteModal}
         deleteServer={deleteServer}
       />
-      <SelectVersionModal
-        server={getSelectedServer()}
-        versions={versions}
-        show={showSelectVersionModal}
-        setShow={setShowSelectVersionModal}
-        onSelect={(uuid) => {
-          setSelectedVersionUuid(uuid);
-          setShowLoginModal(true);
-        }}
-      />
       <LoginModal
         server={getSelectedServer()}
         show={showLoginModal}
         setShow={setShowLoginModal}
         onSubmit={(username, password) => {
-          connectToServer(getSelectedServer()!.uuid, selectedVersionUuid!, username, password);
+          onLogin(getSelectedServer()!.uuid, username, password);
         }}
       />
       <AboutModal
