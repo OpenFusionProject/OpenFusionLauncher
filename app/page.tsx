@@ -492,6 +492,7 @@ export default function Home() {
         onSubmit={(username, password) => {
           onLogin(getSelectedServer()!.uuid, username, password);
         }}
+        onShowPrivacyPolicy={(server) => stub()}
       />
       <AboutModal
         show={showAboutModal}

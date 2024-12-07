@@ -64,11 +64,13 @@ export default function LoginModal({
   show,
   setShow,
   onSubmit,
+  onShowPrivacyPolicy,
 }: {
   server?: ServerEntry;
   show: boolean;
   setShow: (newShow: boolean) => void;
   onSubmit: (username: string, password: string) => void;
+  onShowPrivacyPolicy: (server: ServerEntry) => void;
 }) {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -106,7 +108,7 @@ export default function LoginModal({
 
   const canSubmit = (tab: string) => {
     return tab === TAB_LOGIN ? validateLogin() : validateRegister();
-  }
+  };
 
   const submitForm = () => {
     if (!canSubmit(tab)) return;
@@ -114,14 +116,16 @@ export default function LoginModal({
     if (tab === TAB_LOGIN) {
       onSubmit(username, password);
     } // TODO: Register
-  }
+  };
 
   return (
     <Modal show={show} onHide={() => setShow(false)} centered={true}>
-      <Form onSubmit={(e) => {
-        e.preventDefault();
-        submitForm();
-      }}>
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          submitForm();
+        }}
+      >
         <Modal.Header>
           <Modal.Title>{server?.description}</Modal.Title>
         </Modal.Header>
@@ -196,6 +200,18 @@ export default function LoginModal({
                   isInvalid={email.length > 0 && !validateEmail(email)}
                 />
               </Form.Group>
+              <div className="text-center">
+                <span>
+                  View this server's{" "}
+                  <span
+                    role="button"
+                    className="text-decoration-underline"
+                    onClick={() => onShowPrivacyPolicy(server!)}
+                  >
+                    privacy policy
+                  </span>
+                </span>
+              </div>
               <RequirementsTooltip
                 focusedControlId={activeControl}
                 controlId={CONTROL_ID_NEW_USERNAME}
