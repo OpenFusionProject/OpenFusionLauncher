@@ -18,6 +18,7 @@ pub struct InfoResponse {
     game_versions: Option<Vec<String>>,
     pub login_address: String,
     email_required: Option<bool>,
+    pub custom_loading_screen: Option<bool>,
 }
 impl InfoResponse {
     pub fn get_supported_versions(&self) -> Vec<String> {

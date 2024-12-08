@@ -142,19 +142,28 @@ async fn prep_launch(
             .ok_or(format!("Server {} not found", server_uuid))?
             .clone();
 
-        let (addr, versions) = match &server.info {
-            ServerInfo::Simple { ip, version } => (ip.clone(), vec![version.clone()]),
+        let addr;
+        let mut versions = Vec::new();
+        let mut custom_loading_screen = false;
+        match &server.info {
+            ServerInfo::Simple { ip, version } => {
+                addr = ip.clone();
+                versions.push(version.clone());
+            }
             ServerInfo::Endpoint(endpoint_host) => {
                 // Ask the endpoint server for the UUID of the current version
                 let Ok(api_info) = endpoint::get_info(endpoint_host).await else {
                     return Err("Failed to contact API server".into());
                 };
-                (
-                    api_info.login_address.clone(),
-                    api_info.get_supported_versions(),
-                )
+
+                if api_info.custom_loading_screen.is_some_and(|b| b) {
+                    custom_loading_screen = true;
+                }
+
+                addr = api_info.login_address.clone();
+                versions = api_info.get_supported_versions();
             }
-        };
+        }
 
         // Ensure the version is supported
         if !versions.contains(&version_uuid.to_string()) {
@@ -204,6 +213,11 @@ async fn prep_launch(
             cmd.args(["-r", &rankurl])
                 .args(["-i", &images])
                 .args(["-s", &sponsor]);
+
+            if custom_loading_screen {
+                let loading_images_url = format!("http://{}/launcher/loading", endpoint_host);
+                cmd.args(["--loaderimages", &loading_images_url]);
+            }
         }
 
         #[cfg(debug_assertions)]
