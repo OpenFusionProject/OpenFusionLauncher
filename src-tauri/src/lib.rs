@@ -176,7 +176,8 @@ async fn prep_launch(
             return Err(format!("Version {} not found", version_uuid).into());
         };
 
-        let cache_dir = util::get_cache_dir_for_version(version)?;
+        let base_cache_dir = &state.config.game_cache_path;
+        let cache_dir = util::get_cache_dir_for_version(base_cache_dir, version)?;
         unsafe {
             env::set_var("UNITY_FF_CACHE_DIR", cache_dir);
         }

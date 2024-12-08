@@ -62,8 +62,19 @@ pub fn resolve_server_addr(addr: &str) -> Result<String> {
     Ok(format!("{}:{}", ip, port))
 }
 
-pub fn get_cache_dir_for_version(version: &Version) -> Result<PathBuf> {
-    let cache_dir = get_app_statics().ff_cache_dir.clone();
+pub fn get_default_cache_dir() -> String {
+    get_app_statics().ff_cache_dir.to_string_lossy().to_string()
+}
+
+pub fn get_default_offline_cache_dir() -> String {
+    get_app_statics()
+        .offline_cache_dir
+        .to_string_lossy()
+        .to_string()
+}
+
+pub fn get_cache_dir_for_version(base_cache_dir: &str, version: &Version) -> Result<PathBuf> {
+    let cache_dir = PathBuf::from(base_cache_dir);
     let build_dir = cache_dir.join(version.get_uuid().to_string());
     std::fs::create_dir_all(&build_dir)?;
     Ok(build_dir)

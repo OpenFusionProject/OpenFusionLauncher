@@ -28,6 +28,7 @@ pub struct AppStatics {
     pub app_data_dir: PathBuf,
     pub resource_dir: PathBuf,
     pub ff_cache_dir: PathBuf,
+    pub offline_cache_dir: PathBuf,
     pub ffrunner_log_path: PathBuf,
 }
 impl AppStatics {
@@ -39,6 +40,9 @@ impl AppStatics {
         let ff_cache_dir = path_resolver
             .resolve("ffcache", BaseDirectory::AppCache)
             .unwrap();
+        let offline_cache_dir = path_resolver
+            .resolve("offline_cache", BaseDirectory::AppCache)
+            .unwrap();
         let ffrunner_log_path = path_resolver
             .resolve("ffrunner.log", BaseDirectory::AppCache)
             .unwrap();
@@ -47,6 +51,7 @@ impl AppStatics {
             app_data_dir,
             resource_dir,
             ff_cache_dir,
+            offline_cache_dir,
             ffrunner_log_path,
         }
     }
@@ -142,33 +147,19 @@ impl AppState {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct Config {
-    #[serde(alias = "autoupdate-check")]
     #[serde(default = "util::true_fn")]
-    autoupdate_check: bool,
+    pub check_for_updates: bool,
 
-    #[serde(alias = "cache-swapping")]
     #[serde(default = "util::true_fn")]
-    cache_swapping: bool,
+    pub use_offline_caches: bool,
 
-    #[serde(alias = "enable-offline-cache")]
-    #[serde(default = "util::true_fn")]
-    enable_offline_cache: bool,
+    #[serde(default = "util::get_default_cache_dir")]
+    pub game_cache_path: String,
 
-    #[serde(alias = "verify-offline-cache")]
-    #[serde(default = "util::false_fn")]
-    verify_offline_cache: bool,
-}
-impl Default for Config {
-    fn default() -> Self {
-        Self {
-            autoupdate_check: true,
-            cache_swapping: true,
-            enable_offline_cache: true,
-            verify_offline_cache: false,
-        }
-    }
+    #[serde(default = "util::get_default_offline_cache_dir")]
+    pub offline_cache_path: String,
 }
 impl Config {
     fn new() -> Self {

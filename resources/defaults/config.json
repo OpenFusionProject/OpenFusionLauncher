@@ -1,7 +1,4 @@
 {
-    "autoupdate-check": true,
-    "cache-swapping": true,
-    "enable-offline-cache": true,
-    "verify-offline-cache": false,
-    "last-version-initialized": "1.0"
+    "check_for_updates": true,
+    "use_offline_caches": true
 }
