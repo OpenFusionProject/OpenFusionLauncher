@@ -454,7 +454,7 @@ export default function Home() {
                 text="Connect "
               />
               <Button
-                onClick={stub}
+                onClick={() => window.location.href = "/builds"}
                 enabled={true}
                 variant="primary"
                 icon="database"
