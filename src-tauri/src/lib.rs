@@ -2,7 +2,7 @@ mod endpoint;
 mod state;
 mod util;
 
-use endpoint::Session;
+use endpoint::{InfoResponse, RegisterResponse, Session};
 use serde::{Deserialize, Serialize};
 use state::{get_app_statics, AppState, FlatServer, FrontendServers, Server, ServerInfo, Versions};
 
@@ -42,6 +42,33 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
         Ok(exit_code.code().unwrap_or(0))
     };
     debug!("do_launch");
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
+async fn do_register(
+    app_handle: tauri::AppHandle,
+    server_uuid: Uuid,
+    username: String,
+    password: String,
+    email: String,
+) -> CommandResult<RegisterResponse> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let server = state
+            .servers
+            .get_entry(server_uuid)
+            .ok_or(format!("Server {} not found", server_uuid))?;
+
+        let ServerInfo::Endpoint(endpoint_host) = &server.info else {
+            return Err("Server is not an endpoint server".into());
+        };
+
+        let response = endpoint::register_user(&username, &password, &email, endpoint_host).await?;
+        Ok(response)
+    };
+    debug!("do_register");
     internal.await.map_err(|e: Error| e.to_string())
 }
 
@@ -225,6 +252,25 @@ async fn reload_state(app_handle: tauri::AppHandle) -> bool {
 }
 
 #[tauri::command]
+async fn get_info_for_server(
+    app_handle: tauri::AppHandle,
+    uuid: Uuid,
+) -> CommandResult<InfoResponse> {
+    debug!("get_info_for_server {}", uuid);
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
+        let ServerInfo::Endpoint(endpoint_host) = &server.info else {
+            return Err("Server is not an endpoint server".into());
+        };
+        let info = endpoint::get_info(endpoint_host).await?;
+        Ok(info)
+    };
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
 async fn get_player_count_for_server(
     app_handle: tauri::AppHandle,
     uuid: Uuid,
@@ -350,8 +396,10 @@ pub fn run() {
             add_server,
             update_server,
             delete_server,
+            get_info_for_server,
             get_player_count_for_server,
             import_from_openfusionclient,
+            do_register,
             do_login,
             get_session,
             prep_launch,

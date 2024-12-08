@@ -21,6 +21,7 @@ import {
   VersionEntry,
   Versions,
   LoginSession,
+  RegistrationResult,
 } from "./types";
 
 import LauncherPage from "./LauncherPage";
@@ -226,6 +227,26 @@ export default function Home() {
     }
     stopLoading("launch");
   };
+
+  const onRegister = async (serverUuid: string, username: string, password: string, email: string) => {
+    try {
+      const res: RegistrationResult = await invoke("do_register", {
+        serverUuid: serverUuid,
+        username: username,
+        password: password,
+        email: email,
+      });
+
+      if (res.can_login) {
+        alertSuccess(res.resp);
+        onLogin(serverUuid, username, password);
+      } else {
+        alertInfo(res.resp);
+      }
+    } catch (e: unknown) {
+      alertError("Failed to register (" + e + ")");
+    }
+  }
 
   const onLogin = async (serverUuid: string, username: string, password: string) => {
     try {
@@ -489,8 +510,11 @@ export default function Home() {
         server={getSelectedServer()}
         show={showLoginModal}
         setShow={setShowLoginModal}
-        onSubmit={(username, password) => {
+        onSubmitLogin={(username, password) => {
           onLogin(getSelectedServer()!.uuid, username, password);
+        }}
+        onSubmitRegister={(username, password, email) => {
+          onRegister(getSelectedServer()!.uuid, username, password, email);
         }}
         onShowPrivacyPolicy={(server) => stub()}
       />

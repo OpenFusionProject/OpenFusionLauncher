@@ -7,8 +7,9 @@ import Tab from "react-bootstrap/Tab";
 
 import Button from "./Button";
 
-import { ServerEntry } from "./types";
+import { EndpointInfo, ServerEntry } from "./types";
 import { Overlay, Tooltip } from "react-bootstrap";
+import { invoke } from "@tauri-apps/api/core";
 
 const TAB_LOGIN = "login";
 const TAB_REGISTER = "register";
@@ -19,6 +20,14 @@ const CONTROL_ID_NEW_USERNAME = "newUsername";
 const CONTROL_ID_NEW_PASSWORD = "newPassword";
 const CONTROL_ID_CONFIRM_PASSWORD = "confirmPassword";
 const CONTROL_ID_EMAIL = "email";
+
+const checkEmailRequired = async (server: ServerEntry) => {
+  if (!server.endpoint) return false;
+  const info: EndpointInfo = await invoke("get_info_for_server", {
+    uuid: server.uuid,
+  });
+  return info.email_required ?? false;
+};
 
 const validateUsername = (username: string) => {
   // From OpenFusion:
@@ -35,7 +44,9 @@ const validatePassword = (password: string) => {
   return regex.test(password);
 };
 
-const validateEmail = (email: string) => {
+const validateEmail = (email: string, required: boolean) => {
+  if (!required && email.length === 0) return true;
+
   // normal email regex
   const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return regex.test(email);
@@ -63,13 +74,15 @@ export default function LoginModal({
   server,
   show,
   setShow,
-  onSubmit,
+  onSubmitLogin,
+  onSubmitRegister,
   onShowPrivacyPolicy,
 }: {
   server?: ServerEntry;
   show: boolean;
   setShow: (newShow: boolean) => void;
-  onSubmit: (username: string, password: string) => void;
+  onSubmitLogin: (username: string, password: string) => void;
+  onSubmitRegister: (username: string, password: string, email: string) => void;
   onShowPrivacyPolicy: (server: ServerEntry) => void;
 }) {
   const [username, setUsername] = useState<string>("");
@@ -82,6 +95,8 @@ export default function LoginModal({
 
   const [tab, setTab] = useState<string>(TAB_LOGIN);
 
+  const [emailRequired, setEmailRequired] = useState<boolean>(false);
+
   const validateLogin = () => {
     return username.length > 0 && password.length > 0;
   };
@@ -91,7 +106,7 @@ export default function LoginModal({
       validateUsername(username) &&
       validatePassword(password) &&
       password === confirmPassword &&
-      validateEmail(email)
+      validateEmail(email, emailRequired)
     );
   };
 
@@ -104,6 +119,9 @@ export default function LoginModal({
 
   useEffect(() => {
     clear();
+    if (server) {
+      checkEmailRequired(server).then(setEmailRequired);
+    }
   }, [server]);
 
   const canSubmit = (tab: string) => {
@@ -114,8 +132,10 @@ export default function LoginModal({
     if (!canSubmit(tab)) return;
     setShow(false);
     if (tab === TAB_LOGIN) {
-      onSubmit(username, password);
-    } // TODO: Register
+      onSubmitLogin(username, password);
+    } else if (tab === TAB_REGISTER) {
+      onSubmitRegister(username, password, email);
+    }
   };
 
   return (
@@ -193,11 +213,11 @@ export default function LoginModal({
               <Form.Group className="mb-3" controlId={CONTROL_ID_EMAIL}>
                 <Form.Control
                   type="text"
-                  placeholder="Email"
+                  placeholder={"Email" + (emailRequired ? "" : " (optional)")}
                   value={email}
                   onFocus={() => setActiveControl(CONTROL_ID_EMAIL)}
                   onChange={(e) => setEmail(e.target.value)}
-                  isInvalid={email.length > 0 && !validateEmail(email)}
+                  isInvalid={email.length > 0 && !validateEmail(email, emailRequired)}
                 />
               </Form.Group>
               <div className="text-center">

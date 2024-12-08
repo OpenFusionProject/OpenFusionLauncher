@@ -10,13 +10,14 @@ use crate::Error;
 use crate::Result;
 
 #[allow(dead_code)]
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct InfoResponse {
     pub api_version: String,
     pub secure_apis_enabled: bool,
     game_version: Option<String>,
     game_versions: Option<Vec<String>>,
     pub login_address: String,
+    email_required: Option<bool>,
 }
 impl InfoResponse {
     pub fn get_supported_versions(&self) -> Vec<String> {
@@ -47,6 +48,19 @@ pub struct Session {
     session_token: String,
 }
 
+#[derive(Serialize)]
+pub struct RegisterRequest {
+    username: String,
+    password: String,
+    email: Option<String>,
+}
+
+#[derive(Serialize)]
+pub struct RegisterResponse {
+    resp: String,
+    can_login: bool,
+}
+
 #[allow(dead_code)]
 #[derive(Deserialize)]
 pub struct CookieResponse {
@@ -69,6 +83,38 @@ pub async fn get_status(endpoint_host: &str) -> Result<StatusResponse> {
     let status_json = util::do_simple_get(&format!("https://{}/status", endpoint_host)).await?;
     let status: StatusResponse = serde_json::from_str(&status_json)?;
     Ok(status)
+}
+
+pub async fn register_user(
+    username: &str,
+    password: &str,
+    email: &str,
+    endpoint_host: &str,
+) -> Result<RegisterResponse> {
+    debug!("Registering user {}", username);
+    let req = RegisterRequest {
+        username: username.to_string(),
+        password: password.to_string(),
+        email: if email.is_empty() {
+            None
+        } else {
+            Some(email.to_string())
+        },
+    };
+    let url = format!("https://{}/account/register", endpoint_host);
+    let client = reqwest::Client::new();
+    let res = client.post(&url).json(&req).send().await?;
+
+    let status = res.status();
+    let body = res.text().await?;
+    if status.is_success() {
+        Ok(RegisterResponse {
+            resp: body,
+            can_login: status == StatusCode::CREATED,
+        })
+    } else {
+        Err(make_api_error(&url, status, &body))
+    }
 }
 
 pub async fn get_refresh_token(

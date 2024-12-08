@@ -48,4 +48,13 @@ export type ImportCounts = {
 export type LoginSession = {
   username: string;
   session_token: string;
-}
+};
+
+export type RegistrationResult = {
+  resp: string;
+  can_login: boolean;
+};
+
+export type EndpointInfo = {
+  email_required?: boolean;
+};
