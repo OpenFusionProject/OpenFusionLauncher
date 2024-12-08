@@ -24,7 +24,6 @@ import {
   RegistrationResult,
 } from "./types";
 
-import LauncherPage from "./LauncherPage";
 import ServerList from "./ServerList";
 import AlertList from "./AlertList";
 import Button from "./Button";
@@ -32,7 +31,6 @@ import LoadingScreen from "./LoadingScreen";
 import EditServerModal from "./EditServerModal";
 import DeleteServerModal from "./DeleteServerModal";
 import AboutModal from "./AboutModal";
-import SelectVersionModal from "./SelectVersionModal";
 import LoginModal from "./LoginModal";
 import BackgroundImages from "./BackgroundImages";
 import LogoImages from "./LogoImages";
@@ -522,11 +520,6 @@ export default function Home() {
         setShow={setShowAboutModal}
         version={launcherVersion}
       />
-      <LauncherPage show={showConfigPage} inactiveX={-1}>
-        <div id="page-config">
-          <div className="mx-auto text-center">hehe dong</div>
-        </div>
-      </LauncherPage>
     </>
   );
 }

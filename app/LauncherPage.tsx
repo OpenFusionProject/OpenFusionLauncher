@@ -1,18 +1,23 @@
+import { Container, Row, Col } from "react-bootstrap";
+import NavBar from "./NavBar";
+
 export default function LauncherPage({
-  show,
-  inactiveX,
+  title,
   children,
+  buttons,
 }: Readonly<{
-  show: boolean;
-  inactiveX: number;
+  title?: string;
   children: React.ReactNode;
+  buttons?: React.ReactNode;
 }>) {
   return (
-    <div
-      className="launcher-page"
-      style={show ? { left: 0 } : { left: inactiveX * 100 + "%" }}
-    >
-      {children}
+    <div className="launcher-page">
+      <div className="launcher-page-header border-bottom border-primary">
+        <NavBar title={title} buttons={buttons} />
+      </div>
+      <div className="launcher-page-content">
+        {children}
+      </div>
     </div>
   );
 }

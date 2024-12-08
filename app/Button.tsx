@@ -3,6 +3,7 @@ export default function Button({
   enabled,
   variant,
   icon,
+  iconLeft,
   tooltip,
   text
 }: {
@@ -10,6 +11,7 @@ export default function Button({
   enabled: boolean;
   variant: string;
   icon?: string;
+  iconLeft?: boolean;
   tooltip?: string;
   text?: string;
 }) {
@@ -24,8 +26,9 @@ export default function Button({
       title={tooltip}
       onClick={onClick}
     >
+      {iconLeft && icon && <i className={"fas fa-" + icon}></i>}
       {text && <span>{text}</span>}
-      {icon && <i className={"fas fa-" + icon}></i>}
+      {!iconLeft && icon && <i className={"fas fa-" + icon}></i>}
     </button>
   )
 }
