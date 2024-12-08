@@ -516,7 +516,6 @@ export default function Home() {
         onSubmitRegister={(username, password, email) => {
           onRegister(getSelectedServer()!.uuid, username, password, email);
         }}
-        onShowPrivacyPolicy={(server) => stub()}
       />
       <AboutModal
         show={showAboutModal}

@@ -10,6 +10,7 @@ import Button from "./Button";
 import { EndpointInfo, ServerEntry } from "./types";
 import { Overlay, Tooltip } from "react-bootstrap";
 import { invoke } from "@tauri-apps/api/core";
+import { open } from "@tauri-apps/plugin-shell";
 
 const TAB_LOGIN = "login";
 const TAB_REGISTER = "register";
@@ -20,6 +21,10 @@ const CONTROL_ID_NEW_USERNAME = "newUsername";
 const CONTROL_ID_NEW_PASSWORD = "newPassword";
 const CONTROL_ID_CONFIRM_PASSWORD = "confirmPassword";
 const CONTROL_ID_EMAIL = "email";
+
+const getPrivacyPolicyUrl = (server: ServerEntry) => {
+  return "http://" + server.endpoint + "/privacy";
+}
 
 const checkEmailRequired = async (server: ServerEntry) => {
   if (!server.endpoint) return false;
@@ -76,14 +81,12 @@ export default function LoginModal({
   setShow,
   onSubmitLogin,
   onSubmitRegister,
-  onShowPrivacyPolicy,
 }: {
   server?: ServerEntry;
   show: boolean;
   setShow: (newShow: boolean) => void;
   onSubmitLogin: (username: string, password: string) => void;
   onSubmitRegister: (username: string, password: string, email: string) => void;
-  onShowPrivacyPolicy: (server: ServerEntry) => void;
 }) {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -226,7 +229,10 @@ export default function LoginModal({
                   <span
                     role="button"
                     className="text-decoration-underline"
-                    onClick={() => onShowPrivacyPolicy(server!)}
+                    onClick={() => {
+                      const url = getPrivacyPolicyUrl(server!);
+                      open(url);
+                    }}
                   >
                     privacy policy
                   </span>

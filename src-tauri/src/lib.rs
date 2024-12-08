@@ -394,6 +394,7 @@ pub fn run() {
                         .build(),
                 )?;
             }
+            app.handle().plugin(tauri_plugin_shell::init())?;
 
             state::init_app_statics(app);
             info!("OpenFusion Launcher v{}", get_app_statics().get_version());
