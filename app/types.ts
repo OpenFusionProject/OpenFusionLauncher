@@ -23,6 +23,8 @@ export type VersionEntry = {
   name?: string;
   description?: string;
   hidden?: boolean;
+  total_compressed_size?: number;
+  total_uncompressed_size?: number;
 };
 
 export type Versions = {

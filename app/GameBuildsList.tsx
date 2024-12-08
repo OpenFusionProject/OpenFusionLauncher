@@ -3,6 +3,15 @@ import Button from "./Button";
 
 import { VersionEntry } from "./types";
 
+const BYTES_PER_GB = 1024 * 1024 * 1024;
+
+const formatBytesToGB = (bytes?: number) => {
+  if (bytes == undefined) {
+    return undefined;
+  }
+  return (bytes / BYTES_PER_GB).toFixed(2);
+}
+
 export default function GameBuildsList({
   versions,
   clearGameCache,
@@ -59,7 +68,7 @@ export default function GameBuildsList({
                   )}
                 </td>
                 <td className="text-center">
-                  <p>?.?? / ?.?? GB</p>
+                  <p>-- / {formatBytesToGB(version.total_uncompressed_size) ?? "?.??"} GB</p>
                   <Button
                     enabled={false}
                     icon="trash"
@@ -69,7 +78,7 @@ export default function GameBuildsList({
                   />
                 </td>
                 <td className="text-center">
-                  <p>?.?? / ?.?? GB</p>
+                  <p>-- / {formatBytesToGB(version.total_compressed_size) ?? "?.??"} GB</p>
                   <Button
                     enabled={true}
                     icon="download"
