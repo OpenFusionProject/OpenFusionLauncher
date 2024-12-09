@@ -81,7 +81,7 @@ export default function GameBuildsPage() {
               };
             });
           })
-          .catch((e) => {});
+          .catch((e) => { console.log("error with game validation: " + e) });
       } else {
         setVersionData((prevVersionData) => {
           const oldData = prevVersionData[version.uuid] ?? {
@@ -112,7 +112,7 @@ export default function GameBuildsPage() {
               };
             });
           })
-          .catch((e) => {});
+          .catch((e) => { console.log("error with offline validation: " + e) });
       } else {
         setVersionData((prevVersionData) => {
           const oldData = prevVersionData[version.uuid] ?? {
@@ -150,7 +150,6 @@ export default function GameBuildsPage() {
   };
 
   const handleValidationEvent = (e: ValidationEvent, offline: boolean) => {
-    console.log(e);
     setVersionData((prevVersionData) => {
       const oldData = prevVersionData[e.uuid] ?? {
         offlineSize: undefined,
@@ -160,7 +159,6 @@ export default function GameBuildsPage() {
       const newData = offline
         ? { ...oldData, offlineSize: newBytes }
         : { ...oldData, gameSize: newBytes };
-      console.log(newData);
       return {
         ...prevVersionData,
         [e.uuid]: newData,
