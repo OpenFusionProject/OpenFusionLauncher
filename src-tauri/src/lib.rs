@@ -7,7 +7,14 @@ use ffbuildtool::ItemProgress;
 use serde::{Deserialize, Serialize};
 use state::{get_app_statics, AppState, FlatServer, FrontendServers, Server, ServerInfo, Versions};
 
-use std::{collections::HashMap, env, sync::OnceLock};
+use std::{
+    collections::HashSet,
+    env,
+    sync::{
+        atomic::{AtomicU64, Ordering},
+        Arc, OnceLock, RwLock,
+    },
+};
 use tokio::sync::Mutex;
 
 use log::*;
@@ -245,14 +252,13 @@ async fn prep_launch(
 
 #[tauri::command]
 async fn validate_version_game(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<bool> {
-    static TRACKING: OnceLock<std::sync::Mutex<HashMap<Uuid, u64>>> = OnceLock::new();
+    static IN_PROGRESS: OnceLock<RwLock<HashSet<Uuid>>> = OnceLock::new();
 
-    fn callback(uuid: &Uuid, _item_name: &str, item_progress: ItemProgress) {
+    let total_size = Arc::new(AtomicU64::new(0));
+    let callback = move |uuid: &Uuid, _item_name: &str, item_progress: ItemProgress| {
         if let ItemProgress::Completed(sz) = item_progress {
-            let mut tracking = TRACKING.get().unwrap().lock().unwrap();
-            let old_sz = tracking.get(uuid).copied().unwrap();
+            let old_sz = total_size.fetch_add(sz, Ordering::AcqRel);
             let new_sz = old_sz + sz;
-            tracking.insert(*uuid, new_sz);
             let event = ValidationEvent {
                 uuid: *uuid,
                 sz: new_sz,
@@ -261,7 +267,8 @@ async fn validate_version_game(app_handle: tauri::AppHandle, uuid: Uuid) -> Comm
                 warn!("Failed to emit validated_item_game event: {}", e);
             }
         }
-    }
+    };
+    let callback = Arc::new(callback);
 
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
@@ -275,21 +282,27 @@ async fn validate_version_game(app_handle: tauri::AppHandle, uuid: Uuid) -> Comm
         drop(state); // give up the state lock
 
         {
-            let mut tracking = TRACKING
-                .get_or_init(|| std::sync::Mutex::new(HashMap::new()))
-                .lock()
+            let tracking = IN_PROGRESS
+                .get_or_init(|| std::sync::RwLock::new(HashSet::new()))
+                .read()
                 .unwrap();
-            if tracking.contains_key(&uuid) {
+            if tracking.contains(&uuid) {
                 return Err(format!("Already validating game cache for {}", uuid).into());
             }
-            tracking.insert(uuid, 0);
+        }
+
+        {
+            let mut tracking = IN_PROGRESS.get().unwrap().write().unwrap();
+            tracking.insert(uuid);
         }
 
         let passed = version
             .validate_uncompressed(&path.to_string_lossy(), Some(callback))
             .await
             .is_ok_and(|corrupted| corrupted.is_empty());
-        TRACKING.get().unwrap().lock().unwrap().remove(&uuid);
+
+        let mut tracking = IN_PROGRESS.get().unwrap().write().unwrap();
+        tracking.remove(&uuid);
         Ok(passed)
     };
     debug!("validate_version_game {}", uuid);
@@ -298,14 +311,13 @@ async fn validate_version_game(app_handle: tauri::AppHandle, uuid: Uuid) -> Comm
 
 #[tauri::command]
 async fn validate_version_offline(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<bool> {
-    static TRACKING: OnceLock<std::sync::Mutex<HashMap<Uuid, u64>>> = OnceLock::new();
+    static IN_PROGRESS: OnceLock<std::sync::RwLock<HashSet<Uuid>>> = OnceLock::new();
 
-    fn callback(uuid: &Uuid, _item_name: &str, item_progress: ItemProgress) {
+    let total_size = Arc::new(AtomicU64::new(0));
+    let callback = move |uuid: &Uuid, _item_name: &str, item_progress: ItemProgress| {
         if let ItemProgress::Completed(sz) = item_progress {
-            let mut tracking = TRACKING.get().unwrap().lock().unwrap();
-            let old_sz = tracking.get(uuid).copied().unwrap();
+            let old_sz = total_size.fetch_add(sz, Ordering::AcqRel);
             let new_sz = old_sz + sz;
-            tracking.insert(*uuid, new_sz);
             let event = ValidationEvent {
                 uuid: *uuid,
                 sz: new_sz,
@@ -317,7 +329,8 @@ async fn validate_version_offline(app_handle: tauri::AppHandle, uuid: Uuid) -> C
                 warn!("Failed to emit validated_item_offline event: {}", e);
             }
         }
-    }
+    };
+    let callback = Arc::new(callback);
 
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
@@ -331,21 +344,27 @@ async fn validate_version_offline(app_handle: tauri::AppHandle, uuid: Uuid) -> C
         drop(state); // give up the state lock
 
         {
-            let mut tracking = TRACKING
-                .get_or_init(|| std::sync::Mutex::new(HashMap::new()))
-                .lock()
+            let tracking = IN_PROGRESS
+                .get_or_init(|| std::sync::RwLock::new(HashSet::new()))
+                .read()
                 .unwrap();
-            if tracking.contains_key(&uuid) {
+            if tracking.contains(&uuid) {
                 return Err(format!("Already validating offline cache for {}", uuid).into());
             }
-            tracking.insert(uuid, 0);
+        }
+
+        {
+            let mut tracking = IN_PROGRESS.get().unwrap().write().unwrap();
+            tracking.insert(uuid);
         }
 
         let passed = version
             .validate_compressed(&path.to_string_lossy(), Some(callback))
             .await
             .is_ok_and(|corrupted| corrupted.is_empty());
-        TRACKING.get().unwrap().lock().unwrap().remove(&uuid);
+
+        let mut tracking = IN_PROGRESS.get().unwrap().write().unwrap();
+        tracking.remove(&uuid);
         Ok(passed)
     };
     debug!("validate_version_offline {}", uuid);

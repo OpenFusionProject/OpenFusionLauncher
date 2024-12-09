@@ -902,8 +902,8 @@ dependencies = [
 
 [[package]]
 name = "ffbuildtool"
-version = "2.0.0"
-source = "git+https://github.com/OpenFusionProject/ffbuildtool.git#2ee198516f4e68b1639f4ab4ff1bdd607b730e63"
+version = "3.0.1"
+source = "git+https://github.com/OpenFusionProject/ffbuildtool.git#e39624f4846d1c91d36718b897e40e7d8812bccf"
 dependencies = [
  "futures-util",
  "log",
@@ -4776,7 +4776,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]
