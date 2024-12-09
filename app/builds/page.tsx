@@ -2,17 +2,27 @@
 
 import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Alert, LoadingTask, VersionEntry, Versions } from "../types";
+import { listen } from "@tauri-apps/api/event";
+import {
+  Alert,
+  LoadingTask,
+  ValidationEvent,
+  VersionCacheData,
+  VersionEntry,
+  Versions,
+} from "../types";
 import GameBuildsList from "../GameBuildsList";
 import LauncherPage from "../LauncherPage";
-import Button from "../Button"
+import Button from "../Button";
 import AlertList from "../AlertList";
 import LoadingScreen from "../LoadingScreen";
 
 export default function GameBuildsPage() {
-
   const [loaded, setLoaded] = useState<boolean>(false);
   const [versions, setVersions] = useState<VersionEntry[]>([]);
+  const [versionData, setVersionData] = useState<
+    Record<string, VersionCacheData>
+  >({});
 
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>([]);
@@ -51,13 +61,76 @@ export default function GameBuildsPage() {
 
   const stub = () => {
     alertInfo("hehe dong");
-  }
+  };
 
   const fetchVersions = async () => {
     await invoke("reload_state");
     const versionData: Versions = await invoke("get_versions");
     setVersions(versionData.versions);
     setLoaded(true);
+    for (const version of versionData.versions) {
+      if (version.total_uncompressed_size) {
+        invoke("validate_version_game", { uuid: version.uuid })
+          .then((_) => {
+            setVersionData((prevVersionData) => {
+              const oldData = prevVersionData[version.uuid]!;
+              const newData = { ...oldData, gameDone: true };
+              return {
+                ...prevVersionData,
+                [version.uuid]: newData,
+              };
+            });
+          })
+          .catch((e) => {});
+      } else {
+        setVersionData((prevVersionData) => {
+          const oldData = prevVersionData[version.uuid] ?? {
+            offlineSize: undefined,
+            gameSize: undefined,
+          };
+          const newData = { ...oldData, gameDone: true };
+          return {
+            ...prevVersionData,
+            [version.uuid]: newData,
+          };
+        });
+      }
+
+      if (version.total_compressed_size && version.main_file_info) {
+        invoke("validate_version_offline", { uuid: version.uuid })
+          .then((passed) => {
+            setVersionData((prevVersionData) => {
+              const oldData = prevVersionData[version.uuid]!;
+              const newData = {
+                ...oldData,
+                offlineDone: true,
+                offlineCorrupted: !passed,
+              };
+              return {
+                ...prevVersionData,
+                [version.uuid]: newData,
+              };
+            });
+          })
+          .catch((e) => {});
+      } else {
+        setVersionData((prevVersionData) => {
+          const oldData = prevVersionData[version.uuid] ?? {
+            offlineSize: undefined,
+            gameSize: undefined,
+          };
+          const newData = {
+            ...oldData,
+            offlineDone: true,
+            offlineCorrupted: false,
+          };
+          return {
+            ...prevVersionData,
+            [version.uuid]: newData,
+          };
+        });
+      }
+    }
   };
 
   const clearGameCache = async (uuid: string) => {
@@ -66,18 +139,47 @@ export default function GameBuildsPage() {
 
   const downloadOfflineCache = async (uuid: string) => {
     stub();
-  }
+  };
 
   const repairOfflineCache = async (uuid: string) => {
     stub();
-  }
+  };
 
   const deleteOfflineCache = async (uuid: string) => {
     stub();
-  }
+  };
+
+  const handleValidationEvent = (e: ValidationEvent, offline: boolean) => {
+    console.log(e);
+    setVersionData((prevVersionData) => {
+      const oldData = prevVersionData[e.uuid] ?? {
+        offlineSize: undefined,
+        gameSize: undefined,
+      };
+      const newBytes = e.sz;
+      const newData = offline
+        ? { ...oldData, offlineSize: newBytes }
+        : { ...oldData, gameSize: newBytes };
+      console.log(newData);
+      return {
+        ...prevVersionData,
+        [e.uuid]: newData,
+      };
+    });
+  };
+
+  const registerValidationEventListeners = () => {
+    listen<ValidationEvent>("validated_item_game", (e) => {
+      handleValidationEvent(e.payload, false);
+    });
+    listen<ValidationEvent>("validated_item_offline", (e) => {
+      handleValidationEvent(e.payload, true);
+    });
+  };
 
   useEffect(() => {
     fetchVersions();
+    registerValidationEventListeners();
 
     // Clean up
     return () => {
@@ -107,6 +209,7 @@ export default function GameBuildsPage() {
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
       <GameBuildsList
         versions={loaded ? versions : undefined}
+        versionData={versionData}
         clearGameCache={clearGameCache}
         downloadOfflineCache={downloadOfflineCache}
         repairOfflineCache={repairOfflineCache}

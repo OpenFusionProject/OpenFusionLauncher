@@ -25,6 +25,9 @@ export type VersionEntry = {
   hidden?: boolean;
   total_compressed_size?: number;
   total_uncompressed_size?: number;
+  main_file_info?: {
+    size: number;
+  };
 };
 
 export type Versions = {
@@ -59,4 +62,17 @@ export type RegistrationResult = {
 
 export type EndpointInfo = {
   email_required?: boolean;
+};
+
+export type VersionCacheData = {
+  gameSize?: number;
+  gameDone: boolean;
+  offlineSize?: number;
+  offlineDone: boolean;
+  offlineCorrupted: boolean;
+};
+
+export type ValidationEvent = {
+  uuid: string;
+  sz: number;
 };

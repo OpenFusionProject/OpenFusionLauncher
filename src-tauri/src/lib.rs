@@ -3,14 +3,15 @@ mod state;
 mod util;
 
 use endpoint::{InfoResponse, RegisterResponse, Session};
+use ffbuildtool::ItemProgress;
 use serde::{Deserialize, Serialize};
 use state::{get_app_statics, AppState, FlatServer, FrontendServers, Server, ServerInfo, Versions};
 
-use std::env;
+use std::{collections::HashMap, env, sync::OnceLock};
 use tokio::sync::Mutex;
 
 use log::*;
-use tauri::Manager;
+use tauri::{Emitter, Manager};
 use uuid::Uuid;
 
 type Error = Box<dyn std::error::Error>;
@@ -29,6 +30,12 @@ struct NewServerDetails {
     ip: Option<String>,
     version: Option<String>,
     endpoint: Option<String>,
+}
+
+#[derive(Serialize, Clone)]
+struct ValidationEvent {
+    uuid: Uuid,
+    sz: u64,
 }
 
 #[tauri::command]
@@ -237,6 +244,115 @@ async fn prep_launch(
 }
 
 #[tauri::command]
+async fn validate_version_game(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<bool> {
+    static TRACKING: OnceLock<std::sync::Mutex<HashMap<Uuid, u64>>> = OnceLock::new();
+
+    fn callback(uuid: &Uuid, _item_name: &str, item_progress: ItemProgress) {
+        if let ItemProgress::Completed(sz) = item_progress {
+            let mut tracking = TRACKING.get().unwrap().lock().unwrap();
+            let old_sz = tracking.get(uuid).copied().unwrap();
+            let new_sz = old_sz + sz;
+            tracking.insert(*uuid, new_sz);
+            let event = ValidationEvent {
+                uuid: *uuid,
+                sz: new_sz,
+            };
+            if let Err(e) = get_app_statics().handle.emit("validated_item_game", event) {
+                warn!("Failed to emit validated_item_game event: {}", e);
+            }
+        }
+    }
+
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let version = state
+            .versions
+            .get_entry(uuid)
+            .ok_or("Version not found")?
+            .clone();
+        let path = util::get_cache_dir_for_version(&state.config.game_cache_path, &version)?;
+        drop(state); // give up the state lock
+
+        {
+            let mut tracking = TRACKING
+                .get_or_init(|| std::sync::Mutex::new(HashMap::new()))
+                .lock()
+                .unwrap();
+            if tracking.contains_key(&uuid) {
+                return Err(format!("Already validating game cache for {}", uuid).into());
+            }
+            tracking.insert(uuid, 0);
+        }
+
+        let passed = version
+            .validate_uncompressed(&path.to_string_lossy(), Some(callback))
+            .await
+            .is_ok_and(|corrupted| corrupted.is_empty());
+        TRACKING.get().unwrap().lock().unwrap().remove(&uuid);
+        Ok(passed)
+    };
+    debug!("validate_version_game {}", uuid);
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
+async fn validate_version_offline(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<bool> {
+    static TRACKING: OnceLock<std::sync::Mutex<HashMap<Uuid, u64>>> = OnceLock::new();
+
+    fn callback(uuid: &Uuid, _item_name: &str, item_progress: ItemProgress) {
+        if let ItemProgress::Completed(sz) = item_progress {
+            let mut tracking = TRACKING.get().unwrap().lock().unwrap();
+            let old_sz = tracking.get(uuid).copied().unwrap();
+            let new_sz = old_sz + sz;
+            tracking.insert(*uuid, new_sz);
+            let event = ValidationEvent {
+                uuid: *uuid,
+                sz: new_sz,
+            };
+            if let Err(e) = get_app_statics()
+                .handle
+                .emit("validated_item_offline", event)
+            {
+                warn!("Failed to emit validated_item_offline event: {}", e);
+            }
+        }
+    }
+
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let version = state
+            .versions
+            .get_entry(uuid)
+            .ok_or("Version not found")?
+            .clone();
+        let path = util::get_cache_dir_for_version(&state.config.offline_cache_path, &version)?;
+        drop(state); // give up the state lock
+
+        {
+            let mut tracking = TRACKING
+                .get_or_init(|| std::sync::Mutex::new(HashMap::new()))
+                .lock()
+                .unwrap();
+            if tracking.contains_key(&uuid) {
+                return Err(format!("Already validating offline cache for {}", uuid).into());
+            }
+            tracking.insert(uuid, 0);
+        }
+
+        let passed = version
+            .validate_compressed(&path.to_string_lossy(), Some(callback))
+            .await
+            .is_ok_and(|corrupted| corrupted.is_empty());
+        TRACKING.get().unwrap().lock().unwrap().remove(&uuid);
+        Ok(passed)
+    };
+    debug!("validate_version_offline {}", uuid);
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
 async fn import_from_openfusionclient(app_handle: tauri::AppHandle) -> CommandResult<ImportCounts> {
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
@@ -419,7 +535,9 @@ pub fn run() {
             do_login,
             get_session,
             prep_launch,
-            do_launch
+            do_launch,
+            validate_version_game,
+            validate_version_offline,
         ])
         .build(tauri::generate_context![])
         .unwrap()

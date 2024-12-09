@@ -5,7 +5,8 @@ export default function Button({
   icon,
   iconLeft,
   tooltip,
-  text
+  text,
+  loading
 }: {
   onClick: () => void;
   enabled: boolean;
@@ -14,21 +15,31 @@ export default function Button({
   iconLeft?: boolean;
   tooltip?: string;
   text?: string;
+  loading?: boolean;
 }) {
+  const actuallyEnabled = enabled && !loading;
   return (
     <button
       type="button"
-      className={"btn px-3 btn-" + variant + (enabled ? "" : " disabled")}
+      className={"btn px-3 btn-" + variant + (actuallyEnabled ? "" : " disabled")}
       data-bs-toggle="tooltip"
       data-bs-placement="top"
-      disabled={!enabled}
+      disabled={!actuallyEnabled}
       tabIndex={-1}
       title={tooltip}
       onClick={onClick}
     >
-      {iconLeft && icon && <i className={"fas fa-" + icon}></i>}
-      {text && <span>{text}</span>}
-      {!iconLeft && icon && <i className={"fas fa-" + icon}></i>}
+      {loading ? (
+        <div className="spinner-border spinner-border-sm" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      ) : (
+        <>
+          {iconLeft && icon && <i className={"fas fa-" + icon}></i>}
+          {text && <span>{text}</span>}
+          {!iconLeft && icon && <i className={"fas fa-" + icon}></i>}
+        </>
+      )}
     </button>
   )
 }
