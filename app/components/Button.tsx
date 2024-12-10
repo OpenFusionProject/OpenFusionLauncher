@@ -9,7 +9,7 @@ export default function Button({
   loading
 }: {
   onClick: () => void;
-  enabled: boolean;
+  enabled?: boolean;
   variant: string;
   icon?: string;
   iconLeft?: boolean;
@@ -17,7 +17,7 @@ export default function Button({
   text?: string;
   loading?: boolean;
 }) {
-  const actuallyEnabled = enabled && !loading;
+  const actuallyEnabled = (enabled ?? true) && !loading;
   return (
     <button
       type="button"

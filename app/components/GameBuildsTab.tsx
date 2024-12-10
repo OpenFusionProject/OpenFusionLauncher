@@ -26,7 +26,6 @@ export default function GameBuildsTab() {
     });
     setVersionData(data);
     updateSizes(data);
-    updateValidity(data);
   };
 
   const updateSizes = async (versionData: VersionCacheData[]) => {
@@ -52,35 +51,36 @@ export default function GameBuildsTab() {
           }
         });
       } catch (e) {}
+
+      updateValidity(v);
     }
   };
 
-  const updateValidity = async (versionData: VersionCacheData[]) => {
-    for (const v of versionData) {
-      try {
-        // for some reason, cakefall chokes the game cache validation.
-        // until we know why we will not run this.
-        const gameCorrupted: boolean = false; //await invoke("is_cache_corrupted", { uuid: v.version.uuid, offline: false });
-        setVersionData((prev) => {
-          const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);
-          if (pv) {
-            const nv = { ...pv, gameDone: true, gameCorrupted };
-            return prev?.map((pv) => (pv.version.uuid == v.version.uuid ? nv : pv));
-          }
-        });
-      } catch (e) { console.error("Game cache validation failed", v.version.uuid, e); }
+  const updateValidity = async (versionData: VersionCacheData) => {
+    const v = versionData;
+    try {
+      // for some reason, cakefall chokes the game cache validation.
+      // until we know why we will not run this.
+      const gameCorrupted: boolean = false; //await invoke("is_cache_corrupted", { uuid: v.version.uuid, offline: false });
+      setVersionData((prev) => {
+        const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);
+        if (pv) {
+          const nv = { ...pv, gameDone: true, gameCorrupted };
+          return prev?.map((pv) => (pv.version.uuid == v.version.uuid ? nv : pv));
+        }
+      });
+    } catch (e) { console.error("Game cache validation error", v.version.uuid, e); }
 
-      try {
-        const offlineCorrupted: boolean = await invoke("is_cache_corrupted", { uuid: v.version.uuid, offline: true });
-        setVersionData((prev) => {
-          const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);
-          if (pv) {
-            const nv = { ...pv, offlineDone: true, offlineCorrupted };
-            return prev?.map((pv) => (pv.version.uuid == v.version.uuid ? nv : pv));
-          }
-        });
-      } catch (e) { console.error("Offline cache validation failed", v.version.uuid, e); }
-    }
+    try {
+      const offlineCorrupted: boolean = await invoke("is_cache_corrupted", { uuid: v.version.uuid, offline: true });
+      setVersionData((prev) => {
+        const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);
+        if (pv) {
+          const nv = { ...pv, offlineDone: true, offlineCorrupted };
+          return prev?.map((pv) => (pv.version.uuid == v.version.uuid ? nv : pv));
+        }
+      });
+    } catch (e) { console.error("Offline cache validation error", v.version.uuid, e); }
   }
 
   const stub = () => {
@@ -112,10 +112,22 @@ export default function GameBuildsTab() {
   return (
     <GameBuildsList
       versionData={versionData}
-      clearGameCache={clearGameCache}
+      clearGameCache={(uuid) => {
+        if (ctx.showConfirmationModal) {
+          const version = versionData!.find((v) => v.version.uuid == uuid)!;
+          const label = version.version.name ?? ("version " + version.version.uuid);
+          ctx.showConfirmationModal("Are you sure you want to clear the game cache for " + label + "?", "Clear", "danger", clearGameCache.bind(null, uuid));
+        }
+      }}
       downloadOfflineCache={downloadOfflineCache}
       repairOfflineCache={repairOfflineCache}
-      deleteOfflineCache={deleteOfflineCache}
+      deleteOfflineCache={(uuid) => {
+        if (ctx.showConfirmationModal) {
+          const version = versionData!.find((v) => v.version.uuid == uuid)!;
+          const label = version.version.name ?? ("version " + version.version.uuid);
+          ctx.showConfirmationModal("Are you sure you want to delete the offline cache for " + label + "?", "Delete", "danger", deleteOfflineCache.bind(null, uuid));
+        }
+      }}
     />
   );
 }

@@ -2,17 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Alert, LoadingTask } from "@/app/types";
+import { Alert, LoadingTask, SettingsContext } from "@/app/types";
 import { SettingsCtx } from "@/app/contexts";
 import AlertList from "@/components/AlertList";
 import LoadingScreen from "@/components/LoadingScreen";
 import GameBuildsTab from "@/components/GameBuildsTab";
 import { Tab, Tabs } from "react-bootstrap";
 import LauncherPage from "@/components/LauncherPage";
+import ConfirmationModal from "../components/ConfirmationModal";
 
 export default function SettingsPage() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>([]);
+
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [confirmationMessage, setConfirmationMessage] = useState("");
+  const [confirmationConfirmText, setConfirmationConfirmText] = useState("");
+  const [confirmationConfirmVariant, setConfirmationConfirmVariant] = useState("");
+  const [confirmationOnConfirm, setConfirmationOnConfirm] = useState<() => void>(() => {});
 
   const pushAlert = (variant: string, text: string) => {
     const id = Math.floor(Math.random() * 1000000);
@@ -46,16 +53,25 @@ export default function SettingsPage() {
     setLoadingTasks(newTasks);
   };
 
+  const showConfirmationModal = (message: string, confirmText: string, confirmVariant: string, onConfirm: () => void) => {
+    setConfirmationMessage(message);
+    setConfirmationConfirmText(confirmText);
+    setConfirmationConfirmVariant(confirmVariant);
+    setConfirmationOnConfirm(() => onConfirm);
+    setShowConfirmation(true);
+  };
+
   useEffect(() => {
     invoke("reload_state");
   });
 
-  const ctx = {
+  const ctx: SettingsContext = {
     alertSuccess,
     alertInfo,
     alertError,
     startLoading,
     stopLoading,
+    showConfirmationModal,
   };
 
   return (
@@ -106,6 +122,17 @@ export default function SettingsPage() {
           </Tab>
         </Tabs>
       </LauncherPage>
+      <ConfirmationModal
+        show={showConfirmation}
+        setShow={setShowConfirmation}
+        message={confirmationMessage}
+        confirmText={confirmationConfirmText}
+        confirmVariant={confirmationConfirmVariant}
+        onConfirm={() => {
+          confirmationOnConfirm();
+          setShowConfirmation(false);
+        }}
+      />
     </SettingsCtx.Provider>
   );
 }
