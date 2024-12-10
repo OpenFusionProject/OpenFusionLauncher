@@ -12,49 +12,6 @@ const formatBytesToGB = (bytes?: number) => {
   return (bytes / BYTES_PER_GB).toFixed(2);
 };
 
-const getVersionData = (
-  version: VersionEntry,
-  versionData: Record<string, VersionCacheData>
-) => {
-  return versionData[version.uuid];
-};
-
-const isDoneValidatingOffline = (
-  version: VersionEntry,
-  versionData: Record<string, VersionCacheData>
-) => {
-  return getVersionData(version, versionData)?.offlineDone ?? false;
-};
-
-const isDoneValidatingGame = (
-  version: VersionEntry,
-  versionData: Record<string, VersionCacheData>
-) => {
-  return getVersionData(version, versionData)?.gameDone ?? false;
-};
-
-const getValidatedOfflineSize = (
-  version: VersionEntry,
-  versionData: Record<string, VersionCacheData>
-) => {
-  const data = getVersionData(version, versionData);
-  if (!data) {
-    return undefined;
-  }
-  return data.offlineSize;
-};
-
-const getValidatedGameSize = (
-  version: VersionEntry,
-  versionData: Record<string, VersionCacheData>
-) => {
-  const data = getVersionData(version, versionData);
-  if (!data) {
-    return undefined;
-  }
-  return data.gameSize;
-};
-
 const getTotalOfflineSize = (version: VersionEntry) => {
   if (!version.total_compressed_size || !version.main_file_info) {
     return undefined;
@@ -63,15 +20,13 @@ const getTotalOfflineSize = (version: VersionEntry) => {
 };
 
 export default function GameBuildsList({
-  versions,
   versionData,
   clearGameCache,
   downloadOfflineCache,
   repairOfflineCache,
   deleteOfflineCache,
 }: {
-  versions?: VersionEntry[];
-  versionData: Record<string, VersionCacheData>;
+  versionData?: VersionCacheData[];
   clearGameCache: (uuid: string) => void;
   downloadOfflineCache: (uuid: string) => void;
   repairOfflineCache: (uuid: string) => void;
@@ -88,7 +43,7 @@ export default function GameBuildsList({
           </tr>
         </thead>
         <tbody>
-          {!versions ? (
+          {!versionData ? (
             <tr>
               <td colSpan={3} className="text-center">
                 <span
@@ -98,14 +53,15 @@ export default function GameBuildsList({
                 ></span>
               </td>
             </tr>
-          ) : versions.length == 0 ? (
+          ) : versionData.length == 0 ? (
             <tr>
-              <td colSpan={3}>No versions available</td>
+              <td colSpan={3}>No builds available</td>
             </tr>
           ) : (
-            versions.map(
-              (version) =>
-                !version.hidden && (
+            versionData.map(
+              (versionData) => {
+                const version = versionData.version;
+                return !version.hidden && (
                   <tr key={version.uuid}>
                     <td className="font-monospace align-middle">
                       {version.name ?? version.uuid}
@@ -123,17 +79,14 @@ export default function GameBuildsList({
                     </td>
                     <td className="text-center">
                       <p>
-                        {formatBytesToGB(
-                          getValidatedGameSize(version, versionData)
-                        ) ?? "--"}{" "}
-                        /{" "}
-                        {formatBytesToGB(version.total_uncompressed_size) ??
-                          "?.??"}{" "}
-                        GB
+                        {formatBytesToGB(versionData.gameSize) ?? "--"}
+                        {" / "}
+                        {formatBytesToGB(version.total_uncompressed_size) ?? "?.??"}
+                        {" GB"}
                       </p>
                       <Button
-                        loading={!isDoneValidatingGame(version, versionData)}
-                        enabled={!!getValidatedGameSize(version, versionData)}
+                        loading={!versionData.gameDone}
+                        enabled={!!versionData.gameSize}
                         icon="trash"
                         onClick={() => clearGameCache(version.uuid)}
                         variant="danger"
@@ -142,18 +95,15 @@ export default function GameBuildsList({
                     </td>
                     <td className="text-center">
                       <p>
-                        {formatBytesToGB(
-                          getValidatedOfflineSize(version, versionData)
-                        ) ?? "--"}{" "}
-                        /{" "}
-                        {formatBytesToGB(getTotalOfflineSize(version)) ??
-                          "?.??"}{" "}
-                        GB
+                        {formatBytesToGB(versionData.offlineSize) ?? "--"}
+                        {" / "}
+                        {formatBytesToGB(getTotalOfflineSize(version)) ?? "?.??"}
+                        {" GB"}
                       </p>
                       <Button
-                        loading={!isDoneValidatingOffline(version, versionData)}
+                        loading={!versionData.offlineDone}
                         enabled={
-                          !getValidatedOfflineSize(version, versionData) &&
+                          !versionData.offlineSize &&
                           !!version.main_file_info &&
                           !!version.total_compressed_size
                         }
@@ -161,23 +111,23 @@ export default function GameBuildsList({
                         onClick={() => downloadOfflineCache(version.uuid)}
                         variant="success"
                         tooltip="Download offline cache"
-                      />{" "}
+                      />
+                      {" "}
                       <Button
-                        loading={!isDoneValidatingOffline(version, versionData)}
+                        loading={!versionData.offlineDone}
                         enabled={
-                          !!getValidatedOfflineSize(version, versionData) &&
-                          getVersionData(version, versionData)?.offlineCorrupted
+                          !!versionData.offlineSize &&
+                          versionData.offlineCorrupted
                         }
                         icon="screwdriver-wrench"
                         onClick={() => repairOfflineCache(version.uuid)}
                         variant="warning"
                         tooltip="Repair offline cache"
-                      />{" "}
+                      />
+                      {" "}
                       <Button
-                        loading={!isDoneValidatingOffline(version, versionData)}
-                        enabled={
-                          !!getValidatedOfflineSize(version, versionData)
-                        }
+                        loading={!versionData.offlineDone}
+                        enabled={!!versionData.offlineSize}
                         icon="trash"
                         onClick={() => deleteOfflineCache(version.uuid)}
                         variant="danger"
@@ -185,7 +135,8 @@ export default function GameBuildsList({
                       />
                     </td>
                   </tr>
-                )
+                );
+              }
             )
           )}
         </tbody>

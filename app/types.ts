@@ -73,14 +73,11 @@ export type SettingsContext = {
 }
 
 export type VersionCacheData = {
+  version: VersionEntry;
   gameSize?: number;
   gameDone: boolean;
+  gameCorrupted: boolean;
   offlineSize?: number;
   offlineDone: boolean;
   offlineCorrupted: boolean;
-};
-
-export type ValidationEvent = {
-  uuid: string;
-  sz: number;
 };

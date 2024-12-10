@@ -76,8 +76,31 @@ pub fn get_default_offline_cache_dir() -> String {
 pub fn get_cache_dir_for_version(base_cache_dir: &str, version: &Version) -> Result<PathBuf> {
     let cache_dir = PathBuf::from(base_cache_dir);
     let build_dir = cache_dir.join(version.get_uuid().to_string());
-    std::fs::create_dir_all(&build_dir)?;
     Ok(build_dir)
+}
+
+pub fn get_dir_size(dir: &PathBuf) -> Result<u64> {
+    let mut size = 0;
+    for entry in std::fs::read_dir(dir)? {
+        let entry = entry?;
+        let metadata = entry.metadata()?;
+        if metadata.is_symlink() {
+            continue;
+        }
+        if metadata.is_file() {
+            size += metadata.len();
+        } else if metadata.is_dir() {
+            size += get_dir_size(&entry.path())?;
+        }
+    }
+    Ok(size)
+}
+
+pub fn is_dir_empty(dir: &PathBuf) -> Result<bool> {
+    match std::fs::read_dir(dir) {
+        Ok(mut entries) => Ok(entries.next().is_none()),
+        Err(e) => Err(e.into()),
+    }
 }
 
 pub fn import_versions(to_import: Vec<Version>) -> Result<Vec<Version>> {

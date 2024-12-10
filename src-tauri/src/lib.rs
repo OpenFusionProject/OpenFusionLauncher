@@ -192,6 +192,7 @@ async fn prep_launch(
 
         let base_cache_dir = &state.config.game_cache_path;
         let cache_dir = util::get_cache_dir_for_version(base_cache_dir, version)?;
+        std::fs::create_dir_all(&cache_dir)?;
         unsafe {
             env::set_var("UNITY_FF_CACHE_DIR", cache_dir);
         }
@@ -251,140 +252,49 @@ async fn prep_launch(
 }
 
 #[tauri::command]
-async fn validate_version_game(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<bool> {
-    static IN_PROGRESS: OnceLock<RwLock<HashSet<Uuid>>> = OnceLock::new();
-
-    let total_size = Arc::new(AtomicU64::new(0));
-    let callback = move |uuid: &Uuid, _item_name: &str, item_progress: ItemProgress| {
-        if let ItemProgress::Completed(sz) = item_progress {
-            let old_sz = total_size.fetch_add(sz, Ordering::AcqRel);
-            let new_sz = old_sz + sz;
-            let event = ValidationEvent {
-                uuid: *uuid,
-                sz: new_sz,
-            };
-            if let Err(e) = get_app_statics().handle.emit("validated_item_game", event) {
-                warn!("Failed to emit validated_item_game event: {}", e);
-            }
-        }
-    };
-    let callback = Arc::new(callback);
-
+async fn get_cache_size(
+    app_handle: tauri::AppHandle,
+    uuid: Uuid,
+    offline: bool,
+) -> CommandResult<u64> {
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
         let state = state.lock().await;
-        let version = state
-            .versions
-            .get_entry(uuid)
-            .ok_or("Version not found")?
-            .clone();
-        let path = util::get_cache_dir_for_version(&state.config.game_cache_path, &version)?;
-        drop(state); // give up the state lock
-
-        {
-            let tracking = IN_PROGRESS
-                .get_or_init(|| std::sync::RwLock::new(HashSet::new()))
-                .read()
-                .unwrap();
-            if tracking.contains(&uuid) {
-                return Err(format!("Already validating game cache for {}", uuid).into());
-            }
+        let version = state.versions.get_entry(uuid).ok_or("Version not found")?;
+        let path = if offline {
+            util::get_cache_dir_for_version(&state.config.offline_cache_path, version)?
+        } else {
+            util::get_cache_dir_for_version(&state.config.game_cache_path, version)?
+        };
+        if util::is_dir_empty(&path)? {
+            return Err("No cache data".into());
         }
-
-        {
-            let mut tracking = IN_PROGRESS.get().unwrap().write().unwrap();
-            tracking.insert(uuid);
-        }
-
-        let passed = version
-            .validate_uncompressed(&path.to_string_lossy(), Some(callback))
-            .await
-            .is_ok_and(|corrupted| corrupted.is_empty());
-
-        let mut tracking = IN_PROGRESS.get().unwrap().write().unwrap();
-        tracking.remove(&uuid);
-        Ok(passed)
+        let sz = util::get_dir_size(&path)?;
+        Ok(sz)
     };
-    debug!("validate_version_game {}", uuid);
+    debug!("get_cache_size {} {}", uuid, offline);
     internal.await.map_err(|e: Error| e.to_string())
 }
 
 #[tauri::command]
-async fn validate_version_offline(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<bool> {
-    static IN_PROGRESS: OnceLock<std::sync::RwLock<HashSet<Uuid>>> = OnceLock::new();
-
-    let total_size = Arc::new(AtomicU64::new(0));
-    let callback = move |uuid: &Uuid, _item_name: &str, item_progress: ItemProgress| {
-        if let ItemProgress::Completed(sz) = item_progress {
-            let old_sz = total_size.fetch_add(sz, Ordering::AcqRel);
-            let new_sz = old_sz + sz;
-            let event = ValidationEvent {
-                uuid: *uuid,
-                sz: new_sz,
-            };
-            if let Err(e) = get_app_statics()
-                .handle
-                .emit("validated_item_offline", event)
-            {
-                warn!("Failed to emit validated_item_offline event: {}", e);
-            }
-        }
-    };
-    let callback = Arc::new(callback);
-
+async fn delete_cache(
+    app_handle: tauri::AppHandle,
+    uuid: Uuid,
+    offline: bool,
+) -> CommandResult<()> {
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
         let state = state.lock().await;
-        let version = state
-            .versions
-            .get_entry(uuid)
-            .ok_or("Version not found")?
-            .clone();
-        let path = util::get_cache_dir_for_version(&state.config.offline_cache_path, &version)?;
-        drop(state); // give up the state lock
-
-        {
-            let tracking = IN_PROGRESS
-                .get_or_init(|| std::sync::RwLock::new(HashSet::new()))
-                .read()
-                .unwrap();
-            if tracking.contains(&uuid) {
-                return Err(format!("Already validating offline cache for {}", uuid).into());
-            }
-        }
-
-        {
-            let mut tracking = IN_PROGRESS.get().unwrap().write().unwrap();
-            tracking.insert(uuid);
-        }
-
-        let passed = version
-            .validate_compressed(&path.to_string_lossy(), Some(callback))
-            .await
-            .is_ok_and(|corrupted| corrupted.is_empty());
-
-        let mut tracking = IN_PROGRESS.get().unwrap().write().unwrap();
-        tracking.remove(&uuid);
-        Ok(passed)
-    };
-    debug!("validate_version_offline {}", uuid);
-    internal.await.map_err(|e: Error| e.to_string())
-}
-
-#[tauri::command]
-async fn delete_game_cache(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<()> {
-    let internal = async {
-        let state = app_handle.state::<Mutex<AppState>>();
-        let state = state.lock().await;
-        let version = state
-            .versions
-            .get_entry(uuid)
-            .ok_or("Version not found")?;
-        let path = util::get_cache_dir_for_version(&state.config.game_cache_path, version)?;
+        let version = state.versions.get_entry(uuid).ok_or("Version not found")?;
+        let path = if offline {
+            util::get_cache_dir_for_version(&state.config.offline_cache_path, version)?
+        } else {
+            util::get_cache_dir_for_version(&state.config.game_cache_path, version)?
+        };
         std::fs::remove_dir_all(&path)?;
         Ok(())
     };
-    debug!("delete_game_cache {}", uuid);
+    debug!("delete_cache {} {}", uuid, offline);
     internal.await.map_err(|e: Error| e.to_string())
 }
 
@@ -572,8 +482,7 @@ pub fn run() {
             get_session,
             prep_launch,
             do_launch,
-            validate_version_game,
-            validate_version_offline,
+            get_cache_size,
         ])
         .build(tauri::generate_context![])
         .unwrap()

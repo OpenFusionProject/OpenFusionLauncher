@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useState } from "react";
-import { Alert, LoadingTask, SettingsContext } from "@/app/types";
+import { useEffect, useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { Alert, LoadingTask } from "@/app/types";
 import { SettingsCtx } from "@/app/contexts";
 import AlertList from "@/components/AlertList";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -44,6 +45,10 @@ export default function SettingsPage() {
     const newTasks = loadingTasks.filter((task) => task.id != id);
     setLoadingTasks(newTasks);
   };
+
+  useEffect(() => {
+    invoke("reload_state");
+  });
 
   const ctx = {
     alertSuccess,
