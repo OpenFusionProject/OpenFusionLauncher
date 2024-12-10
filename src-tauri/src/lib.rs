@@ -277,6 +277,43 @@ async fn get_cache_size(
 }
 
 #[tauri::command]
+async fn is_cache_corrupted(
+    app_handle: tauri::AppHandle,
+    uuid: Uuid,
+    offline: bool,
+) -> CommandResult<bool> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let version = state.versions.get_entry(uuid).ok_or("Version not found")?;
+        let path = if offline {
+            util::get_cache_dir_for_version(&state.config.offline_cache_path, version)?
+        } else {
+            util::get_cache_dir_for_version(&state.config.game_cache_path, version)?
+        };
+
+        if util::is_dir_empty(&path)? {
+            return Ok(true);
+        }
+
+        let path = path.to_string_lossy().to_string();
+        let result = if offline {
+            version
+                .validate_compressed_stop_on_first_fail(&path, None)
+                .await
+        } else {
+            version
+                .validate_uncompressed_stop_on_first_fail(&path, None)
+                .await
+        }?;
+
+        Ok(result.is_some())
+    };
+    debug!("is_cache_corrupt {} {}", uuid, offline);
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
 async fn delete_cache(
     app_handle: tauri::AppHandle,
     uuid: Uuid,
@@ -483,6 +520,7 @@ pub fn run() {
             prep_launch,
             do_launch,
             get_cache_size,
+            is_cache_corrupted
         ])
         .build(tauri::generate_context![])
         .unwrap()

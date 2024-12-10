@@ -26,24 +26,62 @@ export default function GameBuildsTab() {
     });
     setVersionData(data);
     updateSizes(data);
+    updateValidity(data);
   };
 
   const updateSizes = async (versionData: VersionCacheData[]) => {
     for (const v of versionData) {
-      let nv: VersionCacheData = v;
       try {
         const gameSize: number = await invoke("get_cache_size", { uuid: v.version.uuid, offline: false });
-        nv = { ...nv, gameSize };
+        setVersionData((prev) => {
+          const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);
+          if (pv) {
+            const nv = { ...pv, gameSize };
+            return prev?.map((pv) => (pv.version.uuid == v.version.uuid ? nv : pv));
+          }
+        });
       } catch (e) {}
+
       try {
         const offlineSize: number = await invoke("get_cache_size", { uuid: v.version.uuid, offline: true });
-        nv = { ...nv, offlineSize };
+        setVersionData((prev) => {
+          const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);
+          if (pv) {
+            const nv = { ...pv, offlineSize };
+            return prev?.map((pv) => (pv.version.uuid == v.version.uuid ? nv : pv));
+          }
+        });
       } catch (e) {}
-      setVersionData((prev) => {
-        return prev!.map((pv) => (pv.version.uuid === v.version.uuid ? nv : pv));
-      });
     }
   };
+
+  const updateValidity = async (versionData: VersionCacheData[]) => {
+    for (const v of versionData) {
+      try {
+        // for some reason, cakefall chokes the game cache validation.
+        // until we know why we will not run this.
+        const gameCorrupted: boolean = false; //await invoke("is_cache_corrupted", { uuid: v.version.uuid, offline: false });
+        setVersionData((prev) => {
+          const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);
+          if (pv) {
+            const nv = { ...pv, gameDone: true, gameCorrupted };
+            return prev?.map((pv) => (pv.version.uuid == v.version.uuid ? nv : pv));
+          }
+        });
+      } catch (e) { console.error("Game cache validation failed", v.version.uuid, e); }
+
+      try {
+        const offlineCorrupted: boolean = await invoke("is_cache_corrupted", { uuid: v.version.uuid, offline: true });
+        setVersionData((prev) => {
+          const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);
+          if (pv) {
+            const nv = { ...pv, offlineDone: true, offlineCorrupted };
+            return prev?.map((pv) => (pv.version.uuid == v.version.uuid ? nv : pv));
+          }
+        });
+      } catch (e) { console.error("Offline cache validation failed", v.version.uuid, e); }
+    }
+  }
 
   const stub = () => {
     if (ctx.alertInfo) {
