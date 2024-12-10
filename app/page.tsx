@@ -58,8 +58,6 @@ export default function Home() {
 
   const [showAboutModal, setShowAboutModal] = useState(false);
 
-  const [showConfigPage, setShowConfigPage] = useState(false);
-
   const getSelectedServer = () => {
     if (selectedIdx >= 0 && selectedIdx < servers.length) {
       return servers[selectedIdx];
@@ -155,7 +153,6 @@ export default function Home() {
   const handleKeydown = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
       setSelectedServer(undefined);
-      setShowConfigPage(false);
     }
 
     // Server selector controls
@@ -453,13 +450,6 @@ export default function Home() {
                 icon="angle-double-right"
                 text="Connect "
               />
-              <Button
-                onClick={() => window.location.href = "/builds"}
-                enabled={true}
-                variant="primary"
-                icon="database"
-                tooltip="Edit Game Builds"
-              />
             </Stack>
           </Col>
         </Row>
@@ -475,11 +465,11 @@ export default function Home() {
       </div>
       <div id="config-button-div">
         <Button
-          onClick={() => setShowConfigPage(true)}
+          onClick={() => window.location.href = "/settings"}
           enabled={true}
           variant="primary"
           icon="cog"
-          tooltip="Edit Configuration"
+          tooltip="Settings"
         />
       </div>
       <EditServerModal

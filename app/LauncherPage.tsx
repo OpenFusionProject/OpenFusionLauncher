@@ -12,7 +12,7 @@ export default function LauncherPage({
 }>) {
   return (
     <div className="launcher-page">
-      <div className="launcher-page-header border-bottom border-primary">
+      <div className="launcher-page-header">
         <NavBar title={title} buttons={buttons} />
       </div>
       <div className="launcher-page-content">

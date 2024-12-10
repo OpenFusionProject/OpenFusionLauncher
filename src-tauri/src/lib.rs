@@ -372,6 +372,23 @@ async fn validate_version_offline(app_handle: tauri::AppHandle, uuid: Uuid) -> C
 }
 
 #[tauri::command]
+async fn delete_game_cache(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<()> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let version = state
+            .versions
+            .get_entry(uuid)
+            .ok_or("Version not found")?;
+        let path = util::get_cache_dir_for_version(&state.config.game_cache_path, version)?;
+        std::fs::remove_dir_all(&path)?;
+        Ok(())
+    };
+    debug!("delete_game_cache {}", uuid);
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
 async fn import_from_openfusionclient(app_handle: tauri::AppHandle) -> CommandResult<ImportCounts> {
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();

@@ -64,6 +64,14 @@ export type EndpointInfo = {
   email_required?: boolean;
 };
 
+export type SettingsContext = {
+  alertSuccess?: (text: string) => void;
+  alertInfo?: (text: string) => void;
+  alertError?: (text: string) => void;
+  startLoading?: (id: string, text?: string) => void;
+  stopLoading?: (id: string) => void;
+}
+
 export type VersionCacheData = {
   gameSize?: number;
   gameDone: boolean;
