@@ -1,13 +1,13 @@
 "use client";
 
 import { createContext, useState } from "react";
-import { Alert, LoadingTask, SettingsContext } from "../types";
-import { SettingsCtx } from "../contexts";
-import AlertList from "../AlertList";
-import LoadingScreen from "../LoadingScreen";
-import GameBuildsTab from "./GameBuildsTab";
+import { Alert, LoadingTask, SettingsContext } from "@/app/types";
+import { SettingsCtx } from "@/app/contexts";
+import AlertList from "@/components/AlertList";
+import LoadingScreen from "@/components/LoadingScreen";
+import GameBuildsTab from "@/components/GameBuildsTab";
 import { Tab, Tabs } from "react-bootstrap";
-import LauncherPage from "../LauncherPage";
+import LauncherPage from "@/components/LauncherPage";
 
 export default function SettingsPage() {
   const [alerts, setAlerts] = useState<Alert[]>([]);

@@ -24,16 +24,16 @@ import {
   RegistrationResult,
 } from "./types";
 
-import ServerList from "./ServerList";
-import AlertList from "./AlertList";
-import Button from "./Button";
-import LoadingScreen from "./LoadingScreen";
-import EditServerModal from "./EditServerModal";
-import DeleteServerModal from "./DeleteServerModal";
-import AboutModal from "./AboutModal";
-import LoginModal from "./LoginModal";
-import BackgroundImages from "./BackgroundImages";
-import LogoImages from "./LogoImages";
+import ServerList from "@/components/ServerList";
+import AlertList from "@/components/AlertList";
+import Button from "@/components/Button";
+import LoadingScreen from "@/components/LoadingScreen";
+import EditServerModal from "@/components/EditServerModal";
+import DeleteServerModal from "@/components/DeleteServerModal";
+import AboutModal from "@/components/AboutModal";
+import LoginModal from "@/components/LoginModal";
+import BackgroundImages from "@/components/BackgroundImages";
+import LogoImages from "@/components/LogoImages";
 
 export default function Home() {
   const [launcherVersion, setLauncherVersion] = useState("0.0.0");
