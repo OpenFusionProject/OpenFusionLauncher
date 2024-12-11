@@ -76,9 +76,19 @@ export type SettingsContext = {
 export type VersionCacheData = {
   version: VersionEntry;
   gameSize?: number;
+  gameSizeValidated?: number;
   gameDone: boolean;
   gameCorrupted: boolean;
   offlineSize?: number;
+  offlineSizeValidated?: number;
   offlineDone: boolean;
   offlineCorrupted: boolean;
+};
+
+export type VersionCacheProgress = {
+  uuid: string;
+  offline: boolean;
+  bytes_processed: number;
+  is_corrupt: boolean;
+  is_done: boolean;
 };

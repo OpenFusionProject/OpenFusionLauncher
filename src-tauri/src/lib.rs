@@ -3,14 +3,22 @@ mod state;
 mod util;
 
 use endpoint::{InfoResponse, RegisterResponse, Session};
+use ffbuildtool::ItemProgress;
 use serde::{Deserialize, Serialize};
 use state::{get_app_statics, AppState, FlatServer, FrontendServers, Server, ServerInfo, Versions};
 
-use std::{collections::HashSet, env, sync::OnceLock};
+use std::{
+    collections::HashSet,
+    env,
+    sync::{
+        atomic::{AtomicBool, AtomicU64, Ordering},
+        Arc, OnceLock,
+    },
+};
 use tokio::sync::Mutex;
 
 use log::*;
-use tauri::Manager;
+use tauri::{Emitter as _, Manager};
 use uuid::Uuid;
 
 type Error = Box<dyn std::error::Error>;
@@ -19,6 +27,18 @@ type CommandResult<T> = std::result::Result<T, String>;
 
 static GAME_CACHE_OPS: OnceLock<Mutex<HashSet<Uuid>>> = OnceLock::new();
 static OFFLINE_CACHE_OPS: OnceLock<Mutex<HashSet<Uuid>>> = OnceLock::new();
+
+const CACHE_PROGRESS_EVENT: &str = "cache_progress";
+
+#[derive(Debug, Serialize, Clone)]
+struct CacheProgress {
+    uuid: Uuid,
+    offline: bool,
+    //
+    bytes_processed: u64,
+    is_corrupt: bool,
+    is_done: bool,
+}
 
 #[derive(Debug, Serialize)]
 struct ImportCounts {
@@ -266,11 +286,7 @@ async fn get_cache_size(
 }
 
 #[tauri::command]
-async fn is_cache_corrupted(
-    app_handle: tauri::AppHandle,
-    uuid: Uuid,
-    offline: bool,
-) -> CommandResult<bool> {
+async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool) {
     let internal = async {
         let ops = if offline {
             &OFFLINE_CACHE_OPS
@@ -285,6 +301,45 @@ async fn is_cache_corrupted(
             }
             ops.insert(uuid);
         }
+
+        let byte_counter = Arc::new(AtomicU64::new(0));
+        let corrupt_flag = Arc::new(AtomicBool::new(false));
+
+        let app_handle_clone = app_handle.clone();
+        let byte_counter_clone = byte_counter.clone();
+        let corrupt_flag_clone = corrupt_flag.clone();
+        let cb = move |version_uuid: &Uuid, _item_name: &str, progress: ItemProgress| {
+            let cache_progress = match progress {
+                ItemProgress::Failed => {
+                    corrupt_flag_clone.store(true, Ordering::Release);
+                    CacheProgress {
+                        uuid: *version_uuid,
+                        offline,
+                        //
+                        bytes_processed: byte_counter_clone.load(Ordering::Acquire),
+                        is_corrupt: true,
+                        is_done: false,
+                    }
+                }
+                ItemProgress::Completed(item_sz) => {
+                    let old_sz = byte_counter_clone.fetch_add(item_sz, Ordering::AcqRel);
+                    CacheProgress {
+                        uuid: *version_uuid,
+                        offline,
+                        //
+                        bytes_processed: old_sz + item_sz,
+                        is_corrupt: corrupt_flag_clone.load(Ordering::Relaxed),
+                        is_done: false,
+                    }
+                }
+                _ => return,
+            };
+
+            if let Err(e) = app_handle_clone.emit(CACHE_PROGRESS_EVENT, cache_progress) {
+                warn!("Failed to emit cache progress: {}", e);
+            }
+        };
+        let cb = Arc::new(cb);
 
         let state = app_handle.state::<Mutex<AppState>>();
         let state = state.lock().await;
@@ -301,24 +356,38 @@ async fn is_cache_corrupted(
         drop(state);
 
         if util::is_dir_empty(&path)? {
-            return Ok(true);
+            return Ok(());
         }
 
         let path = path.to_string_lossy().to_string();
-        let result = if offline {
-            version.validate_compressed(&path, None).await
+        if offline {
+            version.validate_compressed(&path, Some(cb)).await
         } else {
-            version.validate_uncompressed(&path, None).await
+            version.validate_uncompressed(&path, Some(cb)).await
         }?;
+
+        let progress = CacheProgress {
+            uuid,
+            offline,
+            bytes_processed: byte_counter.load(Ordering::Acquire),
+            is_corrupt: corrupt_flag.load(Ordering::Acquire),
+            is_done: true,
+        };
+        if let Err(e) = app_handle.emit(CACHE_PROGRESS_EVENT, progress) {
+            warn!("Failed to emit cache progress: {}", e);
+        }
 
         {
             let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
             ops.remove(&uuid);
         }
-        Ok(!result.is_empty())
+        Ok(())
     };
-    debug!("is_cache_corrupt {} {}", uuid, offline);
-    internal.await.map_err(|e: Error| e.to_string())
+    debug!("validate_cache {} {}", uuid, offline);
+    let res: Result<()> = internal.await;
+    if let Err(e) = res {
+        error!("validate_cache {} {}: {}", uuid, offline, e);
+    }
 }
 
 #[tauri::command]
@@ -547,7 +616,7 @@ pub fn run() {
             prep_launch,
             do_launch,
             get_cache_size,
-            is_cache_corrupted,
+            validate_cache,
             delete_cache,
         ])
         .build(tauri::generate_context![])

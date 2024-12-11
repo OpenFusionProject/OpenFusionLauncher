@@ -1,4 +1,4 @@
-import { Stack } from "react-bootstrap";
+import { ProgressBar, Stack } from "react-bootstrap";
 import Button from "./Button";
 
 import { VersionCacheData, VersionEntry } from "@/app/types";
@@ -11,6 +11,16 @@ const formatBytesToGB = (bytes?: number) => {
   }
   return (bytes / BYTES_PER_GB).toFixed(2);
 };
+
+const getVariantForStatus = (done: boolean, corrupted: boolean) => {
+  if (corrupted) {
+    return "warning";
+  }
+  if (done) {
+    return "success";
+  }
+  return "primary";
+}
 
 const getTotalOfflineSize = (version: VersionEntry) => {
   if (!version.total_compressed_size || !version.main_file_info) {
@@ -84,6 +94,13 @@ export default function GameBuildsList({
                         {formatBytesToGB(version.total_uncompressed_size) ?? "?.??"}
                         {" GB"}
                       </p>
+                      <ProgressBar
+                        max={version.total_uncompressed_size ?? 1}
+                        now={versionData.gameSizeValidated ?? 0}
+                        animated={!versionData.gameDone}
+                        variant={getVariantForStatus(versionData.gameDone, versionData.gameCorrupted)}
+                      />
+                      <br />
                       <Button
                         loading={!versionData.gameDone}
                         enabled={!!versionData.gameSize}
@@ -100,6 +117,13 @@ export default function GameBuildsList({
                         {formatBytesToGB(getTotalOfflineSize(version)) ?? "?.??"}
                         {" GB"}
                       </p>
+                      <ProgressBar
+                        max={getTotalOfflineSize(version) ?? 1}
+                        now={versionData.offlineSizeValidated ?? 0}
+                        animated={!versionData.offlineDone}
+                        variant={getVariantForStatus(versionData.offlineDone, versionData.offlineCorrupted)}
+                      />
+                      <br />
                       <Button
                         loading={!versionData.offlineDone}
                         enabled={
@@ -115,10 +139,7 @@ export default function GameBuildsList({
                       {" "}
                       <Button
                         loading={!versionData.offlineDone}
-                        enabled={
-                          !!versionData.offlineSize &&
-                          versionData.offlineCorrupted
-                        }
+                        enabled={versionData.offlineCorrupted}
                         icon="screwdriver-wrench"
                         onClick={() => repairOfflineCache(version.uuid)}
                         variant="warning"
