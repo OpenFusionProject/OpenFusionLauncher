@@ -68,10 +68,10 @@ export default function GameBuildsTab() {
 
   const updateValidity = async (versionData: VersionCacheData) => {
     const v = versionData;
-    // invoke("validate_cache", {
-    //   uuid: v.version.uuid,
-    //   offline: false,
-    // });
+    invoke("validate_cache", {
+      uuid: v.version.uuid,
+      offline: false,
+    });
     invoke("validate_cache", {
       uuid: v.version.uuid,
       offline: true,
