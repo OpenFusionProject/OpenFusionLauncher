@@ -306,20 +306,16 @@ async fn is_cache_corrupted(
 
         let path = path.to_string_lossy().to_string();
         let result = if offline {
-            version
-                .validate_compressed_stop_on_first_fail(&path, None)
-                .await
+            version.validate_compressed(&path, None).await
         } else {
-            version
-                .validate_uncompressed_stop_on_first_fail(&path, None)
-                .await
+            version.validate_uncompressed(&path, None).await
         }?;
 
         {
             let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
             ops.remove(&uuid);
         }
-        Ok(result.is_some())
+        Ok(!result.is_empty())
     };
     debug!("is_cache_corrupt {} {}", uuid, offline);
     internal.await.map_err(|e: Error| e.to_string())
