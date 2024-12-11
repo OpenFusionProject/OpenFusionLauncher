@@ -30,7 +30,6 @@ pub struct AppStatics {
     pub ff_cache_dir: PathBuf,
     pub offline_cache_dir: PathBuf,
     pub ffrunner_log_path: PathBuf,
-    pub handle: tauri::AppHandle,
 }
 impl AppStatics {
     fn load(app: &mut tauri::App) -> Self {
@@ -54,7 +53,6 @@ impl AppStatics {
             ff_cache_dir,
             offline_cache_dir,
             ffrunner_log_path,
-            handle: app.handle().clone(),
         }
     }
 

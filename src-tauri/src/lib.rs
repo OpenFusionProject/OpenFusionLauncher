@@ -3,22 +3,14 @@ mod state;
 mod util;
 
 use endpoint::{InfoResponse, RegisterResponse, Session};
-use ffbuildtool::ItemProgress;
 use serde::{Deserialize, Serialize};
 use state::{get_app_statics, AppState, FlatServer, FrontendServers, Server, ServerInfo, Versions};
 
-use std::{
-    collections::HashSet,
-    env,
-    sync::{
-        atomic::{AtomicU64, Ordering},
-        Arc, OnceLock, RwLock,
-    },
-};
+use std::{collections::HashSet, env, sync::OnceLock};
 use tokio::sync::Mutex;
 
 use log::*;
-use tauri::{Emitter, Manager};
+use tauri::Manager;
 use uuid::Uuid;
 
 type Error = Box<dyn std::error::Error>;
@@ -37,12 +29,6 @@ struct NewServerDetails {
     ip: Option<String>,
     version: Option<String>,
     endpoint: Option<String>,
-}
-
-#[derive(Serialize, Clone)]
-struct ValidationEvent {
-    uuid: Uuid,
-    sz: u64,
 }
 
 #[tauri::command]
@@ -285,12 +271,17 @@ async fn is_cache_corrupted(
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
         let state = state.lock().await;
-        let version = state.versions.get_entry(uuid).ok_or("Version not found")?;
+        let version = state
+            .versions
+            .get_entry(uuid)
+            .ok_or("Version not found")?
+            .clone();
         let path = if offline {
-            util::get_cache_dir_for_version(&state.config.offline_cache_path, version)?
+            util::get_cache_dir_for_version(&state.config.offline_cache_path, &version)?
         } else {
-            util::get_cache_dir_for_version(&state.config.game_cache_path, version)?
+            util::get_cache_dir_for_version(&state.config.game_cache_path, &version)?
         };
+        drop(state);
 
         if util::is_dir_empty(&path)? {
             return Ok(true);
