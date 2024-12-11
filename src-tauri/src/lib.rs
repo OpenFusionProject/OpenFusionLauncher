@@ -17,6 +17,9 @@ type Error = Box<dyn std::error::Error>;
 type Result<T> = std::result::Result<T, Error>;
 type CommandResult<T> = std::result::Result<T, String>;
 
+static GAME_CACHE_OPS: OnceLock<Mutex<HashSet<Uuid>>> = OnceLock::new();
+static OFFLINE_CACHE_OPS: OnceLock<Mutex<HashSet<Uuid>>> = OnceLock::new();
+
 #[derive(Debug, Serialize)]
 struct ImportCounts {
     version_count: usize,
@@ -269,6 +272,20 @@ async fn is_cache_corrupted(
     offline: bool,
 ) -> CommandResult<bool> {
     let internal = async {
+        let ops = if offline {
+            &OFFLINE_CACHE_OPS
+        } else {
+            &GAME_CACHE_OPS
+        };
+
+        {
+            let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
+            if ops.contains(&uuid) {
+                return Err("Cache operation in progress".into());
+            }
+            ops.insert(uuid);
+        }
+
         let state = app_handle.state::<Mutex<AppState>>();
         let state = state.lock().await;
         let version = state
@@ -298,6 +315,10 @@ async fn is_cache_corrupted(
                 .await
         }?;
 
+        {
+            let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
+            ops.remove(&uuid);
+        }
         Ok(result.is_some())
     };
     debug!("is_cache_corrupt {} {}", uuid, offline);
@@ -311,6 +332,20 @@ async fn delete_cache(
     offline: bool,
 ) -> CommandResult<()> {
     let internal = async {
+        let ops = if offline {
+            &OFFLINE_CACHE_OPS
+        } else {
+            &GAME_CACHE_OPS
+        };
+
+        {
+            let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
+            if ops.contains(&uuid) {
+                return Err("Cache operation in progress".into());
+            }
+            ops.insert(uuid);
+        }
+
         let state = app_handle.state::<Mutex<AppState>>();
         let state = state.lock().await;
         let version = state.versions.get_entry(uuid).ok_or("Version not found")?;
@@ -320,6 +355,11 @@ async fn delete_cache(
             util::get_cache_dir_for_version(&state.config.game_cache_path, version)?
         };
         std::fs::remove_dir_all(&path)?;
+
+        {
+            let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
+            ops.remove(&uuid);
+        }
         Ok(())
     };
     debug!("delete_cache {} {}", uuid, offline);
@@ -511,7 +551,8 @@ pub fn run() {
             prep_launch,
             do_launch,
             get_cache_size,
-            is_cache_corrupted
+            is_cache_corrupted,
+            delete_cache,
         ])
         .build(tauri::generate_context![])
         .unwrap()
