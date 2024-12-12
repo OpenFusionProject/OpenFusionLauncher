@@ -355,26 +355,24 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
         };
         drop(state);
 
-        if util::is_dir_empty(&path)? {
-            return Ok(());
-        }
+        if !util::is_dir_empty(&path)? {
+            let path = path.to_string_lossy().to_string();
+            if offline {
+                version.validate_compressed(&path, Some(cb)).await
+            } else {
+                version.validate_uncompressed(&path, Some(cb)).await
+            }?;
 
-        let path = path.to_string_lossy().to_string();
-        if offline {
-            version.validate_compressed(&path, Some(cb)).await
-        } else {
-            version.validate_uncompressed(&path, Some(cb)).await
-        }?;
-
-        let progress = CacheProgress {
-            uuid,
-            offline,
-            bytes_processed: byte_counter.load(Ordering::Acquire),
-            is_corrupt: corrupt_flag.load(Ordering::Acquire),
-            is_done: true,
-        };
-        if let Err(e) = app_handle.emit(CACHE_PROGRESS_EVENT, progress) {
-            warn!("Failed to emit cache progress: {}", e);
+            let progress = CacheProgress {
+                uuid,
+                offline,
+                bytes_processed: byte_counter.load(Ordering::Acquire),
+                is_corrupt: corrupt_flag.load(Ordering::Acquire),
+                is_done: true,
+            };
+            if let Err(e) = app_handle.emit(CACHE_PROGRESS_EVENT, progress) {
+                warn!("Failed to emit cache progress: {}", e);
+            }
         }
 
         {
