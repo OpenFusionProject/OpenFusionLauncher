@@ -131,7 +131,8 @@ export default function GameBuildsTab() {
           : {
               ...pv,
               gameSizeValidated: bytesProcessed,
-              gameCorrupted: isCorrupted,
+              // FIXME: we can't yet distinguish between missing and corrupted
+              gameCorrupted: false, //isCorrupted,
               gameDone: isDone,
             };
         return prev?.map((pv) => (pv.version.uuid == progress.uuid ? nv : pv));
