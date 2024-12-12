@@ -4,7 +4,10 @@ import { Alert } from "@/app/types";
 
 export default function AlertList({ alerts }: { alerts: Alert[] }) {
   return (
-    <Stack id="alerts">
+    <Stack
+      id="alerts"
+      style={ { zIndex: alerts.length > 0 ? 2000 : -1 } }
+    >
       {alerts.map((alert) => (
         <AlertBox
           key={alert.id}
