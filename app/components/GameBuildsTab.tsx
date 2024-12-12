@@ -39,12 +39,26 @@ export default function GameBuildsTab() {
           const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);
           if (pv) {
             const nv = { ...pv, gameSize };
+            invoke("validate_cache", {
+              uuid: v.version.uuid,
+              offline: false,
+            });
             return prev?.map((pv) =>
               pv.version.uuid == v.version.uuid ? nv : pv
             );
           }
         });
-      } catch (e) {}
+      } catch (e) {
+        setVersionData((prev) => {
+          const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);
+          if (pv) {
+            const nv = { ...pv, gameDone: true };
+            return prev?.map((pv) =>
+              pv.version.uuid == v.version.uuid ? nv : pv
+            );
+          }
+        });
+      }
 
       try {
         const offlineSize: number = await invoke("get_cache_size", {
@@ -55,27 +69,27 @@ export default function GameBuildsTab() {
           const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);
           if (pv) {
             const nv = { ...pv, offlineSize };
+            invoke("validate_cache", {
+              uuid: v.version.uuid,
+              offline: true,
+            });
             return prev?.map((pv) =>
               pv.version.uuid == v.version.uuid ? nv : pv
             );
           }
         });
-      } catch (e) {}
-
-      updateValidity(v);
+      } catch (e) {
+        setVersionData((prev) => {
+          const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);
+          if (pv) {
+            const nv = { ...pv, offlineDone: true };
+            return prev?.map((pv) =>
+              pv.version.uuid == v.version.uuid ? nv : pv
+            );
+          }
+        });
+      }
     }
-  };
-
-  const updateValidity = async (versionData: VersionCacheData) => {
-    const v = versionData;
-    invoke("validate_cache", {
-      uuid: v.version.uuid,
-      offline: false,
-    });
-    invoke("validate_cache", {
-      uuid: v.version.uuid,
-      offline: true,
-    });
   };
 
   const stub = () => {

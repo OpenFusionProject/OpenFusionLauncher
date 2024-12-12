@@ -12,7 +12,13 @@ const formatBytesToGB = (bytes?: number) => {
   return (bytes / BYTES_PER_GB).toFixed(2);
 };
 
-const getVariantForStatus = (done: boolean, corrupted: boolean) => {
+const getVariantForStatus = (status: VersionCacheData, offline: boolean) => {
+  const exists = offline ? !!status.offlineSize : !!status.gameSize;
+  const corrupted = offline ? status.offlineCorrupted : status.gameCorrupted;
+  const done = offline ? status.offlineDone : status.gameDone;
+  if (!exists) {
+    return "danger";
+  }
   if (corrupted) {
     return "warning";
   }
@@ -98,7 +104,7 @@ export default function GameBuildsList({
                         max={version.total_uncompressed_size ?? 1}
                         now={versionData.gameSizeValidated ?? 0}
                         animated={!versionData.gameDone}
-                        variant={getVariantForStatus(versionData.gameDone, versionData.gameCorrupted)}
+                        variant={getVariantForStatus(versionData, false)}
                       />
                       <br />
                       <Button
@@ -121,7 +127,7 @@ export default function GameBuildsList({
                         max={getTotalOfflineSize(version) ?? 1}
                         now={versionData.offlineSizeValidated ?? 0}
                         animated={!versionData.offlineDone}
-                        variant={getVariantForStatus(versionData.offlineDone, versionData.offlineCorrupted)}
+                        variant={getVariantForStatus(versionData, true)}
                       />
                       <br />
                       <Button
