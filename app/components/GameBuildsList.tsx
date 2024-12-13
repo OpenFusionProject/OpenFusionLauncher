@@ -1,7 +1,8 @@
 import { ProgressBar, Stack } from "react-bootstrap";
 import Button from "./Button";
 
-import { VersionCacheData, VersionEntry } from "@/app/types";
+import { VersionCacheData, VersionCacheProgressItem, VersionEntry } from "@/app/types";
+import { get } from "http";
 
 const BYTES_PER_GB = 1024 * 1024 * 1024;
 
@@ -12,20 +13,26 @@ const formatBytesToGB = (bytes?: number) => {
   return (bytes / BYTES_PER_GB).toFixed(2);
 };
 
-const getVariantForStatus = (status: VersionCacheData, offline: boolean) => {
-  const exists = offline ? !!status.offlineSize : !!status.gameSize;
-  const corrupted = offline ? status.offlineCorrupted : status.gameCorrupted;
-  const done = offline ? status.offlineDone : status.gameDone;
-  if (!exists) {
-    return "danger";
-  }
-  if (corrupted) {
+const isCorrupt = (items: Record<string, VersionCacheProgressItem>) => {
+  return Object.values(items).some((item) => item.corrupt);
+};
+
+const getVariantForProgress = (data: VersionCacheData, item: VersionCacheProgressItem, offline: boolean) => {
+  if (item.corrupt) {
     return "warning";
   }
-  if (done) {
+
+  const done = offline ? data.offlineDone : data.gameDone;
+  const items = offline ? data.offlineItems : data.gameItems;
+  const corrupt = isCorrupt(items);
+  if (done && !corrupt) {
     return "success";
   }
   return "primary";
+};
+
+const getValidatedSize = (items: Record<string, VersionCacheProgressItem>) => {
+  return Object.values(items).reduce((acc, item) => acc + item.item_size, 0);
 }
 
 const getTotalOfflineSize = (version: VersionEntry) => {
@@ -95,17 +102,21 @@ export default function GameBuildsList({
                     </td>
                     <td className="text-center">
                       <p>
-                        {formatBytesToGB(versionData.gameSize) ?? "--"}
+                        {versionData.gameSize ? formatBytesToGB(getValidatedSize(versionData.gameItems)) : "--"}
                         {" / "}
                         {formatBytesToGB(version.total_uncompressed_size) ?? "?.??"}
                         {" GB"}
                       </p>
-                      <ProgressBar
-                        max={version.total_uncompressed_size ?? 1}
-                        now={versionData.gameSizeValidated ?? 0}
-                        animated={!versionData.gameDone}
-                        variant={getVariantForStatus(versionData, false)}
-                      />
+                      <ProgressBar>
+                        {Object.entries(versionData.gameItems).map(([itemName, item]) => (
+                          <ProgressBar
+                            key={itemName}
+                            now={item.item_size}
+                            max={version.total_uncompressed_size ?? 1}
+                            variant={getVariantForProgress(versionData, item, false)}
+                          />
+                        ))}
+                      </ProgressBar>
                       <br />
                       <Button
                         loading={!versionData.gameDone}
@@ -118,17 +129,21 @@ export default function GameBuildsList({
                     </td>
                     <td className="text-center">
                       <p>
-                        {formatBytesToGB(versionData.offlineSize) ?? "--"}
+                        {versionData.offlineSize ? formatBytesToGB(getValidatedSize(versionData.offlineItems)) : "--"}
                         {" / "}
                         {formatBytesToGB(getTotalOfflineSize(version)) ?? "?.??"}
                         {" GB"}
                       </p>
-                      <ProgressBar
-                        max={getTotalOfflineSize(version) ?? 1}
-                        now={versionData.offlineSizeValidated ?? 0}
-                        animated={!versionData.offlineDone}
-                        variant={getVariantForStatus(versionData, true)}
-                      />
+                      <ProgressBar>
+                        {Object.entries(versionData.offlineItems).map(([itemName, item]) => (
+                          <ProgressBar
+                            key={itemName}
+                            now={item.item_size}
+                            max={version.total_compressed_size ?? 1}
+                            variant={getVariantForProgress(versionData, item, true)}
+                          />
+                        ))}
+                      </ProgressBar>
                       <br />
                       <Button
                         loading={!versionData.offlineDone}
@@ -145,7 +160,7 @@ export default function GameBuildsList({
                       {" "}
                       <Button
                         loading={!versionData.offlineDone}
-                        enabled={versionData.offlineCorrupted}
+                        enabled={isCorrupt(versionData.offlineItems)}
                         icon="screwdriver-wrench"
                         onClick={() => repairOfflineCache(version.uuid)}
                         variant="warning"

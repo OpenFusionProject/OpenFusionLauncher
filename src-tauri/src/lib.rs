@@ -3,17 +3,14 @@ mod state;
 mod util;
 
 use endpoint::{InfoResponse, RegisterResponse, Session};
-use ffbuildtool::ItemProgress;
+use ffbuildtool::{FailReason, ItemProgress};
 use serde::{Deserialize, Serialize};
 use state::{get_app_statics, AppState, FlatServer, FrontendServers, Server, ServerInfo, Versions};
 
 use std::{
-    collections::HashSet,
+    collections::{HashMap, HashSet},
     env,
-    sync::{
-        atomic::{AtomicBool, AtomicU64, Ordering},
-        Arc, OnceLock,
-    },
+    sync::{Arc, OnceLock},
 };
 use tokio::sync::Mutex;
 
@@ -31,13 +28,17 @@ static OFFLINE_CACHE_OPS: OnceLock<Mutex<HashSet<Uuid>>> = OnceLock::new();
 const CACHE_PROGRESS_EVENT: &str = "cache_progress";
 
 #[derive(Debug, Serialize, Clone)]
+struct CacheProgressItem {
+    item_size: u64,
+    corrupt: bool,
+}
+
+#[derive(Debug, Serialize, Clone)]
 struct CacheProgress {
     uuid: Uuid,
     offline: bool,
-    //
-    bytes_processed: u64,
-    is_corrupt: bool,
-    is_done: bool,
+    items: HashMap<String, CacheProgressItem>,
+    done: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -302,39 +303,38 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
             ops.insert(uuid);
         }
 
-        let byte_counter = Arc::new(AtomicU64::new(0));
-        let corrupt_flag = Arc::new(AtomicBool::new(false));
-
+        let items = Arc::new(std::sync::Mutex::new(HashMap::new()));
+        let items_clone = items.clone();
         let app_handle_clone = app_handle.clone();
-        let byte_counter_clone = byte_counter.clone();
-        let corrupt_flag_clone = corrupt_flag.clone();
-        let cb = move |version_uuid: &Uuid, _item_name: &str, progress: ItemProgress| {
-            let cache_progress = match progress {
-                ItemProgress::Failed => {
-                    corrupt_flag_clone.store(true, Ordering::Release);
-                    CacheProgress {
-                        uuid: *version_uuid,
-                        offline,
-                        //
-                        bytes_processed: byte_counter_clone.load(Ordering::Acquire),
-                        is_corrupt: true,
-                        is_done: false,
+        let cb = move |version_uuid: &Uuid, item_name: &str, progress: ItemProgress| {
+            let item = match progress {
+                ItemProgress::Failed { item_size, reason } => {
+                    if matches!(reason, FailReason::Missing) && !offline {
+                        // we expect holes in the game cache; don't report
+                        return;
+                    }
+
+                    CacheProgressItem {
+                        item_size,
+                        corrupt: true,
                     }
                 }
-                ItemProgress::Completed(item_sz) => {
-                    let old_sz = byte_counter_clone.fetch_add(item_sz, Ordering::AcqRel);
-                    CacheProgress {
-                        uuid: *version_uuid,
-                        offline,
-                        //
-                        bytes_processed: old_sz + item_sz,
-                        is_corrupt: corrupt_flag_clone.load(Ordering::Relaxed),
-                        is_done: false,
-                    }
-                }
+                ItemProgress::Passed { item_size } => CacheProgressItem {
+                    item_size,
+                    corrupt: false,
+                },
                 _ => return,
             };
 
+            let mut items = items_clone.lock().unwrap();
+            items.insert(item_name.to_string(), item);
+
+            let cache_progress = CacheProgress {
+                uuid: *version_uuid,
+                offline,
+                items: items.clone(),
+                done: false,
+            };
             if let Err(e) = app_handle_clone.emit(CACHE_PROGRESS_EVENT, cache_progress) {
                 warn!("Failed to emit cache progress: {}", e);
             }
@@ -366,9 +366,8 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
             let progress = CacheProgress {
                 uuid,
                 offline,
-                bytes_processed: byte_counter.load(Ordering::Acquire),
-                is_corrupt: corrupt_flag.load(Ordering::Acquire),
-                is_done: true,
+                items: items.lock().unwrap().clone(),
+                done: true,
             };
             if let Err(e) = app_handle.emit(CACHE_PROGRESS_EVENT, progress) {
                 warn!("Failed to emit cache progress: {}", e);

@@ -18,9 +18,9 @@ export default function GameBuildsTab() {
       const data: VersionCacheData = {
         version: version,
         gameDone: false,
-        gameCorrupted: false,
+        gameItems: {},
         offlineDone: false,
-        offlineCorrupted: false,
+        offlineItems: {},
       };
       return data;
     });
@@ -118,21 +118,16 @@ export default function GameBuildsTab() {
     setVersionData((prev) => {
       const pv = prev?.find((pv) => pv.version.uuid == progress.uuid);
       if (pv) {
-        const bytesProcessed = progress.bytes_processed;
-        const isCorrupted = progress.is_corrupt;
-        const isDone = progress.is_done;
+        const isDone = progress.done;
         const nv: VersionCacheData = progress.offline
           ? {
               ...pv,
-              offlineSizeValidated: bytesProcessed,
-              offlineCorrupted: isCorrupted,
+              offlineItems: progress.items,
               offlineDone: isDone,
             }
           : {
               ...pv,
-              gameSizeValidated: bytesProcessed,
-              // FIXME: we can't yet distinguish between missing and corrupted
-              gameCorrupted: false, //isCorrupted,
+              gameItems: progress.items,
               gameDone: isDone,
             };
         return prev?.map((pv) => (pv.version.uuid == progress.uuid ? nv : pv));
