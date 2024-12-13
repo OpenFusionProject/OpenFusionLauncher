@@ -5,5 +5,6 @@ fn main() {
     std::panic::set_hook(Box::new(|info| {
         log::error!("Panicked: {:?}", info);
     }));
+    ffbuildtool::set_max_concurrent_downloads(10).unwrap();
     scamper::run();
 }
