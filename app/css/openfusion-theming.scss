@@ -81,6 +81,10 @@ $body-bg-dark: #000;
         background-image: url("../img/modal-footer-bg-dark.png");
         background-repeat: repeat;
     }
+
+    .contrast-border-hover:hover {
+        border: 1px solid white;
+    }
 }
 
 /* Light mode only */
@@ -150,6 +154,10 @@ $body-bg-dark: #000;
 
     .modal-header {
         color: #f8f9fa;
+    }
+
+    .contrast-border-hover:hover {
+        border: 1px solid black;
     }
 }
 

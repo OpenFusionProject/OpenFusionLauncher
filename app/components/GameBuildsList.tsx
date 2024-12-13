@@ -110,10 +110,14 @@ export default function GameBuildsList({
                       <ProgressBar>
                         {Object.entries(versionData.gameItems).map(([itemName, item]) => (
                           <ProgressBar
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            title={itemName}
                             key={itemName}
                             now={item.item_size}
                             max={version.total_uncompressed_size ?? 1}
                             variant={getVariantForProgress(versionData, item, false)}
+                            className="contrast-border-hover"
                           />
                         ))}
                       </ProgressBar>
@@ -137,10 +141,14 @@ export default function GameBuildsList({
                       <ProgressBar>
                         {Object.entries(versionData.offlineItems).map(([itemName, item]) => (
                           <ProgressBar
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            title={itemName}
                             key={itemName}
                             now={item.item_size}
                             max={version.total_compressed_size ?? 1}
                             variant={getVariantForProgress(versionData, item, true)}
+                            className="contrast-border-hover"
                           />
                         ))}
                       </ProgressBar>
