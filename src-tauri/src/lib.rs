@@ -286,6 +286,47 @@ async fn get_cache_size(
     internal.await.map_err(|e: Error| e.to_string())
 }
 
+fn progress_callback(
+    app_handle: tauri::AppHandle,
+    offline: bool,
+    items: Arc<std::sync::Mutex<HashMap<String, CacheProgressItem>>>,
+    uuid: Uuid,
+    item_name: &str,
+    progress: ItemProgress,
+) {
+    let item = match progress {
+        ItemProgress::Failed { item_size, reason } => {
+            if matches!(reason, FailReason::Missing) && !offline {
+                // we expect holes in the game cache; don't report
+                return;
+            }
+
+            CacheProgressItem {
+                item_size,
+                corrupt: true,
+            }
+        }
+        ItemProgress::Passed { item_size } => CacheProgressItem {
+            item_size,
+            corrupt: false,
+        },
+        _ => return,
+    };
+
+    let mut items = items.lock().unwrap();
+    items.insert(item_name.to_string(), item);
+
+    let cache_progress = CacheProgress {
+        uuid,
+        offline,
+        items: items.clone(),
+        done: false,
+    };
+    if let Err(e) = app_handle.emit(CACHE_PROGRESS_EVENT, cache_progress) {
+        warn!("Failed to emit cache progress: {}", e);
+    }
+}
+
 #[tauri::command]
 async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool) {
     let internal = async {
@@ -295,49 +336,19 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
             &GAME_CACHE_OPS
         };
 
-        {
-            let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
-            if ops.contains(&uuid) {
-                return Err("Cache operation in progress".into());
-            }
-            ops.insert(uuid);
-        }
-
         let items = Arc::new(std::sync::Mutex::new(HashMap::new()));
+
         let items_clone = items.clone();
         let app_handle_clone = app_handle.clone();
         let cb = move |version_uuid: &Uuid, item_name: &str, progress: ItemProgress| {
-            let item = match progress {
-                ItemProgress::Failed { item_size, reason } => {
-                    if matches!(reason, FailReason::Missing) && !offline {
-                        // we expect holes in the game cache; don't report
-                        return;
-                    }
-
-                    CacheProgressItem {
-                        item_size,
-                        corrupt: true,
-                    }
-                }
-                ItemProgress::Passed { item_size } => CacheProgressItem {
-                    item_size,
-                    corrupt: false,
-                },
-                _ => return,
-            };
-
-            let mut items = items_clone.lock().unwrap();
-            items.insert(item_name.to_string(), item);
-
-            let cache_progress = CacheProgress {
-                uuid: *version_uuid,
+            progress_callback(
+                app_handle_clone.clone(),
                 offline,
-                items: items.clone(),
-                done: false,
-            };
-            if let Err(e) = app_handle_clone.emit(CACHE_PROGRESS_EVENT, cache_progress) {
-                warn!("Failed to emit cache progress: {}", e);
-            }
+                items_clone.clone(),
+                *version_uuid,
+                item_name,
+                progress,
+            );
         };
         let cb = Arc::new(cb);
 
@@ -355,13 +366,25 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
         };
         drop(state);
 
-        if !util::is_dir_empty(&path)? {
+        if util::is_dir_empty(&path)? {
+            return Ok(()); // nothing to validate
+        }
+
+        {
+            let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
+            if ops.contains(&uuid) {
+                return Err("Cache operation in progress".into());
+            }
+            ops.insert(uuid);
+        }
+
+        tauri::async_runtime::spawn(async move {
             let path = path.to_string_lossy().to_string();
             if offline {
-                version.validate_compressed(&path, Some(cb)).await
+                let _ = version.validate_compressed(&path, Some(cb)).await;
             } else {
-                version.validate_uncompressed(&path, Some(cb)).await
-            }?;
+                let _ = version.validate_uncompressed(&path, Some(cb)).await;
+            }
 
             let progress = CacheProgress {
                 uuid,
@@ -372,12 +395,12 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
             if let Err(e) = app_handle.emit(CACHE_PROGRESS_EVENT, progress) {
                 warn!("Failed to emit cache progress: {}", e);
             }
-        }
 
-        {
-            let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
-            ops.remove(&uuid);
-        }
+            {
+                let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
+                ops.remove(&uuid);
+            }
+        });
         Ok(())
     };
     debug!("validate_cache {} {}", uuid, offline);
@@ -385,6 +408,96 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
     if let Err(e) = res {
         error!("validate_cache {} {}: {}", uuid, offline, e);
     }
+}
+
+#[tauri::command]
+async fn download_cache(
+    app_handle: tauri::AppHandle,
+    uuid: Uuid,
+    offline: bool,
+    repair: bool,
+) -> CommandResult<()> {
+    let internal = async {
+        let ops = if offline {
+            &OFFLINE_CACHE_OPS
+        } else {
+            &GAME_CACHE_OPS
+        };
+
+        if !offline {
+            return Err("Not implemented".into());
+        }
+
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let version = state
+            .versions
+            .get_entry(uuid)
+            .ok_or("Version not found")?
+            .clone();
+        let path = if offline {
+            util::get_cache_dir_for_version(&state.config.offline_cache_path, &version)?
+        } else {
+            util::get_cache_dir_for_version(&state.config.game_cache_path, &version)?
+        };
+        drop(state);
+
+        std::fs::create_dir_all(&path)?;
+        if !repair && !util::is_dir_empty(&path)? {
+            return Err("Cache directory not empty".into());
+        }
+
+        let items = Arc::new(std::sync::Mutex::new(HashMap::new()));
+
+        let items_clone = items.clone();
+        let app_handle_clone = app_handle.clone();
+        let cb = move |version_uuid: &Uuid, item_name: &str, progress: ItemProgress| {
+            progress_callback(
+                app_handle_clone.clone(),
+                offline,
+                items_clone.clone(),
+                *version_uuid,
+                item_name,
+                progress,
+            );
+        };
+        let cb = Arc::new(cb);
+
+        {
+            let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
+            if ops.contains(&uuid) {
+                return Err("Cache operation in progress".into());
+            }
+            ops.insert(uuid);
+        }
+
+        let path = path.to_string_lossy().to_string();
+        tauri::async_runtime::spawn(async move {
+            if repair {
+                let _ = version.repair(&path, Some(cb)).await;
+            } else {
+                let _ = version.download_compressed(&path, Some(cb)).await;
+            }
+
+            let progress = CacheProgress {
+                uuid,
+                offline,
+                items: items.lock().unwrap().clone(),
+                done: true,
+            };
+            if let Err(e) = app_handle.emit(CACHE_PROGRESS_EVENT, progress) {
+                warn!("Failed to emit cache progress: {}", e);
+            }
+
+            {
+                let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
+                ops.remove(&uuid);
+            }
+        });
+        Ok(())
+    };
+    debug!("download_cache {} {} {}", uuid, offline, repair);
+    internal.await.map_err(|e: Error| e.to_string())
 }
 
 #[tauri::command]
@@ -614,6 +727,7 @@ pub fn run() {
             do_launch,
             get_cache_size,
             validate_cache,
+            download_cache,
             delete_cache,
         ])
         .build(tauri::generate_context![])

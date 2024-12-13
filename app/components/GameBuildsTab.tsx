@@ -119,11 +119,31 @@ export default function GameBuildsTab() {
   };
 
   const downloadOfflineCache = async (uuid: string) => {
-    stub();
+    try {
+      await invoke("download_cache", { uuid, offline: true, repair: false });
+      setVersionData((prev) => {
+        return prev?.map((pv) =>
+          pv.version.uuid == uuid ? { ...pv, offlineDone: false } : pv
+        );
+      });
+    } catch (e) {
+      if (ctx.alertError) {
+        ctx.alertError("Failed to kickoff offline cache download: " + e);
+      }
+    }
   };
 
   const repairOfflineCache = async (uuid: string) => {
-    stub();
+    try {
+      await invoke("download_cache", { uuid, offline: true, repair: true });
+      if (ctx.alertSuccess) {
+        ctx.alertSuccess("Offline cache repair started");
+      }
+    } catch (e) {
+      if (ctx.alertError) {
+        ctx.alertError("Failed to kickoff offline cache repair: " + e);
+      }
+    }
   };
 
   const deleteOfflineCache = async (uuid: string) => {
