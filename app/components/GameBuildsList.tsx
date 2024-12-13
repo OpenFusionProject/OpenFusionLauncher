@@ -23,8 +23,8 @@ const formatBytesToGB = (bytes?: number) => {
   return (bytes / BYTES_PER_GB).toFixed(2);
 };
 
-const isCorrupt = (items: Record<string, VersionCacheProgressItem>) => {
-  return Object.values(items).some((item) => item.corrupt && !item.missing);
+const isCorrupt = (items: Record<string, VersionCacheProgressItem>, countMissing?: boolean) => {
+  return Object.values(items).some((item) => item.corrupt && (!item.missing || countMissing));
 };
 
 const getTooltipForItem = (name: string, item: VersionCacheProgressItem) => {
@@ -44,7 +44,7 @@ const getVariantForProgress = (data: VersionCacheData, item: VersionCacheProgres
 
   const done = offline ? data.offlineDone : data.gameDone;
   const items = offline ? data.offlineItems : data.gameItems;
-  const corrupt = isCorrupt(items);
+  const corrupt = isCorrupt(items, false);
   if (done && !corrupt) {
     return "success";
   }
@@ -221,7 +221,7 @@ export default function GameBuildsList({
                       {" "}
                       <Button
                         loading={!versionData.offlineDone}
-                        enabled={isCorrupt(versionData.offlineItems)}
+                        enabled={isCorrupt(versionData.offlineItems, true)}
                         icon="screwdriver-wrench"
                         onClick={() => repairOfflineCache(version.uuid)}
                         variant="warning"
