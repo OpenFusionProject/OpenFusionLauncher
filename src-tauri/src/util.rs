@@ -1,24 +1,29 @@
 #![allow(dead_code)]
 
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf, sync::mpsc};
 
 use dns_lookup::lookup_host;
-use ffbuildtool::Version;
+use ffbuildtool::{FailReason, ItemProgress, Version};
 use log::*;
+use tauri::Emitter as _;
+use uuid::Uuid;
 
-use crate::{state::get_app_statics, Result};
+use crate::{
+    state::get_app_statics, CacheEvent, CacheProgress, CacheProgressItem, Result,
+    CACHE_PROGRESS_EVENT,
+};
 
 // for serde
-pub fn true_fn() -> bool {
+pub(crate) fn true_fn() -> bool {
     true
 }
 
 // for serde
-pub fn false_fn() -> bool {
+pub(crate) fn false_fn() -> bool {
     false
 }
 
-pub fn string_version_to_u32(version: &str) -> u32 {
+pub(crate) fn string_version_to_u32(version: &str) -> u32 {
     let mut version_parts = version.split('.').map(|part| part.parse::<u32>().unwrap());
     let major = version_parts.next().unwrap();
     let minor = version_parts.next().unwrap_or(0);
@@ -26,7 +31,7 @@ pub fn string_version_to_u32(version: &str) -> u32 {
     (major << 16) | (minor << 8) | patch
 }
 
-pub fn get_timestamp() -> u64 {
+pub(crate) fn get_timestamp() -> u64 {
     let now = std::time::SystemTime::now();
     now.duration_since(std::time::UNIX_EPOCH).unwrap().as_secs()
 }
@@ -53,7 +58,7 @@ fn resolve_host(host: &str) -> Result<String> {
     Err(format!("No IPv4 address found for {}", host).into())
 }
 
-pub fn resolve_server_addr(addr: &str) -> Result<String> {
+pub(crate) fn resolve_server_addr(addr: &str) -> Result<String> {
     let (host, port) = split_addr_port(addr)?;
     let Ok(ip) = resolve_host(&host) else {
         return Err(format!("Failed to resolve game server address {}", addr).into());
@@ -62,24 +67,27 @@ pub fn resolve_server_addr(addr: &str) -> Result<String> {
     Ok(format!("{}:{}", ip, port))
 }
 
-pub fn get_default_cache_dir() -> String {
+pub(crate) fn get_default_cache_dir() -> String {
     get_app_statics().ff_cache_dir.to_string_lossy().to_string()
 }
 
-pub fn get_default_offline_cache_dir() -> String {
+pub(crate) fn get_default_offline_cache_dir() -> String {
     get_app_statics()
         .offline_cache_dir
         .to_string_lossy()
         .to_string()
 }
 
-pub fn get_cache_dir_for_version(base_cache_dir: &str, version: &Version) -> Result<PathBuf> {
+pub(crate) fn get_cache_dir_for_version(
+    base_cache_dir: &str,
+    version: &Version,
+) -> Result<PathBuf> {
     let cache_dir = PathBuf::from(base_cache_dir);
     let build_dir = cache_dir.join(version.get_uuid().to_string());
     Ok(build_dir)
 }
 
-pub fn get_dir_size(dir: &PathBuf) -> Result<u64> {
+pub(crate) fn get_dir_size(dir: &PathBuf) -> Result<u64> {
     let mut size = 0;
     for entry in std::fs::read_dir(dir)? {
         let entry = entry?;
@@ -96,14 +104,14 @@ pub fn get_dir_size(dir: &PathBuf) -> Result<u64> {
     Ok(size)
 }
 
-pub fn is_dir_empty(dir: &PathBuf) -> Result<bool> {
+pub(crate) fn is_dir_empty(dir: &PathBuf) -> Result<bool> {
     match std::fs::read_dir(dir) {
         Ok(mut entries) => Ok(entries.next().is_none()),
         Err(e) => Err(e.into()),
     }
 }
 
-pub fn import_versions(to_import: Vec<Version>) -> Result<Vec<Version>> {
+pub(crate) fn import_versions(to_import: Vec<Version>) -> Result<Vec<Version>> {
     let versions_path = get_app_statics().app_data_dir.join("versions");
     if !versions_path.exists() {
         std::fs::create_dir_all(&versions_path)?;
@@ -122,11 +130,77 @@ pub fn import_versions(to_import: Vec<Version>) -> Result<Vec<Version>> {
     Ok(versions)
 }
 
-pub async fn do_simple_get(url: &str) -> Result<String> {
+pub(crate) async fn do_simple_get(url: &str) -> Result<String> {
     debug!("=> GET {}", url);
     let client = reqwest::Client::new();
     let response = client.get(url).send().await?;
     let text = response.text().await?;
     debug!("<= {}", text);
     Ok(text)
+}
+
+pub(crate) fn cache_progress_loop(
+    offline: bool,
+    app_handle: tauri::AppHandle,
+    item_rx: mpsc::Receiver<CacheEvent>,
+    uuid: Uuid,
+) {
+    const POLL_INTERVAL: std::time::Duration = std::time::Duration::from_millis(250);
+
+    let mut items = HashMap::new();
+    let mut done = false;
+    while !done {
+        std::thread::sleep(POLL_INTERVAL);
+        while let Ok(event) = item_rx.try_recv() {
+            match event {
+                CacheEvent::ItemProcessed(name, item) => {
+                    items.insert(name, item);
+                }
+                CacheEvent::Done => {
+                    done = true;
+                }
+            }
+        }
+
+        let progress = CacheProgress {
+            offline,
+            uuid,
+            items: items.clone(),
+            done,
+        };
+        if let Err(e) = app_handle.emit(CACHE_PROGRESS_EVENT, progress) {
+            error!("Failed to emit cache progress event: {}", e);
+        }
+    }
+}
+
+pub(crate) fn cache_progress_callback(
+    offline: bool,
+    item_tx: mpsc::Sender<CacheEvent>,
+    item_name: &str,
+    progress: ItemProgress,
+) {
+    let item = match progress {
+        ItemProgress::Failed { item_size, reason } => {
+            if matches!(reason, FailReason::Missing) && !offline {
+                // we expect holes in the game cache; don't report
+                return;
+            }
+
+            CacheProgressItem {
+                item_size,
+                corrupt: true,
+            }
+        }
+        ItemProgress::Passed { item_size } => CacheProgressItem {
+            item_size,
+            corrupt: false,
+        },
+        _ => return,
+    };
+
+    let event = CacheEvent::ItemProcessed(item_name.to_string(), item);
+    if let Err(e) = item_tx.send(event) {
+        error!("Failed to send cache progress event: {}", e);
+    }
 }

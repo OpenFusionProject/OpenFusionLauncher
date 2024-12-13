@@ -3,19 +3,19 @@ mod state;
 mod util;
 
 use endpoint::{InfoResponse, RegisterResponse, Session};
-use ffbuildtool::{FailReason, ItemProgress};
+use ffbuildtool::ItemProgress;
 use serde::{Deserialize, Serialize};
 use state::{get_app_statics, AppState, FlatServer, FrontendServers, Server, ServerInfo, Versions};
 
 use std::{
     collections::{HashMap, HashSet},
     env,
-    sync::{Arc, OnceLock},
+    sync::{mpsc, Arc, OnceLock},
 };
 use tokio::sync::Mutex;
 
 use log::*;
-use tauri::{Emitter as _, Manager};
+use tauri::Manager;
 use uuid::Uuid;
 
 type Error = Box<dyn std::error::Error>;
@@ -31,6 +31,12 @@ const CACHE_PROGRESS_EVENT: &str = "cache_progress";
 struct CacheProgressItem {
     item_size: u64,
     corrupt: bool,
+}
+
+#[derive(Debug)]
+enum CacheEvent {
+    ItemProcessed(String, CacheProgressItem),
+    Done,
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -286,50 +292,6 @@ async fn get_cache_size(
     internal.await.map_err(|e: Error| e.to_string())
 }
 
-fn progress_callback(
-    app_handle: tauri::AppHandle,
-    offline: bool,
-    items: Arc<std::sync::Mutex<HashMap<String, CacheProgressItem>>>,
-    uuid: Uuid,
-    item_name: &str,
-    progress: ItemProgress,
-) {
-    let item = match progress {
-        ItemProgress::Failed { item_size, reason } => {
-            if matches!(reason, FailReason::Missing) && !offline {
-                // we expect holes in the game cache; don't report
-                return;
-            }
-
-            CacheProgressItem {
-                item_size,
-                corrupt: true,
-            }
-        }
-        ItemProgress::Passed { item_size } => CacheProgressItem {
-            item_size,
-            corrupt: false,
-        },
-        _ => return,
-    };
-
-    let Ok(mut items) = items.lock() else {
-        error!("Failed to lock items");
-        return;
-    };
-    items.insert(item_name.to_string(), item);
-
-    let cache_progress = CacheProgress {
-        uuid,
-        offline,
-        items: items.clone(),
-        done: false,
-    };
-    if let Err(e) = app_handle.emit(CACHE_PROGRESS_EVENT, cache_progress) {
-        warn!("Failed to emit cache progress: {}", e);
-    }
-}
-
 #[tauri::command]
 async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool) {
     let internal = async {
@@ -339,19 +301,10 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
             &GAME_CACHE_OPS
         };
 
-        let items = Arc::new(std::sync::Mutex::new(HashMap::new()));
-
-        let items_clone = items.clone();
-        let app_handle_clone = app_handle.clone();
-        let cb = move |version_uuid: &Uuid, item_name: &str, progress: ItemProgress| {
-            progress_callback(
-                app_handle_clone.clone(),
-                offline,
-                items_clone.clone(),
-                *version_uuid,
-                item_name,
-                progress,
-            );
+        let (tx, rx) = mpsc::channel();
+        let tx_clone = tx.clone();
+        let cb = move |_version_uuid: &Uuid, item_name: &str, progress: ItemProgress| {
+            util::cache_progress_callback(offline, tx_clone.clone(), item_name, progress);
         };
         let cb = Arc::new(cb);
 
@@ -381,35 +334,25 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
             ops.insert(uuid);
         }
 
+        tauri::async_runtime::spawn_blocking(move || {
+            util::cache_progress_loop(offline, app_handle, rx, uuid);
+        });
+
+        let path = path.to_string_lossy().to_string();
         tauri::async_runtime::spawn(async move {
-            let path = path.to_string_lossy().to_string();
             if offline {
                 let _ = version.validate_compressed(&path, Some(cb)).await;
             } else {
                 let _ = version.validate_uncompressed(&path, Some(cb)).await;
             }
 
-            match items.lock() {
-                Ok(items) => {
-                    let progress = CacheProgress {
-                        uuid,
-                        offline,
-                        items: items.clone(),
-                        done: true,
-                    };
-                    if let Err(e) = app_handle.emit(CACHE_PROGRESS_EVENT, progress) {
-                        warn!("Failed to emit cache progress: {}", e);
-                    }
-                }
-                Err(e) => {
-                    error!("Failed to lock items: {}", e);
-                    return;
-                }
-            }
-
             {
                 let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
                 ops.remove(&uuid);
+            }
+
+            if let Err(e) = tx.send(CacheEvent::Done) {
+                error!("Failed to send cache done event: {}", e);
             }
         });
         Ok(())
@@ -458,19 +401,10 @@ async fn download_cache(
             return Err("Cache directory not empty".into());
         }
 
-        let items = Arc::new(std::sync::Mutex::new(HashMap::new()));
-
-        let items_clone = items.clone();
-        let app_handle_clone = app_handle.clone();
-        let cb = move |version_uuid: &Uuid, item_name: &str, progress: ItemProgress| {
-            progress_callback(
-                app_handle_clone.clone(),
-                offline,
-                items_clone.clone(),
-                *version_uuid,
-                item_name,
-                progress,
-            );
+        let (tx, rx) = mpsc::channel();
+        let tx_clone = tx.clone();
+        let cb = move |_version_uuid: &Uuid, item_name: &str, progress: ItemProgress| {
+            util::cache_progress_callback(offline, tx_clone.clone(), item_name, progress);
         };
         let cb = Arc::new(cb);
 
@@ -482,6 +416,10 @@ async fn download_cache(
             ops.insert(uuid);
         }
 
+        tauri::async_runtime::spawn_blocking(move || {
+            util::cache_progress_loop(offline, app_handle, rx, uuid);
+        });
+
         let path = path.to_string_lossy().to_string();
         tauri::async_runtime::spawn(async move {
             if repair {
@@ -490,27 +428,13 @@ async fn download_cache(
                 let _ = version.download_compressed(&path, Some(cb)).await;
             }
 
-            match items.lock() {
-                Ok(items) => {
-                    let progress = CacheProgress {
-                        uuid,
-                        offline,
-                        items: items.clone(),
-                        done: true,
-                    };
-                    if let Err(e) = app_handle.emit(CACHE_PROGRESS_EVENT, progress) {
-                        warn!("Failed to emit cache progress: {}", e);
-                    }
-                }
-                Err(e) => {
-                    error!("Failed to lock items: {}", e);
-                    return;
-                }
-            }
-
             {
                 let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
                 ops.remove(&uuid);
+            }
+
+            if let Err(e) = tx.send(CacheEvent::Done) {
+                error!("Failed to send cache done event: {}", e);
             }
         });
         Ok(())
