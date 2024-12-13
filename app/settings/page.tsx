@@ -11,9 +11,17 @@ import { Tab, Tabs } from "react-bootstrap";
 import LauncherPage from "@/components/LauncherPage";
 import ConfirmationModal from "../components/ConfirmationModal";
 
+const TAB_LAUNCHER_SETTINGS = "launcher-settings";
+const TAB_GAME_SETTINGS = "game-settings";
+const TAB_GAME_BUILDS = "game-builds";
+const TAB_AUTHENTICATION = "authentication";
+const DEFAULT_TAB = TAB_LAUNCHER_SETTINGS;
+
 export default function SettingsPage() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>([]);
+
+  const [tab, setTab] = useState(DEFAULT_TAB);
 
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState("");
@@ -79,9 +87,13 @@ export default function SettingsPage() {
       <AlertList alerts={alerts} />
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
       <LauncherPage title="Settings">
-        <Tabs defaultActiveKey="launcher-settings" id="settings-tabs" fill>
+        <Tabs
+          activeKey={tab}
+          onSelect={(k) => setTab(k ?? DEFAULT_TAB)}
+          fill
+        >
           <Tab
-            eventKey="launcher-settings"
+            eventKey={TAB_LAUNCHER_SETTINGS}
             title={
               <>
                 <i className="fas fa-rocket"></i> <span>Launcher Settings</span>
@@ -91,7 +103,7 @@ export default function SettingsPage() {
             <h1>benis</h1>
           </Tab>
           <Tab
-            eventKey="game-settings"
+            eventKey={TAB_GAME_SETTINGS}
             title={
               <>
                 <i className="fas fa-gamepad"></i> <span>Game Settings</span>
@@ -101,17 +113,17 @@ export default function SettingsPage() {
             <h1>benis 2</h1>
           </Tab>
           <Tab
-            eventKey="game-builds"
+            eventKey={TAB_GAME_BUILDS}
             title={
               <>
                 <i className="fas fa-download"></i> <span>Game Builds</span>
               </>
             }
           >
-            <GameBuildsTab />
+            <GameBuildsTab active={tab == TAB_GAME_BUILDS} />
           </Tab>
           <Tab
-            eventKey="authentication"
+            eventKey={TAB_AUTHENTICATION}
             title={
               <>
                 <i className="fas fa-key"></i> <span>Authentication</span>

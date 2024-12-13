@@ -84,13 +84,15 @@ const getMissingTooltip = (items: Record<string, VersionCacheProgressItem>) => {
 }
 
 export default function GameBuildsList({
-  versionData,
+  versions,
+  versionDataList,
   clearGameCache,
   downloadOfflineCache,
   repairOfflineCache,
   deleteOfflineCache,
 }: {
-  versionData?: VersionCacheData[];
+  versions?: VersionEntry[];
+  versionDataList: VersionCacheData[];
   clearGameCache: (uuid: string) => void;
   downloadOfflineCache: (uuid: string) => void;
   repairOfflineCache: (uuid: string) => void;
@@ -107,7 +109,7 @@ export default function GameBuildsList({
           </tr>
         </thead>
         <tbody>
-          {!versionData ? (
+          {!versions ? (
             <tr>
               <td colSpan={3} className="text-center">
                 <span
@@ -117,14 +119,20 @@ export default function GameBuildsList({
                 ></span>
               </td>
             </tr>
-          ) : versionData.length == 0 ? (
+          ) : versions.length == 0 ? (
             <tr>
               <td colSpan={3}>No builds available</td>
             </tr>
           ) : (
-            versionData.map(
-              (versionData) => {
-                const version = versionData.version;
+            versions.map(
+              (version) => {
+                const versionData: VersionCacheData = versionDataList.find((vd) => vd.versionUuid == version.uuid) ?? {
+                  versionUuid: version.uuid,
+                  gameDone: false,
+                  gameItems: {},
+                  offlineDone: false,
+                  offlineItems: {},
+                };
                 return !version.hidden && (
                   <tr key={version.uuid}>
                     <td className="font-monospace align-middle">

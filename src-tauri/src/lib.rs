@@ -323,10 +323,6 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
         };
         drop(state);
 
-        if util::is_dir_empty(&path)? {
-            return Ok(()); // nothing to validate
-        }
-
         {
             let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
             if ops.contains(&uuid) {
@@ -339,12 +335,14 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
             util::cache_progress_loop(offline, app_handle, rx, uuid);
         });
 
-        let path = path.to_string_lossy().to_string();
         tauri::async_runtime::spawn(async move {
-            if offline {
-                let _ = version.validate_compressed(&path, Some(cb)).await;
-            } else {
-                let _ = version.validate_uncompressed(&path, Some(cb)).await;
+            if !util::is_dir_empty(&path).unwrap_or(true) {
+                let path = path.to_string_lossy().to_string();
+                if offline {
+                    let _ = version.validate_compressed(&path, Some(cb)).await;
+                } else {
+                    let _ = version.validate_uncompressed(&path, Some(cb)).await;
+                }
             }
 
             {
