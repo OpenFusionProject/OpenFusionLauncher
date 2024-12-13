@@ -6,6 +6,16 @@ import { get } from "http";
 
 const BYTES_PER_GB = 1024 * 1024 * 1024;
 
+const min = (a: number | undefined, b: number | undefined) => {
+  if (a == undefined) {
+    return b;
+  }
+  if (b == undefined) {
+    return a;
+  }
+  return Math.min(a, b);
+}
+
 const formatBytesToGB = (bytes?: number) => {
   if (bytes == undefined) {
     return undefined;
@@ -105,7 +115,7 @@ export default function GameBuildsList({
                     </td>
                     <td className="text-center">
                       <p>
-                        {formatBytesToGB(getValidatedSize(versionData.gameItems)) ?? "--"}
+                        {formatBytesToGB(min(getValidatedSize(versionData.gameItems), versionData.gameSize)) ?? "--"}
                         {" / "}
                         {formatBytesToGB(version.total_uncompressed_size) ?? "?.??"}
                         {" GB"}
@@ -136,7 +146,7 @@ export default function GameBuildsList({
                     </td>
                     <td className="text-center">
                       <p>
-                        {formatBytesToGB(getValidatedSize(versionData.offlineItems)) ?? "--"}
+                        {formatBytesToGB(min(getValidatedSize(versionData.offlineItems), versionData.offlineSize)) ?? "--"}
                         {" / "}
                         {formatBytesToGB(getTotalOfflineSize(version)) ?? "?.??"}
                         {" GB"}
