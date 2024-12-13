@@ -24,7 +24,7 @@ const formatBytesToGB = (bytes?: number) => {
 };
 
 const isCorrupt = (items: Record<string, VersionCacheProgressItem>) => {
-  return Object.values(items).some((item) => item.corrupt);
+  return Object.values(items).some((item) => item.corrupt && !item.missing);
 };
 
 const getTooltipForItem = (name: string, item: VersionCacheProgressItem) => {
@@ -59,9 +59,6 @@ const getValidatedSize = (items: Record<string, VersionCacheProgressItem>, inclu
 }
 
 const getDisplaySize = (data: VersionCacheData, offline: boolean) => {
-  // const size = offline ? data.offlineSize : data.gameSize;
-  // return size;
-
   const items = offline ? data.offlineItems : data.gameItems;
   return getValidatedSize(items, false);
 };

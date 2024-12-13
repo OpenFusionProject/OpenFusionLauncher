@@ -38,19 +38,12 @@ export default function GameBuildsTab() {
           uuid: v.version.uuid,
           offline: false,
         });
-        setVersionData((prev) => {
-          const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);
-          if (pv) {
-            const nv = { ...pv, gameSize };
-            invoke("validate_cache", {
-              uuid: v.version.uuid,
-              offline: false,
-            });
-            return prev?.map((pv) =>
-              pv.version.uuid == v.version.uuid ? nv : pv
-            );
-          }
-        });
+        if (gameSize > 0) {
+          invoke("validate_cache", {
+            uuid: v.version.uuid,
+            offline: false,
+          });
+        }
       } catch (e) {
         setVersionData((prev) => {
           const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);
@@ -68,19 +61,12 @@ export default function GameBuildsTab() {
           uuid: v.version.uuid,
           offline: true,
         });
-        setVersionData((prev) => {
-          const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);
-          if (pv) {
-            const nv = { ...pv, offlineSize };
-            invoke("validate_cache", {
-              uuid: v.version.uuid,
-              offline: true,
-            });
-            return prev?.map((pv) =>
-              pv.version.uuid == v.version.uuid ? nv : pv
-            );
-          }
-        });
+        if (offlineSize > 0) {
+          invoke("validate_cache", {
+            uuid: v.version.uuid,
+            offline: true,
+          });
+        }
       } catch (e) {
         setVersionData((prev) => {
           const pv = prev?.find((pv) => pv.version.uuid == v.version.uuid);

@@ -75,10 +75,8 @@ export type SettingsContext = {
 
 export type VersionCacheData = {
   version: VersionEntry;
-  gameSize?: number;
   gameDone: boolean;
   gameItems: Record<string, VersionCacheProgressItem>;
-  offlineSize?: number;
   offlineDone: boolean;
   offlineItems: Record<string, VersionCacheProgressItem>;
 };
