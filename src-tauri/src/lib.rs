@@ -313,7 +313,10 @@ fn progress_callback(
         _ => return,
     };
 
-    let mut items = items.lock().unwrap();
+    let Ok(mut items) = items.lock() else {
+        error!("Failed to lock items");
+        return;
+    };
     items.insert(item_name.to_string(), item);
 
     let cache_progress = CacheProgress {
@@ -386,14 +389,22 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
                 let _ = version.validate_uncompressed(&path, Some(cb)).await;
             }
 
-            let progress = CacheProgress {
-                uuid,
-                offline,
-                items: items.lock().unwrap().clone(),
-                done: true,
-            };
-            if let Err(e) = app_handle.emit(CACHE_PROGRESS_EVENT, progress) {
-                warn!("Failed to emit cache progress: {}", e);
+            match items.lock() {
+                Ok(items) => {
+                    let progress = CacheProgress {
+                        uuid,
+                        offline,
+                        items: items.clone(),
+                        done: true,
+                    };
+                    if let Err(e) = app_handle.emit(CACHE_PROGRESS_EVENT, progress) {
+                        warn!("Failed to emit cache progress: {}", e);
+                    }
+                }
+                Err(e) => {
+                    error!("Failed to lock items: {}", e);
+                    return;
+                }
             }
 
             {
@@ -479,14 +490,22 @@ async fn download_cache(
                 let _ = version.download_compressed(&path, Some(cb)).await;
             }
 
-            let progress = CacheProgress {
-                uuid,
-                offline,
-                items: items.lock().unwrap().clone(),
-                done: true,
-            };
-            if let Err(e) = app_handle.emit(CACHE_PROGRESS_EVENT, progress) {
-                warn!("Failed to emit cache progress: {}", e);
+            match items.lock() {
+                Ok(items) => {
+                    let progress = CacheProgress {
+                        uuid,
+                        offline,
+                        items: items.clone(),
+                        done: true,
+                    };
+                    if let Err(e) = app_handle.emit(CACHE_PROGRESS_EVENT, progress) {
+                        warn!("Failed to emit cache progress: {}", e);
+                    }
+                }
+                Err(e) => {
+                    error!("Failed to lock items: {}", e);
+                    return;
+                }
             }
 
             {
