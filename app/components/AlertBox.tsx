@@ -29,17 +29,10 @@ export default function AlertBox({
 }) {
   const [show, setShow] = useState(true);
 
-  const close = () => {
-    setShow(false);
-    if (onClose) {
-      onClose();
-    }
-  }
-
   useEffect(() => {
     if (timeout) {
       const timer = setTimeout(() => {
-        close();
+        setShow(false);
       }, timeout);
       return () => clearTimeout(timer);
     }
@@ -50,6 +43,7 @@ export default function AlertBox({
       variant={variant}
       className={"mb-2 pr-0 border border-" + variant + " btn-" + variant}
       show={show}
+      onClose={onClose}
     >
       <span className="align-middle">
         <strong>{variantToLabel(variant)}:</strong> {text}
@@ -57,7 +51,7 @@ export default function AlertBox({
       <button
         type="button"
         className="btn shadow-none float-end fas fa-times"
-        onClick={() => close()}
+        onClick={() => setShow(false)}
       ></button>
     </Alert>
   );

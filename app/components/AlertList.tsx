@@ -6,10 +6,12 @@ import { useState } from "react";
 export default function AlertList({ alerts }: { alerts: Alert[] }) {
   const [closedAlerts, setClosedAlerts] = useState<number>(0);
 
+  const zIndex = alerts.length > closedAlerts ? 2000 : -1;
+
   return (
     <Stack
       id="alerts"
-      style={ { zIndex: alerts.length > closedAlerts ? 2000 : -1 } }
+      style={{ zIndex }}
     >
       {alerts.map((alert) => (
         <AlertBox
