@@ -1,9 +1,12 @@
 import { useState, useEffect, useContext } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { VersionCacheData, VersionCacheProgress, Versions } from "../types";
+import { VersionCacheData, VersionCacheProgress, VersionEntry, Versions } from "../types";
 import GameBuildsList from "./GameBuildsList";
 import { SettingsCtx } from "@/app/contexts";
 import { listen } from "@tauri-apps/api/event";
+import { version } from "os";
+import { Stack } from "react-bootstrap";
+import Button from "./Button";
 
 export default function GameBuildsTab() {
   const [versionData, setVersionData] = useState<
@@ -98,11 +101,12 @@ export default function GameBuildsTab() {
     }
   };
 
-  const clearGameCache = async (uuid: string) => {
+  const clearGameCache = async (uuid: string, name?: string) => {
+    const txt = name ? " for " + name : "";
     try {
       await invoke("delete_cache", { uuid, offline: false });
       if (ctx.alertSuccess) {
-        ctx.alertSuccess("Game cache cleared successfully");
+        ctx.alertSuccess("Game cache" + txt + " cleared successfully");
       }
       setVersionData((prev) => {
         return prev?.map((pv) =>
@@ -113,10 +117,23 @@ export default function GameBuildsTab() {
       });
     } catch (e) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to clear game cache: " + e);
+        ctx.alertError("Failed to clear game cache" + txt + ": " + e);
       }
     }
   };
+
+  const clearAllGameCaches = async () => {
+    if (!versionData) {
+      return;
+    }
+
+    for (const v of versionData) {
+      if (v.gameDone && Object.keys(v.gameItems).length > 0) {
+        const label = v.version.name ?? v.version.uuid;
+        clearGameCache(v.version.uuid, label);
+      }
+    }
+  }
 
   const downloadOfflineCache = async (uuid: string) => {
     try {
@@ -146,11 +163,12 @@ export default function GameBuildsTab() {
     }
   };
 
-  const deleteOfflineCache = async (uuid: string) => {
+  const deleteOfflineCache = async (uuid: string, name?: string) => {
+    const txt = name ? " for " + name : "";
     try {
       await invoke("delete_cache", { uuid, offline: true });
       if (ctx.alertSuccess) {
-        ctx.alertSuccess("Offline cache deleted successfully");
+        ctx.alertSuccess("Offline cache" + txt + " deleted successfully");
       }
       setVersionData((prev) => {
         return prev?.map((pv) =>
@@ -161,7 +179,20 @@ export default function GameBuildsTab() {
       });
     } catch (e) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to delete offline cache: " + e);
+        ctx.alertError("Failed to delete offline cache" + txt + ": " + e);
+      }
+    }
+  };
+
+  const deleteAllOfflineCaches = async () => {
+    if (!versionData) {
+      return;
+    }
+
+    for (const v of versionData) {
+      if (v.offlineDone && Object.keys(v.offlineItems).length > 0) {
+        const label = v.version.name ?? v.version.uuid;
+        deleteOfflineCache(v.version.uuid, label);
       }
     }
   };
@@ -199,38 +230,72 @@ export default function GameBuildsTab() {
   }, []);
 
   return (
-    <GameBuildsList
-      versionData={versionData}
-      clearGameCache={(uuid) => {
-        if (ctx.showConfirmationModal) {
-          const version = versionData!.find((v) => v.version.uuid == uuid)!;
-          const label =
-            version.version.name ?? "version " + version.version.uuid;
-          ctx.showConfirmationModal(
-            "Are you sure you want to clear the game cache for " + label + "?",
-            "Clear",
-            "danger",
-            clearGameCache.bind(null, uuid)
-          );
-        }
-      }}
-      downloadOfflineCache={downloadOfflineCache}
-      repairOfflineCache={repairOfflineCache}
-      deleteOfflineCache={(uuid) => {
-        if (ctx.showConfirmationModal) {
-          const version = versionData!.find((v) => v.version.uuid == uuid)!;
-          const label =
-            version.version.name ?? "version " + version.version.uuid;
-          ctx.showConfirmationModal(
-            "Are you sure you want to delete the offline cache for " +
-              label +
-              "?",
-            "Delete",
-            "danger",
-            deleteOfflineCache.bind(null, uuid)
-          );
-        }
-      }}
-    />
+    <>
+      <Stack direction="horizontal" className="flex-row-reverse p-2" gap={2}>
+        <Button
+          icon="trash"
+          text="Delete All Offline "
+          variant="danger"
+          onClick={() => {
+            if (ctx.showConfirmationModal) {
+              ctx.showConfirmationModal(
+                "Are you sure you want to delete all offline caches?",
+                "Delete All",
+                "danger",
+                deleteAllOfflineCaches
+              );
+            }
+          }}
+        />
+        <Button
+          icon="trash"
+          text="Clear All Game "
+          variant="danger"
+          onClick={() => {
+            if (ctx.showConfirmationModal) {
+              ctx.showConfirmationModal(
+                "Are you sure you want to clear all game caches?",
+                "Clear All",
+                "danger",
+                clearAllGameCaches
+              );
+            }
+          }}
+        />
+      </Stack>
+      <GameBuildsList
+        versionData={versionData}
+        clearGameCache={(uuid) => {
+          if (ctx.showConfirmationModal) {
+            const version = versionData!.find((v) => v.version.uuid == uuid)!;
+            const label =
+              version.version.name ?? "version " + version.version.uuid;
+            ctx.showConfirmationModal(
+              "Are you sure you want to clear the game cache for " + label + "?",
+              "Clear",
+              "danger",
+              clearGameCache.bind(null, uuid)
+            );
+          }
+        }}
+        downloadOfflineCache={downloadOfflineCache}
+        repairOfflineCache={repairOfflineCache}
+        deleteOfflineCache={(uuid) => {
+          if (ctx.showConfirmationModal) {
+            const version = versionData!.find((v) => v.version.uuid == uuid)!;
+            const label =
+              version.version.name ?? "version " + version.version.uuid;
+            ctx.showConfirmationModal(
+              "Are you sure you want to delete the offline cache for " +
+                label +
+                "?",
+              "Delete",
+              "danger",
+              deleteOfflineCache.bind(null, uuid)
+            );
+          }
+        }}
+      />
+    </>
   );
 }
