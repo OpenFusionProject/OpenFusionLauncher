@@ -32,6 +32,9 @@ const getVariantForProgress = (data: VersionCacheData, item: VersionCacheProgres
 };
 
 const getValidatedSize = (items: Record<string, VersionCacheProgressItem>) => {
+  if (Object.keys(items).length == 0) {
+    return undefined;
+  }
   return Object.values(items).reduce((acc, item) => acc + item.item_size, 0);
 }
 
@@ -102,7 +105,7 @@ export default function GameBuildsList({
                     </td>
                     <td className="text-center">
                       <p>
-                        {versionData.gameSize ? formatBytesToGB(getValidatedSize(versionData.gameItems)) : "--"}
+                        {formatBytesToGB(getValidatedSize(versionData.gameItems)) ?? "--"}
                         {" / "}
                         {formatBytesToGB(version.total_uncompressed_size) ?? "?.??"}
                         {" GB"}
@@ -124,7 +127,7 @@ export default function GameBuildsList({
                       <br />
                       <Button
                         loading={!versionData.gameDone}
-                        enabled={!!versionData.gameSize}
+                        enabled={!!getValidatedSize(versionData.gameItems)}
                         icon="trash"
                         onClick={() => clearGameCache(version.uuid)}
                         variant="danger"
@@ -133,7 +136,7 @@ export default function GameBuildsList({
                     </td>
                     <td className="text-center">
                       <p>
-                        {versionData.offlineSize ? formatBytesToGB(getValidatedSize(versionData.offlineItems)) : "--"}
+                        {formatBytesToGB(getValidatedSize(versionData.offlineItems)) ?? "--"}
                         {" / "}
                         {formatBytesToGB(getTotalOfflineSize(version)) ?? "?.??"}
                         {" GB"}
@@ -156,7 +159,7 @@ export default function GameBuildsList({
                       <Button
                         loading={!versionData.offlineDone}
                         enabled={
-                          !versionData.offlineSize &&
+                          !getValidatedSize(versionData.offlineItems) &&
                           !!version.main_file_info &&
                           !!version.total_compressed_size
                         }
@@ -177,7 +180,7 @@ export default function GameBuildsList({
                       {" "}
                       <Button
                         loading={!versionData.offlineDone}
-                        enabled={!!versionData.offlineSize}
+                        enabled={!!getValidatedSize(versionData.offlineItems)}
                         icon="trash"
                         onClick={() => deleteOfflineCache(version.uuid)}
                         variant="danger"
