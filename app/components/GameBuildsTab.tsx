@@ -235,6 +235,7 @@ export default function GameBuildsTab() {
         <Button
           icon="trash"
           text="Delete All Offline "
+          tooltip="Delete all offline caches"
           variant="danger"
           onClick={() => {
             if (ctx.showConfirmationModal) {
@@ -250,6 +251,7 @@ export default function GameBuildsTab() {
         <Button
           icon="trash"
           text="Clear All Game "
+          tooltip="Clear all game caches"
           variant="danger"
           onClick={() => {
             if (ctx.showConfirmationModal) {
