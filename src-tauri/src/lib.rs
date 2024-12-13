@@ -456,14 +456,6 @@ async fn delete_cache(
             &GAME_CACHE_OPS
         };
 
-        {
-            let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
-            if ops.contains(&uuid) {
-                return Err("Cache operation in progress".into());
-            }
-            ops.insert(uuid);
-        }
-
         let state = app_handle.state::<Mutex<AppState>>();
         let state = state.lock().await;
         let version = state.versions.get_entry(uuid).ok_or("Version not found")?;
@@ -472,13 +464,22 @@ async fn delete_cache(
         } else {
             util::get_cache_dir_for_version(&state.config.game_cache_path, version)?
         };
-        std::fs::remove_dir_all(&path)?;
+
+        {
+            let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
+            if ops.contains(&uuid) {
+                return Err("Cache operation in progress".into());
+            }
+            ops.insert(uuid);
+        }
+
+        let result = std::fs::remove_dir_all(&path);
 
         {
             let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
             ops.remove(&uuid);
         }
-        Ok(())
+        Ok(result?)
     };
     debug!("delete_cache {} {}", uuid, offline);
     internal.await.map_err(|e: Error| e.to_string())
