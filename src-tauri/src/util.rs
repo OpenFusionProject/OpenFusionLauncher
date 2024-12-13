@@ -175,26 +175,20 @@ pub(crate) fn cache_progress_loop(
 }
 
 pub(crate) fn cache_progress_callback(
-    offline: bool,
     item_tx: mpsc::Sender<CacheEvent>,
     item_name: &str,
     progress: ItemProgress,
 ) {
     let item = match progress {
-        ItemProgress::Failed { item_size, reason } => {
-            if matches!(reason, FailReason::Missing) && !offline {
-                // we expect holes in the game cache; don't report
-                return;
-            }
-
-            CacheProgressItem {
-                item_size,
-                corrupt: true,
-            }
-        }
+        ItemProgress::Failed { item_size, reason } => CacheProgressItem {
+            item_size,
+            corrupt: true,
+            missing: matches!(reason, FailReason::Missing),
+        },
         ItemProgress::Passed { item_size } => CacheProgressItem {
             item_size,
             corrupt: false,
+            missing: false,
         },
         _ => return,
     };

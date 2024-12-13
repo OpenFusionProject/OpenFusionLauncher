@@ -31,6 +31,7 @@ const CACHE_PROGRESS_EVENT: &str = "cache_progress";
 struct CacheProgressItem {
     item_size: u64,
     corrupt: bool,
+    missing: bool,
 }
 
 #[derive(Debug)]
@@ -304,7 +305,7 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
         let (tx, rx) = mpsc::channel();
         let tx_clone = tx.clone();
         let cb = move |_version_uuid: &Uuid, item_name: &str, progress: ItemProgress| {
-            util::cache_progress_callback(offline, tx_clone.clone(), item_name, progress);
+            util::cache_progress_callback(tx_clone.clone(), item_name, progress);
         };
         let cb = Arc::new(cb);
 
@@ -404,7 +405,7 @@ async fn download_cache(
         let (tx, rx) = mpsc::channel();
         let tx_clone = tx.clone();
         let cb = move |_version_uuid: &Uuid, item_name: &str, progress: ItemProgress| {
-            util::cache_progress_callback(offline, tx_clone.clone(), item_name, progress);
+            util::cache_progress_callback(tx_clone.clone(), item_name, progress);
         };
         let cb = Arc::new(cb);
 

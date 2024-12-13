@@ -93,4 +93,5 @@ export type VersionCacheProgress = {
 export type VersionCacheProgressItem = {
   item_size: number;
   corrupt: boolean;
+  missing: boolean;
 };

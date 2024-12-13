@@ -27,7 +27,17 @@ const isCorrupt = (items: Record<string, VersionCacheProgressItem>) => {
   return Object.values(items).some((item) => item.corrupt);
 };
 
+const getTooltipForItem = (name: string, item: VersionCacheProgressItem) => {
+  const status = item.missing ? "Missing: " : item.corrupt ? "Corrupt: " : "";
+  return status + name;
+};
+
 const getVariantForProgress = (data: VersionCacheData, item: VersionCacheProgressItem, offline: boolean) => {
+
+  if (item.missing) {
+    return "danger";
+  }
+
   if (item.corrupt) {
     return "warning";
   }
@@ -41,12 +51,20 @@ const getVariantForProgress = (data: VersionCacheData, item: VersionCacheProgres
   return "primary";
 };
 
-const getValidatedSize = (items: Record<string, VersionCacheProgressItem>) => {
+const getValidatedSize = (items: Record<string, VersionCacheProgressItem>, includeMissing?: boolean) => {
   if (Object.keys(items).length == 0) {
     return undefined;
   }
-  return Object.values(items).reduce((acc, item) => acc + item.item_size, 0);
+  return Object.values(items).reduce((acc, item) => acc + (item.missing && !includeMissing ? 0 : item.item_size), 0);
 }
+
+const getDisplaySize = (data: VersionCacheData, offline: boolean) => {
+  // const size = offline ? data.offlineSize : data.gameSize;
+  // return size;
+
+  const items = offline ? data.offlineItems : data.gameItems;
+  return getValidatedSize(items, false);
+};
 
 const getTotalOfflineSize = (version: VersionEntry) => {
   if (!version.total_compressed_size || !version.main_file_info) {
@@ -54,6 +72,19 @@ const getTotalOfflineSize = (version: VersionEntry) => {
   }
   return version.total_compressed_size + version.main_file_info.size;
 };
+
+const getMissingTooltip = (items: Record<string, VersionCacheProgressItem>) => {
+  const missingItems = Object.entries(items).filter(([_, item]) => item.missing);
+  if (missingItems.length == 0) {
+    return undefined;
+  }
+
+  let tooltip = "Missing:\n";
+  for (const [name, item] of missingItems) {
+    tooltip += `${name}\n`;
+  }
+  return tooltip;
+}
 
 export default function GameBuildsList({
   versionData,
@@ -115,17 +146,21 @@ export default function GameBuildsList({
                     </td>
                     <td className="text-center">
                       <p>
-                        {formatBytesToGB(min(getValidatedSize(versionData.gameItems), versionData.gameSize)) ?? "--"}
+                        {formatBytesToGB(getDisplaySize(versionData, false)) ?? "--"}
                         {" / "}
                         {formatBytesToGB(version.total_uncompressed_size) ?? "?.??"}
                         {" GB"}
                       </p>
-                      <ProgressBar>
+                      <ProgressBar
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        title={getMissingTooltip(versionData.gameItems)}
+                      >
                         {Object.entries(versionData.gameItems).map(([itemName, item]) => (
-                          <ProgressBar
+                          !item.missing && <ProgressBar
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
-                            title={itemName}
+                            title={getTooltipForItem(itemName, item)}
                             key={itemName}
                             now={item.item_size}
                             max={version.total_uncompressed_size ?? 1}
@@ -146,7 +181,7 @@ export default function GameBuildsList({
                     </td>
                     <td className="text-center">
                       <p>
-                        {formatBytesToGB(min(getValidatedSize(versionData.offlineItems), versionData.offlineSize)) ?? "--"}
+                        {formatBytesToGB(getDisplaySize(versionData, true)) ?? "--"}
                         {" / "}
                         {formatBytesToGB(getTotalOfflineSize(version)) ?? "?.??"}
                         {" GB"}
@@ -156,7 +191,7 @@ export default function GameBuildsList({
                           <ProgressBar
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
-                            title={itemName}
+                            title={getTooltipForItem(itemName, item)}
                             key={itemName}
                             now={item.item_size}
                             max={version.total_compressed_size ?? 1}
