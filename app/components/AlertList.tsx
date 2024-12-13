@@ -1,12 +1,15 @@
 import Stack from "react-bootstrap/Stack";
 import AlertBox from "./AlertBox";
 import { Alert } from "@/app/types";
+import { useState } from "react";
 
 export default function AlertList({ alerts }: { alerts: Alert[] }) {
+  const [closedAlerts, setClosedAlerts] = useState<number>(0);
+
   return (
     <Stack
       id="alerts"
-      style={ { zIndex: alerts.length > 0 ? 2000 : -1 } }
+      style={ { zIndex: alerts.length > closedAlerts ? 2000 : -1 } }
     >
       {alerts.map((alert) => (
         <AlertBox
@@ -14,6 +17,7 @@ export default function AlertList({ alerts }: { alerts: Alert[] }) {
           variant={alert.variant}
           text={alert.text}
           timeout={(alert.variant == "success") ? 5000 : undefined}
+          onClose={() => setClosedAlerts((prev) => prev + 1)}
         />
       ))}
     </Stack>

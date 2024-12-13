@@ -20,17 +20,26 @@ export default function AlertBox({
   variant,
   text,
   timeout,
+  onClose,
 }: {
   variant: string;
   text: string;
   timeout?: number;
+  onClose?: () => void;
 }) {
   const [show, setShow] = useState(true);
+
+  const close = () => {
+    setShow(false);
+    if (onClose) {
+      onClose();
+    }
+  }
 
   useEffect(() => {
     if (timeout) {
       const timer = setTimeout(() => {
-        setShow(false);
+        close();
       }, timeout);
       return () => clearTimeout(timer);
     }
@@ -48,7 +57,7 @@ export default function AlertBox({
       <button
         type="button"
         className="btn shadow-none float-end fas fa-times"
-        onClick={() => setShow(false)}
+        onClick={() => close()}
       ></button>
     </Alert>
   );
