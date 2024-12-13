@@ -165,7 +165,11 @@ export default function GameBuildsTab({
   useEffect(() => {
     if (active && versions) {
       for (const version of versions) {
-        if (!versionData.find((vd) => vd.versionUuid == version.uuid)) {
+        setVersionData((prev) => {
+          const pv = prev.find((v) => v.versionUuid == version.uuid);
+          if (pv) {
+            return prev;
+          }
           invoke("validate_cache", {
             uuid: version.uuid,
             offline: false,
@@ -174,7 +178,17 @@ export default function GameBuildsTab({
             uuid: version.uuid,
             offline: true,
           });
-        }
+          return [
+            ...prev,
+            {
+              versionUuid: version.uuid,
+              gameDone: false,
+              gameItems: {},
+              offlineDone: false,
+              offlineItems: {},
+            },
+          ];
+        });
       }
     }
   }, [active, versions]);
