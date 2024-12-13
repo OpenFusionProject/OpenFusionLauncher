@@ -18,6 +18,7 @@ export default function Button({
   loading?: boolean;
 }) {
   const actuallyEnabled = (enabled ?? true) && !loading;
+  const tooltipText = tooltip ?? text?.trim(); 
   return (
     <button
       type="button"
@@ -26,7 +27,7 @@ export default function Button({
       data-bs-placement="top"
       disabled={!actuallyEnabled}
       tabIndex={-1}
-      title={tooltip}
+      title={tooltipText}
       onClick={onClick}
     >
       {loading ? (
