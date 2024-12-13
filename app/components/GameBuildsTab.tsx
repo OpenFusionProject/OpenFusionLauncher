@@ -99,7 +99,23 @@ export default function GameBuildsTab() {
   };
 
   const clearGameCache = async (uuid: string) => {
-    stub();
+    try {
+      await invoke("delete_cache", { uuid, offline: false });
+      if (ctx.alertSuccess) {
+        ctx.alertSuccess("Game cache cleared successfully");
+      }
+      setVersionData((prev) => {
+        return prev?.map((pv) =>
+          pv.version.uuid == uuid
+            ? { ...pv, gameSize: 0, gameItems: {}, gameDone: true }
+            : pv
+        );
+      });
+    } catch (e) {
+      if (ctx.alertError) {
+        ctx.alertError("Failed to clear game cache: " + e);
+      }
+    }
   };
 
   const downloadOfflineCache = async (uuid: string) => {
@@ -111,7 +127,23 @@ export default function GameBuildsTab() {
   };
 
   const deleteOfflineCache = async (uuid: string) => {
-    stub();
+    try {
+      await invoke("delete_cache", { uuid, offline: true });
+      if (ctx.alertSuccess) {
+        ctx.alertSuccess("Offline cache deleted successfully");
+      }
+      setVersionData((prev) => {
+        return prev?.map((pv) =>
+          pv.version.uuid == uuid
+            ? { ...pv, offlineSize: 0, offlineItems: {}, offlineDone: true }
+            : pv
+        );
+      });
+    } catch (e) {
+      if (ctx.alertError) {
+        ctx.alertError("Failed to delete offline cache: " + e);
+      }
+    }
   };
 
   const handleProgress = (progress: VersionCacheProgress) => {
