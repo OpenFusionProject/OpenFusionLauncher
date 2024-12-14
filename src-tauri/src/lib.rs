@@ -12,7 +12,7 @@ use std::{
     env,
     sync::{mpsc, Arc, OnceLock},
 };
-use tokio::sync::Mutex;
+use tokio::sync::{Mutex, Semaphore};
 
 use log::*;
 use tauri::Manager;
@@ -21,6 +21,12 @@ use uuid::Uuid;
 type Error = Box<dyn std::error::Error>;
 type Result<T> = std::result::Result<T, Error>;
 type CommandResult<T> = std::result::Result<T, String>;
+
+const MAX_CONCURRENT_VALIDATION_OPS: usize = 2; // compromise. 1 is a lot for an HDD, but SSDs can handle 3-5
+static VALIDATION_SEMAPHORE: Semaphore = Semaphore::const_new(MAX_CONCURRENT_VALIDATION_OPS);
+
+const MAX_CONCURRENT_DOWNLOAD_OPS: usize = 1;
+static DOWNLOAD_SEMAPHORE: Semaphore = Semaphore::const_new(MAX_CONCURRENT_DOWNLOAD_OPS);
 
 static GAME_CACHE_OPS: OnceLock<Mutex<HashSet<Uuid>>> = OnceLock::new();
 static OFFLINE_CACHE_OPS: OnceLock<Mutex<HashSet<Uuid>>> = OnceLock::new();
@@ -296,6 +302,7 @@ async fn get_cache_size(
 #[tauri::command]
 async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool) {
     let internal = async {
+        let _permit = VALIDATION_SEMAPHORE.acquire().await?;
         let ops = if offline {
             &OFFLINE_CACHE_OPS
         } else {
@@ -336,6 +343,7 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
         });
 
         tauri::async_runtime::spawn(async move {
+            let _permit = _permit; // move into the async block
             if !util::is_dir_empty(&path).unwrap_or(true) {
                 let path = path.to_string_lossy().to_string();
                 if offline {
@@ -371,6 +379,7 @@ async fn download_cache(
     repair: bool,
 ) -> CommandResult<()> {
     let internal = async {
+        let _permit = DOWNLOAD_SEMAPHORE.acquire().await?;
         let ops = if offline {
             &OFFLINE_CACHE_OPS
         } else {
@@ -421,6 +430,7 @@ async fn download_cache(
 
         let path = path.to_string_lossy().to_string();
         tauri::async_runtime::spawn(async move {
+            let _permit = _permit; // move into the async block
             if repair {
                 let _ = version.repair(&path, Some(cb)).await;
             } else {
