@@ -85,6 +85,10 @@ $body-bg-dark: #000;
     .contrast-border-hover:hover {
         border: 1px solid white;
     }
+
+    .opacity-on {
+        opacity: 0.25;
+    }
 }
 
 /* Light mode only */
@@ -159,6 +163,10 @@ $body-bg-dark: #000;
     .contrast-border-hover:hover {
         border: 1px solid black;
     }
+
+    .opacity-on {
+        opacity: 0.5;
+    }
 }
 
 /* Global */
@@ -230,4 +238,8 @@ $body-bg-dark: #000;
 
 input.is-invalid {
     border-color: red !important;
+}
+
+.opacity-off {
+    opacity: 0;
 }

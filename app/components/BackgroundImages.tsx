@@ -10,12 +10,9 @@ const getBackgroundImageUrlForServer = (server?: ServerEntry) => {
   return undefined;
 };
 
-const OPACITY = 0.25;
-
-const getStyleForServer = (imageUrl: string | undefined, selected: boolean) => {
+const getStyleForServer = (imageUrl: string | undefined) => {
   return {
     backgroundImage: imageUrl ? `url(${imageUrl})` : "none",
-    opacity: selected ? OPACITY : 0,
   };
 };
 
@@ -43,9 +40,10 @@ export default function BackgroundImages({
       {servers.map((server) => {
         const imageUrl = getBackgroundImageUrlForServer(server);
         const selected = server.uuid === selectedServer?.uuid;
-        const style = getStyleForServer(imageUrl, selected);
+        const className = selected ? "opacity-on" : "opacity-off";
+        const style = getStyleForServer(imageUrl);
         return (
-          <div key={server.uuid} className="background-image" style={style} />
+          <div key={server.uuid} className={"background-image " + className} style={style} />
         );
       })}
     </>
