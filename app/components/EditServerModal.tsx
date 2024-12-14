@@ -140,9 +140,9 @@ export default function EditServerModal({
       <Modal.Header>
         <Modal.Title>{isAdd ? "Add Server" : "Edit Server"}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="px-0">
         <Form>
-          <Form.Group className="mb-3" controlId="editServerDescription">
+          <Form.Group className="mb-3 px-3" controlId="editServerDescription">
             <Form.Label>Server Name</Form.Label>
             <Form.Control
               type="text"
@@ -158,7 +158,7 @@ export default function EditServerModal({
             fill
           >
             <Tab eventKey={TAB_SIMPLE} title="Simple Server">
-              <Form.Group className="mb-3" controlId="editServerIp">
+              <Form.Group className="mb-3 px-3" controlId="editServerIp">
                 <Form.Label>Server Host</Form.Label>
                 <Form.Control
                   type="text"
@@ -168,7 +168,7 @@ export default function EditServerModal({
                   isInvalid={!validateAddress(ip)}
                 />
               </Form.Group>
-              <Form.Group className="mb-3" controlId="editServerVersion">
+              <Form.Group className="mb-3 px-3" controlId="editServerVersion">
                 <Form.Label>Server Version</Form.Label>
                 <Form.Select
                   value={version}

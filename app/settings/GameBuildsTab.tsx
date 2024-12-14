@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { VersionCacheData, VersionCacheProgress, VersionEntry, Versions } from "@/app/types";
-import GameBuildsList from "@/components/GameBuildsList";
+import GameBuildsList from "./GameBuildsList";
 import { SettingsCtx } from "@/app/contexts";
 import { listen } from "@tauri-apps/api/event";
 import { Stack } from "react-bootstrap";
@@ -192,7 +192,17 @@ export default function GameBuildsTab({
 
   return (
     <>
-      <Stack direction="horizontal" className="flex-row-reverse p-2" gap={2}>
+      <Stack direction="horizontal" className="p-2" gap={2} id="game-builds-buttonstack">
+        <Button
+          icon="plus"
+          iconLeft={true}
+          text=" Add Version"
+          tooltip="Add a new version"
+          variant="success"
+          onClick={() => {}}
+          enabled={false}
+        />
+        <div className="p-2 ms-auto"></div>
         <Button
           icon="trash"
           text="Delete All Offline "

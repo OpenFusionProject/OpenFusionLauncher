@@ -86,7 +86,7 @@ export default function SettingsPage() {
     <SettingsCtx.Provider value={ctx}>
       <AlertList alerts={alerts} />
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
-      <LauncherPage title="Settings">
+      <LauncherPage title="Settings" id="launcher-page-settings">
         <Tabs
           activeKey={tab}
           onSelect={(k) => setTab(k ?? DEFAULT_TAB)}

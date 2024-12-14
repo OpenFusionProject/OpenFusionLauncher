@@ -37,6 +37,21 @@ $body-bg-dark: #000;
         font-size: 18px;
     }
 
+    .launcher-page-header {
+        background-image: url("../img/modal-bg-dark.png");
+        background-repeat: repeat;
+    }
+
+    #launcher-page-settings {
+        background-image: url("../img/modal-bg-dark.png");
+            background-repeat: repeat;
+    }
+
+    #game-builds-buttonstack {
+        background-image: url("../img/modal-footer-bg-dark.png");
+        background-repeat: repeat;
+    }
+
     .form-control, .form-control:focus {
         border-color: #0099ff;
         background-color: #000;
@@ -47,6 +62,24 @@ $body-bg-dark: #000;
         border-color: #0099ff;
         background-color: #000;
         color: #fff;
+    }
+
+    .nav {
+        --bs-nav-tabs-link-active-border-color:
+            #90d1e4 #90d1e4 #091a23;
+        --bs-nav-tabs-link-hover-border-color:
+            #90d1e4 #90d1e4 #90d1e4;
+    }
+    
+    .nav button {
+        border-bottom: 1px solid #90d1e4;
+        background-image: url("../img/modal-bg-dark.png");
+        background-repeat: repeat;
+    }
+
+    .nav button.active {
+        background-image: url("../img/modal-footer-bg-dark.png");
+        background-repeat: repeat;
     }
 
     .border-primary {
@@ -83,6 +116,11 @@ $body-bg-dark: #000;
 
     .opacity-on {
         opacity: 0.25;
+    }
+
+    .progress {
+        background-color: #000;
+        border: 1px solid #0097fc;
     }
 }
 
@@ -153,6 +191,11 @@ $body-bg-dark: #000;
 
     .contrast-border-hover:hover {
         border: 1px solid black;
+    }
+
+    .progress {
+        background-color: #f8f9fa;
+        border: 1px solid $green;
     }
 
     .opacity-on {

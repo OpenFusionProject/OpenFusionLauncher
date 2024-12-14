@@ -1,5 +1,5 @@
 import { ProgressBar, Stack } from "react-bootstrap";
-import Button from "./Button";
+import Button from "../components/Button";
 
 import { VersionCacheData, VersionCacheProgressItem, VersionEntry } from "@/app/types";
 import { get } from "http";
@@ -136,18 +136,20 @@ export default function GameBuildsList({
                 return !version.hidden && (
                   <tr key={version.uuid}>
                     <td className="font-monospace align-middle">
-                      {version.name ?? version.uuid}
-                      {version.description && (
-                        <>
-                          {" "}
-                          <i
-                            className="fas fa-circle-info"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            title={version.description}
-                          ></i>
-                        </>
-                      )}
+                      <h3>
+                        {version.name ?? version.uuid}
+                        {version.description && (
+                          <>
+                            {" "}
+                            <i
+                              className="fas fa-circle-info"
+                              data-bs-toggle="tooltip"
+                              data-bs-placement="top"
+                              title={version.description}
+                            ></i>
+                          </>
+                        )}
+                      </h3>
                     </td>
                     <td className="text-center">
                       <p>
