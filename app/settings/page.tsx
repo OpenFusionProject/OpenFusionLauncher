@@ -6,7 +6,7 @@ import { Alert, LoadingTask, SettingsContext } from "@/app/types";
 import { SettingsCtx } from "@/app/contexts";
 import AlertList from "@/components/AlertList";
 import LoadingScreen from "@/components/LoadingScreen";
-import GameBuildsTab from "@/components/GameBuildsTab";
+import GameBuildsTab from "./GameBuildsTab";
 import { Tab, Tabs } from "react-bootstrap";
 import LauncherPage from "@/components/LauncherPage";
 import ConfirmationModal from "../components/ConfirmationModal";

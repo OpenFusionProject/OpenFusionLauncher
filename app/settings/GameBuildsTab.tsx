@@ -1,11 +1,11 @@
 import { useState, useEffect, useContext } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { VersionCacheData, VersionCacheProgress, VersionEntry, Versions } from "../types";
-import GameBuildsList from "./GameBuildsList";
+import { VersionCacheData, VersionCacheProgress, VersionEntry, Versions } from "@/app/types";
+import GameBuildsList from "@/components/GameBuildsList";
 import { SettingsCtx } from "@/app/contexts";
 import { listen } from "@tauri-apps/api/event";
 import { Stack } from "react-bootstrap";
-import Button from "./Button";
+import Button from "@/components/Button";
 
 export default function GameBuildsTab({
   active,
