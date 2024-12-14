@@ -51,13 +51,18 @@ function PlayerCount({ server }: { server: ServerEntry }) {
   }, [server]);
 
   if (playerCount !== undefined) {
-    const text = playerCount == 1 ? " player" : " players";
-    return <span className="fw-bold text-success">{playerCount + text}</span>;
+    return <span className="fw-bold text-success" title="Current player count">
+      <i className="fa fa-user fa-sm"></i>{" "}{playerCount}
+      </span>;
   }
 
   if (server.endpoint) {
     if (error) {
-      return <span className="fw-bold text-danger">Offline</span>;
+      return (
+        <span className="fw-bold text-danger">
+          <i className="fa fa-plug-circle-xmark" title="Could not connect to server"></i>
+        </span>
+      );
     }
     return (
       <span
@@ -68,7 +73,11 @@ function PlayerCount({ server }: { server: ServerEntry }) {
     );
   }
 
-  return <span>--</span>;
+  return (
+    <span>
+      <i className="fa-solid fa-circle-question" title="No information provided"></i>
+    </span>
+  );
 }
 
 function VersionBadges({
