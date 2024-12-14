@@ -14,20 +14,16 @@ $body-bg-dark: #000;
 /* Dark mode only */
 
 @include color-mode(dark) {
-    #server-table > .table-striped thead th {
+    .table-striped thead th {
         background-color: #34476e;
     }
 
-    #server-table > .table-striped tbody tr:nth-of-type(even) > td {
+    .table-striped tbody tr:nth-of-type(even) > td {
         background-color: #34476e;
     }
 
-    #server-table > .table-striped tbody tr:nth-of-type(odd) > td,
+    .table-striped tbody tr:nth-of-type(odd) > td,
     th {
-        background-color: #24314d;
-    }
-
-    #server-listing-placeholder > td {
         background-color: #24314d;
     }
 
@@ -76,7 +72,6 @@ $body-bg-dark: #000;
         --bs-modal-footer-border-color: #90d1e4;
     }
 
-
     .modal-body {
         background-image: url("../img/modal-footer-bg-dark.png");
         background-repeat: repeat;
@@ -94,20 +89,16 @@ $body-bg-dark: #000;
 /* Light mode only */
 
 @include color-mode(light) {
-    #server-table > .table-striped thead th {
+    .table-striped thead th {
         background-color: $green-300;
     }
 
-    #server-table > .table-striped tbody tr:nth-of-type(even) > td {
+    .table-striped tbody tr:nth-of-type(even) > td {
         background-color: $green-300;
     }
 
-    #server-table > .table-striped tbody tr:nth-of-type(odd) > td,
+    .table-striped tbody tr:nth-of-type(odd) > td,
     th {
-        background-color: $green-100;
-    }
-
-    #server-listing-placeholder > td {
         background-color: $green-100;
     }
 
@@ -226,9 +217,9 @@ $body-bg-dark: #000;
 }
 
 .modal-footer {
-        border-top-color: rgb(0,0,0,0);
-        padding-top: 8px;
-        padding-bottom: 8px;
+    border-top-color: rgb(0,0,0,0);
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
 
 .alert > span {

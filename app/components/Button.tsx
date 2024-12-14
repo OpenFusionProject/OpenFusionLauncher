@@ -36,9 +36,9 @@ export default function Button({
         </div>
       ) : (
         <>
-          {iconLeft && icon && <i className={"fas fa-" + icon}></i>}
+          {iconLeft && icon && <i className={"fa fa-" + icon}></i>}
           {text && <span>{text}</span>}
-          {!iconLeft && icon && <i className={"fas fa-" + icon}></i>}
+          {!iconLeft && icon && <i className={"fa fa-" + icon}></i>}
         </>
       )}
     </button>

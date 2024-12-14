@@ -99,8 +99,8 @@ export default function GameBuildsList({
   deleteOfflineCache: (uuid: string) => void;
 }) {
   return (
-    <div className="table-responsive mb-10">
-      <table className="table table-striped table-hover">
+    <div className="table-responsive">
+      <table className="table table-striped table-hover mb-0">
         <thead>
           <tr>
             <th>Version</th>
