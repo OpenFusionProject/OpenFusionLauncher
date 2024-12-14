@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use tauri::{path::BaseDirectory, Manager};
 use uuid::Uuid;
 
-use crate::{endpoint, util, NewServerDetails, Result};
+use crate::{util, NewServerDetails, Result};
 
 const OPENFUSIONCLIENT_PATH: &str = "OpenFusionClient";
 
@@ -375,104 +375,6 @@ impl From<Servers> for FlatServers {
             servers: servers.servers.into_iter().map(FlatServer::from).collect(),
             favorites: servers.favorites,
         }
-    }
-}
-
-/// View of servers from the frontend.
-/// Similar to a flat server but supports scenarios like multiple versions for endpoint servers.
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct FrontendServers {
-    servers: Vec<FrontendServer>,
-    favorites: Vec<Uuid>,
-}
-impl From<Servers> for FrontendServers {
-    fn from(servers: Servers) -> Self {
-        Self {
-            servers: servers
-                .servers
-                .into_iter()
-                .map(FrontendServer::from)
-                .collect(),
-            favorites: servers.favorites,
-        }
-    }
-}
-impl FrontendServers {
-    pub async fn refresh_all(&mut self, versions: &mut Versions) {
-        for server in &mut self.servers {
-            if let Err(e) = server.refresh(versions).await {
-                warn!("Failed to refresh server {}: {}", server.uuid, e);
-            }
-        }
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct FrontendServer {
-    uuid: Uuid,
-    description: Option<String>,
-    ip: Option<String>,
-    versions: Vec<String>,
-    endpoint: Option<String>,
-}
-impl From<Server> for FrontendServer {
-    fn from(server: Server) -> Self {
-        let info = server.info;
-        match info {
-            ServerInfo::Simple { ip, version } => Self {
-                uuid: server.uuid,
-                description: server.description,
-                ip: Some(ip),
-                versions: vec![version],
-                endpoint: None,
-            },
-            ServerInfo::Endpoint(endpoint) => Self {
-                uuid: server.uuid,
-                description: server.description,
-                ip: None,
-                versions: Vec::new(),
-                endpoint: Some(endpoint),
-            },
-        }
-    }
-}
-impl FrontendServer {
-    async fn refresh(&mut self, versions: &mut Versions) -> Result<()> {
-        if let Some(endpoint_host) = &self.endpoint {
-            self.versions.clear();
-            let server_versions = endpoint::get_info(endpoint_host)
-                .await?
-                .get_supported_versions();
-            let mut to_import = Vec::with_capacity(server_versions.len());
-
-            for version in server_versions {
-                let Ok(version_uuid) = Uuid::parse_str(&version) else {
-                    warn!("Invalid version UUID {} for server {}", version, self.uuid);
-                    continue;
-                };
-                if versions.get_entry(version_uuid).is_none() {
-                    let Ok(version) = endpoint::fetch_version(endpoint_host, version_uuid).await
-                    else {
-                        warn!(
-                            "Failed to fetch version {} for server {}",
-                            version, self.uuid
-                        );
-                        continue;
-                    };
-                    versions.add_entry(version.clone());
-                    to_import.push(version);
-                } else {
-                    debug!("Version {} already cached", version);
-                }
-                self.versions.push(version);
-            }
-
-            // cache version manifests
-            if let Err(e) = util::import_versions(to_import) {
-                warn!("Failed to cache version: {}", e);
-            }
-        }
-        Ok(())
     }
 }
 

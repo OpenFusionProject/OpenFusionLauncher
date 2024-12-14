@@ -1,9 +1,21 @@
-import { ServerEntry, VersionEntry } from "@/app/types";
+import { ServerEntry, VersionEntry, Versions } from "@/app/types";
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 
 const findVersion = (versions: VersionEntry[], uuid: string) => {
   return versions.find((version) => version.uuid == uuid);
+};
+
+const getVersionsForServer = async (server: ServerEntry) => {
+  if (!server.endpoint) {
+    // Not available for simple servers
+    throw new Error("Server is not an endpoint server");
+  }
+
+  const versions: string[] = await invoke("get_versions_for_server", {
+    uuid: server.uuid,
+  });
+  return versions;
 };
 
 const getPlayerCountForServer = async (server: ServerEntry) => {
@@ -30,6 +42,7 @@ function PlayerCount({ server }: { server: ServerEntry }) {
         setPlayerCount(count);
         setError(false);
       } catch (e) {
+        console.warn(e);
         setError(true);
       }
     };
@@ -58,18 +71,83 @@ function PlayerCount({ server }: { server: ServerEntry }) {
   return <span>--</span>;
 }
 
+function VersionBadges({
+  server,
+  versions,
+  refreshVersions,
+}: {
+  server: ServerEntry;
+  versions: VersionEntry[];
+  refreshVersions: () => Promise<void>;
+}) {
+  const [endpointVersions, setEndpointVersions] = useState<string[] | undefined>(undefined);
+
+  useEffect(() => {
+    const fetchEndpointVersions = async () => {
+      try {
+        const versionUuids: string[] = await getVersionsForServer(server);
+        await refreshVersions();
+        setEndpointVersions(versionUuids);
+      } catch (e) {
+        console.warn(e);
+        setEndpointVersions([]);
+      }
+    };
+
+    if (server.endpoint) {
+      fetchEndpointVersions();
+    }
+  }, [server]);
+
+  if (server.endpoint) {
+    if (!endpointVersions) {
+      return (
+        <span
+          className="spinner-border spinner-border-sm"
+          role="status"
+          aria-hidden="true"
+        ></span>);
+    } else if (endpointVersions.length == 0) {
+      return <span className="badge bg-danger">no versions</span>;
+    } else {
+      return (
+        <>
+          {endpointVersions.map((versionUuid) => {
+            const version = findVersion(versions, versionUuid);
+            if (!version) {
+              return <span className="badge bg-danger">unknown</span>;
+            }
+            const label = version.name ?? version.uuid;
+            return <span key={version.uuid} className="badge bg-success">{label}</span>;
+          })}
+        </>
+      );
+    }
+  } else {
+    const versionUuid = server.version!;
+    const version = findVersion(versions, versionUuid);
+    if (!version) {
+      return <span className="badge bg-danger">unknown</span>;
+    }
+    const label = version.name ?? version.uuid;
+    return <span className="badge bg-secondary">{label}</span>;
+  }
+}
+
 export default function ServerList({
   servers,
   versions,
   selectedServer,
   setSelectedServer,
   onConnect,
+  refreshVersions,
 }: {
   servers?: ServerEntry[];
   versions: VersionEntry[];
   selectedServer?: string;
   setSelectedServer: (server: string) => void;
   onConnect: (server: string) => void;
+  refreshVersions: () => Promise<void>;
 }) {
   return (
     <div
@@ -112,33 +190,7 @@ export default function ServerList({
               >
                 <td className="text-start name-column">{server.description}</td>
                 <td className="font-monospace versions-column">
-                  {server.versions.length === 0 ? (
-                    <span className="badge bg-danger me-1">no versions</span>
-                  ) : (
-                    server.versions.map((version) => {
-                      const versionEntry = findVersion(versions, version);
-                      if (!versionEntry) {
-                        return (
-                          <span key={version} className="badge bg-danger me-1">
-                            unknown
-                          </span>
-                        );
-                      }
-                      const label = versionEntry.name ?? versionEntry.uuid;
-                      return (
-                        <span
-                          key={version}
-                          className={
-                            "badge " +
-                            (server.endpoint ? "bg-success" : "bg-secondary") +
-                            " me-1"
-                          }
-                        >
-                          {label}
-                        </span>
-                      );
-                    })
-                  )}
+                  <VersionBadges server={server} versions={versions} refreshVersions={refreshVersions} />
                 </td>
                 <td className="font-monospace text-end status-column">
                   <PlayerCount server={server} />

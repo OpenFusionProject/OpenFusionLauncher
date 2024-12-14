@@ -2,7 +2,7 @@ export type ServerEntry = {
   uuid: string;
   description: string;
   ip?: string;
-  versions: string[];
+  version?: string;
   endpoint?: string;
 };
 

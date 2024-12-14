@@ -5,7 +5,7 @@ mod util;
 use endpoint::{InfoResponse, RegisterResponse, Session};
 use ffbuildtool::ItemProgress;
 use serde::{Deserialize, Serialize};
-use state::{get_app_statics, AppState, FlatServer, FrontendServers, Server, ServerInfo, Versions};
+use state::{get_app_statics, AppState, FlatServer, FlatServers, Server, ServerInfo, Versions};
 
 use std::{
     collections::{HashMap, HashSet},
@@ -618,13 +618,57 @@ async fn delete_server(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResul
 }
 
 #[tauri::command]
-async fn get_servers(app_handle: tauri::AppHandle) -> FrontendServers {
+async fn get_versions_for_server(
+    app_handle: tauri::AppHandle,
+    uuid: Uuid,
+) -> CommandResult<Vec<Uuid>> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let mut state = state.lock().await;
+        let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
+        let ServerInfo::Endpoint(endpoint_host) = server.info.clone() else {
+            return Err("Server is not an endpoint server".into());
+        };
+        let info = endpoint::get_info(&endpoint_host).await?;
+        let supported_versions = info.get_supported_versions();
+        let mut new_versions = Vec::new();
+        let mut supported_version_uuids = Vec::new();
+        for version_uuid in supported_versions {
+            let Ok(version_uuid) = Uuid::parse_str(&version_uuid) else {
+                warn!("Invalid version UUID: {}", version_uuid);
+                continue;
+            };
+            supported_version_uuids.push(version_uuid);
+
+            if state.versions.get_entry(version_uuid).is_some() {
+                debug!("Already have version {}", version_uuid);
+                continue;
+            }
+
+            let Ok(version) = endpoint::fetch_version(&endpoint_host, version_uuid).await else {
+                warn!("Failed to fetch version {}", version_uuid);
+                continue;
+            };
+            state.versions.add_entry(version.clone());
+            new_versions.push(version);
+        }
+
+        if let Err(e) = util::import_versions(new_versions) {
+            warn!("Failed to import versions for server {}: {}", uuid, e);
+        }
+        Ok(supported_version_uuids)
+    };
+    debug!("get_versions_for_server {}", uuid);
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
+async fn get_servers(app_handle: tauri::AppHandle) -> FlatServers {
     debug!("get_servers");
     let state = app_handle.state::<Mutex<AppState>>();
-    let mut state = state.lock().await;
+    let state = state.lock().await;
     let servers = state.servers.clone();
-    let mut flat_servers: FrontendServers = servers.into();
-    flat_servers.refresh_all(&mut state.versions).await;
+    let flat_servers: FlatServers = servers.into();
     flat_servers
 }
 
@@ -671,6 +715,7 @@ pub fn run() {
             update_server,
             delete_server,
             get_info_for_server,
+            get_versions_for_server,
             get_player_count_for_server,
             import_from_openfusionclient,
             do_register,

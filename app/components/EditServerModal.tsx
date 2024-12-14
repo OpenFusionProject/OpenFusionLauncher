@@ -111,7 +111,7 @@ export default function EditServerModal({
     setDescription(server?.description || "");
     setTab(server?.endpoint ? TAB_ENDPOINT : TAB_SIMPLE);
     setIp(server?.ip || "");
-    setVersion(server?.versions?.at(0) || getDefaultVersion());
+    setVersion(server?.version ?? getDefaultVersion());
     setEndpoint(server?.endpoint || "");
   }, [server, versions]);
 

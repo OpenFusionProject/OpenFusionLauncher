@@ -42,7 +42,7 @@ export default function SelectVersionModal({
 
   useEffect(() => {
     if (server) {
-      setSelected(server.versions[0]);
+      setSelected(versions[0].uuid);
     }
   }, [server]);
 
@@ -55,19 +55,15 @@ export default function SelectVersionModal({
         The server <strong>{server?.description}</strong> supports multiple game versions. Please select a version to use.
         <br />
         <Form className="mt-2">
-          {server?.versions?.map((version) => {
-            const versionEntry = findVersion(versions, version);
-            if (!versionEntry) {
-              return null;
-            }
+          {versions.map((version) => {
             return (
               <Form.Check
-                key={version}
+                key={version.uuid}
                 type="radio"
                 name="version"
-                label={getLabelForVersion(versionEntry)}
-                checked={selected === version}
-                onChange={() => setSelected(version)}
+                label={getLabelForVersion(version)}
+                checked={selected === version.uuid}
+                onChange={() => setSelected(version.uuid)}
               />
             );
           })}

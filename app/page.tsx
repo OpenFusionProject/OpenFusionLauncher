@@ -108,11 +108,19 @@ export default function Home() {
     setLoadingTasks(newTasks);
   };
 
-  const syncServersAndVersions = async () => {
+  const syncServers = async () => {
     const serverData: Servers = await invoke("get_servers");
     setServers(serverData.servers);
+  }
+
+  const syncVersions = async () => {
     const versionData: Versions = await invoke("get_versions");
     setVersions(versionData.versions);
+  }
+
+  const syncServersAndVersions = async () => {
+    await syncVersions();
+    await syncServers();
   }
 
   const initialFetch = async () => {
@@ -264,13 +272,8 @@ export default function Home() {
       return;
     }
 
-    if (!server.versions || server.versions.length < 1) {
-      alertError("No versions available for server");
-      return;
-    }
-
-    let sessionToken: string | undefined = undefined;
     if (server.endpoint) {
+      let sessionToken: string | undefined = undefined;
       try {
         const loginSession: LoginSession = await invoke("get_session", { serverUuid: serverUuid });
         sessionToken = loginSession.session_token;
@@ -281,23 +284,21 @@ export default function Home() {
         setShowLoginModal(true);
         return;
       }
+      alertError("TODO: show server landing page");
+      return;
     }
 
-    connectToServer(serverUuid, server.versions[0], sessionToken);
+    const version = server.version!;
+    connectToServer(serverUuid, version);
   };
 
   const addServer = async (details: NewServerDetails) => {
     try {
       const uuid: string = await invoke("add_server", { details: details });
-      if (!details.endpoint) {
-        // in this case, we can instantly update the frontend
-        const entry: ServerEntry = { ...details, uuid, versions: [details.version!] };
-        const newServers = [...servers, entry];
-        setServers(newServers);
-      } else {
-        startLoading("add_server", "Adding server");
-        await syncServersAndVersions();
-      }
+      setServers((servers) => {
+        const newServer: ServerEntry = { ...details, uuid };
+        return [...servers, newServer];
+      });
       setSelectedServer(uuid);
       alertSuccess("Server added");
     } catch (e: unknown) {
@@ -308,22 +309,17 @@ export default function Home() {
 
   const updateServer = async (details: NewServerDetails, uuid: string) => {
     try {
-      const entry: ServerEntry = { ...details, uuid, versions: details.endpoint ? [] : [details.version!] };
-      await invoke("update_server", { serverEntry: entry });
-      if (!details.endpoint) {
-        // in this case, we can instantly update the frontend
+      const entry: ServerEntry = { ...details, uuid };
+      await invoke("update_server", { serverEntry: entry });;
+      setServers((servers) => {
         const newServers = servers.map((server) => {
           if (server.uuid == uuid) {
             return entry;
           }
           return server;
         });
-        setServers(newServers);
-      } else {
-        // API servers might introduce new versions, so we need to do a full refresh
-        startLoading("update_server", "Updating server");
-        await syncServersAndVersions();
-      }
+        return newServers;
+      });
       alertSuccess("Server updated");
     } catch (e: unknown) {
       alertError("Failed to update server (" + e + ")");
@@ -408,6 +404,7 @@ export default function Home() {
               versions={versions}
               selectedServer={getSelectedServer()?.uuid}
               setSelectedServer={setSelectedServer}
+              refreshVersions={syncVersions}
               onConnect={(serverUuid) => {
                 setSelectedServer(serverUuid);
                 onConnect(serverUuid);
