@@ -164,32 +164,29 @@ export default function GameBuildsTab({
 
   useEffect(() => {
     if (active && versions) {
+      let vd: VersionCacheData[] = [...versionData];
       for (const version of versions) {
-        setVersionData((prev) => {
-          const pv = prev.find((v) => v.versionUuid == version.uuid);
-          if (pv) {
-            return prev;
-          }
-          invoke("validate_cache", {
+        if (vd.find((v) => v.versionUuid == version.uuid)) {
+          continue;
+        }
+        console.log("Validating cache for " + (version.name ?? version.uuid));
+        invoke("validate_cache", {
             uuid: version.uuid,
             offline: false,
-          });
-          invoke("validate_cache", {
+        });
+        invoke("validate_cache", {
             uuid: version.uuid,
             offline: true,
-          });
-          return [
-            ...prev,
-            {
-              versionUuid: version.uuid,
-              gameDone: false,
-              gameItems: {},
-              offlineDone: false,
-              offlineItems: {},
-            },
-          ];
         });
+        vd = [...vd, {
+          versionUuid: version.uuid,
+          gameDone: false,
+          gameItems: {},
+          offlineDone: false,
+          offlineItems: {},
+        }];
       }
+      setVersionData(vd);
     }
   }, [active, versions]);
 
