@@ -272,8 +272,10 @@ export default function Home() {
       return;
     }
 
+    let sessionToken: string | undefined = undefined;
+    let version: string | undefined = server.version;
     if (server.endpoint) {
-      let sessionToken: string | undefined = undefined;
+      startLoading("configure_endpoint");
       try {
         const loginSession: LoginSession = await invoke("get_session", { serverUuid: serverUuid });
         sessionToken = loginSession.session_token;
@@ -281,15 +283,33 @@ export default function Home() {
       } catch (e: unknown) {
         // If we can't get a session token for ANY REASON, we'll grab a new refresh token
         // by making the user log in again
+        stopLoading("configure_endpoint");
         setShowLoginModal(true);
         return;
       }
-      alertError("TODO: show server landing page");
-      return;
+
+      if (!version) {
+        try {
+          const versions: string[] = await invoke("get_versions_for_server", {
+            uuid: serverUuid,
+          });
+          if (versions.length == 1) {
+            version = versions[0];
+          } else {
+            stopLoading("configure_endpoint");
+            alertError("TODO show version selector");
+            return;
+          }
+        } catch (e: unknown) {
+          stopLoading("configure_endpoint");
+          alertError("Failed to get versions: " + e);
+          return;
+        }
+      }
     }
 
-    const version = server.version!;
-    connectToServer(serverUuid, version);
+    connectToServer(serverUuid, version!, sessionToken);
+    stopLoading("configure_endpoint");
   };
 
   const addServer = async (details: NewServerDetails) => {
