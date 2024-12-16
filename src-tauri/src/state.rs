@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use tauri::{path::BaseDirectory, Manager};
 use uuid::Uuid;
 
-use crate::{util, NewServerDetails, Result};
+use crate::{endpoint::InfoResponse, util, NewServerDetails, Result};
 
 const OPENFUSIONCLIENT_PATH: &str = "OpenFusionClient";
 
@@ -61,7 +61,7 @@ impl AppStatics {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct AppState {
     pub config: Config,
     pub versions: Versions,
@@ -69,6 +69,7 @@ pub struct AppState {
     pub tokens: Tokens,
     //
     pub launch_cmd: Option<Command>,
+    info_cache: HashMap<String, InfoResponse>,
 }
 impl AppState {
     pub fn load() -> Self {
@@ -89,6 +90,7 @@ impl AppState {
             tokens,
             //
             launch_cmd: None,
+            info_cache: HashMap::new(),
         }
     }
 
@@ -144,6 +146,14 @@ impl AppState {
         let num_imported = imported.len();
         versions.extend(imported);
         Ok(num_imported)
+    }
+
+    pub fn cache_info(&mut self, endpoint_host: &str, info: InfoResponse) {
+        self.info_cache.insert(endpoint_host.to_string(), info);
+    }
+
+    pub fn get_cached_info(&self, endpoint_host: &str) -> Option<&InfoResponse> {
+        self.info_cache.get(endpoint_host)
     }
 }
 

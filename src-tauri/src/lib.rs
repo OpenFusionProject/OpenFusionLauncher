@@ -188,7 +188,7 @@ async fn prep_launch(
             }
             ServerInfo::Endpoint { endpoint, .. } => {
                 // Ask the endpoint server for the UUID of the current version
-                let Ok(api_info) = endpoint::get_info(endpoint).await else {
+                let Ok(api_info) = endpoint::get_info(&mut state, endpoint).await else {
                     return Err("Failed to contact API server".into());
                 };
 
@@ -531,13 +531,13 @@ async fn get_info_for_server(
     debug!("get_info_for_server {}", uuid);
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
-        let state = state.lock().await;
+        let mut state = state.lock().await;
         let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
-        let ServerInfo::Endpoint { endpoint, .. } = &server.info else {
+        let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
             return Err("Server is not an endpoint server".into());
         };
-        let info = endpoint::get_info(endpoint).await?;
-        Ok(info)
+        let info = endpoint::get_info(&mut state, &endpoint).await?;
+        Ok(info.clone())
     };
     internal.await.map_err(|e: Error| e.to_string())
 }
@@ -628,7 +628,7 @@ async fn get_versions_for_server(
         let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
             return Err("Server is not an endpoint server".into());
         };
-        let info = endpoint::get_info(&endpoint).await?;
+        let info = endpoint::get_info(&mut state, &endpoint).await?;
         let supported_versions = info.get_supported_versions();
         let mut new_versions = Vec::new();
         let mut supported_version_uuids = Vec::new();
