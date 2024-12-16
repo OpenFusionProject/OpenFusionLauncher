@@ -98,11 +98,11 @@ async fn do_register(
             .get_entry(server_uuid)
             .ok_or(format!("Server {} not found", server_uuid))?;
 
-        let ServerInfo::Endpoint(endpoint_host) = &server.info else {
+        let ServerInfo::Endpoint { endpoint, .. } = &server.info else {
             return Err("Server is not an endpoint server".into());
         };
 
-        let response = endpoint::register_user(&username, &password, &email, endpoint_host).await?;
+        let response = endpoint::register_user(&username, &password, &email, endpoint).await?;
         Ok(response)
     };
     debug!("do_register");
@@ -124,12 +124,11 @@ async fn do_login(
             .get_entry(server_uuid)
             .ok_or(format!("Server {} not found", server_uuid))?;
 
-        let ServerInfo::Endpoint(endpoint_host) = &server.info else {
+        let ServerInfo::Endpoint { endpoint, .. } = &server.info else {
             return Err("Server is not an endpoint server".into());
         };
 
-        let refresh_token =
-            endpoint::get_refresh_token(&username, &password, endpoint_host).await?;
+        let refresh_token = endpoint::get_refresh_token(&username, &password, endpoint).await?;
         state.tokens.save_token(server_uuid, &refresh_token);
         state.save();
         Ok(())
@@ -148,7 +147,7 @@ async fn get_session(app_handle: tauri::AppHandle, server_uuid: Uuid) -> Command
             .get_entry(server_uuid)
             .ok_or(format!("Server {} not found", server_uuid))?;
 
-        let ServerInfo::Endpoint(endpoint_host) = &server.info else {
+        let ServerInfo::Endpoint { endpoint, .. } = &server.info else {
             return Err("Server is not an endpoint server".into());
         };
 
@@ -156,7 +155,7 @@ async fn get_session(app_handle: tauri::AppHandle, server_uuid: Uuid) -> Command
             return Err("Not logged in".into());
         };
 
-        let session = endpoint::get_session(refresh_token, endpoint_host).await?;
+        let session = endpoint::get_session(refresh_token, endpoint).await?;
         Ok(session)
     };
     debug!("get_session");
@@ -187,9 +186,9 @@ async fn prep_launch(
                 addr = ip.clone();
                 versions.push(version.clone());
             }
-            ServerInfo::Endpoint(endpoint_host) => {
+            ServerInfo::Endpoint { endpoint, .. } => {
                 // Ask the endpoint server for the UUID of the current version
-                let Ok(api_info) = endpoint::get_info(endpoint_host).await else {
+                let Ok(api_info) = endpoint::get_info(endpoint).await else {
                     return Err("Failed to contact API server".into());
                 };
 
@@ -235,26 +234,26 @@ async fn prep_launch(
             .args(["--asseturl", &format!("{}/", asset_url)])
             .args(["-l", log_file_path.to_str().ok_or("Invalid log file path")?]);
 
-        if let ServerInfo::Endpoint(endpoint_host) = &server.info {
+        if let ServerInfo::Endpoint { endpoint, .. } = &server.info {
             match session_token {
                 None => {
                     warn!("No session token provided for endpoint server");
                 }
                 Some(token) => {
-                    let (username, cookie) = endpoint::get_cookie(&token, endpoint_host).await?;
+                    let (username, cookie) = endpoint::get_cookie(&token, endpoint).await?;
                     cmd.args(["-u", &username]).args(["-t", &cookie]);
                 }
             };
 
-            let rankurl = format!("http://{}/getranks", endpoint_host);
-            let images = format!("http://{}/upsell/", endpoint_host);
-            let sponsor = format!("http://{}/upsell/sponsor.png", endpoint_host);
+            let rankurl = format!("http://{}/getranks", endpoint);
+            let images = format!("http://{}/upsell/", endpoint);
+            let sponsor = format!("http://{}/upsell/sponsor.png", endpoint);
             cmd.args(["-r", &rankurl])
                 .args(["-i", &images])
                 .args(["-s", &sponsor]);
 
             if custom_loading_screen {
-                let loading_images_url = format!("http://{}/launcher/loading", endpoint_host);
+                let loading_images_url = format!("http://{}/launcher/loading", endpoint);
                 cmd.args(["--loaderimages", &loading_images_url]);
             }
         }
@@ -534,10 +533,10 @@ async fn get_info_for_server(
         let state = app_handle.state::<Mutex<AppState>>();
         let state = state.lock().await;
         let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
-        let ServerInfo::Endpoint(endpoint_host) = &server.info else {
+        let ServerInfo::Endpoint { endpoint, .. } = &server.info else {
             return Err("Server is not an endpoint server".into());
         };
-        let info = endpoint::get_info(endpoint_host).await?;
+        let info = endpoint::get_info(endpoint).await?;
         Ok(info)
     };
     internal.await.map_err(|e: Error| e.to_string())
@@ -553,10 +552,10 @@ async fn get_player_count_for_server(
         let state = app_handle.state::<Mutex<AppState>>();
         let state = state.lock().await;
         let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
-        let ServerInfo::Endpoint(endpoint_host) = &server.info else {
+        let ServerInfo::Endpoint { endpoint, .. } = &server.info else {
             return Err("Server is not an endpoint server".into());
         };
-        let status = endpoint::get_status(endpoint_host).await?;
+        let status = endpoint::get_status(endpoint).await?;
         Ok(status.player_count)
     };
     internal.await.map_err(|e: Error| e.to_string())
@@ -626,10 +625,10 @@ async fn get_versions_for_server(
         let state = app_handle.state::<Mutex<AppState>>();
         let mut state = state.lock().await;
         let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
-        let ServerInfo::Endpoint(endpoint_host) = server.info.clone() else {
+        let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
             return Err("Server is not an endpoint server".into());
         };
-        let info = endpoint::get_info(&endpoint_host).await?;
+        let info = endpoint::get_info(&endpoint).await?;
         let supported_versions = info.get_supported_versions();
         let mut new_versions = Vec::new();
         let mut supported_version_uuids = Vec::new();
@@ -645,7 +644,7 @@ async fn get_versions_for_server(
                 continue;
             }
 
-            let Ok(version) = endpoint::fetch_version(&endpoint_host, version_uuid).await else {
+            let Ok(version) = endpoint::fetch_version(&endpoint, version_uuid).await else {
                 warn!("Failed to fetch version {}", version_uuid);
                 continue;
             };

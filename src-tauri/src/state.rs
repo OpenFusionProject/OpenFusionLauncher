@@ -329,8 +329,14 @@ impl Versions {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum ServerInfo {
-    Simple { ip: String, version: String },
-    Endpoint(String),
+    Simple {
+        ip: String,
+        version: String,
+    },
+    Endpoint {
+        endpoint: String,
+        preferred_version: Option<String>,
+    },
 }
 
 /// We store servers in a "flat" format for ease of serialization on disk
@@ -353,11 +359,14 @@ impl From<Server> for FlatServer {
                 version: Some(version),
                 endpoint: None,
             },
-            ServerInfo::Endpoint(endpoint) => Self {
+            ServerInfo::Endpoint {
+                endpoint,
+                preferred_version,
+            } => Self {
                 uuid: server.uuid,
                 description: server.description,
                 ip: None,
-                version: None,
+                version: preferred_version,
                 endpoint: Some(endpoint),
             },
         }
@@ -387,7 +396,10 @@ pub struct Server {
 impl From<FlatServer> for Server {
     fn from(flat: FlatServer) -> Self {
         let info = if let Some(endpoint) = flat.endpoint {
-            ServerInfo::Endpoint(endpoint)
+            ServerInfo::Endpoint {
+                endpoint,
+                preferred_version: flat.version,
+            }
         } else {
             ServerInfo::Simple {
                 ip: flat.ip.unwrap(),
@@ -486,7 +498,10 @@ impl Servers {
         let uuid = Uuid::new_v4();
         let description = details.description;
         let info = if let Some(endpoint) = details.endpoint {
-            ServerInfo::Endpoint(endpoint)
+            ServerInfo::Endpoint {
+                endpoint,
+                preferred_version: None,
+            }
         } else {
             ServerInfo::Simple {
                 ip: details.ip.unwrap(),
