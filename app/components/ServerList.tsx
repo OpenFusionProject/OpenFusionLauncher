@@ -95,6 +95,7 @@ function VersionBadges({
     const fetchEndpointVersions = async () => {
       try {
         const versionUuids: string[] = await getVersionsForServer(server);
+        // FEAT: maybe store which versions are new so we can show badges fot them
         await refreshVersions();
         setEndpointVersions(versionUuids);
       } catch (e) {
@@ -124,10 +125,10 @@ function VersionBadges({
           {endpointVersions.map((versionUuid) => {
             const version = findVersion(versions, versionUuid);
             if (!version) {
-              return <span className="badge bg-danger">unknown</span>;
+              return <span className="badge bg-danger me-1">unknown</span>;
             }
             const label = version.name ?? version.uuid;
-            return <span key={version.uuid} className="badge bg-success">{label}</span>;
+            return <span key={version.uuid} className="badge bg-success me-1">{label}</span>;
           })}
         </>
       );

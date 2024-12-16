@@ -34,6 +34,7 @@ import AboutModal from "@/components/AboutModal";
 import LoginModal from "@/components/LoginModal";
 import BackgroundImages from "@/components/BackgroundImages";
 import LogoImages from "@/components/LogoImages";
+import SelectVersionModal from "./components/SelectVersionModal";
 
 export default function Home() {
   const [launcherVersion, setLauncherVersion] = useState("0.0.0");
@@ -55,6 +56,7 @@ export default function Home() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showVersionSelectorModal, setShowVersionSelectorModal] = useState(false);
 
   const [showAboutModal, setShowAboutModal] = useState(false);
 
@@ -156,6 +158,20 @@ export default function Home() {
       alertError("Failed to import from OpenFusionClient (" + e + ")");
     }
     stopLoading("import");
+  };
+
+  const setVersionForServer = async (serverUuid: string, versionUuid: string) => {
+    const server = servers.find((s) => s.uuid == serverUuid);
+    if (!server) {
+      return;
+    }
+    const details: NewServerDetails = { ...server, version: versionUuid };
+    try {
+      await updateServer(details, serverUuid, false);
+    } catch (e: unknown) {
+      console.warn("Failed to set version for server: " + e);
+    }
+    onConnect(serverUuid, versionUuid);
   };
 
   const handleKeydown = (e: KeyboardEvent) => {
@@ -265,21 +281,22 @@ export default function Home() {
     onConnect(serverUuid);
   }
 
-  const onConnect = async (serverUuid: string) => {
+  const onConnect = async (serverUuid: string, versionUuid?: string) => {
     const server = servers.find((s) => s.uuid == serverUuid);
     if (!server) {
       alertError("Server not found");
       return;
     }
 
-    let sessionToken: string | undefined = undefined;
-    let version: string | undefined = server.version;
+    let session: LoginSession | undefined = undefined;
+    let version: string | undefined = versionUuid ?? server.version;
     if (server.endpoint) {
       startLoading("configure_endpoint");
+
+      // authenticate before worrying about versions
       try {
         const loginSession: LoginSession = await invoke("get_session", { serverUuid: serverUuid });
-        sessionToken = loginSession.session_token;
-        alertSuccess("Logged in as " + loginSession.username);
+        session = loginSession;
       } catch (e: unknown) {
         // If we can't get a session token for ANY REASON, we'll grab a new refresh token
         // by making the user log in again
@@ -288,27 +305,37 @@ export default function Home() {
         return;
       }
 
-      if (!version) {
-        try {
-          const versions: string[] = await invoke("get_versions_for_server", {
-            uuid: serverUuid,
-          });
-          if (versions.length == 1) {
-            version = versions[0];
-          } else {
-            stopLoading("configure_endpoint");
-            alertError("TODO show version selector");
-            return;
-          }
-        } catch (e: unknown) {
+      // check supported versions
+      let versions: string[] = [];
+      try {
+        versions = await invoke("get_versions_for_server", { uuid: serverUuid });
+      } catch (e: unknown) {
+        stopLoading("configure_endpoint");
+        alertError("Failed to get versions: " + e);
+        return;
+      }
+
+      if (!version || !versions.includes(version)) {
+        if (versions.length == 1) {
+          // only one version available, so just use that
+          version = versions[0];
+        } else {
+          // mutliple available; show the selector
           stopLoading("configure_endpoint");
-          alertError("Failed to get versions: " + e);
+          setShowVersionSelectorModal(true);
           return;
         }
       }
+
+      alertSuccess("Logged in as " + session.username);
     }
 
-    connectToServer(serverUuid, version!, sessionToken);
+    if (!version) {
+      alertError("No version selected");
+      return;
+    }
+
+    connectToServer(serverUuid, version, session?.session_token);
     stopLoading("configure_endpoint");
   };
 
@@ -327,7 +354,7 @@ export default function Home() {
     stopLoading("add_server");
   };
 
-  const updateServer = async (details: NewServerDetails, uuid: string) => {
+  const updateServer = async (details: NewServerDetails, uuid: string, showSucc?: boolean) => {
     try {
       const entry: ServerEntry = { ...details, uuid };
       await invoke("update_server", { serverEntry: entry });;
@@ -340,7 +367,9 @@ export default function Home() {
         });
         return newServers;
       });
-      alertSuccess("Server updated");
+      if (showSucc ?? true) {
+        alertSuccess("Server updated");
+      }
     } catch (e: unknown) {
       alertError("Failed to update server (" + e + ")");
     }
@@ -520,6 +549,15 @@ export default function Home() {
         }}
         onSubmitRegister={(username, password, email) => {
           onRegister(getSelectedServer()!.uuid, username, password, email);
+        }}
+      />
+      <SelectVersionModal
+        show={showVersionSelectorModal}
+        setShow={setShowVersionSelectorModal}
+        server={getSelectedServer()}
+        versions={versions}
+        onSelect={(selected) => {
+          setVersionForServer(getSelectedServer()!.uuid, selected);  
         }}
       />
       <AboutModal
