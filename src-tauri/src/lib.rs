@@ -543,6 +543,26 @@ async fn get_info_for_server(
 }
 
 #[tauri::command]
+async fn get_announcements_for_server(
+    app_handle: tauri::AppHandle,
+    uuid: Uuid,
+) -> CommandResult<String> {
+    debug!("get_announcements_for_server {}", uuid);
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
+        let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
+            return Err("Server is not an endpoint server".into());
+        };
+        drop(state);
+        let announcements = endpoint::get_announcements(&endpoint).await?;
+        Ok(announcements)
+    };
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
 async fn get_player_count_for_server(
     app_handle: tauri::AppHandle,
     uuid: Uuid,
@@ -552,10 +572,11 @@ async fn get_player_count_for_server(
         let state = app_handle.state::<Mutex<AppState>>();
         let state = state.lock().await;
         let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
-        let ServerInfo::Endpoint { endpoint, .. } = &server.info else {
+        let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
             return Err("Server is not an endpoint server".into());
         };
-        let status = endpoint::get_status(endpoint).await?;
+        drop(state);
+        let status = endpoint::get_status(&endpoint).await?;
         Ok(status.player_count)
     };
     internal.await.map_err(|e: Error| e.to_string())
@@ -714,6 +735,7 @@ pub fn run() {
             update_server,
             delete_server,
             get_info_for_server,
+            get_announcements_for_server,
             get_versions_for_server,
             get_player_count_for_server,
             import_from_openfusionclient,

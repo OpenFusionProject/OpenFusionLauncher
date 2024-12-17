@@ -122,6 +122,16 @@ $body-bg-dark: #000;
         background-color: #000;
         border: 1px solid #0097fc;
     }
+
+    .server-landing {
+        color: #fff;
+        background-color: #000;
+        border-bottom: 1px solid #90d1e4;
+    }
+
+    .server-landing .announcements {
+        border-left: 1px solid #90d1e4;
+    }
 }
 
 /* Light mode only */
@@ -200,6 +210,16 @@ $body-bg-dark: #000;
 
     .opacity-on {
         opacity: 0.5;
+    }
+
+    .server-landing {
+        color: #000;
+        background-color: #fff;
+        border-bottom: 1px solid #198754;
+    }
+
+    .server-landing .announcements {
+        border-left: 1px solid #198754;
     }
 }
 

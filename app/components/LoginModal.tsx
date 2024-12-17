@@ -11,6 +11,7 @@ import { EndpointInfo, ServerEntry } from "@/app/types";
 import { Overlay, Tooltip } from "react-bootstrap";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-shell";
+import get_seed from "../seed";
 
 const TAB_LOGIN = "login";
 const TAB_REGISTER = "register";
@@ -25,6 +26,14 @@ const CONTROL_ID_EMAIL = "email";
 const getPrivacyPolicyUrl = (server: ServerEntry) => {
   return "http://" + server.endpoint + "/privacy";
 }
+
+const getUpsellImage = (server?: ServerEntry) => {
+  if (server?.endpoint) {
+    // HACK: add the counter to the url as a parameter to prevent caching across launches
+    return "http://" + server.endpoint + "/upsell/sponsor.png?seed=" + get_seed();
+  }
+  return undefined;
+};
 
 const checkEmailRequired = async (server: ServerEntry) => {
   if (!server.endpoint) return false;
@@ -56,6 +65,48 @@ const validateEmail = (email: string, required: boolean) => {
   const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return regex.test(email);
 };
+
+function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
+  const ERROR_TEXT = "This server has no announcements.";
+
+  const [show, setShow] = useState<boolean>(false);
+  const [announcements, setAnnouncements] = useState<string>("");
+  const [error, setError] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        const announcements: string = await invoke("get_announcements_for_server", {
+          uuid: server!.uuid,
+        });
+        setAnnouncements(announcements);
+        setError(false);
+      } catch (e) {
+        console.warn(e);
+        setError(true);
+      }
+    };
+
+    setShow(false);
+    setAnnouncements("");
+    setError(false);
+    if (server) {
+      fetchAnnouncements();
+    }
+  }, [server]);
+
+  return (
+    <div className={"server-landing " + (!show ? "d-none" : "")}>
+      <img
+        src={getUpsellImage(server)}
+        onLoad={() => setShow(true)}
+      />
+      <div className="announcements">
+        <span>{error ? ERROR_TEXT : announcements}</span>
+      </div>
+    </div>
+  );
+}
 
 function RequirementsTooltip({
   focusedControlId,
@@ -142,7 +193,7 @@ export default function LoginModal({
   };
 
   return (
-    <Modal show={show} onHide={() => setShow(false)} centered={true}>
+    <Modal show={show} onHide={() => setShow(false)} centered={true} size="lg">
       <Form
         onSubmit={(e) => {
           e.preventDefault();
@@ -152,14 +203,15 @@ export default function LoginModal({
         <Modal.Header>
           <Modal.Title>{server?.description}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <AnnouncementsPanel server={server} />
+        <Modal.Body className="p-0">
           <Tabs
             activeKey={tab}
             onSelect={(k) => setTab(k ?? TAB_LOGIN)}
             className="mb-3"
             fill
           >
-            <Tab eventKey={TAB_LOGIN} title="Log In">
+            <Tab eventKey={TAB_LOGIN} title="Log In" className="p-3">
               <Form.Group className="mb-3" controlId={CONTROL_ID_USERNAME}>
                 <Form.Control
                   type="text"
@@ -179,7 +231,7 @@ export default function LoginModal({
                 />
               </Form.Group>
             </Tab>
-            <Tab eventKey={TAB_REGISTER} title="Register">
+            <Tab eventKey={TAB_REGISTER} title="Register" className="p-3">
               <Form.Group className="mb-3" controlId={CONTROL_ID_NEW_USERNAME}>
                 <Form.Control
                   type="text"

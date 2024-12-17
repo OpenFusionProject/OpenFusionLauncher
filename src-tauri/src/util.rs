@@ -134,6 +134,9 @@ pub(crate) async fn do_simple_get(url: &str) -> Result<String> {
     debug!("=> GET {}", url);
     let client = reqwest::Client::new();
     let response = client.get(url).send().await?;
+    if !response.status().is_success() {
+        return Err(format!("Failed to GET {}: {}", url, response.status()).into());
+    }
     let text = response.text().await?;
     debug!("<= {}", text);
     Ok(text)

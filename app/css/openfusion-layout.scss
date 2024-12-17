@@ -45,6 +45,25 @@ html, body {
     width: 33%;
 }
 
+.server-landing {
+    display: flex;
+    flex-direction: row;
+    height: 300px;
+}
+
+.server-landing img {
+    height: 100%;
+}
+
+.server-landing .announcements {
+    font-size: 0.75em;
+    height: 100%;
+    display: inline-block;
+    text-wrap: wrap;
+    overflow-y: auto;
+    padding: 5px;
+}
+
 .background-image {
     position: fixed;
     width: 100%;

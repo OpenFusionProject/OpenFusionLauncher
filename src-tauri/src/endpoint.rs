@@ -88,6 +88,12 @@ pub async fn get_info<'a>(
     Ok(state.get_cached_info(endpoint_host).unwrap())
 }
 
+pub async fn get_announcements(endpoint_host: &str) -> Result<String> {
+    let url = format!("http://{}/announcements", endpoint_host);
+    let announcements = util::do_simple_get(&url).await?;
+    Ok(announcements)
+}
+
 pub async fn get_status(endpoint_host: &str) -> Result<StatusResponse> {
     let status_json = util::do_simple_get(&format!("http://{}/status", endpoint_host)).await?;
     let status: StatusResponse = serde_json::from_str(&status_json)?;
