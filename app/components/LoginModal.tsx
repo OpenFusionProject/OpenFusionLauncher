@@ -69,9 +69,12 @@ const validateEmail = (email: string, required: boolean) => {
 function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
   const ERROR_TEXT = "This server has no announcements.";
 
-  const [show, setShow] = useState<boolean>(false);
+  const [showUpsell, setShowUpsell] = useState<boolean>(false);
+  const [showAnnouncements, setShowAnnouncements] = useState<boolean>(false);
   const [announcements, setAnnouncements] = useState<string>("");
   const [error, setError] = useState<boolean>(false);
+
+  const show = showUpsell || showAnnouncements;
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -79,15 +82,17 @@ function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
         const announcements: string = await invoke("get_announcements_for_server", {
           uuid: server!.uuid,
         });
-        setAnnouncements(announcements);
         setError(false);
+        setAnnouncements(announcements);
+        setShowAnnouncements(true);
       } catch (e) {
         console.warn(e);
         setError(true);
       }
     };
 
-    setShow(false);
+    setShowUpsell(false);
+    setShowAnnouncements(false);
     setAnnouncements("");
     setError(false);
     if (server) {
@@ -99,7 +104,8 @@ function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
     <div className={"server-landing " + (!show ? "d-none" : "")}>
       <img
         src={getUpsellImage(server)}
-        onLoad={() => setShow(true)}
+        className={!showUpsell ? "d-none" : ""}
+        onLoad={() => setShowUpsell(true)}
       />
       <div className="announcements">
         <span>{error ? ERROR_TEXT : announcements}</span>
