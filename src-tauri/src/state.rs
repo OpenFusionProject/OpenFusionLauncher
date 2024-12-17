@@ -131,7 +131,7 @@ impl AppState {
     pub fn fixup_server_versions(servers: &mut Servers, versions: &Versions) {
         for server in &mut servers.servers {
             if let ServerInfo::Simple { version, .. } = &mut server.info {
-                if let Some(correct_version) = versions.get_entry_by_description(version) {
+                if let Some(correct_version) = versions.get_entry_by_name(version) {
                     *version = correct_version.get_uuid().to_string();
                 }
             }
@@ -330,10 +330,8 @@ impl Versions {
         self.versions.iter().find(|v| v.get_uuid() == uuid)
     }
 
-    pub fn get_entry_by_description(&self, description: &str) -> Option<&Version> {
-        self.versions
-            .iter()
-            .find(|v| v.get_description() == Some(description))
+    pub fn get_entry_by_name(&self, name: &str) -> Option<&Version> {
+        self.versions.iter().find(|v| v.get_name() == Some(name))
     }
 }
 
