@@ -35,6 +35,7 @@ import LoginModal from "@/components/LoginModal";
 import BackgroundImages from "@/components/BackgroundImages";
 import LogoImages from "@/components/LogoImages";
 import SelectVersionModal from "./components/SelectVersionModal";
+import { start } from "repl";
 
 export default function Home() {
   const [launcherVersion, setLauncherVersion] = useState("0.0.0");
@@ -248,6 +249,7 @@ export default function Home() {
   };
 
   const onRegister = async (serverUuid: string, username: string, password: string, email: string) => {
+    startLoading("do_register");
     try {
       const res: RegistrationResult = await invoke("do_register", {
         serverUuid: serverUuid,
@@ -265,9 +267,11 @@ export default function Home() {
     } catch (e: unknown) {
       alertError("Failed to register (" + e + ")");
     }
+    stopLoading("do_register");
   }
 
   const onLogin = async (serverUuid: string, username: string, password: string) => {
+    startLoading("do_login");
     try {
       await invoke("do_login", {
         serverUuid: serverUuid,
@@ -277,6 +281,8 @@ export default function Home() {
     } catch (e: unknown) {
       alertError("Failed to login (" + e + ")");
       return;
+    } finally {
+      stopLoading("do_login");
     }
     onConnect(serverUuid);
   }
