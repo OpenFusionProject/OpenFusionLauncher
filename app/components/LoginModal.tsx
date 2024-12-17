@@ -108,7 +108,9 @@ function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
         onLoad={() => setShowUpsell(true)}
       />
       <div className="announcements">
-        <span>{error ? ERROR_TEXT : announcements}</span>
+        {error ? ERROR_TEXT : announcements.split('\n').map((line, index) => (
+          <p className="mb-1" key={index}>{line}</p>
+        ))}
       </div>
     </div>
   );
