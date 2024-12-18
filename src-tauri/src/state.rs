@@ -6,7 +6,11 @@ use serde::{Deserialize, Serialize};
 use tauri::{path::BaseDirectory, Manager};
 use uuid::Uuid;
 
-use crate::{endpoint::InfoResponse, util, NewServerDetails, Result};
+use crate::{
+    config::{GameSettings, LauncherSettings},
+    endpoint::InfoResponse,
+    util, NewServerDetails, Result,
+};
 
 const OPENFUSIONCLIENT_PATH: &str = "OpenFusionClient";
 
@@ -159,17 +163,8 @@ impl AppState {
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct Config {
-    #[serde(default = "util::true_fn")]
-    pub check_for_updates: bool,
-
-    #[serde(default = "util::true_fn")]
-    pub use_offline_caches: bool,
-
-    #[serde(default = "util::get_default_cache_dir")]
-    pub game_cache_path: String,
-
-    #[serde(default = "util::get_default_offline_cache_dir")]
-    pub offline_cache_path: String,
+    pub launcher: LauncherSettings,
+    pub game: GameSettings,
 }
 impl Config {
     fn new() -> Self {

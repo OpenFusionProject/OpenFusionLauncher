@@ -23,6 +23,7 @@ export default function SettingsPage() {
 
   const [tab, setTab] = useState(DEFAULT_TAB);
 
+  // confirmation modal
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [confirmationConfirmText, setConfirmationConfirmText] = useState("");

@@ -1,4 +1,12 @@
 {
+  "launcher": {
     "check_for_updates": true,
-    "use_offline_caches": true
+    "use_offline_caches": true,
+    "verify_offline_caches": false,
+    "launch_behavior": "hide"
+  },
+  "game": {
+    "graphics_api": "dx9",
+    "fps_fix": "on"
+  }
 }
