@@ -266,6 +266,16 @@ async fn prep_launch(
             }
         }
 
+        match state.config.game.graphics_api {
+            config::GraphicsApi::Dx9 => {}
+            config::GraphicsApi::OpenGl => {
+                cmd.arg("--force-opengl");
+            }
+            config::GraphicsApi::Vulkan => {
+                cmd.arg("--force-vulkan");
+            }
+        }
+
         #[cfg(debug_assertions)]
         cmd.arg("-v"); // verbose logging
 
