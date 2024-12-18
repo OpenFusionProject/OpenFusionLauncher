@@ -72,12 +72,13 @@ pub struct AppState {
     pub servers: Servers,
     pub tokens: Tokens,
     //
+    pub config_valid: bool,
     pub launch_cmd: Option<Command>,
     info_cache: HashMap<String, InfoResponse>,
 }
 impl AppState {
     pub fn load() -> Self {
-        let config = Config::new();
+        let (config, config_valid) = Config::new();
         let versions = Versions::new();
         let mut servers = Servers::new();
         let tokens = Tokens::new();
@@ -93,6 +94,7 @@ impl AppState {
             servers,
             tokens,
             //
+            config_valid,
             launch_cmd: None,
             info_cache: HashMap::new(),
         }
@@ -111,9 +113,14 @@ impl AppState {
             }
         }
 
-        if let Err(e) = self.config.save() {
-            warn!("Failed to save config: {}", e);
+        // we don't want to override the config file on disk
+        // if it was invalid at load time
+        if self.config_valid {
+            if let Err(e) = self.config.save() {
+                warn!("Failed to save config: {}", e);
+            }
         }
+
         if let Err(e) = self.servers.save() {
             warn!("Failed to save servers: {}", e);
         }
@@ -167,10 +174,10 @@ pub struct Config {
     pub game: GameSettings,
 }
 impl Config {
-    fn new() -> Self {
+    fn new() -> (Self, bool) {
         match Self::load() {
-            Ok(config) => config,
-            Err(_) => Self::load_default(),
+            Ok(config) => (config, true),
+            Err(_) => (Self::load_default(), false),
         }
     }
 
