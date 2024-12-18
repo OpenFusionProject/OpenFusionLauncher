@@ -266,6 +266,7 @@ async fn prep_launch(
             }
         }
 
+        // Graphics API overrides
         match state.config.game.graphics_api {
             config::GraphicsApi::Dx9 => {}
             config::GraphicsApi::OpenGl => {
@@ -273,6 +274,19 @@ async fn prep_launch(
             }
             config::GraphicsApi::Vulkan => {
                 cmd.arg("--force-vulkan");
+            }
+        }
+
+        // FPS behavior
+        unsafe {
+            match state.config.game.fps_fix {
+                config::FpsFix::On => {}
+                config::FpsFix::OnWithLimiter(limit) => {
+                    env::set_var("UNITY_FF_FPS_CAP", limit.to_string());
+                }
+                config::FpsFix::Off => {
+                    env::set_var("UNITY_FF_FPS_CAP", "old");
+                }
             }
         }
 
