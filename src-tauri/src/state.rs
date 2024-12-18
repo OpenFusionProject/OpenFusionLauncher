@@ -9,7 +9,8 @@ use uuid::Uuid;
 use crate::{
     config::{GameSettings, LauncherSettings},
     endpoint::InfoResponse,
-    util, NewServerDetails, Result,
+    util::{self, AlertVariant},
+    NewServerDetails, Result,
 };
 
 const OPENFUSIONCLIENT_PATH: &str = "OpenFusionClient";
@@ -72,13 +73,27 @@ pub struct AppState {
     pub servers: Servers,
     pub tokens: Tokens,
     //
-    pub config_valid: bool,
+    pub write_config: bool,
     pub launch_cmd: Option<Command>,
     info_cache: HashMap<String, InfoResponse>,
 }
 impl AppState {
-    pub fn load() -> Self {
-        let (config, config_valid) = Config::new();
+    pub fn load(app_handle: tauri::AppHandle) -> Self {
+        let config = Config::new();
+        let (config, write_config) = match config {
+            Ok(config) => (config, true),
+            Err(e) => {
+                let config_exists = get_app_statics().app_data_dir.join("config.json").exists();
+                if config_exists {
+                    // config exists but is malformed. warn and do not overwrite
+                    let msg = format!("Failed to load config: {}", e);
+                    warn!("{}", msg);
+                    util::send_alert(app_handle, AlertVariant::Warning, &msg);
+                }
+                (Config::load_default(), !config_exists)
+            }
+        };
+
         let versions = Versions::new();
         let mut servers = Servers::new();
         let tokens = Tokens::new();
@@ -94,7 +109,7 @@ impl AppState {
             servers,
             tokens,
             //
-            config_valid,
+            write_config,
             launch_cmd: None,
             info_cache: HashMap::new(),
         }
@@ -115,7 +130,7 @@ impl AppState {
 
         // we don't want to override the config file on disk
         // if it was invalid at load time
-        if self.config_valid {
+        if self.write_config {
             if let Err(e) = self.config.save() {
                 warn!("Failed to save config: {}", e);
             }
@@ -174,11 +189,8 @@ pub struct Config {
     pub game: GameSettings,
 }
 impl Config {
-    fn new() -> (Self, bool) {
-        match Self::load() {
-            Ok(config) => (config, true),
-            Err(_) => (Self::load_default(), false),
-        }
+    fn new() -> Result<Self> {
+        Self::load()
     }
 
     fn load() -> Result<Self> {

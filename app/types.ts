@@ -71,7 +71,7 @@ export type SettingsContext = {
   startLoading?: (id: string, text?: string) => void;
   stopLoading?: (id: string) => void;
   showConfirmationModal?: (message: string, confirmText: string, confirmVariant: string, onConfirm: () => void) => void;
-}
+};
 
 export type VersionCacheData = {
   versionUuid: string;
@@ -92,4 +92,9 @@ export type VersionCacheProgressItem = {
   item_size: number;
   corrupt: boolean;
   missing: boolean;
+};
+
+export type AlertEvent = {
+  variant: string;
+  message: string;
 };

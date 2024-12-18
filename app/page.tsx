@@ -5,7 +5,7 @@ import { startEasterEggs, stopEasterEggs } from "./easter-eggs";
 import { invoke } from "@tauri-apps/api/core";
 import { getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -22,6 +22,7 @@ import {
   Versions,
   LoginSession,
   RegistrationResult,
+  AlertEvent,
 } from "./types";
 
 import ServerList from "@/components/ServerList";
@@ -36,8 +37,11 @@ import BackgroundImages from "@/components/BackgroundImages";
 import LogoImages from "@/components/LogoImages";
 import SelectVersionModal from "./components/SelectVersionModal";
 import { start } from "repl";
+import { listen } from "@tauri-apps/api/event";
 
 export default function Home() {
+  const loadedRef = useRef(false);
+
   const [launcherVersion, setLauncherVersion] = useState("0.0.0");
   const [tagline, setTagline] = useState(
     "Welcome to OpenFusion.\nSelect a server from the list below to get started."
@@ -206,15 +210,6 @@ export default function Home() {
       await getCurrentWindow().show();
       alertError("Error during init (" + e + ")");
     }
-  };
-
-  const doDeinit = () => {
-    setServers([]);
-    setSelectedServer("");
-    setVersions([]);
-    setInitialFetchDone(false);
-    setAlerts([]);
-    setLoadingTasks([]);
   };
 
   const stub = () => {
@@ -409,15 +404,22 @@ export default function Home() {
     }
   };
 
+  const handleAlert = (alert: AlertEvent) => {
+    console.log("alert", alert);
+    pushAlert(alert.variant, alert.message);
+  };
+
   useEffect(() => {
-    console.log("init");
-    doInit();
-    startEasterEggs();
-    return () => {
-      console.log("deinit");
-      stopEasterEggs();
-      doDeinit();
-    };
+    if (!loadedRef.current) {
+      console.log("init");
+      doInit();
+      startEasterEggs();
+
+      listen<AlertEvent>("alert", (e) => {
+        handleAlert(e.payload);
+      });
+      loadedRef.current = true;
+    }
   }, []);
 
   // Keyboard event listener needs to be separate since it depends on state

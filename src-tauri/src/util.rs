@@ -5,6 +5,7 @@ use std::{collections::HashMap, path::PathBuf, sync::mpsc};
 use dns_lookup::lookup_host;
 use ffbuildtool::{FailReason, ItemProgress, Version};
 use log::*;
+use serde::Serialize;
 use tauri::Emitter as _;
 use uuid::Uuid;
 
@@ -199,5 +200,30 @@ pub(crate) fn cache_progress_callback(
     let event = CacheEvent::ItemProcessed(item_name.to_string(), item);
     if let Err(e) = item_tx.send(event) {
         error!("Failed to send cache progress event: {}", e);
+    }
+}
+
+#[derive(Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) enum AlertVariant {
+    Info,
+    Warning,
+    Error,
+    Success,
+}
+
+#[derive(Clone, Serialize)]
+struct AlertEvent {
+    variant: AlertVariant,
+    message: String,
+}
+
+pub(crate) fn send_alert(app_handle: tauri::AppHandle, variant: AlertVariant, message: &str) {
+    let payload = AlertEvent {
+        variant,
+        message: message.to_string(),
+    };
+    if let Err(e) = app_handle.emit("alert", payload) {
+        error!("Failed to emit alert event: {}", e);
     }
 }

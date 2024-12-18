@@ -519,7 +519,7 @@ async fn reload_state(app_handle: tauri::AppHandle) -> bool {
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
     let first_run = !get_app_statics().app_data_dir.exists();
-    *state = AppState::load();
+    *state = AppState::load(app_handle.clone());
     state.save();
     first_run
 }
