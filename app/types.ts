@@ -34,6 +34,15 @@ export type Versions = {
   versions: VersionEntry[];
 };
 
+export type LauncherSettings = {
+  check_for_updates: boolean;
+  launch_behavior: string;
+};
+
+export type Config = {
+  launcher: LauncherSettings;
+};
+
 export type Alert = {
   variant: string;
   text: string;

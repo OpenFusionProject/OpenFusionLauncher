@@ -8,7 +8,7 @@ pub enum LauncherTheme {
     DexlabsLight,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum LaunchBehavior {
     #[default]

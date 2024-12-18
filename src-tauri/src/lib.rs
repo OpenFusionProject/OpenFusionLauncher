@@ -3,10 +3,13 @@ mod endpoint;
 mod state;
 mod util;
 
+use config::LaunchBehavior;
 use endpoint::{InfoResponse, RegisterResponse, Session};
 use ffbuildtool::ItemProgress;
 use serde::{Deserialize, Serialize};
-use state::{get_app_statics, AppState, FlatServer, FlatServers, Server, ServerInfo, Versions};
+use state::{
+    get_app_statics, AppState, Config, FlatServer, FlatServers, Server, ServerInfo, Versions,
+};
 
 use std::{
     collections::{HashMap, HashSet},
@@ -76,6 +79,10 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
         let mut state = state.lock().await;
         let mut cmd = state.launch_cmd.take().ok_or("No launch prepared")?;
         let mut proc = cmd.spawn()?;
+        if state.config.launcher.launch_behavior == LaunchBehavior::Quit {
+            app_handle.exit(0);
+            return Ok(0);
+        }
         let exit_code = proc.wait()?;
         Ok(exit_code.code().unwrap_or(0))
     };
@@ -701,6 +708,14 @@ async fn get_versions(app_handle: tauri::AppHandle) -> Versions {
     state.versions.clone()
 }
 
+#[tauri::command]
+async fn get_config(app_handle: tauri::AppHandle) -> Config {
+    debug!("get_config");
+    let state = app_handle.state::<Mutex<AppState>>();
+    let state = state.lock().await;
+    state.config.clone()
+}
+
 #[allow(clippy::single_match)]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -732,6 +747,7 @@ pub fn run() {
             reload_state,
             get_versions,
             get_servers,
+            get_config,
             add_server,
             update_server,
             delete_server,

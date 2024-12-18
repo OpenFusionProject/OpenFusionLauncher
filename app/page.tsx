@@ -23,7 +23,8 @@ import {
   LoginSession,
   RegistrationResult,
   AlertEvent,
-} from "./types";
+  Config,
+} from "@/app/types";
 
 import ServerList from "@/components/ServerList";
 import AlertList from "@/components/AlertList";
@@ -229,12 +230,16 @@ export default function Home() {
         sessionToken: sessionToken,
       });
       stopLoading("launch");
-      await getCurrentWindow().hide();
-      const exit_code: number = await invoke("do_launch");
+      const config: Config = await invoke("get_config");
+      console.log("config", config);
+      if (config.launcher.launch_behavior == "hide") {
+        await getCurrentWindow().hide();
+      }
+      const exitCode: number = await invoke("do_launch");
       setTagline("Thanks for playing!");
       await getCurrentWindow().show();
-      if (exit_code != 0) {
-        alertError("Game exited with code " + exit_code);
+      if (exitCode != 0) {
+        alertError("Game exited with code " + exitCode);
       }
     } catch (e: unknown) {
       await getCurrentWindow().show();
