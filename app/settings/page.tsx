@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { Alert, Config, LoadingTask, SettingsContext } from "@/app/types";
 import { SettingsCtx } from "@/app/contexts";
-import AlertList from "@/components/AlertList";
+import Toasts from "@/components/Toasts";
 import LoadingScreen from "@/components/LoadingScreen";
 import GameBuildsTab from "@/app/settings/GameBuildsTab";
 import { Tab, Tabs } from "react-bootstrap";
@@ -106,7 +106,7 @@ export default function SettingsPage() {
 
   return initialFetchDone ? (
     <SettingsCtx.Provider value={ctx}>
-      <AlertList alerts={alerts} />
+      <Toasts alerts={alerts} />
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
       <LauncherPage title="Settings" id="launcher-page-settings">
         <Tabs

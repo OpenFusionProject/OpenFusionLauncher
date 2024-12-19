@@ -137,6 +137,18 @@ html, body {
     left: 0;
 }
 
+.toast-container {
+    z-index: 2000;
+}
+
+.toast {
+    font-size: 0.8em;
+    min-width: 220px;
+    max-width: 340px;
+    width: fit-content;
+    margin-left: auto;
+}
+
 #server-table {
     overflow: hidden;
 }

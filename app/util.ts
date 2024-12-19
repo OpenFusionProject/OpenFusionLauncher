@@ -23,3 +23,18 @@ export function getTheme(config: Config) {
   }
   return getSystemTheme();
 }
+
+export function variantToLabel(variant: string) {
+  switch (variant) {
+    case "success":
+      return "Success";
+    case "danger":
+      return "Error";
+    case "warning":
+      return "Warning";
+    case "primary":
+      return "Info";
+    default:
+      return "";
+  }
+}

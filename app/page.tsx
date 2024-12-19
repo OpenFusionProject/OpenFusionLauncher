@@ -27,7 +27,6 @@ import {
 } from "@/app/types";
 
 import ServerList from "@/components/ServerList";
-import AlertList from "@/components/AlertList";
 import Button from "@/components/Button";
 import LoadingScreen from "@/components/LoadingScreen";
 import EditServerModal from "@/components/EditServerModal";
@@ -36,7 +35,8 @@ import AboutModal from "@/components/AboutModal";
 import LoginModal from "@/components/LoginModal";
 import BackgroundImages from "@/components/BackgroundImages";
 import LogoImages from "@/components/LogoImages";
-import SelectVersionModal from "./components/SelectVersionModal";
+import SelectVersionModal from "@/components/SelectVersionModal";
+import Toasts from "@/components/Toasts";
 import { listen } from "@tauri-apps/api/event";
 import { getTheme } from "@/app/util";
 
@@ -56,6 +56,7 @@ export default function Home() {
   const [versions, setVersions] = useState<VersionEntry[]>([]);
 
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>([]);
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -219,6 +220,10 @@ export default function Home() {
       await initialFetch();
       await getCurrentWindow().show();
       await getCurrentWindow().setFocus();
+      alertSuccess("Test");
+      alertInfo("hehe dong");
+      alertError("bad thing happen");
+      alertSuccess("good thing happen!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     } catch (e: unknown) {
       await getCurrentWindow().show();
       alertError("Error during init (" + e + ")");
@@ -453,7 +458,7 @@ export default function Home() {
 
   return initialFetchDone ? (
     <>
-      <AlertList alerts={alerts} />
+      <Toasts alerts={alerts} />
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
       <BackgroundImages
         servers={servers}
