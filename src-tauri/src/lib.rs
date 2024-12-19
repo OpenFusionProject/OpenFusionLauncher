@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 use state::{
     get_app_statics, AppState, Config, FlatServer, FlatServers, Server, ServerInfo, Versions,
 };
+use util::AlertVariant;
 
 use std::{
     collections::{HashMap, HashSet},
@@ -242,8 +243,65 @@ async fn prep_launch(
             env::set_var("UNITY_FF_CACHE_DIR", cache_dir);
         }
 
-        let asset_url = version.get_asset_url();
-        let main_url = format!("{}/main.unity3d", asset_url);
+        let mut asset_url = version.get_asset_url();
+        let mut main_url = format!("{}/main.unity3d", asset_url);
+
+        // use offline cache if available
+        let base_offline_cache_dir = &state.config.launcher.offline_cache_path;
+        let offline_cache_dir = util::get_cache_dir_for_version(base_offline_cache_dir, version)?;
+        if state.config.launcher.use_offline_caches && offline_cache_dir.exists() {
+            let offline_asset_url = util::get_path_as_file_uri(&offline_cache_dir);
+            let offline_cache_dir = offline_cache_dir.to_string_lossy().to_string();
+            let offline_main_url = format!("{}\\main.unity3d", offline_cache_dir);
+
+            let use_offline_cache = if state.config.launcher.verify_offline_caches {
+                match version
+                    .validate_compressed_stop_on_first_fail(&offline_cache_dir, None)
+                    .await
+                {
+                    Ok(corrupted) => {
+                        let is_corrupt = corrupted.is_some();
+                        if is_corrupt {
+                            let msg = format!(
+                                "Offline cache for version {} is corrupt. Not using.",
+                                util::get_version_name(version)
+                            );
+                            warn!("{}", msg);
+                            util::send_alert(app_handle.clone(), AlertVariant::Warning, &msg);
+                        }
+                        !is_corrupt
+                    }
+                    Err(e) => {
+                        let msg = format!(
+                            "Failed to validate offline cache for version {}: {:?}",
+                            util::get_version_name(version),
+                            e
+                        );
+                        error!("{}", msg);
+                        util::send_alert(app_handle.clone(), AlertVariant::Error, &msg);
+                        false
+                    }
+                }
+            } else {
+                false
+            };
+
+            if use_offline_cache {
+                let msg = format!(
+                    "Using offline cache for version {}",
+                    util::get_version_name(version)
+                );
+                info!("{}", msg);
+                util::send_alert(app_handle.clone(), AlertVariant::Success, &msg);
+
+                asset_url = offline_asset_url;
+                main_url = offline_main_url;
+            }
+        }
+
+        debug!("Asset URL: {}", asset_url);
+        debug!("Main URL: {}", main_url);
+
         let app_statics = get_app_statics();
         let working_dir = &app_statics.resource_dir;
         let mut ffrunner_path = working_dir.clone();

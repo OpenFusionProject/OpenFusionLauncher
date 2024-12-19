@@ -2,7 +2,7 @@
 
 use std::{
     collections::HashMap,
-    path::PathBuf,
+    path::{Path, PathBuf},
     sync::{mpsc, OnceLock},
 };
 
@@ -124,6 +124,19 @@ pub(crate) fn is_dir_empty(dir: &PathBuf) -> Result<bool> {
     match std::fs::read_dir(dir) {
         Ok(mut entries) => Ok(entries.next().is_none()),
         Err(e) => Err(e.into()),
+    }
+}
+
+pub(crate) fn get_path_as_file_uri(path: &Path) -> String {
+    let uri = format!("file:///{}", path.to_string_lossy());
+    uri.replace("\\", "/")
+}
+
+pub(crate) fn get_version_name(version: &Version) -> String {
+    if let Some(name) = version.get_name() {
+        name.to_string()
+    } else {
+        version.get_uuid().to_string()
     }
 }
 
