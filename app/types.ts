@@ -37,6 +37,7 @@ export type Versions = {
 export type LauncherSettings = {
   check_for_updates: boolean;
   launch_behavior: string;
+  theme?: string;
 };
 
 export type Config = {

@@ -8,7 +8,7 @@ export default function LoadingScreen({ tasks }: { tasks: LoadingTask[] }) {
       <div id="loading-screen">
         <div className="loading-screen-component" id="loading-screen-bg"></div>
         <Stack className="loading-screen-component d-flex align-items-center justify-content-center">
-          <Spinner animation="border" role="status" variant="primary" />
+          <Spinner animation="border" role="status" />
           {tasks.map((task) => (
             <span key={task.id}>{task.text}</span>
           ))}

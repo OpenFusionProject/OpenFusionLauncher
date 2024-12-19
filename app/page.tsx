@@ -37,8 +37,27 @@ import LoginModal from "@/components/LoginModal";
 import BackgroundImages from "@/components/BackgroundImages";
 import LogoImages from "@/components/LogoImages";
 import SelectVersionModal from "./components/SelectVersionModal";
-import { start } from "repl";
 import { listen } from "@tauri-apps/api/event";
+
+const getSystemTheme = () => {
+  if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    return "dark";
+  }
+  return "light";
+}
+
+const getTheme = (config: Config) => {
+  const themeName = config.launcher.theme;
+  if (themeName) {
+    switch (themeName) {
+      case "dexlabs_light":
+        return "light";
+      case "dexlabs_dark":
+        return "dark";
+    }
+  }
+  return getSystemTheme();
+}
 
 export default function Home() {
   const loadedRef = useRef(false);
@@ -49,6 +68,7 @@ export default function Home() {
   );
 
   const [initialFetchDone, setInitialFetchDone] = useState(false);
+  const [config, setConfig] = useState<Config | undefined>(undefined);
   const [servers, setServers] = useState<ServerEntry[]>([]);
   const [selectedIdx, setSelectedIdx] = useState<number>(-1);
 
@@ -126,12 +146,20 @@ export default function Home() {
     setVersions(versionData.versions);
   }
 
+  const syncConfig = async () => {
+    const config: Config = await invoke("get_config");
+    const theme = getTheme(config);
+    document.documentElement.setAttribute("data-bs-theme", theme);
+    setConfig(config);
+  }
+
   const syncServersAndVersions = async () => {
     await syncVersions();
     await syncServers();
   }
 
   const initialFetch = async () => {
+    await syncConfig();
     await syncServersAndVersions();
     setInitialFetchDone(true);
   };
@@ -205,8 +233,9 @@ export default function Home() {
       if (firstRun) {
         await importFromOpenFusionClient();
       }
-      await getCurrentWindow().show();
       await initialFetch();
+      await getCurrentWindow().show();
+      await getCurrentWindow().setFocus();
     } catch (e: unknown) {
       await getCurrentWindow().show();
       alertError("Error during init (" + e + ")");
@@ -230,9 +259,7 @@ export default function Home() {
         sessionToken: sessionToken,
       });
       stopLoading("launch");
-      const config: Config = await invoke("get_config");
-      console.log("config", config);
-      if (config.launcher.launch_behavior == "hide") {
+      if (config!.launcher.launch_behavior == "hide") {
         await getCurrentWindow().hide();
       }
       const exitCode: number = await invoke("do_launch");
@@ -435,7 +462,7 @@ export default function Home() {
     };
   }, [servers, selectedIdx]);
 
-  return (
+  return initialFetchDone ? (
     <>
       <AlertList alerts={alerts} />
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
@@ -462,7 +489,7 @@ export default function Home() {
         >
           <Col xs={8} className="mb-2 main-col">
             <ServerList
-              servers={initialFetchDone ? servers : undefined}
+              servers={servers}
               versions={versions}
               selectedServer={getSelectedServer()?.uuid}
               setSelectedServer={setSelectedServer}
@@ -579,5 +606,7 @@ export default function Home() {
         version={launcherVersion}
       />
     </>
+  ) : (
+    <LoadingScreen tasks={[{ id: "init" }]} />
   );
 }
