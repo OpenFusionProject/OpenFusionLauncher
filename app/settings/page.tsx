@@ -39,6 +39,10 @@ export default function SettingsPage() {
     setAlerts((alerts) => [{ variant, text, id }, ...alerts]);
   };
 
+  const alertWarning = (text: string) => {
+    pushAlert("warning", text);
+  };
+
   const alertError = (text: string) => {
     pushAlert("danger", text);
   };
@@ -99,6 +103,7 @@ export default function SettingsPage() {
     alertSuccess,
     alertInfo,
     alertError,
+    alertWarning,
     startLoading,
     stopLoading,
     showConfirmationModal,

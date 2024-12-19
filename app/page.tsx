@@ -93,6 +93,10 @@ export default function Home() {
     setAlerts((alerts) => [{ variant, text, id }, ...alerts]);
   };
 
+  const alertWarning = (text: string) => {
+    pushAlert("warning", text);
+  };
+
   const alertError = (text: string) => {
     pushAlert("danger", text);
   };
