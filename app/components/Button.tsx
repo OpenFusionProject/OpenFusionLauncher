@@ -37,7 +37,9 @@ export default function Button({
       ) : (
         <>
           {iconLeft && icon && <i className={"fa fa-" + icon}></i>}
+          {iconLeft && icon && text && " "}
           {text && <span>{text}</span>}
+          {!iconLeft && icon && text && " "}
           {!iconLeft && icon && <i className={"fa fa-" + icon}></i>}
         </>
       )}

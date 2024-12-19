@@ -203,7 +203,6 @@ export default function EditServerModal({
           onClick={() => doHide()}
           variant="primary"
           text="Cancel"
-          enabled={true}
         />
         <Button
           onClick={() => {

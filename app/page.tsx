@@ -496,7 +496,6 @@ export default function Home() {
             <Stack gap={1} direction="horizontal">
               <Button
                 onClick={() => setShowAddModal(true)}
-                enabled={true}
                 variant="success"
                 icon="plus"
                 tooltip="Add server"
@@ -528,7 +527,7 @@ export default function Home() {
                 enabled={getSelectedServer() ? true : false}
                 variant="primary"
                 icon="angle-double-right"
-                text="Connect "
+                text="Connect"
               />
             </Stack>
           </Col>
@@ -537,7 +536,6 @@ export default function Home() {
       <div id="about-button-div">
         <Button
           onClick={() => setShowAboutModal(true)}
-          enabled={true}
           variant="primary"
           icon="info-circle"
           tooltip="About OpenFusion Launcher"
@@ -546,7 +544,6 @@ export default function Home() {
       <div id="config-button-div">
         <Button
           onClick={() => window.location.href = "/settings"}
-          enabled={true}
           variant="primary"
           icon="cog"
           tooltip="Settings"

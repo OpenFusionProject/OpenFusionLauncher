@@ -196,16 +196,15 @@ export default function GameBuildsTab({
         <Button
           icon="plus"
           iconLeft={true}
-          text=" Add Version"
+          text="Add Version"
           tooltip="Add a new version"
           variant="success"
           onClick={() => {}}
-          enabled={false}
         />
         <div className="p-2 ms-auto"></div>
         <Button
           icon="trash"
-          text="Delete All Offline "
+          text="Delete All Offline"
           tooltip="Delete all offline caches"
           variant="danger"
           onClick={() => {
@@ -221,7 +220,7 @@ export default function GameBuildsTab({
         />
         <Button
           icon="trash"
-          text="Clear All Game "
+          text="Clear All Game"
           tooltip="Clear all game caches"
           variant="danger"
           onClick={() => {

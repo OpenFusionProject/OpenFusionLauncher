@@ -13,8 +13,7 @@ export default function NavBar({
       <Row className="m-0 w-100">
         <Col className="p-0">
           <Button
-            enabled={true}
-            text=" Back"
+            text="Back"
             icon="angle-double-left"
             iconLeft={true}
             onClick={() => window.history.back()}

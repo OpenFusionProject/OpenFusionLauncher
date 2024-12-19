@@ -32,21 +32,18 @@ export default function AboutModal({
             variant="primary"
             icon="github fa-brands fa-xl"
             tooltip="Github Page"
-            enabled={true}
           />
           <Button
             onClick={() => open("https://discord.gg/DYavckB")}
             variant="primary"
             icon="discord fa-brands fa-lg"
             tooltip="Discord Chat"
-            enabled={true}
           />
           <div className="ms-auto"></div>
           <Button
             onClick={() => setShow(false)}
             variant="primary"
             text="Close"
-            enabled={true}
           />
         </Stack>
         

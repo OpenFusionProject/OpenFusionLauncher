@@ -111,7 +111,6 @@ export default function SelectVersionModal({
           onClick={() => doHide()}
           variant="primary"
           text="Cancel"
-          enabled={true}
         />
         <Button
           onClick={() => {

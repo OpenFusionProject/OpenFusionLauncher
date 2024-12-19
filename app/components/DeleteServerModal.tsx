@@ -30,7 +30,6 @@ export default function DeleteServerModal({
           onClick={() => setShow(false)}
           variant="primary"
           text="Cancel"
-          enabled={true}
         />
         <Button
           onClick={() => {
@@ -39,7 +38,6 @@ export default function DeleteServerModal({
           }}
           variant="danger"
           text="Yes, Delete"
-          enabled={true}
         />
       </Modal.Footer>
     </Modal>

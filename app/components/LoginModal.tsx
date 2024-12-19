@@ -323,7 +323,6 @@ export default function LoginModal({
             onClick={() => setShow(false)}
             variant="primary"
             text="Cancel"
-            enabled={true}
           />
           <Button
             onClick={submitForm}
