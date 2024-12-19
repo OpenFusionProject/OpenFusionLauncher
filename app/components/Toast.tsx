@@ -9,7 +9,7 @@ export default function Toast({ alert }: { alert: Alert }) {
   return (
     <_Toast
       bg={alert.variant}
-      className={"border border-" + alert.variant}
+      className={"shadow-none border border-" + alert.variant}
       show={show}
       delay={5000}
       autohide={alert.variant == "success"}
