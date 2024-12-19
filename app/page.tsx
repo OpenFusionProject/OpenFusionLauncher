@@ -38,26 +38,7 @@ import BackgroundImages from "@/components/BackgroundImages";
 import LogoImages from "@/components/LogoImages";
 import SelectVersionModal from "./components/SelectVersionModal";
 import { listen } from "@tauri-apps/api/event";
-
-const getSystemTheme = () => {
-  if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-    return "dark";
-  }
-  return "light";
-}
-
-const getTheme = (config: Config) => {
-  const themeName = config.launcher.theme;
-  if (themeName) {
-    switch (themeName) {
-      case "dexlabs_light":
-        return "light";
-      case "dexlabs_dark":
-        return "dark";
-    }
-  }
-  return getSystemTheme();
-}
+import { getTheme } from "@/app/util";
 
 export default function Home() {
   const loadedRef = useRef(false);

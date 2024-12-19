@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Alert, LoadingTask, SettingsContext } from "@/app/types";
+import { Alert, Config, LoadingTask, SettingsContext } from "@/app/types";
 import { SettingsCtx } from "@/app/contexts";
 import AlertList from "@/components/AlertList";
 import LoadingScreen from "@/components/LoadingScreen";
-import GameBuildsTab from "./GameBuildsTab";
+import GameBuildsTab from "@/app/settings/GameBuildsTab";
 import { Tab, Tabs } from "react-bootstrap";
 import LauncherPage from "@/components/LauncherPage";
-import ConfirmationModal from "../components/ConfirmationModal";
+import ConfirmationModal from "@/components/ConfirmationModal";
+import { getTheme } from "@/app/util";
 
 const TAB_LAUNCHER_SETTINGS = "launcher-settings";
 const TAB_GAME_SETTINGS = "game-settings";
@@ -20,8 +21,11 @@ const DEFAULT_TAB = TAB_LAUNCHER_SETTINGS;
 export default function SettingsPage() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>([]);
+  const [initialFetchDone, setInitialFetchDone] = useState(false);
 
   const [tab, setTab] = useState(DEFAULT_TAB);
+
+  const [config, setConfig] = useState<Config | undefined>(undefined);
 
   // confirmation modal
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -70,9 +74,26 @@ export default function SettingsPage() {
     setShowConfirmation(true);
   };
 
+  const syncConfig = async () => {
+    const config: Config = await invoke("get_config");
+    const theme = getTheme(config);
+    document.documentElement.setAttribute("data-bs-theme", theme);
+    setConfig(config);
+  }
+
+  const doInit = async () => {
+    try {
+      await invoke("reload_state");
+      await syncConfig();
+      setInitialFetchDone(true);
+    } catch (e) {
+      alertError("Error during init: " + e);
+    }
+  }
+
   useEffect(() => {
-    invoke("reload_state");
-  });
+    doInit();
+  }, []);
 
   const ctx: SettingsContext = {
     alertSuccess,
@@ -83,7 +104,7 @@ export default function SettingsPage() {
     showConfirmationModal,
   };
 
-  return (
+  return initialFetchDone ? (
     <SettingsCtx.Provider value={ctx}>
       <AlertList alerts={alerts} />
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
@@ -147,5 +168,7 @@ export default function SettingsPage() {
         }}
       />
     </SettingsCtx.Provider>
+  ) : (
+    <LoadingScreen tasks={[{ id: "init" }]} />
   );
 }
