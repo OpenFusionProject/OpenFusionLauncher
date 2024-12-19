@@ -67,6 +67,8 @@ export default function Home() {
 
   const [showAboutModal, setShowAboutModal] = useState(false);
 
+  const [connecting, setConnecting] = useState(false);
+
   const getSelectedServer = () => {
     if (selectedIdx >= 0 && selectedIdx < servers.length) {
       return servers[selectedIdx];
@@ -299,6 +301,7 @@ export default function Home() {
     const server = servers.find((s) => s.uuid == serverUuid);
     if (!server) {
       alertError("Server not found");
+      setConnecting(false);
       return;
     }
 
@@ -316,6 +319,7 @@ export default function Home() {
         // by making the user log in again
         stopLoading("configure_endpoint");
         setShowLoginModal(true);
+        setConnecting(false);
         return;
       }
 
@@ -326,6 +330,7 @@ export default function Home() {
       } catch (e: unknown) {
         stopLoading("configure_endpoint");
         alertError("Failed to get versions: " + e);
+        setConnecting(false);
         return;
       }
 
@@ -337,6 +342,7 @@ export default function Home() {
           // mutliple available; show the selector
           stopLoading("configure_endpoint");
           setShowVersionSelectorModal(true);
+          setConnecting(false);
           return;
         }
       }
@@ -346,9 +352,11 @@ export default function Home() {
 
     if (!version) {
       alertError("No version selected");
+      setConnecting(false);
       return;
     }
 
+    setConnecting(false);
     connectToServer(serverUuid, version, session?.session_token);
     stopLoading("configure_endpoint");
   };
@@ -477,6 +485,7 @@ export default function Home() {
               refreshVersions={syncVersions}
               onConnect={(serverUuid) => {
                 setSelectedServer(serverUuid);
+                setConnecting(true);
                 onConnect(serverUuid);
               }}
             />
@@ -511,7 +520,11 @@ export default function Home() {
           <Col xs={4} className="side-col">
             <Stack gap={1} direction="horizontal" className="flex-row-reverse">
               <Button
-                onClick={() => onConnect(getSelectedServer()!.uuid)}
+                loading={connecting}
+                onClick={() => {
+                  setConnecting(true);
+                  onConnect(getSelectedServer()!.uuid);
+                }}
                 enabled={getSelectedServer() ? true : false}
                 variant="primary"
                 icon="angle-double-right"
