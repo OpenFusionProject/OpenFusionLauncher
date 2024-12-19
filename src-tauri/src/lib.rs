@@ -26,6 +26,21 @@ type Error = Box<dyn std::error::Error>;
 type Result<T> = std::result::Result<T, Error>;
 type CommandResult<T> = std::result::Result<T, String>;
 
+const UPDATE_CHECK_URL: &str =
+    "https://api.github.com/repos/OpenFusionProject/OpenFusionClient/releases/latest";
+
+#[derive(Debug, Deserialize)]
+struct UpdateCheckResponse {
+    tag_name: String,
+    html_url: String,
+}
+
+#[derive(Debug, Serialize)]
+struct UpdateInfo {
+    version: String,
+    url: String,
+}
+
 const MAX_CONCURRENT_VALIDATION_OPS: usize = 2; // compromise. 1 is a lot for an HDD, but SSDs can handle 3-5
 static VALIDATION_SEMAPHORE: Semaphore = Semaphore::const_new(MAX_CONCURRENT_VALIDATION_OPS);
 
@@ -740,6 +755,25 @@ async fn get_config(app_handle: tauri::AppHandle) -> Config {
     state.config.clone()
 }
 
+#[tauri::command]
+async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
+    debug!("check_for_update");
+    let internal = async {
+        let resp_raw = util::do_simple_get(UPDATE_CHECK_URL).await?;
+        let resp: UpdateCheckResponse = serde_json::from_str(&resp_raw)?;
+        let current_version = util::string_version_to_u32(get_app_statics().get_version());
+        let latest_version = util::string_version_to_u32(&resp.tag_name);
+        if latest_version <= current_version {
+            return Ok(None);
+        }
+        Ok(Some(UpdateInfo {
+            version: resp.tag_name,
+            url: resp.html_url,
+        }))
+    };
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
 #[allow(clippy::single_match)]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -769,6 +803,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             reload_state,
+            check_for_update,
             get_versions,
             get_servers,
             get_config,

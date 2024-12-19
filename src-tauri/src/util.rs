@@ -1,6 +1,10 @@
 #![allow(dead_code)]
 
-use std::{collections::HashMap, path::PathBuf, sync::mpsc};
+use std::{
+    collections::HashMap,
+    path::PathBuf,
+    sync::{mpsc, OnceLock},
+};
 
 use dns_lookup::lookup_host;
 use ffbuildtool::{FailReason, ItemProgress, Version};
@@ -13,6 +17,17 @@ use crate::{
     state::get_app_statics, CacheEvent, CacheProgress, CacheProgressItem, Result,
     CACHE_PROGRESS_EVENT,
 };
+
+static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
+static HTTP_CLIENT: OnceLock<reqwest::Client> = OnceLock::new();
+pub(crate) fn get_http_client() -> &'static reqwest::Client {
+    HTTP_CLIENT.get_or_init(|| {
+        reqwest::Client::builder()
+            .user_agent(APP_USER_AGENT)
+            .build()
+            .unwrap()
+    })
+}
 
 // for serde
 pub(crate) fn true_fn() -> bool {
@@ -133,8 +148,7 @@ pub(crate) fn import_versions(to_import: Vec<Version>) -> Result<Vec<Version>> {
 
 pub(crate) async fn do_simple_get(url: &str) -> Result<String> {
     debug!("=> GET {}", url);
-    let client = reqwest::Client::new();
-    let response = client.get(url).send().await?;
+    let response = get_http_client().get(url).send().await?;
     if !response.status().is_success() {
         return Err(format!("Failed to GET {}: {}", url, response.status()).into());
     }

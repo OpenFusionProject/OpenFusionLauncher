@@ -109,3 +109,8 @@ export type AlertEvent = {
   variant: string;
   message: string;
 };
+
+export type UpdateInfo = {
+  version: string;
+  url: string;
+};

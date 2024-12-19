@@ -117,7 +117,7 @@ pub async fn register_user(
         },
     };
     let url = format!("https://{}/account/register", endpoint_host);
-    let client = reqwest::Client::new();
+    let client = util::get_http_client();
     let res = client.post(&url).json(&req).send().await?;
 
     let status = res.status();
@@ -143,7 +143,7 @@ pub async fn get_refresh_token(
         password: password.to_string(),
     };
     let url = format!("https://{}/auth", endpoint_host);
-    let client = reqwest::Client::new();
+    let client = util::get_http_client();
     let res = client.post(&url).json(&req).send().await?;
 
     let status = res.status();
@@ -158,7 +158,7 @@ pub async fn get_refresh_token(
 pub async fn get_session(refresh_token: &str, endpoint_host: &str) -> Result<Session> {
     debug!("Getting session");
     let url = format!("https://{}/auth/session", endpoint_host);
-    let client = reqwest::Client::new();
+    let client = util::get_http_client();
     let res = client
         .post(&url)
         .header("Authorization", format!("Bearer {}", refresh_token))
@@ -178,7 +178,7 @@ pub async fn get_session(refresh_token: &str, endpoint_host: &str) -> Result<Ses
 pub async fn get_cookie(token: &str, endpoint_host: &str) -> Result<(String, String)> {
     debug!("Getting cookie");
     let url = format!("https://{}/cookie", endpoint_host);
-    let client = reqwest::Client::new();
+    let client = util::get_http_client();
     let res = client
         .post(&url)
         .header("Authorization", format!("Bearer {}", token))

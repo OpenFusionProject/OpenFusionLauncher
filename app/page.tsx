@@ -24,6 +24,7 @@ import {
   RegistrationResult,
   AlertEvent,
   Config,
+  UpdateInfo,
 } from "@/app/types";
 
 import ServerList from "@/components/ServerList";
@@ -40,13 +41,14 @@ import Toasts from "@/components/Toasts";
 import { listen } from "@tauri-apps/api/event";
 import { getTheme } from "@/app/util";
 
+const DEFAULT_TAGLINE = "Welcome to OpenFusion.\nSelect a server from the list below to get started.";
+
 export default function Home() {
   const loadedRef = useRef(false);
 
-  const [launcherVersion, setLauncherVersion] = useState("0.0.0");
-  const [tagline, setTagline] = useState(
-    "Welcome to OpenFusion.\nSelect a server from the list below to get started."
-  );
+  const [launcherVersion, setLauncherVersion] = useState("--");
+  const [updateAvailable, setUpdateAvailable] = useState<UpdateInfo | undefined>(undefined);
+  const [tagline, setTagline] = useState(DEFAULT_TAGLINE);
 
   const [initialFetchDone, setInitialFetchDone] = useState(false);
   const [config, setConfig] = useState<Config | undefined>(undefined);
@@ -127,28 +129,44 @@ export default function Home() {
   const syncServers = async () => {
     const serverData: Servers = await invoke("get_servers");
     setServers(serverData.servers);
-  }
+  };
 
   const syncVersions = async () => {
     const versionData: Versions = await invoke("get_versions");
     setVersions(versionData.versions);
-  }
+  };
 
   const syncConfig = async () => {
     const config: Config = await invoke("get_config");
     const theme = getTheme(config);
     document.documentElement.setAttribute("data-bs-theme", theme);
     setConfig(config);
-  }
+    return config;
+  };
 
   const syncServersAndVersions = async () => {
     await syncVersions();
     await syncServers();
-  }
+  };
+
+  const checkForUpdate = async () => {
+    try {
+      const updateInfo: UpdateInfo | undefined = await invoke("check_for_update");
+      if (updateInfo) {
+        setUpdateAvailable(updateInfo);
+        alertInfo("Update available: " + updateInfo.version);
+      }
+    } catch (e: unknown) {
+      alertError("Failed to check for updates (" + e + ")");
+    }
+  };
 
   const initialFetch = async () => {
-    await syncConfig();
+    const config: Config = await syncConfig();
     await syncServersAndVersions();
+    if (config.launcher.check_for_updates) {
+      checkForUpdate(); // no need to await
+    }
     setInitialFetchDone(true);
   };
 
