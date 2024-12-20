@@ -192,8 +192,12 @@ async fn prep_launch(
     server_uuid: Uuid,
     version_uuid: Uuid,
     session_token: Option<String>,
-) -> CommandResult<()> {
+) -> CommandResult<Option<usize>> {
     let internal = async {
+        // timeout in seconds, for giving the user time
+        // to see any warnings before launch
+        let mut timeout_sec = None;
+
         let state = app_handle.state::<Mutex<AppState>>();
         let mut state = state.lock().await;
         let server = state
@@ -268,6 +272,7 @@ async fn prep_launch(
                             );
                             warn!("{}", msg);
                             util::send_alert(app_handle.clone(), AlertVariant::Warning, &msg);
+                            timeout_sec = Some(3);
                         }
                         !is_corrupt
                     }
@@ -367,7 +372,7 @@ async fn prep_launch(
         cmd.arg("-v"); // verbose logging
 
         state.launch_cmd = Some(cmd);
-        Ok(())
+        Ok(timeout_sec)
     };
     debug!(
         "prep_launch server {} version {}",

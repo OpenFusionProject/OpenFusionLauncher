@@ -38,3 +38,7 @@ export function variantToLabel(variant: string) {
       return "";
   }
 }
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

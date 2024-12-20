@@ -39,7 +39,7 @@ import LogoImages from "@/components/LogoImages";
 import SelectVersionModal from "@/components/SelectVersionModal";
 import Toasts from "@/components/Toasts";
 import { listen } from "@tauri-apps/api/event";
-import { getTheme } from "@/app/util";
+import { getTheme, sleep } from "@/app/util";
 
 const DEFAULT_TAGLINE = "Welcome to OpenFusion.\nSelect a server from the list below to get started.";
 
@@ -259,12 +259,16 @@ export default function Home() {
   ) => {
     try {
       startLoading("launch");
-      await invoke("prep_launch", {
+      const timeout: number | undefined = await invoke("prep_launch", {
         serverUuid: serverUuid,
         versionUuid: versionUuid,
         sessionToken: sessionToken,
       });
+      if (timeout) {
+        await sleep(timeout * 1000);
+      }
       stopLoading("launch");
+
       if (config!.launcher.launch_behavior == "hide") {
         await getCurrentWindow().hide();
       }
