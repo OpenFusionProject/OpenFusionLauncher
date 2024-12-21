@@ -344,6 +344,16 @@ async fn prep_launch(
             }
         }
 
+        // Window size
+        if let Some(window_size) = &state.config.game.window_size {
+            cmd.args([
+                "--width",
+                &window_size.width.to_string(),
+                "--height",
+                &window_size.height.to_string(),
+            ]);
+        }
+
         // Graphics API overrides
         match state.config.game.graphics_api {
             config::GraphicsApi::Dx9 => {}
