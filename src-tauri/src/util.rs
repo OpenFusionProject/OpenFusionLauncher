@@ -2,7 +2,9 @@
 
 use std::{
     collections::HashMap,
+    env,
     path::{Path, PathBuf},
+    process::Command,
     sync::{mpsc, OnceLock},
 };
 
@@ -253,4 +255,44 @@ pub(crate) fn send_alert(app_handle: tauri::AppHandle, variant: AlertVariant, me
     if let Err(e) = app_handle.emit("alert", payload) {
         error!("Failed to emit alert event: {}", e);
     }
+}
+
+pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Command {
+    const REPLACEMENT_TOKEN: &str = "{}";
+
+    let mut base_command_str = base_cmd.get_program().to_string_lossy().to_string();
+    for arg in base_cmd.get_args() {
+        base_command_str.push(' ');
+        base_command_str.push_str(arg.to_string_lossy().to_string().as_str());
+    }
+
+    let launch_command_str = launch_fmt.replace(REPLACEMENT_TOKEN, &base_command_str);
+    let launch_command_tokens = launch_command_str.split_whitespace().collect::<Vec<_>>();
+    let mut launch_command = Command::new(launch_command_tokens[0]);
+    launch_command.current_dir(base_cmd.get_current_dir().unwrap());
+    for env in base_cmd.get_envs() {
+        launch_command.env(env.0, env.1.unwrap());
+    }
+    launch_command.args(&launch_command_tokens[1..]);
+    launch_command
+}
+
+pub(crate) fn log_command(command: &Command) {
+    let mut command_str = command.get_program().to_string_lossy().to_string();
+    for arg in command.get_args() {
+        command_str.push(' ');
+        command_str.push_str(arg.to_string_lossy().to_string().as_str());
+    }
+
+    for env in command.get_envs() {
+        command_str.push_str("\n\t");
+        let env_str = format!(
+            "{}={}",
+            env.0.to_string_lossy(),
+            env.1.unwrap().to_string_lossy()
+        );
+        command_str.push_str(&env_str);
+    }
+
+    debug!("Launching game: {}", command_str);
 }

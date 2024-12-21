@@ -198,6 +198,13 @@ async fn prep_launch(
         // to see any warnings before launch
         let mut timeout_sec = None;
 
+        let app_statics = get_app_statics();
+        let working_dir = &app_statics.resource_dir;
+        let mut ffrunner_path = working_dir.clone();
+        ffrunner_path.push("ffrunner.exe");
+        let mut cmd = std::process::Command::new(ffrunner_path.clone());
+        cmd.current_dir(working_dir);
+
         let state = app_handle.state::<Mutex<AppState>>();
         let mut state = state.lock().await;
         let server = state
@@ -243,9 +250,7 @@ async fn prep_launch(
         let base_cache_dir = &state.config.launcher.game_cache_path;
         let cache_dir = util::get_cache_dir_for_version(base_cache_dir, version)?;
         std::fs::create_dir_all(&cache_dir)?;
-        unsafe {
-            env::set_var("UNITY_FF_CACHE_DIR", cache_dir);
-        }
+        cmd.env("UNITY_FF_CACHE_DIR", cache_dir);
 
         let mut asset_url = version.get_asset_url();
         let mut main_url = format!("{}/main.unity3d", asset_url);
@@ -307,15 +312,9 @@ async fn prep_launch(
         debug!("Asset URL: {}", asset_url);
         debug!("Main URL: {}", main_url);
 
-        let app_statics = get_app_statics();
-        let working_dir = &app_statics.resource_dir;
-        let mut ffrunner_path = working_dir.clone();
-        ffrunner_path.push("ffrunner.exe");
         let log_file_path = &app_statics.ffrunner_log_path;
 
-        let mut cmd = std::process::Command::new(ffrunner_path);
-        cmd.current_dir(working_dir)
-            .args(["-m", &main_url])
+        cmd.args(["-m", &main_url])
             .args(["-a", &ip])
             .args(["--asseturl", &format!("{}/", asset_url)])
             .args(["-l", log_file_path.to_str().ok_or("Invalid log file path")?]);
@@ -366,21 +365,24 @@ async fn prep_launch(
         }
 
         // FPS behavior
-        unsafe {
-            match state.config.game.fps_fix {
-                config::FpsFix::On => {}
-                config::FpsFix::OnWithLimiter(limit) => {
-                    env::set_var("UNITY_FF_FPS_CAP", limit.to_string());
-                }
-                config::FpsFix::Off => {
-                    env::set_var("UNITY_FF_FPS_CAP", "old");
-                }
+        match state.config.game.fps_fix {
+            config::FpsFix::On => {}
+            config::FpsFix::OnWithLimiter(limit) => {
+                cmd.env("UNITY_FF_FPS_CAP", limit.to_string());
+            }
+            config::FpsFix::Off => {
+                cmd.env("UNITY_FF_FPS_CAP", "old");
             }
         }
 
         #[cfg(debug_assertions)]
         cmd.arg("-v"); // verbose logging
 
+        if let Some(launch_fmt) = &state.config.game.launch_command {
+            cmd = util::gen_launch_command(cmd, launch_fmt);
+        }
+
+        util::log_command(&cmd);
         state.launch_cmd = Some(cmd);
         Ok(timeout_sec)
     };
