@@ -257,6 +257,44 @@ pub(crate) fn send_alert(app_handle: tauri::AppHandle, variant: AlertVariant, me
     }
 }
 
+fn tokenize_launch_command(launch_cmd: &str) -> Vec<String> {
+    let mut tokens = Vec::new();
+    let mut current_token = String::new();
+    let mut in_single_quotes = false;
+    let mut in_double_quotes = false;
+    let mut chars = launch_cmd.chars().peekable();
+
+    while let Some(&c) = chars.peek() {
+        match c {
+            '\'' if !in_double_quotes => {
+                in_single_quotes = !in_single_quotes;
+                chars.next();
+            }
+            '"' if !in_single_quotes => {
+                in_double_quotes = !in_double_quotes;
+                chars.next();
+            }
+            ' ' if !in_single_quotes && !in_double_quotes => {
+                if !current_token.is_empty() {
+                    tokens.push(current_token.clone());
+                    current_token.clear();
+                }
+                chars.next();
+            }
+            _ => {
+                current_token.push(c);
+                chars.next();
+            }
+        }
+    }
+
+    if !current_token.is_empty() {
+        tokens.push(current_token);
+    }
+
+    tokens
+}
+
 pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Command {
     const REPLACEMENT_TOKEN: &str = "{}";
 
@@ -267,8 +305,8 @@ pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Command
     }
 
     let launch_command_str = launch_fmt.replace(REPLACEMENT_TOKEN, &base_command_str);
-    let launch_command_tokens = launch_command_str.split_whitespace().collect::<Vec<_>>();
-    let mut launch_command = Command::new(launch_command_tokens[0]);
+    let launch_command_tokens = tokenize_launch_command(&launch_command_str);
+    let mut launch_command = Command::new(&launch_command_tokens[0]);
     launch_command.current_dir(base_cmd.get_current_dir().unwrap());
     for env in base_cmd.get_envs() {
         launch_command.env(env.0, env.1.unwrap());
@@ -278,7 +316,7 @@ pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Command
 }
 
 pub(crate) fn log_command(command: &Command) {
-    let mut command_str = command.get_program().to_string_lossy().to_string();
+    let mut command_str = format!("\"{}\"", command.get_program().to_string_lossy());
     for arg in command.get_args() {
         command_str.push(' ');
         command_str.push_str(arg.to_string_lossy().to_string().as_str());
