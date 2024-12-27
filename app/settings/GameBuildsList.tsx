@@ -1,20 +1,9 @@
-import { ProgressBar, Stack } from "react-bootstrap";
+import { ProgressBar } from "react-bootstrap";
 import Button from "../components/Button";
 
 import { VersionCacheData, VersionCacheProgressItem, VersionEntry } from "@/app/types";
-import { get } from "http";
 
 const BYTES_PER_GB = 1024 * 1024 * 1024;
-
-const min = (a: number | undefined, b: number | undefined) => {
-  if (a == undefined) {
-    return b;
-  }
-  if (b == undefined) {
-    return a;
-  }
-  return Math.min(a, b);
-}
 
 const formatBytesToGB = (bytes?: number) => {
   if (bytes == undefined) {

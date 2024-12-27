@@ -4,6 +4,11 @@ import { SettingsCtx } from "@/app/contexts";
 import { Stack } from "react-bootstrap";
 import Button from "@/components/Button";
 import { ServerEntry, Servers } from "@/app/types";
+import AuthenticationList from "./AuthenticationList";
+
+const findServerByUuid = (servers: ServerEntry[], uuid: string) => {
+  return servers.find((server) => server.uuid == uuid);
+};
 
 export default function AuthenticationTab({
   active,
@@ -19,19 +24,24 @@ export default function AuthenticationTab({
     setServers(servers.servers);
   };
 
-  const signOutAll = async () => {
+  const signOut = async (uuid?: string) => {
     try {
-      await invoke("sign_out_all");
+      await invoke("sign_out", { uuid });
       await fetchServers();
       if (ctx.alertSuccess) {
-        ctx.alertSuccess("Signed out of all game servers");
+        const txt = "Signed out of " + (uuid ? findServerByUuid(servers!, uuid)?.description : "all servers");
+        ctx.alertSuccess(txt);
       }
     } catch (e: unknown) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to sign out of all game servers: " + e);
+        ctx.alertError("Failed to sign out: " + e);
       }
     }
-  }
+  };
+
+  const signOutAll = () => {
+    signOut(undefined);
+  };
 
   useEffect(() => {
     fetchServers();
@@ -41,7 +51,7 @@ export default function AuthenticationTab({
     <>
       <Stack direction="horizontal" className="flex-row-reverse p-2" gap={2} id="game-builds-buttonstack">
         <Button
-          icon="trash"
+          icon="sign-out-alt"
           iconLeft
           text="Sign Out All"
           tooltip="Sign out of all game servers"
@@ -58,6 +68,7 @@ export default function AuthenticationTab({
           }}
         />
       </Stack>
+      <AuthenticationList servers={servers} signOut={signOut} />
     </>
   );
 }
