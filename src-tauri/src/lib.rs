@@ -5,7 +5,7 @@ mod util;
 
 use config::LaunchBehavior;
 use endpoint::{InfoResponse, RegisterResponse, Session};
-use ffbuildtool::ItemProgress;
+use ffbuildtool::{ItemProgress, Version};
 use serde::{Deserialize, Serialize};
 use state::{
     get_app_statics, AppState, Config, FlatServer, FlatServers, Server, ServerInfo, Versions,
@@ -16,6 +16,7 @@ use std::{
     collections::{HashMap, HashSet},
     env,
     sync::{mpsc, Arc, OnceLock},
+    vec,
 };
 use tokio::sync::{Mutex, Semaphore};
 
@@ -760,6 +761,53 @@ async fn delete_server(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResul
 }
 
 #[tauri::command]
+async fn import_version(
+    app_handle: tauri::AppHandle,
+    manifest_bytes: Vec<u8>,
+) -> CommandResult<String> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let mut state = state.lock().await;
+        let manifest_string = String::from_utf8(manifest_bytes)?;
+        let Ok(version) = serde_json::from_str::<Version>(&manifest_string) else {
+            return Err("Invalid manifest".into());
+        };
+
+        if state.versions.get_entry(version.get_uuid()).is_some() {
+            return Err("Version already imported".into());
+        }
+
+        let version_label = match version.get_name() {
+            Some(name) => name.to_string(),
+            None => version.get_uuid().to_string(),
+        };
+        util::import_versions(vec![version.clone()])?;
+        state.versions.add_entry(version);
+        Ok(version_label)
+    };
+    debug!("import_build");
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
+async fn add_version_manual(
+    app_handle: tauri::AppHandle,
+    name: String,
+    asset_url: String,
+) -> CommandResult<()> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let mut state = state.lock().await;
+        let version = Version::build_barebones(&asset_url, Some(&name));
+        util::import_versions(vec![version.clone()])?;
+        state.versions.add_entry(version);
+        Ok(())
+    };
+    debug!("add_build_manual");
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
 async fn get_versions_for_server(
     app_handle: tauri::AppHandle,
     uuid: Uuid,
@@ -885,6 +933,8 @@ pub fn run() {
             add_server,
             update_server,
             delete_server,
+            import_version,
+            add_version_manual,
             get_info_for_server,
             get_announcements_for_server,
             get_versions_for_server,

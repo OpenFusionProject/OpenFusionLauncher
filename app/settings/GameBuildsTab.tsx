@@ -6,6 +6,7 @@ import { SettingsCtx } from "@/app/contexts";
 import { listen } from "@tauri-apps/api/event";
 import { Stack } from "react-bootstrap";
 import Button from "@/components/Button";
+import AddBuildModal from "./AddBuildModal";
 
 export default function GameBuildsTab({
   active,
@@ -14,6 +15,8 @@ export default function GameBuildsTab({
 }) {
   const [versions, setVersions] = useState<VersionEntry[] | undefined>(undefined);
   const [versionData, setVersionData] = useState<VersionCacheData[]>([]);
+
+  const [showAddBuildModal, setShowAddBuildModal] = useState(false);
 
   const ctx = useContext(SettingsCtx);
 
@@ -146,6 +149,38 @@ export default function GameBuildsTab({
     });
   };
 
+  const importBuild = async (manifest: File) => {
+    // javascript doesn't give us the absolute path of the file,
+    // so we have to read it here and send the bytes to the backend
+    const bytes: ArrayBuffer = await manifest.arrayBuffer();
+    const bytesU8 = new Uint8Array(bytes);
+    try {
+      const newVersionLabel: string = await invoke("import_version", { manifestBytes: bytesU8 });
+      await fetchVersions();
+      if (ctx.alertSuccess) {
+        ctx.alertSuccess("Imported build " + newVersionLabel);
+      }
+    } catch (e: unknown) {
+      if (ctx.alertError) {
+        ctx.alertError("Failed to import build: " + e);
+      }
+    }
+  };
+
+  const addBuildManual = async (name: string, assetUrl: string) => {
+    try {
+      await invoke("add_version_manual", { name, assetUrl });
+      await fetchVersions();
+      if (ctx.alertSuccess) {
+        ctx.alertSuccess("Added build " + name);
+      }
+    } catch (e: unknown) {
+      if (ctx.alertError) {
+        ctx.alertError("Failed to add build: " + e);
+      }
+    }
+  };
+
   const fetchVersions = async () => {
     const versions: Versions = await invoke("get_versions");
     setVersions(versions.versions);
@@ -196,10 +231,10 @@ export default function GameBuildsTab({
         <Button
           icon="plus"
           iconLeft={true}
-          text="Add Version"
-          tooltip="Add a new version"
+          text="Add Build"
+          tooltip="Add a new build from a manifest or asset URL"
           variant="success"
-          onClick={() => {}}
+          onClick={() => setShowAddBuildModal(true)}
         />
         <div className="p-2 ms-auto"></div>
         <Button
@@ -264,6 +299,12 @@ export default function GameBuildsTab({
             );
           }
         }}
+      />
+      <AddBuildModal
+        show={showAddBuildModal}
+        setShow={setShowAddBuildModal}
+        onImport={importBuild}
+        onManualAdd={addBuildManual}
       />
     </>
   );

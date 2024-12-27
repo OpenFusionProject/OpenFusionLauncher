@@ -184,7 +184,7 @@ export default function EditServerModal({
               </Form.Group>
             </Tab>
             <Tab eventKey={TAB_ENDPOINT} title="Endpoint Server">
-            <Form.Group className="mb-3 px-3" controlId="editServerEndpoint">
+              <Form.Group className="mb-3 px-3" controlId="editServerEndpoint">
                 <Form.Label>API Host</Form.Label>
                 <Form.Control
                   type="text"
