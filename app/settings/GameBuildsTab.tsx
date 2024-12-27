@@ -239,6 +239,7 @@ export default function GameBuildsTab({
         <div className="p-2 ms-auto"></div>
         <Button
           icon="trash"
+          iconLeft={true}
           text="Delete All Offline"
           tooltip="Delete all offline caches"
           variant="danger"
@@ -255,6 +256,7 @@ export default function GameBuildsTab({
         />
         <Button
           icon="trash"
+          iconLeft={true}
           text="Clear All Game"
           tooltip="Clear all game caches"
           variant="danger"

@@ -11,6 +11,7 @@ import { Tab, Tabs } from "react-bootstrap";
 import LauncherPage from "@/components/LauncherPage";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import { getTheme } from "@/app/util";
+import AuthenticationTab from "./AuthenticationTab";
 
 const TAB_LAUNCHER_SETTINGS = "launcher-settings";
 const TAB_GAME_SETTINGS = "game-settings";
@@ -157,7 +158,7 @@ export default function SettingsPage() {
               </>
             }
           >
-            <h1>benis 4</h1>
+            <AuthenticationTab active={tab == TAB_AUTHENTICATION} />
           </Tab>
         </Tabs>
       </LauncherPage>
