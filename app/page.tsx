@@ -238,10 +238,6 @@ export default function Home() {
       await initialFetch();
       await getCurrentWindow().show();
       await getCurrentWindow().setFocus();
-      alertSuccess("Test");
-      alertInfo("hehe dong");
-      alertError("bad thing happen");
-      alertSuccess("good thing happen!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     } catch (e: unknown) {
       await getCurrentWindow().show();
       alertError("Error during init (" + e + ")");
