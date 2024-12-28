@@ -64,7 +64,7 @@ function ListEntry({
                 title={server.description}
               />
             ) : (
-              <h3>{server.description}</h3>
+              <h3 className="mb-0">{server.description}</h3>
             )}
             <small className="text-muted">{server.endpoint}</small>
           </div>
