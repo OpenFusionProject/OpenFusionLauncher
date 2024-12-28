@@ -2,7 +2,7 @@ import _Toast from "react-bootstrap/Toast";
 import { useState } from "react";
 import { open } from "@tauri-apps/plugin-shell";
 import { Alert } from "@/app/types";
-import { variantToLabel } from "@/app/util";
+import { getHostnameFromLink, variantToLabel } from "@/app/util";
 import Button from "./Button";
 
 export default function Toast({ alert }: { alert: Alert }) {
@@ -28,7 +28,8 @@ export default function Toast({ alert }: { alert: Alert }) {
             onClick={() => open(alert.link!)}
             variant="success"
             icon="arrow-up-right-from-square"
-            text="Open on GitHub"
+            text={getHostnameFromLink(alert.link)}
+            tooltip={alert.link}
           />
         )}
       </_Toast.Body>

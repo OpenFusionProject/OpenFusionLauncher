@@ -65,3 +65,8 @@ export function getBackgroundImageStyle(imageUrl?: string) {
     backgroundImage: imageUrl ? `url(${imageUrl})` : "none",
   };
 }
+
+export function getHostnameFromLink(link: string) {
+  const url = new URL(link);
+  return url.hostname;
+}
