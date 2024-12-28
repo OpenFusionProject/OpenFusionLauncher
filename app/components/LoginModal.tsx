@@ -201,7 +201,7 @@ export default function LoginModal({
   };
 
   return (
-    <Modal show={show} onHide={onClose} centered={true} size="lg">
+    <Modal show={show && !!server} onHide={onClose} centered={true} size="lg">
       <Form
         onSubmit={(e) => {
           e.preventDefault();

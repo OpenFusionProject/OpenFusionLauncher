@@ -6,10 +6,6 @@ import Button from "@/components/Button";
 import { ServerEntry, Servers } from "@/app/types";
 import AuthenticationList from "./AuthenticationList";
 
-const findServerByUuid = (servers: ServerEntry[], uuid: string) => {
-  return servers.find((server) => server.uuid == uuid);
-};
-
 export default function AuthenticationTab({
   active,
 } : {
@@ -24,23 +20,10 @@ export default function AuthenticationTab({
     setServers(servers.servers);
   };
 
-  const logOut = async (uuid?: string) => {
-    try {
-      await invoke("log_out", { uuid });
-      await fetchServers();
-      if (ctx.alertSuccess) {
-        const txt = "Loged out of " + (uuid ? findServerByUuid(servers!, uuid)?.description : "all servers");
-        ctx.alertSuccess(txt);
-      }
-    } catch (e: unknown) {
-      if (ctx.alertError) {
-        ctx.alertError("Failed to log out: " + e);
-      }
-    }
-  };
-
   const logOutAll = () => {
-    logOut(undefined);
+    if (ctx.alertInfo) {
+      ctx.alertInfo("hehe dong");
+    }
   };
 
   useEffect(() => {
@@ -67,7 +50,7 @@ export default function AuthenticationTab({
           }}
         />
       </Stack>
-      <AuthenticationList servers={servers} logOut={logOut} />
+      <AuthenticationList servers={servers} />
     </>
   );
 }
