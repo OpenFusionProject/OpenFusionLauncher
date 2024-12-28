@@ -16,6 +16,7 @@ function ListEntry({
   server: ServerEntry;
 }) {
   const [logo, setLogo] = useState<string | undefined>(undefined);
+  const [buttonLoading, setButtonLoading] = useState(false);
   const [session, setSession] = useState<LoginSession | undefined | null>(
     undefined
   );
@@ -40,6 +41,7 @@ function ListEntry({
   };
 
   const logOut = async () => {
+    setButtonLoading(true);
     try {
       await invoke("do_logout", { serverUuid: server.uuid });
       if (ctx.alertSuccess) {
@@ -52,9 +54,11 @@ function ListEntry({
         ctx.alertError("Failed to log out: " + e);
       }
     }
+    setButtonLoading(false);
   };
 
   const doLogin = async (username: string, password: string) => {
+    setButtonLoading(true);
     try {
       await invoke("do_login", {
         serverUuid: server.uuid,
@@ -70,9 +74,11 @@ function ListEntry({
         ctx.alertError("Failed to login: " + e);
       }
     }
+    setButtonLoading(false);
   };
 
   const doRegister = async (username: string, password: string, email: string) => {
+    setButtonLoading(true);
     try {
       const res: RegistrationResult = await invoke("do_register", {
         serverUuid: server.uuid,
@@ -96,6 +102,7 @@ function ListEntry({
         ctx.alertError("Failed to register: " + e);
       }
     }
+    setButtonLoading(false);
   };
 
   useEffect(() => {
@@ -146,6 +153,7 @@ function ListEntry({
               <div className="text-end">
                 <small className="mb-1 d-block text-muted">not logged in</small>
                 <Button
+                  loading={buttonLoading}
                   icon="sign-in-alt"
                   text="Log In"
                   onClick={logIn}
@@ -159,6 +167,7 @@ function ListEntry({
                   <small className="text-muted">logged in as</small><h4 className="d-inline">{" " + session.username}</h4>
                 </span>
                 <Button
+                  loading={buttonLoading}
                   icon="sign-out-alt"
                   text="Log Out"
                   onClick={logOut}
