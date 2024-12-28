@@ -181,6 +181,10 @@ html, body {
     padding-right: 15px;
 }
 
+#auth-table table tr, #auth-table table td {
+    height: 120px;
+}
+
 .main-col {
     min-width: 720px;
 }

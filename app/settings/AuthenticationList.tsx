@@ -113,7 +113,7 @@ export default function AuthenticationList({
   logOut: (uuid: string) => void;
 }) {
   return (
-    <div className="table-responsive">
+    <div className="table-responsive" id="auth-table">
       <table className="table table-striped table-hover mb-0">
         <tbody className="align-middle">
           {!servers ? (
