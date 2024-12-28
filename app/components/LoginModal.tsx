@@ -137,13 +137,13 @@ function RequirementsTooltip({
 export default function LoginModal({
   server,
   show,
-  setShow,
+  onClose,
   onSubmitLogin,
   onSubmitRegister,
 }: {
   server?: ServerEntry;
   show: boolean;
-  setShow: (newShow: boolean) => void;
+  onClose: () => void;
   onSubmitLogin: (username: string, password: string) => void;
   onSubmitRegister: (username: string, password: string, email: string) => void;
 }) {
@@ -192,7 +192,7 @@ export default function LoginModal({
 
   const submitForm = () => {
     if (!canSubmit(tab)) return;
-    setShow(false);
+    onClose();
     if (tab === TAB_LOGIN) {
       onSubmitLogin(username, password);
     } else if (tab === TAB_REGISTER) {
@@ -201,7 +201,7 @@ export default function LoginModal({
   };
 
   return (
-    <Modal show={show} onHide={() => setShow(false)} centered={true} size="lg">
+    <Modal show={show} onHide={onClose} centered={true} size="lg">
       <Form
         onSubmit={(e) => {
           e.preventDefault();
@@ -320,7 +320,7 @@ export default function LoginModal({
         </Modal.Body>
         <Modal.Footer>
           <Button
-            onClick={() => setShow(false)}
+            onClick={onClose}
             variant="primary"
             text="Cancel"
           />

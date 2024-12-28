@@ -597,7 +597,7 @@ export default function Home() {
       <LoginModal
         server={getSelectedServer()}
         show={showLoginModal}
-        setShow={setShowLoginModal}
+        onClose={() => setShowLoginModal(false)}
         onSubmitLogin={(username, password) => {
           onLogin(getSelectedServer()!.uuid, username, password);
         }}
