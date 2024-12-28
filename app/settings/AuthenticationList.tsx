@@ -53,7 +53,7 @@ function ListEntry({
   };
   return (
     <tr>
-      <td colSpan={2} className="bg-blend" style={rowStyle}>
+      <td colSpan={2} className="bg-blend p-3" style={rowStyle}>
         <div className="d-flex justify-content-between align-items-center">
           <div className="font-monospace ps-3">
             {logo ? (
@@ -75,7 +75,7 @@ function ListEntry({
               aria-hidden="true"
             ></span>
           ) : session === null ? (
-            <div className="text-end pe-3 pb-3">
+            <div className="text-end">
               <small className="mb-1 d-block text-muted">not signed in</small>
               <Button
                 icon="sign-in-alt"
@@ -87,7 +87,7 @@ function ListEntry({
               />
             </div>
           ) : (
-            <div className="text-end pe-3 pb-3">
+            <div className="text-end">
               <span className="mb-1 d-block">
                 <small className="text-muted">signed in as</small>
                 <h4>{" " + session.username}</h4>
