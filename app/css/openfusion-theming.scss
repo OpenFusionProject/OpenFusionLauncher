@@ -114,6 +114,11 @@ $body-bg-dark: #000;
         border: 1px solid white;
     }
 
+    .bg-blend {
+        background-color: rgba($body-bg-dark, 0.5) !important;
+        background-blend-mode: darken;
+    }
+
     .opacity-on {
         opacity: 0.25;
     }
@@ -208,6 +213,11 @@ $body-bg-dark: #000;
         border: 1px solid $green;
     }
 
+    .bg-blend {
+        background-color: rgba($body-bg, 0.5) !important;
+        background-blend-mode: lighten;
+    }
+
     .opacity-on {
         opacity: 0.5;
     }
@@ -231,12 +241,12 @@ $body-bg-dark: #000;
 }
 
 #loading-screen {
-    color: #fff;
+    color: $body-bg;
     font-size: 24pt;
 }
 
 #loading-screen-bg {
-    background-color: #000;
+    background-color: $body-bg-dark;
     opacity: 0.5;
 }
 

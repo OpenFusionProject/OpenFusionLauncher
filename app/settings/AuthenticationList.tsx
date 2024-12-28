@@ -1,9 +1,116 @@
 import Button from "../components/Button";
-import { ServerEntry } from "@/app/types";
+import { LoginSession, ServerEntry } from "@/app/types";
+import {
+  getBackgroundImageStyle,
+  getBackgroundImageUrlForServer,
+  getLogoImageUrlForServer,
+} from "@/app/util";
+import { invoke } from "@tauri-apps/api/core";
+import { CSSProperties, useEffect, useState } from "react";
 
-export default function GameBuildsList({
+function ListEntry({
+  server,
+  signOut,
+}: {
+  server: ServerEntry;
+  signOut: (uuid: string) => void;
+}) {
+  const [logo, setLogo] = useState<string | undefined>(undefined);
+  const [session, setSession] = useState<LoginSession | undefined | null>(
+    undefined
+  );
+
+  useEffect(() => {
+    const loadSession = async () => {
+      try {
+        const session: LoginSession = await invoke("get_session", {
+          serverUuid: server.uuid,
+        });
+        setSession(session);
+      } catch (e) {
+        setSession(null);
+      }
+    };
+
+    const logoUrl = getLogoImageUrlForServer(server);
+    if (logoUrl) {
+      const img = new Image();
+      img.src = logoUrl;
+      img.onload = () => {
+        setLogo(logoUrl);
+      };
+    }
+
+    loadSession();
+  }, []);
+
+  const bgUrl = getBackgroundImageUrlForServer(server);
+  const rowStyle: CSSProperties = {
+    ...getBackgroundImageStyle(bgUrl),
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+  };
+  return (
+    <tr>
+      <td colSpan={2} className="bg-blend" style={rowStyle}>
+        <div className="d-flex justify-content-between align-items-center">
+          <div className="font-monospace ps-3">
+            {logo ? (
+              <img
+                src={logo}
+                height={60}
+                className="d-block"
+                title={server.description}
+              />
+            ) : (
+              <h3>{server.description}</h3>
+            )}
+            <small className="text-muted">{server.endpoint}</small>
+          </div>
+          {session === undefined ? (
+            <span
+              className="spinner-border spinner-border-lg mx-3"
+              role="status"
+              aria-hidden="true"
+            ></span>
+          ) : session === null ? (
+            <div className="text-end pe-3 pb-3">
+              <small className="mb-1 d-block text-muted">not signed in</small>
+              <Button
+                icon="sign-in-alt"
+                iconLeft
+                text="Sign In"
+                onClick={() => {}}
+                variant="success"
+                tooltip="Sign in"
+              />
+            </div>
+          ) : (
+            <div className="text-end pe-3 pb-3">
+              <span className="mb-1 d-block">
+                <small className="text-muted">signed in as</small>
+                <h4>{" " + session.username}</h4>
+              </span>
+              <Button
+                icon="sign-out-alt"
+                iconLeft
+                text="Sign Out"
+                onClick={() => signOut(server.uuid)}
+                variant="danger"
+                tooltip="Sign out"
+              />
+            </div>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+export default function AuthenticationList({
   servers,
-  signOut
+  signOut,
 }: {
   servers?: ServerEntry[];
   signOut: (uuid: string) => void;
@@ -24,43 +131,20 @@ export default function GameBuildsList({
             </tr>
           ) : servers.length == 0 ? (
             <tr>
-              <td colSpan={3}>You are not signed in to any servers.</td>
+              <td colSpan={3}>No servers available.</td>
             </tr>
           ) : (
-            servers.map(
-              (server) => {
-                return server.endpoint && (
-                  <tr key={server.uuid}>
-                    <td className="font-monospace ps-3">
-                      <h3>
-                        {server.description}
-                      </h3>
-                      <small className="text-muted">
-                        {server.endpoint}
-                      </small>
-                    </td>
-                    <td className="text-end pe-3 pb-3">
-                      <div className="mb-1">
-                        <small className="text-muted">
-                          signed in as
-                        </small>
-                        <h4>
-                          {" " + "TODOTODOTODO"}
-                        </h4>
-                      </div>
-                      <Button
-                        icon="sign-out-alt"
-                        iconLeft
-                        text="Sign Out"
-                        onClick={() => signOut(server.uuid)}
-                        variant="danger"
-                        tooltip="Sign out"
-                      />
-                    </td>
-                  </tr>
-                );
-              }
-            )
+            servers.map((server: ServerEntry) => {
+              return (
+                server.endpoint && (
+                  <ListEntry
+                    key={server.uuid}
+                    server={server}
+                    signOut={signOut}
+                  />
+                )
+              );
+            })
           )}
         </tbody>
       </table>

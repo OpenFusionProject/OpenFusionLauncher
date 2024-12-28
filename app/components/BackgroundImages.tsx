@@ -1,20 +1,6 @@
 import { useEffect } from "react";
 import { ServerEntry } from "@/app/types";
-import get_seed from "@/app/seed";
-
-const getBackgroundImageUrlForServer = (server?: ServerEntry) => {
-  if (server?.endpoint) {
-    // HACK: add the counter to the url as a parameter to prevent caching across launches
-    return "http://" + server.endpoint + "/launcher/background.png?seed=" + get_seed();
-  }
-  return undefined;
-};
-
-const getStyleForServer = (imageUrl: string | undefined) => {
-  return {
-    backgroundImage: imageUrl ? `url(${imageUrl})` : "none",
-  };
-};
+import { getBackgroundImageStyle, getBackgroundImageUrlForServer } from "@/app/util";
 
 export default function BackgroundImages({
   servers,
@@ -41,7 +27,7 @@ export default function BackgroundImages({
         const imageUrl = getBackgroundImageUrlForServer(server);
         const selected = server.uuid === selectedServer?.uuid;
         const className = selected ? "opacity-on" : "opacity-off";
-        const style = getStyleForServer(imageUrl);
+        const style = getBackgroundImageStyle(imageUrl);
         return (
           <div key={server.uuid} className={"background-image " + className} style={style} />
         );

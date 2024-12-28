@@ -3,16 +3,8 @@ import ofLogoDark from "@/app/img/of-dark.png";
 
 import { useEffect, useState } from "react";
 import { ServerEntry } from "@/app/types";
-import get_seed from "@/app/seed";
+import { getLogoImageUrlForServer } from "@/app/util";
 import NextImage from "next/image";
-
-const getLogoImageUrlForServer = (server?: ServerEntry) => {
-  if (server?.endpoint) {
-    // HACK: add the counter to the url as a parameter to prevent caching across launches
-    return "http://" + server.endpoint + "/launcher/logo.png?seed=" + get_seed();
-  }
-  return undefined;
-};
 
 export default function BackgroundImages({
   servers,

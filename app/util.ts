@@ -1,4 +1,5 @@
-import { Config } from "@/app/types";
+import { Config, ServerEntry } from "@/app/types";
+import get_seed from "@/app/seed";
 
 function getSystemTheme() {
   if (typeof window !== "undefined" && window.matchMedia) {
@@ -41,4 +42,26 @@ export function variantToLabel(variant: string) {
 
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function getLogoImageUrlForServer(server?: ServerEntry) {
+  if (server?.endpoint) {
+    // HACK: add the counter to the url as a parameter to prevent caching across launches
+    return "http://" + server.endpoint + "/launcher/logo.png?seed=" + get_seed();
+  }
+  return undefined;
+}
+
+export function getBackgroundImageUrlForServer(server?: ServerEntry) {
+  if (server?.endpoint) {
+    // HACK: add the counter to the url as a parameter to prevent caching across launches
+    return "http://" + server.endpoint + "/launcher/background.png?seed=" + get_seed();
+  }
+  return undefined;
+}
+
+export function getBackgroundImageStyle(imageUrl?: string) {
+  return {
+    backgroundImage: imageUrl ? `url(${imageUrl})` : "none",
+  };
 }
