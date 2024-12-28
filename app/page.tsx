@@ -90,9 +90,9 @@ export default function Home() {
     }
   }
 
-  const pushAlert = (variant: string, text: string) => {
+  const pushAlert = (variant: string, text: string, link?: string) => {
     const id = Math.floor(Math.random() * 1000000);
-    setAlerts((alerts) => [{ variant, text, id }, ...alerts]);
+    setAlerts((alerts) => [{ variant, text, id, link }, ...alerts]);
   };
 
   const alertWarning = (text: string) => {
@@ -103,8 +103,8 @@ export default function Home() {
     pushAlert("danger", text);
   };
 
-  const alertInfo = (text: string) => {
-    pushAlert("primary", text);
+  const alertInfo = (text: string, link?: string) => {
+    pushAlert("primary", text, link);
   };
 
   const alertSuccess = (text: string) => {
@@ -150,7 +150,7 @@ export default function Home() {
       const updateInfo: UpdateInfo | undefined = await invoke("check_for_update");
       if (updateInfo) {
         setUpdateAvailable(updateInfo);
-        alertInfo("Update available: " + updateInfo.version);
+        alertInfo("Update available: " + updateInfo.version, updateInfo.url);
       }
     } catch (e: unknown) {
       alertError("Failed to check for updates (" + e + ")");
@@ -301,7 +301,7 @@ export default function Home() {
       alertError("Failed to register (" + e + ")");
     }
     stopLoading("do_register");
-  }
+  };
 
   const onLogin = async (serverUuid: string, username: string, password: string) => {
     startLoading("do_login");
@@ -318,7 +318,7 @@ export default function Home() {
       stopLoading("do_login");
     }
     onConnect(serverUuid);
-  }
+  };
 
   const onConnect = async (serverUuid: string, versionUuid?: string) => {
     const server = servers.find((s) => s.uuid == serverUuid);

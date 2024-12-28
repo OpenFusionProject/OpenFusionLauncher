@@ -47,6 +47,7 @@ export type Config = {
 export type Alert = {
   variant: string;
   text: string;
+  link?: string;
   id: number;
 };
 
