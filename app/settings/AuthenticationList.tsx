@@ -10,10 +10,10 @@ import { CSSProperties, useEffect, useState } from "react";
 
 function ListEntry({
   server,
-  signOut,
+  logOut,
 }: {
   server: ServerEntry;
-  signOut: (uuid: string) => void;
+  logOut: (uuid: string) => void;
 }) {
   const [logo, setLogo] = useState<string | undefined>(undefined);
   const [session, setSession] = useState<LoginSession | undefined | null>(
@@ -76,29 +76,28 @@ function ListEntry({
             ></span>
           ) : session === null ? (
             <div className="text-end">
-              <small className="mb-1 d-block text-muted">not signed in</small>
+              <small className="mb-1 d-block text-muted">not logged in</small>
               <Button
                 icon="sign-in-alt"
                 iconLeft
-                text="Sign In"
+                text="Log In"
                 onClick={() => {}}
                 variant="success"
-                tooltip="Sign in"
+                tooltip="Log in"
               />
             </div>
           ) : (
             <div className="text-end">
               <span className="mb-1 d-block">
-                <small className="text-muted">signed in as</small>
-                <h4>{session.username}</h4>
+                <small className="text-muted">logged in as</small><h4 className="d-inline">{" " + session.username}</h4>
               </span>
               <Button
                 icon="sign-out-alt"
                 iconLeft
-                text="Sign Out"
-                onClick={() => signOut(server.uuid)}
+                text="Log Out"
+                onClick={() => logOut(server.uuid)}
                 variant="danger"
-                tooltip="Sign out"
+                tooltip="Log out"
               />
             </div>
           )}
@@ -110,10 +109,10 @@ function ListEntry({
 
 export default function AuthenticationList({
   servers,
-  signOut,
+  logOut,
 }: {
   servers?: ServerEntry[];
-  signOut: (uuid: string) => void;
+  logOut: (uuid: string) => void;
 }) {
   return (
     <div className="table-responsive">
@@ -140,7 +139,7 @@ export default function AuthenticationList({
                   <ListEntry
                     key={server.uuid}
                     server={server}
-                    signOut={signOut}
+                    logOut={logOut}
                   />
                 )
               );

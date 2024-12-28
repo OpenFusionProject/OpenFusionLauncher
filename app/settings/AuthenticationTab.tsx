@@ -24,23 +24,23 @@ export default function AuthenticationTab({
     setServers(servers.servers);
   };
 
-  const signOut = async (uuid?: string) => {
+  const logOut = async (uuid?: string) => {
     try {
-      await invoke("sign_out", { uuid });
+      await invoke("log_out", { uuid });
       await fetchServers();
       if (ctx.alertSuccess) {
-        const txt = "Signed out of " + (uuid ? findServerByUuid(servers!, uuid)?.description : "all servers");
+        const txt = "Loged out of " + (uuid ? findServerByUuid(servers!, uuid)?.description : "all servers");
         ctx.alertSuccess(txt);
       }
     } catch (e: unknown) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to sign out: " + e);
+        ctx.alertError("Failed to log out: " + e);
       }
     }
   };
 
-  const signOutAll = () => {
-    signOut(undefined);
+  const logOutAll = () => {
+    logOut(undefined);
   };
 
   useEffect(() => {
@@ -53,22 +53,22 @@ export default function AuthenticationTab({
         <Button
           icon="sign-out-alt"
           iconLeft
-          text="Sign Out All"
-          tooltip="Sign out of all game servers"
+          text="Log Out All"
+          tooltip="Log out of all game servers"
           variant="danger"
           onClick={() => {
             if (ctx.showConfirmationModal) {
               ctx.showConfirmationModal(
-                "Are you sure you want to sign out of all game servers?",
-                "Sign Out All",
+                "Are you sure you want to log out of all game servers?",
+                "Log Out All",
                 "danger",
-                signOutAll
+                logOutAll
               );
             }
           }}
         />
       </Stack>
-      <AuthenticationList servers={servers} signOut={signOut} />
+      <AuthenticationList servers={servers} logOut={logOut} />
     </>
   );
 }
