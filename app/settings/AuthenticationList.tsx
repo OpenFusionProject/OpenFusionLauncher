@@ -90,7 +90,7 @@ function ListEntry({
             <div className="text-end">
               <span className="mb-1 d-block">
                 <small className="text-muted">signed in as</small>
-                <h4>{" " + session.username}</h4>
+                <h4>{session.username}</h4>
               </span>
               <Button
                 icon="sign-out-alt"
