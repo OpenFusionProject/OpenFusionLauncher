@@ -20,18 +20,18 @@ function ListEntry({
     undefined
   );
 
-  useEffect(() => {
-    const loadSession = async () => {
-      try {
-        const session: LoginSession = await invoke("get_session", {
-          serverUuid: server.uuid,
-        });
-        setSession(session);
-      } catch (e) {
-        setSession(null);
-      }
-    };
+  const loadSession = async () => {
+    try {
+      const session: LoginSession = await invoke("get_session", {
+        serverUuid: server.uuid,
+      });
+      setSession(session);
+    } catch (e) {
+      setSession(null);
+    }
+  };
 
+  useEffect(() => {
     const logoUrl = getLogoImageUrlForServer(server);
     if (logoUrl) {
       const img = new Image();
@@ -79,7 +79,6 @@ function ListEntry({
               <small className="mb-1 d-block text-muted">not logged in</small>
               <Button
                 icon="sign-in-alt"
-                iconLeft
                 text="Log In"
                 onClick={() => {}}
                 variant="success"
@@ -93,7 +92,6 @@ function ListEntry({
               </span>
               <Button
                 icon="sign-out-alt"
-                iconLeft
                 text="Log Out"
                 onClick={() => logOut(server.uuid)}
                 variant="danger"

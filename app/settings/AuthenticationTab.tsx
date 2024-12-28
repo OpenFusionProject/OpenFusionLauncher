@@ -52,7 +52,6 @@ export default function AuthenticationTab({
       <Stack direction="horizontal" className="flex-row-reverse p-2" gap={2} id="game-builds-buttonstack">
         <Button
           icon="sign-out-alt"
-          iconLeft
           text="Log Out All"
           tooltip="Log out of all game servers"
           variant="danger"

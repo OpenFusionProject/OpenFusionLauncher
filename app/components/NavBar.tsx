@@ -15,7 +15,7 @@ export default function NavBar({
           <Button
             text="Back"
             icon="angle-double-left"
-            iconLeft={true}
+            iconLeft
             onClick={() => window.history.back()}
             tooltip="Back"
             variant="primary"
