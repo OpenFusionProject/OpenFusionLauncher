@@ -12,6 +12,7 @@ export default function AuthenticationTab({
   active: boolean;
 }) {
   const [servers, setServers] = useState<ServerEntry[] | undefined>(undefined);
+  const [refreshes, setRefreshes] = useState(0);
 
   const ctx = useContext(SettingsCtx);
 
@@ -24,6 +25,11 @@ export default function AuthenticationTab({
     if (ctx.alertInfo) {
       ctx.alertInfo("hehe dong");
     }
+  };
+
+  const refresh = async () => {
+    fetchServers();
+    setRefreshes((refreshes) => refreshes + 1);
   };
 
   useEffect(() => {
@@ -49,8 +55,16 @@ export default function AuthenticationTab({
             }
           }}
         />
+        {/* <div className="p-2 ms-auto"></div> */}
+        <Button
+          icon="rotate-right"
+          text="Refresh"
+          tooltip="Refresh logins"
+          variant="success"
+          onClick={refresh}
+        />
       </Stack>
-      <AuthenticationList servers={servers} />
+      <AuthenticationList servers={servers} refreshes={refreshes} />
     </>
   );
 }

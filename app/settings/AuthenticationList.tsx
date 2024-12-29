@@ -12,8 +12,10 @@ import LoginModal from "@/components/LoginModal";
 
 function ListEntry({
   server,
+  refreshes,
 }: {
   server: ServerEntry;
+  refreshes: number;
 }) {
   const [logo, setLogo] = useState<string | undefined>(undefined);
   const [buttonLoading, setButtonLoading] = useState(false);
@@ -118,6 +120,10 @@ function ListEntry({
     loadSession();
   }, []);
 
+  useEffect(() => {
+    loadSession();
+  }, [refreshes]);
+
   const bgUrl = getBackgroundImageUrlForServer(server);
   const rowStyle: CSSProperties = {
     ...getBackgroundImageStyle(bgUrl),
@@ -192,8 +198,10 @@ function ListEntry({
 
 export default function AuthenticationList({
   servers,
+  refreshes,
 }: {
   servers?: ServerEntry[];
+  refreshes: number;
 }) {
   return (
     <div className="table-responsive" id="auth-table">
@@ -220,6 +228,7 @@ export default function AuthenticationList({
                   <ListEntry
                     key={server.uuid}
                     server={server}
+                    refreshes={refreshes}
                   />
                 )
               );
