@@ -18,7 +18,8 @@ function ListEntry({
   refreshes: number;
 }) {
   const [logo, setLogo] = useState<string | undefined>(undefined);
-  const [buttonLoading, setButtonLoading] = useState(false);
+  const [offline, setOffline] = useState<boolean | undefined>(undefined);
+  const [buttonLoading, setButtonLoading] = useState<boolean>(false);
   const [session, setSession] = useState<LoginSession | undefined | null>(
     undefined
   );
@@ -27,7 +28,17 @@ function ListEntry({
   const ctx = useContext(SettingsCtx);
 
   const loadSession = async () => {
+    setOffline(undefined);
     setSession(undefined);
+    const endpoint = "http://" + server.endpoint!;
+    const live: boolean = await invoke("live_check", { url: endpoint });
+    if (!live) {
+      setOffline(true);
+      setSession(null);
+      return;
+    }
+    setOffline(false);
+
     try {
       const session: LoginSession = await invoke("get_session", {
         serverUuid: server.uuid,
@@ -148,6 +159,7 @@ function ListEntry({
                 <h3 className="mb-0">{server.description}</h3>
               )}
               <small className="text-muted">{server.endpoint}</small>
+              {offline !== undefined && <small className={"text-" + (offline! ? "danger" : "success")}>{" " + (offline! ? "offline" : "online")}</small>}
             </div>
             {session === undefined ? (
               <span
@@ -155,7 +167,7 @@ function ListEntry({
                 role="status"
                 aria-hidden="true"
               ></span>
-            ) : session === null ? (
+            ) : offline === true ? null : session === null ? (
               <div className="text-end">
                 <small className="mb-1 d-block text-muted">not logged in</small>
                 <Button

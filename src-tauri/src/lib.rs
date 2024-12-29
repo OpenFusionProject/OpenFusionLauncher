@@ -647,6 +647,12 @@ async fn reload_state(app_handle: tauri::AppHandle) -> bool {
 }
 
 #[tauri::command]
+async fn live_check(url: String) -> bool {
+    debug!("live_check {}", url);
+    util::do_live_check(&url).await
+}
+
+#[tauri::command]
 async fn get_info_for_server(
     app_handle: tauri::AppHandle,
     uuid: Uuid,
@@ -935,6 +941,7 @@ pub fn run() {
             delete_server,
             import_version,
             add_version_manual,
+            live_check,
             get_info_for_server,
             get_announcements_for_server,
             get_versions_for_server,

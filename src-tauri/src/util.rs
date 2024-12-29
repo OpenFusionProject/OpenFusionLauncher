@@ -161,6 +161,15 @@ pub(crate) fn import_versions(to_import: Vec<Version>) -> Result<Vec<Version>> {
     Ok(versions)
 }
 
+pub(crate) async fn do_live_check(url: &str) -> bool {
+    let client = get_http_client();
+    let Ok(res) = client.get(url).send().await else {
+        return false;
+    };
+    let status = res.status();
+    status.is_success()
+}
+
 pub(crate) async fn do_simple_get(url: &str) -> Result<String> {
     debug!("=> GET {}", url);
     let response = get_http_client().get(url).send().await?;
