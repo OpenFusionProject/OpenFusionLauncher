@@ -23,3 +23,7 @@ img {
 button > i {
     pointer-events: none;
 }
+
+.tt {
+    pointer-events: all !important;
+}

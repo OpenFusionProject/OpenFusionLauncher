@@ -135,7 +135,7 @@ function ListEntry({
                 <img
                   src={logo}
                   height={60}
-                  className="d-block"
+                  className="d-block tt"
                   title={server.description}
                 />
               ) : (
