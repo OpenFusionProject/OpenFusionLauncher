@@ -31,6 +31,7 @@ html, body {
 .launcher-page-content {
     width: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .loading-screen-component {

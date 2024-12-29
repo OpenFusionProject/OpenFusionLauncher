@@ -43,8 +43,8 @@ $body-bg-dark: #000;
     }
 
     #launcher-page-settings {
-        background-image: url("../img/modal-bg-dark.png");
-            background-repeat: repeat;
+        background-image: url("../img/modal-footer-bg-dark.png");
+        background-repeat: repeat;
     }
 
     #game-builds-buttonstack {
@@ -69,6 +69,8 @@ $body-bg-dark: #000;
             #90d1e4 #90d1e4 #091a23;
         --bs-nav-tabs-link-hover-border-color:
             #90d1e4 #90d1e4 #90d1e4;
+        background-image: url("../img/modal-bg-dark.png");
+        background-repeat: repeat;
     }
     
     .nav button {
@@ -136,6 +138,11 @@ $body-bg-dark: #000;
 
     .server-landing img {
         border-right: 1px solid #90d1e4;
+    }
+
+    #settings-column {
+        background-image: url("../img/modal-bg-dark.png");
+        background-repeat: repeat;
     }
 }
 

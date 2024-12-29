@@ -12,6 +12,7 @@ import LauncherPage from "@/components/LauncherPage";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import { getTheme } from "@/app/util";
 import AuthenticationTab from "./AuthenticationTab";
+import LauncherSettingsTab from "./LauncherSettingsTab";
 
 const TAB_LAUNCHER_SETTINGS = "launcher-settings";
 const TAB_GAME_SETTINGS = "game-settings";
@@ -128,7 +129,10 @@ export default function SettingsPage() {
               </>
             }
           >
-            <h1>benis</h1>
+            <LauncherSettingsTab
+              active={tab == TAB_LAUNCHER_SETTINGS}
+              currentSettings={config?.launcher}
+            />
           </Tab>
           <Tab
             eventKey={TAB_GAME_SETTINGS}
