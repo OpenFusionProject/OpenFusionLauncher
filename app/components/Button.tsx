@@ -11,7 +11,7 @@ export default function Button({
 }: {
   onClick: () => void;
   enabled?: boolean;
-  variant: string;
+  variant?: string;
   icon?: string;
   iconLeft?: boolean;
   tooltip?: string;
@@ -19,12 +19,13 @@ export default function Button({
   loading?: boolean;
   className?: string;
 }) {
+  const actualVariant = variant ?? "primary";
   const actuallyEnabled = (enabled ?? true) && !loading;
   const tooltipText = tooltip ?? text?.trim(); 
   return (
     <button
       type="button"
-      className={(className ? (className + " ") : "") + "btn px-3 btn-" + variant + (actuallyEnabled ? "" : " disabled")}
+      className={(className ? (className + " ") : "") + "btn px-3 btn-" + actualVariant + (actuallyEnabled ? "" : " disabled")}
       data-bs-toggle="tooltip"
       data-bs-placement="top"
       disabled={!actuallyEnabled}

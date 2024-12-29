@@ -163,6 +163,26 @@ async fn do_login(
 }
 
 #[tauri::command]
+async fn do_logout(app_handle: tauri::AppHandle, server_uuid: Option<Uuid>) -> CommandResult<()> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let mut state = state.lock().await;
+        match server_uuid {
+            Some(uuid) => {
+                state.tokens.remove_token(uuid);
+            }
+            None => {
+                state.tokens.clear();
+            }
+        }
+        state.save();
+        Ok(())
+    };
+    debug!("do_logout");
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
 async fn get_session(app_handle: tauri::AppHandle, server_uuid: Uuid) -> CommandResult<Session> {
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
@@ -949,6 +969,7 @@ pub fn run() {
             import_from_openfusionclient,
             do_register,
             do_login,
+            do_logout,
             get_session,
             prep_launch,
             do_launch,

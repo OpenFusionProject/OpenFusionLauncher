@@ -589,4 +589,12 @@ impl Tokens {
     pub fn get_token(&self, server_uuid: Uuid) -> Option<&str> {
         self.tokens.get(&server_uuid).map(|t| t.as_str())
     }
+
+    pub fn remove_token(&mut self, server_uuid: Uuid) {
+        self.tokens.remove(&server_uuid);
+    }
+
+    pub fn clear(&mut self) {
+        self.tokens.clear();
+    }
 }

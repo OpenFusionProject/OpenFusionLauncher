@@ -21,9 +21,17 @@ export default function AuthenticationTab({
     setServers(servers.servers);
   };
 
-  const logOutAll = () => {
-    if (ctx.alertInfo) {
-      ctx.alertInfo("hehe dong");
+  const logOutAll = async () => {
+    try {
+      await invoke("do_logout");
+      if (ctx.alertSuccess) {
+        ctx.alertSuccess("Logged out of all game servers");
+      }
+      refresh();
+    } catch (e) {
+      if (ctx.alertError) {
+        ctx.alertError("Failed to log out of all game servers: " + e);
+      }
     }
   };
 
@@ -40,6 +48,14 @@ export default function AuthenticationTab({
     <>
       <Stack direction="horizontal" className="flex-row-reverse p-2" gap={2} id="game-builds-buttonstack">
         <Button
+          icon="rotate-right"
+          text="Refresh"
+          tooltip="Refresh logins"
+          variant="primary"
+          onClick={refresh}
+        />
+        {/* <div className="p-2 ms-auto"></div> */}
+        <Button
           icon="sign-out-alt"
           text="Log Out All"
           tooltip="Log out of all game servers"
@@ -54,14 +70,6 @@ export default function AuthenticationTab({
               );
             }
           }}
-        />
-        {/* <div className="p-2 ms-auto"></div> */}
-        <Button
-          icon="rotate-right"
-          text="Refresh"
-          tooltip="Refresh logins"
-          variant="success"
-          onClick={refresh}
         />
       </Stack>
       <AuthenticationList servers={servers} refreshes={refreshes} />
