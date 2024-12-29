@@ -1,6 +1,7 @@
 import { LauncherSettings } from "@/app/types";
 import { useEffect, useState } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
+import SettingControl from "./SettingControl";
 
 export default function LauncherSettingsTab({
   active,
@@ -25,9 +26,19 @@ export default function LauncherSettingsTab({
         <Col xs={12} sm={10} md={8} id="settings-column" className="primary my-5 p-3 rounded border border-primary">
           <h2>Launcher Settings</h2>
           <hr className="border-primary" />
-          <span>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio molestiae praesentium obcaecati corporis ipsum eligendi. Nobis asperiores dolores velit modi eum esse sint porro eligendi numquam, itaque fugiat ducimus ex?
-          </span>
+          <Form>
+            <SettingControl
+              id="check_for_updates"
+              name="Check for launcher updates on launch"
+              options={[
+                { value: false, label: "No" },
+                { value: true, label: "Yes" },
+              ]}
+              defaultValue={true}
+              value={settings?.check_for_updates}
+              onChange={(value) => setSettings({ ...settings!, check_for_updates: value })}
+            />
+          </Form>
           <hr className="border-primary" />
           <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(settings, null, 4)} readOnly />
         </Col>

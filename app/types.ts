@@ -115,3 +115,9 @@ export type UpdateInfo = {
   version: string;
   url: string;
 };
+
+export type SettingsOption = {
+  label: string;
+  description?: string;
+  value: any | undefined;
+};
