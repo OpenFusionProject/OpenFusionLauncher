@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Alert, Config, LoadingTask, SettingsContext } from "@/app/types";
+import { Alert, Config, LauncherSettings, LoadingTask, SettingsContext } from "@/app/types";
 import { SettingsCtx } from "@/app/contexts";
 import Toasts from "@/components/Toasts";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -85,7 +85,7 @@ export default function SettingsPage() {
     const theme = getTheme(config);
     document.documentElement.setAttribute("data-bs-theme", theme);
     setConfig(config);
-  }
+  };
 
   const doInit = async () => {
     try {
@@ -95,7 +95,11 @@ export default function SettingsPage() {
     } catch (e) {
       alertError("Error during init: " + e);
     }
-  }
+  };
+
+  const updateLauncherSettings = (newSettings: LauncherSettings) => {
+    setConfig({ ...config!, launcher: newSettings });
+  };
 
   useEffect(() => {
     doInit();
@@ -132,6 +136,7 @@ export default function SettingsPage() {
             <LauncherSettingsTab
               active={tab == TAB_LAUNCHER_SETTINGS}
               currentSettings={config?.launcher}
+              updateSettings={updateLauncherSettings}
             />
           </Tab>
           <Tab
