@@ -11,16 +11,22 @@ export default function LauncherSettingsTab({
 }: {
   active: boolean;
   currentSettings?: LauncherSettings;
-  updateSettings: (newSettings: LauncherSettings) => void;
+  updateSettings: (newSettings: LauncherSettings) => Promise<void>;
 }) {
-
   const [settings, setSettings] = useState<LauncherSettings | undefined>(undefined);
+  const [applying, setApplying] = useState<boolean>(false);
 
   useEffect(() => {
     if (currentSettings) {
       setSettings(currentSettings);
     }
   }, [active, currentSettings]);
+
+  const applySettings = async () => {
+    setApplying(true);
+    await updateSettings(settings!);
+    setApplying(false);
+  };
 
   return (
     <Container fluid id="settings-container" className="bg-footer">
@@ -36,12 +42,13 @@ export default function LauncherSettingsTab({
             variant="danger"
             onClick={() => setSettings(currentSettings)} />
           <Button
+            loading={applying}
             icon="check"
             className="d-inline-block float-end"
             enabled={JSON.stringify(currentSettings) !== JSON.stringify(settings)}
             text="Apply"
             variant="success"
-            onClick={() => updateSettings(settings!)} />
+            onClick={() => applySettings()} />
           <hr className="border-primary" />
           <Form>
             <SettingControl

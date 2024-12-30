@@ -905,6 +905,16 @@ async fn get_config(app_handle: tauri::AppHandle) -> Config {
 }
 
 #[tauri::command]
+async fn update_config(app_handle: tauri::AppHandle, config: Config) -> CommandResult<()> {
+    debug!("update_config");
+    let state = app_handle.state::<Mutex<AppState>>();
+    let mut state = state.lock().await;
+    state.config = config;
+    state.save();
+    Ok(())
+}
+
+#[tauri::command]
 async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
     debug!("check_for_update");
     let internal = async {
@@ -956,6 +966,7 @@ pub fn run() {
             get_versions,
             get_servers,
             get_config,
+            update_config,
             add_server,
             update_server,
             delete_server,

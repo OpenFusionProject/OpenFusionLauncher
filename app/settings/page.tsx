@@ -98,16 +98,24 @@ export default function SettingsPage() {
     }
   };
 
-  const updateLauncherSettings = (newSettings: LauncherSettings) => {
-    const newConfig = { ...config!, launcher: newSettings };
-    const theme = getTheme(newConfig);
-    document.documentElement.setAttribute("data-bs-theme", theme);
-    setConfig(newConfig);
+  const saveConfig = async (config: Config) => {
+    try {
+      await invoke("update_config", { config: config });
+      await syncConfig();
+      alertSuccess("Changes applied successfully");
+    } catch (e) {
+      alertError("Error updating config: " + e);
+    }
   };
 
-  const updateGameSettings = (newSettings: GameSettings) => {
+  const updateLauncherSettings = async (newSettings: LauncherSettings) => {
+    const newConfig = { ...config!, launcher: newSettings };
+    await saveConfig(newConfig);
+  };
+
+  const updateGameSettings = async (newSettings: GameSettings) => {
     const newConfig = { ...config!, game: newSettings };
-    setConfig(newConfig);
+    await saveConfig(newConfig);
   };
 
   useEffect(() => {

@@ -11,16 +11,22 @@ export default function GameSettingsTab({
 }: {
   active: boolean;
   currentSettings?: GameSettings;
-  updateSettings: (newSettings: GameSettings) => void;
+  updateSettings: (newSettings: GameSettings) => Promise<void>;
 }) {
-
   const [settings, setSettings] = useState<GameSettings | undefined>(undefined);
+  const [applying, setApplying] = useState<boolean>(false);
 
   useEffect(() => {
     if (currentSettings) {
       setSettings(currentSettings);
     }
   }, [active, currentSettings]);
+
+  const applySettings = async () => {
+    setApplying(true);
+    await updateSettings(settings!);
+    setApplying(false);
+  };
 
   return (
     <Container fluid id="settings-container" className="bg-footer">
@@ -36,12 +42,13 @@ export default function GameSettingsTab({
             variant="danger"
             onClick={() => setSettings(currentSettings)} />
           <Button
+            loading={applying}
             icon="check"
             className="d-inline-block float-end"
             enabled={JSON.stringify(currentSettings) !== JSON.stringify(settings)}
             text="Apply"
             variant="success"
-            onClick={() => updateSettings(settings!)} />
+            onClick={() => applySettings()} />
           <hr className="border-primary" />
           <Form>
             <SettingControl
@@ -66,9 +73,9 @@ export default function GameSettingsTab({
               onChange={(value) => setSettings({ ...settings!, launch_command: (value === "" ? undefined : value) })}
             />
           </Form>
-          <hr className="border-primary" />
+          {/* <hr className="border-primary" />
           <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(currentSettings, null, 4)} readOnly />
-          <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(settings, null, 4)} readOnly />
+          <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(settings, null, 4)} readOnly /> */}
         </Col>
         <Col />
       </Row>
