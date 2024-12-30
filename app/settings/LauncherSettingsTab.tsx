@@ -50,7 +50,7 @@ export default function LauncherSettingsTab({
             variant="success"
             onClick={() => applySettings()} />
           <hr className="border-primary" />
-          <Form>
+          {settings && <Form>
             <SettingControl
               id="theme"
               name="Launcher Theme"
@@ -127,7 +127,7 @@ export default function LauncherSettingsTab({
               value={settings?.offline_cache_path}
               onChange={(value) => setSettings({ ...settings!, offline_cache_path: value })}
             />
-          </Form>
+          </Form>}
           <hr className="border-primary" />
           <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(currentSettings, null, 4)} readOnly />
           <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(settings, null, 4)} readOnly />

@@ -1,10 +1,9 @@
 import { WindowSize } from "@/app/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 
 const DEFAULT_WINDOW_WIDTH = 1280;
 const DEFAULT_WINDOW_HEIGHT = 720;
-const DEFAULT_WINDOW_SIZE: WindowSize = { width: DEFAULT_WINDOW_WIDTH, height: DEFAULT_WINDOW_HEIGHT };
 
 const validateSize = (value: string, def: number) => {
   if (value === "") return def;
@@ -29,6 +28,21 @@ export default function SettingControlWindowSize({
 }) {
   const [width, setWidth] = useState<string>("");
   const [height, setHeight] = useState<string>("");
+
+  useEffect(() => {
+    if (!value) {
+      setWidth("");
+      setHeight("");
+      return;
+    }
+
+    if (validateSize(width, DEFAULT_WINDOW_WIDTH) !== value.width) {
+      setWidth(value.width.toString());
+    }
+    if (validateSize(height, DEFAULT_WINDOW_HEIGHT) !== value.height) {
+      setHeight(value.height.toString());
+    }
+  }, [value]);
 
   const updateOuter = (width: string, height: string) => {
     if (width === "" && height === "") {
@@ -59,7 +73,7 @@ export default function SettingControlWindowSize({
       <div className="d-flex">
         <Form.Control
           type="text"
-          defaultValue={value?.width ?? ""}
+          value={width}
           className={modified ? "border-success" : ""}
           placeholder={DEFAULT_WINDOW_WIDTH.toString()}
           onChange={(e) => onWidthChange(e.target.value)}
@@ -68,7 +82,7 @@ export default function SettingControlWindowSize({
         <strong className="mx-2 d-flex align-items-center">X</strong>
         <Form.Control
           type="text"
-          defaultValue={value?.height ?? ""}
+          value={height}
           className={modified ? "border-success" : ""}
           placeholder={DEFAULT_WINDOW_HEIGHT.toString()}
           onChange={(e) => onHeightChange(e.target.value)}

@@ -51,7 +51,7 @@ export default function GameSettingsTab({
             variant="success"
             onClick={() => applySettings()} />
           <hr className="border-primary" />
-          <Form>
+          {settings && <Form>
             <SettingControl
               id="graphics_api"
               name="Graphics API"
@@ -76,11 +76,11 @@ export default function GameSettingsTab({
             <SettingControlWindowSize
               id="window_size"
               name="Window Size"
-              modified={settings?.window_size !== currentSettings?.window_size}
+              modified={settings.window_size?.width !== currentSettings?.window_size?.width || settings.window_size?.height !== currentSettings?.window_size?.height}
               value={settings?.window_size}
               onChange={(value: WindowSize | undefined) => setSettings({ ...settings!, window_size: value })}
             />
-          </Form>
+          </Form>}
           <hr className="border-primary" />
           <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(currentSettings, null, 4)} readOnly />
           <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(settings, null, 4)} readOnly />
