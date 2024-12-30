@@ -1,6 +1,5 @@
-import "bootstrap/scss/bootstrap.scss";
 import "@fortawesome/fontawesome-free/css/all.css";
-
+import "./css/bootstrap.scss";
 import "./css/openfusion-behavior.scss";
 import "./css/openfusion-layout.scss";
 import "./css/openfusion-theming.scss";
