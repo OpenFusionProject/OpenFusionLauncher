@@ -1,4 +1,4 @@
-import "bootstrap/dist/css/bootstrap.css"
+import "bootstrap/scss/bootstrap.scss";
 import "@fortawesome/fontawesome-free/css/all.css";
 
 import "./css/openfusion-behavior.scss";
