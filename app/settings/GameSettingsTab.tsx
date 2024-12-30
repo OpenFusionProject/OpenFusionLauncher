@@ -1,9 +1,10 @@
 import { GameSettings, WindowSize } from "@/app/types";
 import { useEffect, useState } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
-import SettingControl from "./SettingControl";
 import Button from "@/components/Button";
+import SettingControlDropdown from "./SettingControlDropdown";
 import SettingControlWindowSize from "./SettingControlWindowSize";
+import SettingControlText from "./SettingControlText";
 
 export default function GameSettingsTab({
   active,
@@ -52,7 +53,7 @@ export default function GameSettingsTab({
             onClick={() => applySettings()} />
           <hr className="border-primary" />
           {settings && <Form>
-            <SettingControl
+            <SettingControlDropdown
               id="graphics_api"
               name="Graphics API"
               options={[
@@ -65,12 +66,13 @@ export default function GameSettingsTab({
               value={settings?.graphics_api}
               onChange={(value) => setSettings({ ...settings!, graphics_api: value })}
             />
-            <SettingControl
+            <SettingControlText
               id="launch_command"
               name="Custom Launch Command"
               modified={settings?.launch_command !== currentSettings?.launch_command}
               value={settings?.launch_command}
-              defaultValue="{}"
+              placeholder="{}"
+              validator={(value) => value === "" || value.indexOf("{}") !== -1}
               onChange={(value) => setSettings({ ...settings!, launch_command: (value === "" ? undefined : value) })}
             />
             <SettingControlWindowSize

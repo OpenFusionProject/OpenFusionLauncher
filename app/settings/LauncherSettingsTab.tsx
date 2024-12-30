@@ -1,8 +1,9 @@
 import { LauncherSettings } from "@/app/types";
 import { useEffect, useState } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
-import SettingControl from "./SettingControl";
+import SettingControlDropdown from "./SettingControlDropdown";
 import Button from "@/components/Button";
+import SettingControlText from "./SettingControlText";
 
 export default function LauncherSettingsTab({
   active,
@@ -51,7 +52,7 @@ export default function LauncherSettingsTab({
             onClick={() => applySettings()} />
           <hr className="border-primary" />
           {settings && <Form>
-            <SettingControl
+            <SettingControlDropdown
               id="theme"
               name="Launcher Theme"
               options={[
@@ -64,7 +65,7 @@ export default function LauncherSettingsTab({
               value={settings?.theme}
               onChange={(value) => setSettings({ ...settings!, theme: value === "system" ? undefined : value })}
             />
-            <SettingControl
+            <SettingControlDropdown
               id="check_for_updates"
               name="Check for launcher updates on launch"
               options={[
@@ -76,7 +77,7 @@ export default function LauncherSettingsTab({
               value={settings?.check_for_updates}
               onChange={(value) => setSettings({ ...settings!, check_for_updates: value === "true" })}
             />
-            <SettingControl
+            <SettingControlDropdown
               id="use_offline_caches"
               name="Use offline caches when downloaded"
               options={[
@@ -88,7 +89,7 @@ export default function LauncherSettingsTab({
               value={settings?.use_offline_caches}
               onChange={(value) => setSettings({ ...settings!, use_offline_caches: value === "true" })}
             />
-            <SettingControl
+            <SettingControlDropdown
               id="verify_offline_caches"
               name="Verify offline caches on launch"
               options={[
@@ -100,7 +101,7 @@ export default function LauncherSettingsTab({
               value={settings?.verify_offline_caches}
               onChange={(value) => setSettings({ ...settings!, verify_offline_caches: value === "true" })}
             />
-            <SettingControl
+            <SettingControlDropdown
               id="launch_behavior"
               name="Launch behavior"
               options={[
@@ -113,14 +114,14 @@ export default function LauncherSettingsTab({
               value={settings?.launch_behavior}
               onChange={(value) => setSettings({ ...settings!, launch_behavior: value })}
             />
-            <SettingControl
+            <SettingControlText
               id="game_cache_path"
               name="Game Cache Path"
               modified={settings?.game_cache_path !== currentSettings?.game_cache_path}
               value={settings?.game_cache_path}
               onChange={(value) => setSettings({ ...settings!, game_cache_path: value })}
             />
-            <SettingControl
+            <SettingControlText
               id="offline_cache_path"
               name="Offline Cache Path"
               modified={settings?.offline_cache_path !== currentSettings?.offline_cache_path}

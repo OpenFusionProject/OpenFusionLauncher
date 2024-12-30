@@ -1,6 +1,7 @@
 import { WindowSize } from "@/app/types";
 import { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
+import SettingControlBase from "./SettingControlBase";
 
 const DEFAULT_WINDOW_WIDTH = 1280;
 const DEFAULT_WINDOW_HEIGHT = 720;
@@ -68,8 +69,7 @@ export default function SettingControlWindowSize({
   };
 
   return (
-    <Form.Group controlId={"setting-control-" + id} className="mb-3">
-      <Form.Label>{name}</Form.Label>
+    <SettingControlBase id={id} name={name}>
       <div className="d-flex">
         <Form.Control
           type="text"
@@ -89,6 +89,6 @@ export default function SettingControlWindowSize({
           isInvalid={validateSize(height, DEFAULT_WINDOW_HEIGHT) === undefined}
         />
       </div>
-    </Form.Group>
+    </SettingControlBase>
   );
 }
