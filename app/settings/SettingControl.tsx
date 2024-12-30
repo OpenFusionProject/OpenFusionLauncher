@@ -14,7 +14,7 @@ export default function SettingControl({
   name?: string;
   options?: SettingsOption[];
   value?: any;
-  defaultValue: any;
+  defaultValue?: any;
   modified?: boolean;
   onChange: (value: any) => void;
 }) {
@@ -23,25 +23,29 @@ export default function SettingControl({
   return (
     <Form.Group controlId={"setting-control-" + id} className="mb-3">
       <Form.Label>{name}</Form.Label>
-      {settingsOptions.length > 0 ? <Form.Select
-        className={modified ? "border-success" : ""}
-        value={initialValue}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        {settingsOptions.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label + (option.description ? (": " + option.description) : "")}
-          </option>
-        ))}
-      </Form.Select>
-      :
-      <Form.Control
-        type="text"
-        className={modified ? "border-success" : ""}
-        defaultValue={value ?? ""}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={defaultValue}
-      />}
+      {settingsOptions.length > 0 ? (
+        <Form.Select
+          className={modified ? "border-success" : ""}
+          value={initialValue}
+          onChange={(e) => onChange(e.target.value)}
+        >
+          {settingsOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label +
+                (option.description ? " - " + option.description : "") +
+                (option.value === defaultValue ? " (default)" : "")}
+            </option>
+          ))}
+        </Form.Select>
+      ) : (
+        <Form.Control
+          type="text"
+          className={modified ? "border-success" : ""}
+          defaultValue={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={defaultValue}
+        />
+      )}
     </Form.Group>
   );
 }

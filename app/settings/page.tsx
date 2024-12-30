@@ -98,7 +98,10 @@ export default function SettingsPage() {
   };
 
   const updateLauncherSettings = (newSettings: LauncherSettings) => {
-    setConfig({ ...config!, launcher: newSettings });
+    const newConfig = { ...config!, launcher: newSettings };
+    const theme = getTheme(newConfig);
+    document.documentElement.setAttribute("data-bs-theme", theme);
+    setConfig(newConfig);
   };
 
   useEffect(() => {

@@ -36,7 +36,11 @@ export type Versions = {
 
 export type LauncherSettings = {
   check_for_updates: boolean;
+  use_offline_caches: boolean;
+  verify_offline_caches: boolean;
   launch_behavior: string;
+  game_cache_path: string;
+  offline_cache_path: string;
   theme?: string;
 };
 
