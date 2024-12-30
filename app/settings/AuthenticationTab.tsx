@@ -41,7 +41,9 @@ export default function AuthenticationTab({
   };
 
   useEffect(() => {
-    fetchServers();
+    if (active) {
+      fetchServers();
+    }
   }, [active]);
 
   return (
