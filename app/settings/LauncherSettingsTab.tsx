@@ -48,14 +48,14 @@ export default function LauncherSettingsTab({
               id="theme"
               name="Launcher Theme"
               options={[
-                { value: undefined, label: "Match system theme" },
+                { value: "system", label: "Match system theme" },
                 { value: "dexlabs_dark", label: "DexLabs Dark" },
                 { value: "dexlabs_light", label: "DexLabs Light" },
               ]}
-              defaultValue={undefined}
+              defaultValue={"system"}
               modified={settings?.theme !== currentSettings?.theme}
               value={settings?.theme}
-              onChange={(value) => setSettings({ ...settings!, theme: value })}
+              onChange={(value) => setSettings({ ...settings!, theme: value === "system" ? undefined : value })}
             />
             <SettingControl
               id="check_for_updates"
