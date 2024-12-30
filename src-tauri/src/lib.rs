@@ -910,6 +910,7 @@ async fn update_config(app_handle: tauri::AppHandle, config: Config) -> CommandR
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
     state.config = config;
+    state.write_config = true;
     state.save();
     Ok(())
 }
