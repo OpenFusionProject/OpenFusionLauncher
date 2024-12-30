@@ -44,8 +44,14 @@ export type LauncherSettings = {
   theme?: string;
 };
 
+export type GameSettings = {
+  graphics_api: string;
+  launch_command?: string;
+};
+
 export type Config = {
   launcher: LauncherSettings;
+  game: GameSettings;
 };
 
 export type Alert = {

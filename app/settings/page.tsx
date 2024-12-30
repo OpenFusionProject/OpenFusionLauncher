@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Alert, Config, LauncherSettings, LoadingTask, SettingsContext } from "@/app/types";
+import { Alert, Config, GameSettings, LauncherSettings, LoadingTask, SettingsContext } from "@/app/types";
 import { SettingsCtx } from "@/app/contexts";
 import Toasts from "@/components/Toasts";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -13,6 +13,7 @@ import ConfirmationModal from "@/components/ConfirmationModal";
 import { getTheme } from "@/app/util";
 import AuthenticationTab from "./AuthenticationTab";
 import LauncherSettingsTab from "./LauncherSettingsTab";
+import GameSettingsTab from "./GameSettingsTab";
 
 const TAB_LAUNCHER_SETTINGS = "launcher-settings";
 const TAB_GAME_SETTINGS = "game-settings";
@@ -104,6 +105,11 @@ export default function SettingsPage() {
     setConfig(newConfig);
   };
 
+  const updateGameSettings = (newSettings: GameSettings) => {
+    const newConfig = { ...config!, game: newSettings };
+    setConfig(newConfig);
+  };
+
   useEffect(() => {
     doInit();
   }, []);
@@ -150,7 +156,11 @@ export default function SettingsPage() {
               </>
             }
           >
-            <h1>benis 2</h1>
+            <GameSettingsTab
+              active={tab == TAB_GAME_SETTINGS}
+              currentSettings={config?.game}
+              updateSettings={updateGameSettings}
+            />
           </Tab>
           <Tab
             eventKey={TAB_GAME_BUILDS}
