@@ -128,9 +128,9 @@ export default function LauncherSettingsTab({
               onChange={(value) => setSettings({ ...settings!, offline_cache_path: value })}
             />
           </Form>
-          {/* <hr className="border-primary" />
+          <hr className="border-primary" />
           <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(currentSettings, null, 4)} readOnly />
-          <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(settings, null, 4)} readOnly /> */}
+          <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(settings, null, 4)} readOnly />
         </Col>
         <Col />
       </Row>

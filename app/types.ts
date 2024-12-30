@@ -44,8 +44,14 @@ export type LauncherSettings = {
   theme?: string;
 };
 
+export type WindowSize = {
+  width: number;
+  height: number;
+};
+
 export type GameSettings = {
   graphics_api: string;
+  window_size?: WindowSize;
   launch_command?: string;
 };
 

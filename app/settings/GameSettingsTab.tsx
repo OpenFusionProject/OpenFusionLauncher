@@ -1,8 +1,9 @@
-import { GameSettings } from "@/app/types";
+import { GameSettings, WindowSize } from "@/app/types";
 import { useEffect, useState } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import SettingControl from "./SettingControl";
 import Button from "@/components/Button";
+import SettingControlWindowSize from "./SettingControlWindowSize";
 
 export default function GameSettingsTab({
   active,
@@ -72,10 +73,17 @@ export default function GameSettingsTab({
               defaultValue="{}"
               onChange={(value) => setSettings({ ...settings!, launch_command: (value === "" ? undefined : value) })}
             />
+            <SettingControlWindowSize
+              id="window_size"
+              name="Window Size"
+              modified={settings?.window_size !== currentSettings?.window_size}
+              value={settings?.window_size}
+              onChange={(value: WindowSize | undefined) => setSettings({ ...settings!, window_size: value })}
+            />
           </Form>
-          {/* <hr className="border-primary" />
+          <hr className="border-primary" />
           <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(currentSettings, null, 4)} readOnly />
-          <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(settings, null, 4)} readOnly /> */}
+          <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(settings, null, 4)} readOnly />
         </Col>
         <Col />
       </Row>
