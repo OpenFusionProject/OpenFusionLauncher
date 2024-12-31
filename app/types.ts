@@ -104,7 +104,12 @@ export type SettingsContext = {
   alertWarning?: (text: string) => void;
   startLoading?: (id: string, text?: string) => void;
   stopLoading?: (id: string) => void;
-  showConfirmationModal?: (message: string, confirmText: string, confirmVariant: string, onConfirm: () => void) => void;
+  showConfirmationModal?: (
+    message: string,
+    confirmText: string,
+    confirmVariant: string,
+    onConfirm: () => void,
+  ) => void;
 };
 
 export type VersionCacheData = {

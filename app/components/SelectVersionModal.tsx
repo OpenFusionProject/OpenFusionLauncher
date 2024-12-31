@@ -9,7 +9,7 @@ import { ServerEntry, VersionEntry } from "@/app/types";
 
 const findVersion = (versions: VersionEntry[], uuid: string) => {
   return versions.find((version) => version.uuid == uuid);
-}
+};
 
 const getVersionsForServer = async (server: ServerEntry) => {
   if (!server.endpoint) {
@@ -33,7 +33,7 @@ const getLabelForVersion = (version: VersionEntry) => {
     return label;
   }
   return version.uuid;
-}
+};
 
 export default function SelectVersionModal({
   server,
@@ -64,7 +64,7 @@ export default function SelectVersionModal({
         console.error("Failed to fetch available versions: " + e);
         setAvailable([]);
       }
-    }
+    };
 
     setSelected(undefined);
     if (server) {
@@ -78,21 +78,24 @@ export default function SelectVersionModal({
         <Modal.Title>Select Game Version</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        The server <strong>{server?.description}</strong> supports multiple game versions. Please select a version to use.
+        The server <strong>{server?.description}</strong> supports multiple game
+        versions. Please select a version to use.
         <br />
         {available ? (
           <Form className="mt-2">
             {available.map((uuid) => {
               const version = findVersion(versions, uuid);
-              return version && (
-                <Form.Check
-                  key={version.uuid}
-                  type="radio"
-                  name="version"
-                  label={getLabelForVersion(version)}
-                  checked={selected === version.uuid}
-                  onChange={() => setSelected(version.uuid)}
-                />
+              return (
+                version && (
+                  <Form.Check
+                    key={version.uuid}
+                    type="radio"
+                    name="version"
+                    label={getLabelForVersion(version)}
+                    checked={selected === version.uuid}
+                    onChange={() => setSelected(version.uuid)}
+                  />
+                )
               );
             })}
           </Form>
@@ -107,11 +110,7 @@ export default function SelectVersionModal({
         )}
       </Modal.Body>
       <Modal.Footer>
-        <Button
-          onClick={() => doHide()}
-          variant="primary"
-          text="Cancel"
-        />
+        <Button onClick={() => doHide()} variant="primary" text="Cancel" />
         <Button
           onClick={() => {
             doHide();

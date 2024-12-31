@@ -6,11 +6,7 @@ import Button from "@/components/Button";
 import { ServerEntry, Servers } from "@/app/types";
 import AuthenticationList from "./AuthenticationList";
 
-export default function AuthenticationTab({
-  active,
-} : {
-  active: boolean;
-}) {
+export default function AuthenticationTab({ active }: { active: boolean }) {
   const [servers, setServers] = useState<ServerEntry[] | undefined>(undefined);
   const [refreshes, setRefreshes] = useState(0);
 
@@ -48,7 +44,12 @@ export default function AuthenticationTab({
 
   return (
     <>
-      <Stack direction="horizontal" className="flex-row-reverse p-2" gap={2} id="game-builds-buttonstack">
+      <Stack
+        direction="horizontal"
+        className="flex-row-reverse p-2"
+        gap={2}
+        id="game-builds-buttonstack"
+      >
         <Button
           icon="rotate-right"
           text="Refresh"
@@ -68,7 +69,7 @@ export default function AuthenticationTab({
                 "Are you sure you want to log out of all game servers?",
                 "Log Out All",
                 "danger",
-                logOutAll
+                logOutAll,
               );
             }
           }}

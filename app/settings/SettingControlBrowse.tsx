@@ -2,7 +2,7 @@ import { Form } from "react-bootstrap";
 import SettingControlBase from "./SettingControlBase";
 import { useEffect, useState } from "react";
 import Button from "@/components/Button";
-import { open } from '@tauri-apps/plugin-dialog';
+import { open } from "@tauri-apps/plugin-dialog";
 
 export default function SettingControlBrowse({
   id,
@@ -47,10 +47,14 @@ export default function SettingControlBrowse({
     const result = await open({
       multiple: false,
       directory: isDirectory,
-      filters: isDirectory ? [] : [{
-        name: "File",
-        extensions: extensions ?? ["*"],
-      }],
+      filters: isDirectory
+        ? []
+        : [
+            {
+              name: "File",
+              extensions: extensions ?? ["*"],
+            },
+          ],
     });
     if (result) {
       onTextChange(result);
@@ -68,11 +72,7 @@ export default function SettingControlBrowse({
           placeholder={placeholder}
           isInvalid={validator ? !validator(text) : false}
         />
-        <Button
-          className="ms-3"
-          text="Browse..."
-          onClick={() => onBrowse()}
-        />
+        <Button className="ms-3" text="Browse..." onClick={() => onBrowse()} />
       </div>
     </SettingControlBase>
   );

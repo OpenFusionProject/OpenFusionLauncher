@@ -1,200 +1,202 @@
-html, body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    clear: both;
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  clear: both;
 }
 
 .nav-title {
-    text-align: center;
-    font-size: 1.5em;
-    font-weight: bold;
-    margin: 0;
-    padding: 0;
+  text-align: center;
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
 }
 
 .launcher-page {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    align-items: stretch;
-    align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  align-items: stretch;
+  align-content: stretch;
 }
 
 .launcher-page-header {
-    padding: 10px;
-    width: 100%;
-    z-index: 10;
+  padding: 10px;
+  width: 100%;
+  z-index: 10;
 }
 
 .launcher-page-content {
-    width: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .loading-screen-component {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .loading-screen-task {
-    width: 33%;
+  width: 33%;
 }
 
 .server-landing {
-    display: flex;
-    flex-direction: row;
-    height: 300px;
+  display: flex;
+  flex-direction: row;
+  height: 300px;
 }
 
 .server-landing img {
-    height: 100%;
+  height: 100%;
 }
 
 .server-landing .announcements {
-    font-size: 0.75em;
-    height: 100%;
-    display: inline-block;
-    text-wrap: wrap;
-    overflow-y: auto;
-    padding: 5px;
+  font-size: 0.75em;
+  height: 100%;
+  display: inline-block;
+  text-wrap: wrap;
+  overflow-y: auto;
+  padding: 5px;
 }
 
 .background-image {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    background-size: cover;
-    background-position: center;
-    transition: opacity 0.5s;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  transition: opacity 0.5s;
 }
 
 .logo-image-container {
-    width: 100%;
-    min-height: 256px;
-    display: flex;
-    justify-content: center;
+  width: 100%;
+  min-height: 256px;
+  display: flex;
+  justify-content: center;
 }
 
 .logo-image {
-    display: block;
-    margin: auto;
+  display: block;
+  margin: auto;
 }
 
 #loading-screen {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    text-align: center;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  text-align: center;
 }
 
 #of-intro-text {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 #of-intro-text p {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 #version-number-div {
-    position: absolute;
-    bottom: 4px;
-    right: 8px;
+  position: absolute;
+  bottom: 4px;
+  right: 8px;
 }
 
 #about-button-div {
-    position: fixed;
-    bottom: 4px;
-    right: 8px;
+  position: fixed;
+  bottom: 4px;
+  right: 8px;
 }
 
 #config-button-div {
-    position: fixed;
-    bottom: 4px;
-    left: 8px;
+  position: fixed;
+  bottom: 4px;
+  left: 8px;
 }
 
 #alerts {
-    position: fixed;
-    width: 100%;
-    margin: 0;
-    padding: 10px;
-    top: 0;
-    left: 0;
+  position: fixed;
+  width: 100%;
+  margin: 0;
+  padding: 10px;
+  top: 0;
+  left: 0;
 }
 
 .toast-container {
-    z-index: 2000;
+  z-index: 2000;
 }
 
 .toast {
-    font-size: 0.8em;
-    min-width: 220px;
-    max-width: 340px;
-    width: fit-content;
-    margin-left: auto;
+  font-size: 0.8em;
+  min-width: 220px;
+  max-width: 340px;
+  width: fit-content;
+  margin-left: auto;
 }
 
 #server-table {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 #server-table table {
-    table-layout: fixed;
-    width: 100%;
+  table-layout: fixed;
+  width: 100%;
 }
 
 #server-table .server-listing-entry {
-    vertical-align: middle;
+  vertical-align: middle;
 }
 
 #server-table table .name-column {
-    min-width: 1px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-left: 15px;
+  min-width: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 15px;
 }
 
 #server-table table .versions-column {
-    width: fit-content
+  width: fit-content;
 }
 
 #server-table table .status-column {
-    width: 150px;
-    white-space: nowrap;
-    padding-left: 15px;
-    padding-right: 15px;
+  width: 150px;
+  white-space: nowrap;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
-#auth-table table tr, #auth-table table td {
-    height: 120px;
+#auth-table table tr,
+#auth-table table td {
+  height: 120px;
 }
 
 .main-col {
-    min-width: 720px;
+  min-width: 720px;
 }
 
 .side-col {
-    // ensure this is half of the main-col width
-    min-width: 360px;
+  // ensure this is half of the main-col width
+  min-width: 360px;
 }
 
 .fps-input {
-    width: 80px;
+  width: 80px;
 }

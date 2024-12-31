@@ -13,13 +13,12 @@ export default function BackgroundImages({
   servers: ServerEntry[];
   selectedServer?: ServerEntry;
 }) {
-
   // map of server UUIDs to bools indicating whether the image is loaded
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
 
   const isImageLoaded = (server: ServerEntry) => {
     return loadedImages[server.uuid] || false;
-  }
+  };
 
   // Load images
   useEffect(() => {
@@ -39,11 +38,15 @@ export default function BackgroundImages({
     const imageUrl = getLogoImageUrlForServer(selectedServer)!;
     return (
       <div className="logo-image-container">
-        <img src={imageUrl} className="logo-image" alt={selectedServer.description + " Logo"} />
+        <img
+          src={imageUrl}
+          className="logo-image"
+          alt={selectedServer.description + " Logo"}
+        />
       </div>
-    )
+    );
   }
-  
+
   return (
     <>
       <NextImage
@@ -59,5 +62,5 @@ export default function BackgroundImages({
         width={256}
       />
     </>
-  )
+  );
 }

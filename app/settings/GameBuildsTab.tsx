@@ -1,6 +1,11 @@
 import { useState, useEffect, useContext } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { VersionCacheData, VersionCacheProgress, VersionEntry, Versions } from "@/app/types";
+import {
+  VersionCacheData,
+  VersionCacheProgress,
+  VersionEntry,
+  Versions,
+} from "@/app/types";
 import GameBuildsList from "./GameBuildsList";
 import { SettingsCtx } from "@/app/contexts";
 import { listen } from "@tauri-apps/api/event";
@@ -8,12 +13,10 @@ import { Stack } from "react-bootstrap";
 import Button from "@/components/Button";
 import AddBuildModal from "./AddBuildModal";
 
-export default function GameBuildsTab({
-  active,
-} : {
-  active: boolean;
-}) {
-  const [versions, setVersions] = useState<VersionEntry[] | undefined>(undefined);
+export default function GameBuildsTab({ active }: { active: boolean }) {
+  const [versions, setVersions] = useState<VersionEntry[] | undefined>(
+    undefined,
+  );
   const [versionData, setVersionData] = useState<VersionCacheData[]>([]);
 
   const [showAddBuildModal, setShowAddBuildModal] = useState(false);
@@ -55,14 +58,14 @@ export default function GameBuildsTab({
         clearGameCache(version.uuid, label);
       }
     }
-  }
+  };
 
   const downloadOfflineCache = async (uuid: string) => {
     try {
       await invoke("download_cache", { uuid, offline: true, repair: false });
       setVersionData((prev) => {
         return prev.map((pv) =>
-          pv.versionUuid == uuid ? { ...pv, offlineDone: false } : pv
+          pv.versionUuid == uuid ? { ...pv, offlineDone: false } : pv,
         );
       });
     } catch (e) {
@@ -97,7 +100,11 @@ export default function GameBuildsTab({
           if (pv.versionUuid != uuid) {
             return pv;
           }
-          const nv: VersionCacheData = { ...pv, offlineItems: {}, offlineDone: true };
+          const nv: VersionCacheData = {
+            ...pv,
+            offlineItems: {},
+            offlineDone: true,
+          };
           return nv;
         });
       });
@@ -151,7 +158,9 @@ export default function GameBuildsTab({
 
   const importBuild = async (manifestPath: string) => {
     try {
-      const newVersionLabel: string = await invoke("import_version", { uri: manifestPath });
+      const newVersionLabel: string = await invoke("import_version", {
+        uri: manifestPath,
+      });
       await fetchVersions();
       if (ctx.alertSuccess) {
         ctx.alertSuccess("Imported build " + newVersionLabel);
@@ -204,20 +213,23 @@ export default function GameBuildsTab({
         }
         console.log("Validating cache for " + (version.name ?? version.uuid));
         invoke("validate_cache", {
-            uuid: version.uuid,
-            offline: false,
+          uuid: version.uuid,
+          offline: false,
         });
         invoke("validate_cache", {
-            uuid: version.uuid,
-            offline: true,
+          uuid: version.uuid,
+          offline: true,
         });
-        vd = [...vd, {
-          versionUuid: version.uuid,
-          gameDone: false,
-          gameItems: {},
-          offlineDone: false,
-          offlineItems: {},
-        }];
+        vd = [
+          ...vd,
+          {
+            versionUuid: version.uuid,
+            gameDone: false,
+            gameItems: {},
+            offlineDone: false,
+            offlineItems: {},
+          },
+        ];
       }
       setVersionData(vd);
     }
@@ -225,7 +237,12 @@ export default function GameBuildsTab({
 
   return (
     <>
-      <Stack direction="horizontal" className="p-2" gap={2} id="game-builds-buttonstack">
+      <Stack
+        direction="horizontal"
+        className="p-2"
+        gap={2}
+        id="game-builds-buttonstack"
+      >
         <Button
           icon="plus"
           text="Add Build"
@@ -245,7 +262,7 @@ export default function GameBuildsTab({
                 "Are you sure you want to delete all offline caches?",
                 "Delete All",
                 "danger",
-                deleteAllOfflineCaches
+                deleteAllOfflineCaches,
               );
             }
           }}
@@ -261,7 +278,7 @@ export default function GameBuildsTab({
                 "Are you sure you want to clear all game caches?",
                 "Clear All",
                 "danger",
-                clearAllGameCaches
+                clearAllGameCaches,
               );
             }
           }}
@@ -275,10 +292,12 @@ export default function GameBuildsTab({
             const version = versions!.find((v) => v.uuid == uuid)!;
             const label = version.name ?? "version " + version.uuid;
             ctx.showConfirmationModal(
-              "Are you sure you want to clear the game cache for " + label + "?",
+              "Are you sure you want to clear the game cache for " +
+                label +
+                "?",
               "Clear",
               "danger",
-              clearGameCache.bind(null, uuid)
+              clearGameCache.bind(null, uuid),
             );
           }
         }}
@@ -289,10 +308,12 @@ export default function GameBuildsTab({
             const version = versions!.find((v) => v.uuid == uuid)!;
             const label = version.name ?? "version " + version.uuid;
             ctx.showConfirmationModal(
-              "Are you sure you want to delete the offline cache for " + label + "?",
+              "Are you sure you want to delete the offline cache for " +
+                label +
+                "?",
               "Delete",
               "danger",
-              deleteOfflineCache.bind(null, uuid)
+              deleteOfflineCache.bind(null, uuid),
             );
           }
         }}

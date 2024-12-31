@@ -18,16 +18,24 @@ export default function ConfirmationModal({
 }) {
   return (
     <Modal show={show} onHide={() => setShow(false)} centered>
-    <Modal.Header closeButton>
-      <Modal.Title>Confirm</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-      <p>{message}</p>
-    </Modal.Body>
-    <Modal.Footer>
-      <Button variant="primary" onClick={() => setShow(false)} text="Cancel" />
-      <Button variant={confirmVariant} onClick={onConfirm} text={confirmText} />
-    </Modal.Footer>
-  </Modal>
+      <Modal.Header closeButton>
+        <Modal.Title>Confirm</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p>{message}</p>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          variant="primary"
+          onClick={() => setShow(false)}
+          text="Cancel"
+        />
+        <Button
+          variant={confirmVariant}
+          onClick={onConfirm}
+          text={confirmText}
+        />
+      </Modal.Footer>
+    </Modal>
   );
 }

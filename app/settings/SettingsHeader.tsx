@@ -8,7 +8,7 @@ export default function SettingsHeader({
   onDiscard,
   onReset,
 }: {
-  text: string
+  text: string;
   working: boolean;
   canApply: boolean;
   onApply: () => void;

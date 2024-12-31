@@ -46,10 +46,12 @@ export default function AddBuildModal({
     const result = await open({
       multiple: false,
       directory: false,
-      filters: [{
-        name: "Build manifest",
-        extensions: ["json"],
-      }],
+      filters: [
+        {
+          name: "Build manifest",
+          extensions: ["json"],
+        },
+      ],
     });
     if (result) {
       setManifestPath(result);

@@ -1,4 +1,4 @@
-// DEPRECATED 
+// DEPRECATED
 //
 // import Stack from "react-bootstrap/Stack";
 // import AlertBox from "./AlertBox";

@@ -48,7 +48,9 @@ export function sleep(ms: number) {
 export function getLogoImageUrlForServer(server?: ServerEntry) {
   if (server?.endpoint) {
     // HACK: add the counter to the url as a parameter to prevent caching across launches
-    return "http://" + server.endpoint + "/launcher/logo.png?seed=" + get_seed();
+    return (
+      "http://" + server.endpoint + "/launcher/logo.png?seed=" + get_seed()
+    );
   }
   return undefined;
 }
@@ -56,7 +58,12 @@ export function getLogoImageUrlForServer(server?: ServerEntry) {
 export function getBackgroundImageUrlForServer(server?: ServerEntry) {
   if (server?.endpoint) {
     // HACK: add the counter to the url as a parameter to prevent caching across launches
-    return "http://" + server.endpoint + "/launcher/background.png?seed=" + get_seed();
+    return (
+      "http://" +
+      server.endpoint +
+      "/launcher/background.png?seed=" +
+      get_seed()
+    );
   }
   return undefined;
 }

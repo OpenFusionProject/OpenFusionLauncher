@@ -47,7 +47,7 @@ export default function SettingControlFpsFix({
 }) {
   const [selected, setSelected] = useState<string>(getKeyForValue(value));
   const [fpsLimit, setFpsLimit] = useState<string>(
-    getFpsLimitForValue(value)?.toString() ?? ""
+    getFpsLimitForValue(value)?.toString() ?? "",
   );
 
   const updateOuter = (key: string, fpsLimit?: string) => {

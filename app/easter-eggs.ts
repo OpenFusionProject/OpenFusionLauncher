@@ -1,4 +1,4 @@
-import Snowflakes from 'magic-snowflakes';
+import Snowflakes from "magic-snowflakes";
 
 let snowflakes: Snowflakes;
 

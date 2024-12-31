@@ -16,7 +16,9 @@ export default function GameSettingsTab({
 }: {
   active: boolean;
   currentSettings: GameSettings;
-  updateSettings: (newSettings: GameSettings | undefined) => Promise<GameSettings>;
+  updateSettings: (
+    newSettings: GameSettings | undefined,
+  ) => Promise<GameSettings>;
 }) {
   const [settings, setSettings] = useState<GameSettings>(currentSettings);
   const [working, setWorking] = useState<boolean>(false);
@@ -64,7 +66,13 @@ export default function GameSettingsTab({
     <Container fluid id="settings-container" className="bg-footer">
       <Row>
         <Col />
-        <Col xs={12} sm={10} md={8} id="settings-column" className="primary my-5 p-3 rounded border border-primary">
+        <Col
+          xs={12}
+          sm={10}
+          md={8}
+          id="settings-column"
+          className="primary my-5 p-3 rounded border border-primary"
+        >
           <SettingsHeader
             text="Game Settings"
             working={working}
@@ -74,50 +82,84 @@ export default function GameSettingsTab({
             onReset={showResetConfirmation}
           />
           <hr className="border-primary" />
-          {settings && <Form>
-            <SettingControlDropdown
-              id="graphics_api"
-              name="Graphics API"
-              options={[
-                { key: "dx9", label: "DirectX 9" },
-                { key: "opengl", label: "OpenGL" },
-                { key: "vulkan", label: "Vulkan" },
-              ]}
-              defaultKey="dx9"
-              oldValue={currentSettings.graphics_api}
-              value={settings.graphics_api}
-              onChange={(value) => setSettings({ ...settings!, graphics_api: value })}
-            />
-            <SettingControlText
-              id="launch_command"
-              name="Custom Launch Command"
-              oldValue={currentSettings.launch_command}
-              value={settings.launch_command}
-              placeholder="{}"
-              validator={(value) => value === "" || value.indexOf("{}") !== -1}
-              onChange={(value) => setSettings({ ...settings!, launch_command: (value === "" ? undefined : value) })}
-            />
-            <SettingControlWindowSize
-              id="window_size"
-              name="Window Size"
-              modified={settings.window_size?.width !== currentSettings?.window_size?.width || settings.window_size?.height !== currentSettings?.window_size?.height}
-              value={settings?.window_size}
-              onChange={(value: WindowSize | undefined) => setSettings({ ...settings!, window_size: value })}
-            />
-            <SettingControlFpsFix
-              id="fps_fix"
-              name="FPS Fix"
-              oldValue={currentSettings.fps_fix}
-              value={settings.fps_fix}
-              onChange={(value) => setSettings({ ...settings!, fps_fix: value })}
-            />
-          </Form>}
-          {debug && <>
-            <hr className="border-primary" />
-            <h6>Debug</h6>
-            <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(currentSettings, null, 4)} readOnly />
-            <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(settings, null, 4)} readOnly />
-          </>}
+          {settings && (
+            <Form>
+              <SettingControlDropdown
+                id="graphics_api"
+                name="Graphics API"
+                options={[
+                  { key: "dx9", label: "DirectX 9" },
+                  { key: "opengl", label: "OpenGL" },
+                  { key: "vulkan", label: "Vulkan" },
+                ]}
+                defaultKey="dx9"
+                oldValue={currentSettings.graphics_api}
+                value={settings.graphics_api}
+                onChange={(value) =>
+                  setSettings({ ...settings!, graphics_api: value })
+                }
+              />
+              <SettingControlText
+                id="launch_command"
+                name="Custom Launch Command"
+                oldValue={currentSettings.launch_command}
+                value={settings.launch_command}
+                placeholder="{}"
+                validator={(value) =>
+                  value === "" || value.indexOf("{}") !== -1
+                }
+                onChange={(value) =>
+                  setSettings({
+                    ...settings!,
+                    launch_command: value === "" ? undefined : value,
+                  })
+                }
+              />
+              <SettingControlWindowSize
+                id="window_size"
+                name="Window Size"
+                modified={
+                  settings.window_size?.width !==
+                    currentSettings?.window_size?.width ||
+                  settings.window_size?.height !==
+                    currentSettings?.window_size?.height
+                }
+                value={settings?.window_size}
+                onChange={(value: WindowSize | undefined) =>
+                  setSettings({ ...settings!, window_size: value })
+                }
+              />
+              <SettingControlFpsFix
+                id="fps_fix"
+                name="FPS Fix"
+                oldValue={currentSettings.fps_fix}
+                value={settings.fps_fix}
+                onChange={(value) =>
+                  setSettings({ ...settings!, fps_fix: value })
+                }
+              />
+            </Form>
+          )}
+          {debug && (
+            <>
+              <hr className="border-primary" />
+              <h6>Debug</h6>
+              <textarea
+                id="settings-json"
+                className="w-100"
+                rows={5}
+                value={JSON.stringify(currentSettings, null, 4)}
+                readOnly
+              />
+              <textarea
+                id="settings-json"
+                className="w-100"
+                rows={5}
+                value={JSON.stringify(settings, null, 4)}
+                readOnly
+              />
+            </>
+          )}
         </Col>
         <Col />
       </Row>

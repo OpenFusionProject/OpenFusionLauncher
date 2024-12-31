@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Alert, Config, GameSettings, LauncherSettings, LoadingTask, SettingsContext } from "@/app/types";
+import {
+  Alert,
+  Config,
+  GameSettings,
+  LauncherSettings,
+  LoadingTask,
+  SettingsContext,
+} from "@/app/types";
 import { SettingsCtx } from "@/app/contexts";
 import Toasts from "@/components/Toasts";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -34,8 +41,11 @@ export default function SettingsPage() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [confirmationConfirmText, setConfirmationConfirmText] = useState("");
-  const [confirmationConfirmVariant, setConfirmationConfirmVariant] = useState("");
-  const [confirmationOnConfirm, setConfirmationOnConfirm] = useState<() => void>(() => {});
+  const [confirmationConfirmVariant, setConfirmationConfirmVariant] =
+    useState("");
+  const [confirmationOnConfirm, setConfirmationOnConfirm] = useState<
+    () => void
+  >(() => {});
 
   const pushAlert = (variant: string, text: string) => {
     const id = Math.floor(Math.random() * 1000000);
@@ -73,7 +83,12 @@ export default function SettingsPage() {
     setLoadingTasks(newTasks);
   };
 
-  const showConfirmationModal = (message: string, confirmText: string, confirmVariant: string, onConfirm: () => void) => {
+  const showConfirmationModal = (
+    message: string,
+    confirmText: string,
+    confirmVariant: string,
+    onConfirm: () => void,
+  ) => {
     setConfirmationMessage(message);
     setConfirmationConfirmText(confirmText);
     setConfirmationConfirmVariant(confirmVariant);
@@ -167,11 +182,7 @@ export default function SettingsPage() {
       <Toasts alerts={alerts} />
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
       <LauncherPage title="Settings" id="launcher-page-settings">
-        <Tabs
-          activeKey={tab}
-          onSelect={(k) => setTab(k ?? DEFAULT_TAB)}
-          fill
-        >
+        <Tabs activeKey={tab} onSelect={(k) => setTab(k ?? DEFAULT_TAB)} fill>
           <Tab
             eventKey={TAB_LAUNCHER_SETTINGS}
             title={
@@ -180,11 +191,13 @@ export default function SettingsPage() {
               </>
             }
           >
-            {config && <LauncherSettingsTab
-              active={tab == TAB_LAUNCHER_SETTINGS}
-              currentSettings={config.launcher}
-              updateSettings={updateLauncherSettings}
-            />}
+            {config && (
+              <LauncherSettingsTab
+                active={tab == TAB_LAUNCHER_SETTINGS}
+                currentSettings={config.launcher}
+                updateSettings={updateLauncherSettings}
+              />
+            )}
           </Tab>
           <Tab
             eventKey={TAB_GAME_SETTINGS}
@@ -194,11 +207,13 @@ export default function SettingsPage() {
               </>
             }
           >
-            {config && <GameSettingsTab
-              active={tab == TAB_GAME_SETTINGS}
-              currentSettings={config.game}
-              updateSettings={updateGameSettings}
-            />}
+            {config && (
+              <GameSettingsTab
+                active={tab == TAB_GAME_SETTINGS}
+                currentSettings={config.game}
+                updateSettings={updateGameSettings}
+              />
+            )}
           </Tab>
           <Tab
             eventKey={TAB_GAME_BUILDS}

@@ -14,311 +14,310 @@ $body-bg-dark: #000;
 /* Dark mode only */
 
 @include color-mode(dark) {
-    .table-striped thead th {
-        background-color: #34476e;
-    }
+  .table-striped thead th {
+    background-color: #34476e;
+  }
 
-    .table-striped tbody tr:nth-of-type(even) > td {
-        background-color: #34476e;
-    }
+  .table-striped tbody tr:nth-of-type(even) > td {
+    background-color: #34476e;
+  }
 
-    .table-striped tbody tr:nth-of-type(odd) > td,
-    th {
-        background-color: #24314d;
-    }
+  .table-striped tbody tr:nth-of-type(odd) > td,
+  th {
+    background-color: #24314d;
+  }
 
-    #of-logo-light {
-        display: none;
-    }
+  #of-logo-light {
+    display: none;
+  }
 
-    #of-intro-text {
-        text-shadow: 1px 1px 8px #4349c4;
-        color: #4a76b7;
-        font-size: 18px;
-    }
+  #of-intro-text {
+    text-shadow: 1px 1px 8px #4349c4;
+    color: #4a76b7;
+    font-size: 18px;
+  }
 
-    .launcher-page-header {
-        background-image: url("../img/modal-bg-dark.png");
-        background-repeat: repeat;
-    }
+  .launcher-page-header {
+    background-image: url("../img/modal-bg-dark.png");
+    background-repeat: repeat;
+  }
 
-    #launcher-page-settings {
-        background-image: url("../img/modal-footer-bg-dark.png");
-        background-repeat: repeat;
-    }
+  #launcher-page-settings {
+    background-image: url("../img/modal-footer-bg-dark.png");
+    background-repeat: repeat;
+  }
 
-    #game-builds-buttonstack {
-        background-image: url("../img/modal-footer-bg-dark.png");
-        background-repeat: repeat;
-    }
+  #game-builds-buttonstack {
+    background-image: url("../img/modal-footer-bg-dark.png");
+    background-repeat: repeat;
+  }
 
-    .form-control, .form-control:focus {
-        border-color: #0099ff;
-        background-color: #000;
-        color: #fff;
-    }
+  .form-control,
+  .form-control:focus {
+    border-color: #0099ff;
+    background-color: #000;
+    color: #fff;
+  }
 
-    .form-control:disabled {
-        background-color: var(--bs-secondary-bg) !important;
-    }
+  .form-control:disabled {
+    background-color: var(--bs-secondary-bg) !important;
+  }
 
-    select {
-        border-color: #0099ff;
-        background-color: #000;
-        color: #fff;
-    }
+  select {
+    border-color: #0099ff;
+    background-color: #000;
+    color: #fff;
+  }
 
-    .nav {
-        --bs-nav-tabs-link-active-border-color:
-            #90d1e4 #90d1e4 #091a23;
-        --bs-nav-tabs-link-hover-border-color:
-            #90d1e4 #90d1e4 #90d1e4;
-        background-image: url("../img/modal-bg-dark.png");
-        background-repeat: repeat;
-    }
-    
-    .nav button {
-        border-bottom: 1px solid #90d1e4;
-        background-image: url("../img/modal-bg-dark.png");
-        background-repeat: repeat;
-    }
+  .nav {
+    --bs-nav-tabs-link-active-border-color: #90d1e4 #90d1e4 #091a23;
+    --bs-nav-tabs-link-hover-border-color: #90d1e4 #90d1e4 #90d1e4;
+    background-image: url("../img/modal-bg-dark.png");
+    background-repeat: repeat;
+  }
 
-    .nav button.active {
-        background-image: url("../img/modal-footer-bg-dark.png");
-        background-repeat: repeat;
-    }
+  .nav button {
+    border-bottom: 1px solid #90d1e4;
+    background-image: url("../img/modal-bg-dark.png");
+    background-repeat: repeat;
+  }
 
-    .border-primary {
-        box-shadow: 0 0 15px 0px #0097fc;
-    }
+  .nav button.active {
+    background-image: url("../img/modal-footer-bg-dark.png");
+    background-repeat: repeat;
+  }
 
-    .btn-primary {
-        background-image: url("../img/btn-primary-bg-dark.png");
-        background-repeat: repeat;
-        box-shadow: inset 0 0 20px #2a9fd6;
-    }
+  .border-primary {
+    box-shadow: 0 0 15px 0px #0097fc;
+  }
 
-    .table-active > td {
-        background-color: var(--bs-primary) !important;
-    }
+  .btn-primary {
+    background-image: url("../img/btn-primary-bg-dark.png");
+    background-repeat: repeat;
+    box-shadow: inset 0 0 20px #2a9fd6;
+  }
 
-    .modal-content {
-        background-image: url("../img/modal-bg-dark.png");
-        background-repeat: repeat;
-        border-color: #90d1e4;
-        box-shadow: 0 0 15px 0px #0097fc;
-        --bs-modal-header-border-color: #90d1e4;
-        --bs-modal-footer-border-color: #90d1e4;
-    }
+  .table-active > td {
+    background-color: var(--bs-primary) !important;
+  }
 
-    .modal-body {
-        background-image: url("../img/modal-footer-bg-dark.png");
-        background-repeat: repeat;
-    }
+  .modal-content {
+    background-image: url("../img/modal-bg-dark.png");
+    background-repeat: repeat;
+    border-color: #90d1e4;
+    box-shadow: 0 0 15px 0px #0097fc;
+    --bs-modal-header-border-color: #90d1e4;
+    --bs-modal-footer-border-color: #90d1e4;
+  }
 
-    .contrast-border-hover:hover {
-        border: 1px solid white;
-    }
+  .modal-body {
+    background-image: url("../img/modal-footer-bg-dark.png");
+    background-repeat: repeat;
+  }
 
-    .bg-blend {
-        background-color: rgba($body-bg-dark, 0.5) !important;
-        background-blend-mode: darken;
-    }
+  .contrast-border-hover:hover {
+    border: 1px solid white;
+  }
 
-    .opacity-on {
-        opacity: 0.25;
-    }
+  .bg-blend {
+    background-color: rgba($body-bg-dark, 0.5) !important;
+    background-blend-mode: darken;
+  }
 
-    .progress {
-        background-color: #000;
-        border: 1px solid #0097fc;
-    }
+  .opacity-on {
+    opacity: 0.25;
+  }
 
-    .server-landing {
-        color: #fff;
-        background-color: #000;
-        border-bottom: 1px solid #90d1e4;
-    }
+  .progress {
+    background-color: #000;
+    border: 1px solid #0097fc;
+  }
 
-    .server-landing img {
-        border-right: 1px solid #90d1e4;
-    }
+  .server-landing {
+    color: #fff;
+    background-color: #000;
+    border-bottom: 1px solid #90d1e4;
+  }
 
-    #settings-column {
-        background-image: url("../img/modal-bg-dark.png");
-        background-repeat: repeat;
-    }
+  .server-landing img {
+    border-right: 1px solid #90d1e4;
+  }
+
+  #settings-column {
+    background-image: url("../img/modal-bg-dark.png");
+    background-repeat: repeat;
+  }
 }
 
 /* Light mode only */
 
 @include color-mode(light) {
-    .table-striped thead th {
-        background-color: $green-300;
-    }
+  .table-striped thead th {
+    background-color: $green-300;
+  }
 
-    .table-striped tbody tr:nth-of-type(even) > td {
-        background-color: $green-300;
-    }
+  .table-striped tbody tr:nth-of-type(even) > td {
+    background-color: $green-300;
+  }
 
-    .table-striped tbody tr:nth-of-type(odd) > td,
-    th {
-        background-color: $green-100;
-    }
+  .table-striped tbody tr:nth-of-type(odd) > td,
+  th {
+    background-color: $green-100;
+  }
 
-    .btn-primary {
-        background-image: url("../img/btn-primary-bg-light.png");
-        background-repeat: repeat;
-        box-shadow: inset 0 0 20px #22D94F;
-        --bs-btn-hover-bg: #198754;
-        --bs-btn-hover-border-color: #198754;
-        --bs-btn-border-color: #198754;
-    }
+  .btn-primary {
+    background-image: url("../img/btn-primary-bg-light.png");
+    background-repeat: repeat;
+    box-shadow: inset 0 0 20px #22d94f;
+    --bs-btn-hover-bg: #198754;
+    --bs-btn-hover-border-color: #198754;
+    --bs-btn-border-color: #198754;
+  }
 
-    #of-logo-dark {
-        display: none;
-    }
+  #of-logo-dark {
+    display: none;
+  }
 
-    #of-intro-text {
-        text-shadow: 1px 1px 8px #22D94F;
-        font-size: 18px;
-    }
+  #of-intro-text {
+    text-shadow: 1px 1px 8px #22d94f;
+    font-size: 18px;
+  }
 
-    .table-active > td {
-        background-color: $green !important;
-    }
+  .table-active > td {
+    background-color: $green !important;
+  }
 
-    .border-primary {
-        border-color: $green !important;
-        box-shadow: 0 0 15px 0px $green;
-    }
+  .border-primary {
+    border-color: $green !important;
+    box-shadow: 0 0 15px 0px $green;
+  }
 
-    .table {
-        border-color: $green !important;
-    }
+  .table {
+    border-color: $green !important;
+  }
 
-    .modal-content {
-        background-image: url("../img/modal-bg-light.png");
-        background-repeat: repeat;
-        border-color: #2AF568;
-        box-shadow: 0 0 15px 0px #479f76;
-        --bs-modal-header-border-color: #2AF568;
-        --bs-modal-footer-border-color: #2AF568;
-    }
+  .modal-content {
+    background-image: url("../img/modal-bg-light.png");
+    background-repeat: repeat;
+    border-color: #2af568;
+    box-shadow: 0 0 15px 0px #479f76;
+    --bs-modal-header-border-color: #2af568;
+    --bs-modal-footer-border-color: #2af568;
+  }
 
-    .modal-body {
-        background-image: url("../img/modal-footer-bg-light.png");
-        background-repeat: repeat;
-    }
+  .modal-body {
+    background-image: url("../img/modal-footer-bg-light.png");
+    background-repeat: repeat;
+  }
 
-    .modal-header {
-        color: #f8f9fa;
-    }
+  .modal-header {
+    color: #f8f9fa;
+  }
 
-    .contrast-border-hover:hover {
-        border: 1px solid black;
-    }
+  .contrast-border-hover:hover {
+    border: 1px solid black;
+  }
 
-    .progress {
-        background-color: #f8f9fa;
-        border: 1px solid $green;
-    }
+  .progress {
+    background-color: #f8f9fa;
+    border: 1px solid $green;
+  }
 
-    .bg-blend {
-        background-color: rgba($body-bg, 0.5) !important;
-        background-blend-mode: lighten;
-    }
+  .bg-blend {
+    background-color: rgba($body-bg, 0.5) !important;
+    background-blend-mode: lighten;
+  }
 
-    .opacity-on {
-        opacity: 0.5;
-    }
+  .opacity-on {
+    opacity: 0.5;
+  }
 
-    .server-landing {
-        color: #000;
-        background-color: #fff;
-        border-bottom: 1px solid #198754;
-    }
+  .server-landing {
+    color: #000;
+    background-color: #fff;
+    border-bottom: 1px solid #198754;
+  }
 
-    .server-landing img {
-        border-right: 1px solid #198754;
-    }
+  .server-landing img {
+    border-right: 1px solid #198754;
+  }
 }
 
 /* Global */
 
 #server-table {
-    font-size: 14pt;
-    opacity: 0.9;
+  font-size: 14pt;
+  opacity: 0.9;
 }
 
 #loading-screen {
-    color: $body-bg;
-    font-size: 24pt;
+  color: $body-bg;
+  font-size: 24pt;
 }
 
 #loading-screen-bg {
-    background-color: $body-bg-dark;
-    opacity: 0.5;
+  background-color: $body-bg-dark;
+  opacity: 0.5;
 }
 
 #page-config {
-    background-color: $body-bg-dark;
+  background-color: $body-bg-dark;
 }
 
 .btn {
-    color: $light !important;
-    font-size: 12pt;
+  color: $light !important;
+  font-size: 12pt;
 }
 
 .btn-success {
-    background-image: url("../img/btn-success-bg.png");
-    background-repeat: repeat;
-    box-shadow: inset 0 0 20px #a2ec00;
+  background-image: url("../img/btn-success-bg.png");
+  background-repeat: repeat;
+  box-shadow: inset 0 0 20px #a2ec00;
 }
 
 .btn-danger {
-    background-image: url("../img/btn-danger-bg.png");
-    background-repeat: repeat;
-    box-shadow: inset 0 0 20px red;
+  background-image: url("../img/btn-danger-bg.png");
+  background-repeat: repeat;
+  box-shadow: inset 0 0 20px red;
 }
 
 .btn-warning {
-    background-image: url("../img/btn-warning-bg.png");
-    background-repeat: repeat;
-    box-shadow: inset 0 0 20px yellow;
+  background-image: url("../img/btn-warning-bg.png");
+  background-repeat: repeat;
+  box-shadow: inset 0 0 20px yellow;
 }
 
 .text-success {
-    color: #a2ec00 !important;
+  color: #a2ec00 !important;
 }
 
 .border-success {
-    border-color: #a2ec00 !important;
+  border-color: #a2ec00 !important;
 }
 
 .text-danger {
-    color: red !important;
+  color: red !important;
 }
 
 .modal {
-    overflow-y: auto;
+  overflow-y: auto;
 }
 
 .modal-footer {
-    border-top-color: rgb(0,0,0,0);
-    padding-top: 8px;
-    padding-bottom: 8px;
+  border-top-color: rgb(0, 0, 0, 0);
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .alert > span {
-    color: $light !important;
-    font-size: 12pt;
+  color: $light !important;
+  font-size: 12pt;
 }
 
 input.is-invalid {
-    border-color: red !important;
+  border-color: red !important;
 }
 
 .opacity-off {
-    opacity: 0;
+  opacity: 0;
 }

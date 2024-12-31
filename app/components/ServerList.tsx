@@ -51,16 +51,21 @@ function PlayerCount({ server }: { server: ServerEntry }) {
   }, [server]);
 
   if (playerCount !== undefined) {
-    return <span className="fw-bold text-success" title="Current player count">
-      <i className="fa fa-user fa-sm"></i>{" "}{playerCount}
-      </span>;
+    return (
+      <span className="fw-bold text-success" title="Current player count">
+        <i className="fa fa-user fa-sm"></i> {playerCount}
+      </span>
+    );
   }
 
   if (server.endpoint) {
     if (error) {
       return (
         <span className="fw-bold text-danger">
-          <i className="fa fa-plug-circle-xmark" title="Could not connect to server"></i>
+          <i
+            className="fa fa-plug-circle-xmark"
+            title="Could not connect to server"
+          ></i>
         </span>
       );
     }
@@ -75,7 +80,10 @@ function PlayerCount({ server }: { server: ServerEntry }) {
 
   return (
     <span>
-      <i className="fa-solid fa-circle-question" title="No information provided"></i>
+      <i
+        className="fa-solid fa-circle-question"
+        title="No information provided"
+      ></i>
     </span>
   );
 }
@@ -89,7 +97,9 @@ function VersionBadges({
   versions: VersionEntry[];
   refreshVersions: () => Promise<void>;
 }) {
-  const [endpointVersions, setEndpointVersions] = useState<string[] | undefined>(undefined);
+  const [endpointVersions, setEndpointVersions] = useState<
+    string[] | undefined
+  >(undefined);
 
   useEffect(() => {
     const fetchEndpointVersions = async () => {
@@ -116,7 +126,8 @@ function VersionBadges({
           className="spinner-border spinner-border-sm"
           role="status"
           aria-hidden="true"
-        ></span>);
+        ></span>
+      );
     } else if (endpointVersions.length == 0) {
       return <span className="badge bg-danger">no versions</span>;
     } else {
@@ -125,10 +136,18 @@ function VersionBadges({
           {endpointVersions.map((versionUuid) => {
             const version = findVersion(versions, versionUuid);
             if (!version) {
-              return <span key={versionUuid} className="badge bg-danger me-1">unknown</span>;
+              return (
+                <span key={versionUuid} className="badge bg-danger me-1">
+                  unknown
+                </span>
+              );
             }
             const label = version.name ?? version.uuid;
-            return <span key={version.uuid} className="badge bg-success me-1">{label}</span>;
+            return (
+              <span key={version.uuid} className="badge bg-success me-1">
+                {label}
+              </span>
+            );
           })}
         </>
       );
@@ -200,7 +219,11 @@ export default function ServerList({
               >
                 <td className="text-start name-column">{server.description}</td>
                 <td className="font-monospace versions-column">
-                  <VersionBadges server={server} versions={versions} refreshVersions={refreshVersions} />
+                  <VersionBadges
+                    server={server}
+                    versions={versions}
+                    refreshVersions={refreshVersions}
+                  />
                 </td>
                 <td className="font-monospace text-end status-column">
                   <PlayerCount server={server} />

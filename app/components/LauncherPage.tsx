@@ -16,9 +16,7 @@ export default function LauncherPage({
       <div className="launcher-page-header">
         <NavBar title={title} buttons={buttons} />
       </div>
-      <div className="launcher-page-content">
-        {children}
-      </div>
+      <div className="launcher-page-content">{children}</div>
     </div>
   );
 }

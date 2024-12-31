@@ -21,7 +21,7 @@ function ListEntry({
   const [offline, setOffline] = useState<boolean | undefined>(undefined);
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
   const [session, setSession] = useState<LoginSession | undefined | null>(
-    undefined
+    undefined,
   );
   const [showLoginModal, setShowLoginModal] = useState(false);
 
@@ -90,7 +90,11 @@ function ListEntry({
     setButtonLoading(false);
   };
 
-  const doRegister = async (username: string, password: string, email: string) => {
+  const doRegister = async (
+    username: string,
+    password: string,
+    email: string,
+  ) => {
     setButtonLoading(true);
     try {
       const res: RegistrationResult = await invoke("do_register", {
@@ -159,7 +163,11 @@ function ListEntry({
                 <h3 className="mb-0">{server.description}</h3>
               )}
               <small className="text-muted">{server.endpoint}</small>
-              {offline !== undefined && <small className={"text-" + (offline! ? "danger" : "success")}>{" " + (offline! ? "offline" : "online")}</small>}
+              {offline !== undefined && (
+                <small className={"text-" + (offline! ? "danger" : "success")}>
+                  {" " + (offline! ? "offline" : "online")}
+                </small>
+              )}
             </div>
             {session === undefined ? (
               <span
@@ -182,7 +190,8 @@ function ListEntry({
             ) : (
               <div className="text-end">
                 <span className="mb-1 d-block">
-                  <small className="text-muted">logged in as</small><h4 className="d-inline">{" " + session.username}</h4>
+                  <small className="text-muted">logged in as</small>
+                  <h4 className="d-inline">{" " + session.username}</h4>
                 </span>
                 <Button
                   loading={buttonLoading}

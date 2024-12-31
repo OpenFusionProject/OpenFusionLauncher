@@ -22,7 +22,7 @@ const validateHostname = (hostname: string) => {
   }
   const re = /^[a-z0-9.-]+$/;
   return re.test(hostnameTrimmed);
-}
+};
 
 const validatePort = (port: string) => {
   const port_trimmed = port.trim();
@@ -34,10 +34,10 @@ const validatePort = (port: string) => {
     return false;
   }
   if (portNum < 1 || portNum > 65535) {
-    return false
+    return false;
   }
   return true;
-}
+};
 
 const validateAddress = (address: string) => {
   const addressTrimmed = address.trim();
@@ -54,7 +54,7 @@ const validateAddress = (address: string) => {
     const port = addressTrimmed.substring(colon_index + 1);
     return validateHostname(hostname) && validatePort(port);
   }
-}
+};
 
 const validateEndpoint = (endpoint: string) => {
   const endpointTrimmed = endpoint.trim();
@@ -71,7 +71,7 @@ const validateEndpoint = (endpoint: string) => {
     const path = endpointTrimmed.substring(slash_index);
     return validateHostname(hostname) && path != "" && !path.endsWith("/");
   }
-}
+};
 
 export default function EditServerModal({
   server,
@@ -120,20 +120,23 @@ export default function EditServerModal({
     const endpointTrimmed = endpoint.trim();
     const ipTrimmed = ip.trim();
 
-    const desc = (descTrimmed == "") ? DEFAULT_DESCRIPTION : descTrimmed;
-    const newServerDetails = (tab == TAB_ENDPOINT) ? {
-      description: desc,
-      endpoint: endpointTrimmed,
-      ip: undefined,
-      version: undefined,
-    } : {
-      description: desc,
-      endpoint: undefined,
-      ip: ipTrimmed == "" ? DEFAULT_IP : ipTrimmed,
-      version: version,
-    };
+    const desc = descTrimmed == "" ? DEFAULT_DESCRIPTION : descTrimmed;
+    const newServerDetails =
+      tab == TAB_ENDPOINT
+        ? {
+            description: desc,
+            endpoint: endpointTrimmed,
+            ip: undefined,
+            version: undefined,
+          }
+        : {
+            description: desc,
+            endpoint: undefined,
+            ip: ipTrimmed == "" ? DEFAULT_IP : ipTrimmed,
+            version: version,
+          };
     return newServerDetails;
-  }
+  };
 
   return (
     <Modal show={show} onHide={() => doHide()} centered={true}>
@@ -175,10 +178,12 @@ export default function EditServerModal({
                   onChange={(e) => setVersion(e.target.value)}
                   isInvalid={version == ""}
                 >
-                    {versions.filter(version => !version.hidden).map(version => (
-                    <option key={version.uuid} value={version.uuid}>
-                      {version.name || version.uuid}
-                    </option>
+                  {versions
+                    .filter((version) => !version.hidden)
+                    .map((version) => (
+                      <option key={version.uuid} value={version.uuid}>
+                        {version.name || version.uuid}
+                      </option>
                     ))}
                 </Form.Select>
               </Form.Group>
@@ -199,11 +204,7 @@ export default function EditServerModal({
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button
-          onClick={() => doHide()}
-          variant="primary"
-          text="Cancel"
-        />
+        <Button onClick={() => doHide()} variant="primary" text="Cancel" />
         <Button
           onClick={() => {
             const newServerDetails = makeNewServerDetails();

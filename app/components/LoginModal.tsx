@@ -25,12 +25,14 @@ const CONTROL_ID_EMAIL = "email";
 
 const getPrivacyPolicyUrl = (server: ServerEntry) => {
   return "http://" + server.endpoint + "/privacy";
-}
+};
 
 const getUpsellImage = (server?: ServerEntry) => {
   if (server?.endpoint) {
     // HACK: add the counter to the url as a parameter to prevent caching across launches
-    return "http://" + server.endpoint + "/upsell/sponsor.png?seed=" + get_seed();
+    return (
+      "http://" + server.endpoint + "/upsell/sponsor.png?seed=" + get_seed()
+    );
   }
   return undefined;
 };
@@ -79,9 +81,12 @@ function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const announcements: string = await invoke("get_announcements_for_server", {
-          uuid: server!.uuid,
-        });
+        const announcements: string = await invoke(
+          "get_announcements_for_server",
+          {
+            uuid: server!.uuid,
+          },
+        );
         setError(false);
         setAnnouncements(announcements);
         setShowAnnouncements(true);
@@ -109,9 +114,13 @@ function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
         alt="Upsell"
       />
       <div className="announcements">
-        {error ? ERROR_TEXT : announcements.split('\n').map((line, index) => (
-          <p className="mb-1" key={index}>{line}</p>
-        ))}
+        {error
+          ? ERROR_TEXT
+          : announcements.split("\n").map((line, index) => (
+              <p className="mb-1" key={index}>
+                {line}
+              </p>
+            ))}
       </div>
     </div>
   );
@@ -281,7 +290,9 @@ export default function LoginModal({
                   value={email}
                   onFocus={() => setActiveControl(CONTROL_ID_EMAIL)}
                   onChange={(e) => setEmail(e.target.value)}
-                  isInvalid={email.length > 0 && !validateEmail(email, emailRequired)}
+                  isInvalid={
+                    email.length > 0 && !validateEmail(email, emailRequired)
+                  }
                 />
               </Form.Group>
               <div className="text-center">
@@ -320,11 +331,7 @@ export default function LoginModal({
           </Tabs>
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            onClick={onClose}
-            variant="primary"
-            text="Cancel"
-          />
+          <Button onClick={onClose} variant="primary" text="Cancel" />
           <Button
             onClick={submitForm}
             variant="success"

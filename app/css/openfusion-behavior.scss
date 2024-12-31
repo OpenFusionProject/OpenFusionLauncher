@@ -1,29 +1,31 @@
-// Only allow highlighting inside of inputs 
+// Only allow highlighting inside of inputs
 :not(input):not(textarea),
 :not(input):not(textarea)::after,
 :not(input):not(textarea)::before {
-    -webkit-user-select: none;
-    user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 // Cross mark on disabled buttons
-.btn:disabled, .btn.disabled, fieldset:disabled .btn {
-    cursor: not-allowed !important;
-    pointer-events: all !important;
+.btn:disabled,
+.btn.disabled,
+fieldset:disabled .btn {
+  cursor: not-allowed !important;
+  pointer-events: all !important;
 }
 
 #server-table .server-listing-entry {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 img {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 button > i {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 .tt {
-    pointer-events: all !important;
+  pointer-events: all !important;
 }

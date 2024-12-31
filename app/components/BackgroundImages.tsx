@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import { ServerEntry } from "@/app/types";
-import { getBackgroundImageStyle, getBackgroundImageUrlForServer } from "@/app/util";
+import {
+  getBackgroundImageStyle,
+  getBackgroundImageUrlForServer,
+} from "@/app/util";
 
 export default function BackgroundImages({
   servers,
@@ -9,7 +12,6 @@ export default function BackgroundImages({
   servers: ServerEntry[];
   selectedServer?: ServerEntry;
 }) {
-
   // Preload images
   useEffect(() => {
     servers.forEach((server) => {
@@ -29,7 +31,11 @@ export default function BackgroundImages({
         const className = selected ? "opacity-on" : "opacity-off";
         const style = getBackgroundImageStyle(imageUrl);
         return (
-          <div key={server.uuid} className={"background-image " + className} style={style} />
+          <div
+            key={server.uuid}
+            className={"background-image " + className}
+            style={style}
+          />
         );
       })}
     </>

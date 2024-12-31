@@ -46,7 +46,6 @@ export default function AboutModal({
             text="Close"
           />
         </Stack>
-        
       </Modal.Footer>
     </Modal>
   );

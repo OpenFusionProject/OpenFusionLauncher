@@ -1,7 +1,11 @@
 import { ProgressBar } from "react-bootstrap";
 import Button from "../components/Button";
 
-import { VersionCacheData, VersionCacheProgressItem, VersionEntry } from "@/app/types";
+import {
+  VersionCacheData,
+  VersionCacheProgressItem,
+  VersionEntry,
+} from "@/app/types";
 
 const BYTES_PER_GB = 1024 * 1024 * 1024;
 
@@ -12,8 +16,13 @@ const formatBytesToGB = (bytes?: number) => {
   return (bytes / BYTES_PER_GB).toFixed(2);
 };
 
-const isCorrupt = (items: Record<string, VersionCacheProgressItem>, countMissing?: boolean) => {
-  return Object.values(items).some((item) => item.corrupt && (!item.missing || countMissing));
+const isCorrupt = (
+  items: Record<string, VersionCacheProgressItem>,
+  countMissing?: boolean,
+) => {
+  return Object.values(items).some(
+    (item) => item.corrupt && (!item.missing || countMissing),
+  );
 };
 
 const getTooltipForItem = (name: string, item: VersionCacheProgressItem) => {
@@ -21,8 +30,11 @@ const getTooltipForItem = (name: string, item: VersionCacheProgressItem) => {
   return status + name;
 };
 
-const getVariantForProgress = (data: VersionCacheData, item: VersionCacheProgressItem, offline: boolean) => {
-
+const getVariantForProgress = (
+  data: VersionCacheData,
+  item: VersionCacheProgressItem,
+  offline: boolean,
+) => {
   if (item.missing) {
     return "danger";
   }
@@ -40,12 +52,18 @@ const getVariantForProgress = (data: VersionCacheData, item: VersionCacheProgres
   return "primary";
 };
 
-const getValidatedSize = (items: Record<string, VersionCacheProgressItem>, includeMissing?: boolean) => {
+const getValidatedSize = (
+  items: Record<string, VersionCacheProgressItem>,
+  includeMissing?: boolean,
+) => {
   if (Object.keys(items).length == 0) {
     return undefined;
   }
-  return Object.values(items).reduce((acc, item) => acc + (item.missing && !includeMissing ? 0 : item.item_size), 0);
-}
+  return Object.values(items).reduce(
+    (acc, item) => acc + (item.missing && !includeMissing ? 0 : item.item_size),
+    0,
+  );
+};
 
 const getDisplaySize = (data: VersionCacheData, offline: boolean) => {
   const items = offline ? data.offlineItems : data.gameItems;
@@ -60,7 +78,9 @@ const getTotalOfflineSize = (version: VersionEntry) => {
 };
 
 const getMissingTooltip = (items: Record<string, VersionCacheProgressItem>) => {
-  const missingItems = Object.entries(items).filter(([_, item]) => item.missing);
+  const missingItems = Object.entries(items).filter(
+    ([_, item]) => item.missing,
+  );
   if (missingItems.length == 0) {
     return undefined;
   }
@@ -70,7 +90,7 @@ const getMissingTooltip = (items: Record<string, VersionCacheProgressItem>) => {
     tooltip += `${name}\n`;
   }
   return tooltip;
-}
+};
 
 export default function GameBuildsList({
   versions,
@@ -113,16 +133,18 @@ export default function GameBuildsList({
               <td colSpan={3}>No builds available</td>
             </tr>
           ) : (
-            versions.map(
-              (version) => {
-                const versionData: VersionCacheData = versionDataList.find((vd) => vd.versionUuid == version.uuid) ?? {
-                  versionUuid: version.uuid,
-                  gameDone: false,
-                  gameItems: {},
-                  offlineDone: false,
-                  offlineItems: {},
-                };
-                return !version.hidden && (
+            versions.map((version) => {
+              const versionData: VersionCacheData = versionDataList.find(
+                (vd) => vd.versionUuid == version.uuid,
+              ) ?? {
+                versionUuid: version.uuid,
+                gameDone: false,
+                gameItems: {},
+                offlineDone: false,
+                offlineItems: {},
+              };
+              return (
+                !version.hidden && (
                   <tr key={version.uuid}>
                     <td className="font-monospace align-middle">
                       <h3>
@@ -142,9 +164,11 @@ export default function GameBuildsList({
                     </td>
                     <td className="text-center">
                       <p>
-                        {formatBytesToGB(getDisplaySize(versionData, false)) ?? "--"}
+                        {formatBytesToGB(getDisplaySize(versionData, false)) ??
+                          "--"}
                         {" / "}
-                        {formatBytesToGB(version.total_uncompressed_size) ?? "?.??"}
+                        {formatBytesToGB(version.total_uncompressed_size) ??
+                          "?.??"}
                         {" GB"}
                       </p>
                       <ProgressBar
@@ -152,18 +176,25 @@ export default function GameBuildsList({
                         data-bs-placement="top"
                         title={getMissingTooltip(versionData.gameItems)}
                       >
-                        {Object.entries(versionData.gameItems).map(([itemName, item]) => (
-                          !item.missing && <ProgressBar
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            title={getTooltipForItem(itemName, item)}
-                            key={itemName}
-                            now={item.item_size}
-                            max={version.total_uncompressed_size ?? 1}
-                            variant={getVariantForProgress(versionData, item, false)}
-                            className="contrast-border-hover"
-                          />
-                        ))}
+                        {Object.entries(versionData.gameItems).map(
+                          ([itemName, item]) =>
+                            !item.missing && (
+                              <ProgressBar
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title={getTooltipForItem(itemName, item)}
+                                key={itemName}
+                                now={item.item_size}
+                                max={version.total_uncompressed_size ?? 1}
+                                variant={getVariantForProgress(
+                                  versionData,
+                                  item,
+                                  false,
+                                )}
+                                className="contrast-border-hover"
+                              />
+                            ),
+                        )}
                       </ProgressBar>
                       <br />
                       <Button
@@ -177,24 +208,32 @@ export default function GameBuildsList({
                     </td>
                     <td className="text-center">
                       <p>
-                        {formatBytesToGB(getDisplaySize(versionData, true)) ?? "--"}
+                        {formatBytesToGB(getDisplaySize(versionData, true)) ??
+                          "--"}
                         {" / "}
-                        {formatBytesToGB(getTotalOfflineSize(version)) ?? "?.??"}
+                        {formatBytesToGB(getTotalOfflineSize(version)) ??
+                          "?.??"}
                         {" GB"}
                       </p>
                       <ProgressBar>
-                        {Object.entries(versionData.offlineItems).map(([itemName, item]) => (
-                          <ProgressBar
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            title={getTooltipForItem(itemName, item)}
-                            key={itemName}
-                            now={item.item_size}
-                            max={version.total_compressed_size ?? 1}
-                            variant={getVariantForProgress(versionData, item, true)}
-                            className="contrast-border-hover"
-                          />
-                        ))}
+                        {Object.entries(versionData.offlineItems).map(
+                          ([itemName, item]) => (
+                            <ProgressBar
+                              data-bs-toggle="tooltip"
+                              data-bs-placement="top"
+                              title={getTooltipForItem(itemName, item)}
+                              key={itemName}
+                              now={item.item_size}
+                              max={version.total_compressed_size ?? 1}
+                              variant={getVariantForProgress(
+                                versionData,
+                                item,
+                                true,
+                              )}
+                              className="contrast-border-hover"
+                            />
+                          ),
+                        )}
                       </ProgressBar>
                       <br />
                       <Button
@@ -208,8 +247,7 @@ export default function GameBuildsList({
                         onClick={() => downloadOfflineCache(version.uuid)}
                         variant="success"
                         tooltip="Download offline cache"
-                      />
-                      {" "}
+                      />{" "}
                       <Button
                         loading={!versionData.offlineDone}
                         enabled={isCorrupt(versionData.offlineItems, true)}
@@ -217,8 +255,7 @@ export default function GameBuildsList({
                         onClick={() => repairOfflineCache(version.uuid)}
                         variant="warning"
                         tooltip="Repair offline cache"
-                      />
-                      {" "}
+                      />{" "}
                       <Button
                         loading={!versionData.offlineDone}
                         enabled={!!getValidatedSize(versionData.offlineItems)}
@@ -229,9 +266,9 @@ export default function GameBuildsList({
                       />
                     </td>
                   </tr>
-                );
-              }
-            )
+                )
+              );
+            })
           )}
         </tbody>
       </table>

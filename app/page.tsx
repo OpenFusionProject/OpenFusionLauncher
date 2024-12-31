@@ -41,13 +41,16 @@ import Toasts from "@/components/Toasts";
 import { listen } from "@tauri-apps/api/event";
 import { getDebugMode, getTheme, sleep } from "@/app/util";
 
-const DEFAULT_TAGLINE = "Welcome to OpenFusion.\nSelect a server from the list below to get started.";
+const DEFAULT_TAGLINE =
+  "Welcome to OpenFusion.\nSelect a server from the list below to get started.";
 
 export default function Home() {
   const loadedRef = useRef(false);
 
   const [launcherVersion, setLauncherVersion] = useState("--");
-  const [updateAvailable, setUpdateAvailable] = useState<UpdateInfo | undefined>(undefined);
+  const [updateAvailable, setUpdateAvailable] = useState<
+    UpdateInfo | undefined
+  >(undefined);
   const [tagline, setTagline] = useState(DEFAULT_TAGLINE);
 
   const [initialFetchDone, setInitialFetchDone] = useState(false);
@@ -65,7 +68,8 @@ export default function Home() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showVersionSelectorModal, setShowVersionSelectorModal] = useState(false);
+  const [showVersionSelectorModal, setShowVersionSelectorModal] =
+    useState(false);
 
   const [showAboutModal, setShowAboutModal] = useState(false);
 
@@ -87,7 +91,7 @@ export default function Home() {
     } else {
       setSelectedIdx(-1);
     }
-  }
+  };
 
   const pushAlert = (variant: string, text: string, link?: string) => {
     const id = Math.floor(Math.random() * 1000000);
@@ -146,7 +150,8 @@ export default function Home() {
 
   const checkForUpdate = async () => {
     try {
-      const updateInfo: UpdateInfo | undefined = await invoke("check_for_update");
+      const updateInfo: UpdateInfo | undefined =
+        await invoke("check_for_update");
       if (updateInfo) {
         setUpdateAvailable(updateInfo);
         alertInfo("Update available: " + updateInfo.version, updateInfo.url);
@@ -166,7 +171,7 @@ export default function Home() {
       if (debug) {
         alertWarning("Debug mode enabled");
       }
-    })
+    });
     setInitialFetchDone(true);
   };
 
@@ -200,7 +205,10 @@ export default function Home() {
     stopLoading("import");
   };
 
-  const setVersionForServer = async (serverUuid: string, versionUuid: string) => {
+  const setVersionForServer = async (
+    serverUuid: string,
+    versionUuid: string,
+  ) => {
     const server = servers.find((s) => s.uuid == serverUuid);
     if (!server) {
       return;
@@ -281,7 +289,12 @@ export default function Home() {
     stopLoading("launch");
   };
 
-  const onRegister = async (serverUuid: string, username: string, password: string, email: string) => {
+  const onRegister = async (
+    serverUuid: string,
+    username: string,
+    password: string,
+    email: string,
+  ) => {
     startLoading("do_register");
     try {
       const res: RegistrationResult = await invoke("do_register", {
@@ -303,7 +316,11 @@ export default function Home() {
     stopLoading("do_register");
   };
 
-  const onLogin = async (serverUuid: string, username: string, password: string) => {
+  const onLogin = async (
+    serverUuid: string,
+    username: string,
+    password: string,
+  ) => {
     startLoading("do_login");
     try {
       await invoke("do_login", {
@@ -335,7 +352,9 @@ export default function Home() {
 
       // authenticate before worrying about versions
       try {
-        const loginSession: LoginSession = await invoke("get_session", { serverUuid: serverUuid });
+        const loginSession: LoginSession = await invoke("get_session", {
+          serverUuid: serverUuid,
+        });
         session = loginSession;
       } catch {
         // If we can't get a session token for ANY REASON, we'll grab a new refresh token
@@ -349,7 +368,9 @@ export default function Home() {
       // check supported versions
       let versions: string[] = [];
       try {
-        versions = await invoke("get_versions_for_server", { uuid: serverUuid });
+        versions = await invoke("get_versions_for_server", {
+          uuid: serverUuid,
+        });
       } catch (e: unknown) {
         stopLoading("configure_endpoint");
         alertError("Failed to get versions: " + e);
@@ -399,10 +420,14 @@ export default function Home() {
     stopLoading("add_server");
   };
 
-  const updateServer = async (details: NewServerDetails, uuid: string, showSucc?: boolean) => {
+  const updateServer = async (
+    details: NewServerDetails,
+    uuid: string,
+    showSucc?: boolean,
+  ) => {
     try {
       const entry: ServerEntry = { ...details, uuid };
-      await invoke("update_server", { serverEntry: entry });;
+      await invoke("update_server", { serverEntry: entry });
       setServers((servers) => {
         const newServers = servers.map((server) => {
           if (server.uuid == uuid) {
@@ -485,7 +510,10 @@ export default function Home() {
       <Container id="serverselector-container">
         <Row id="of-logoheader" className="text-center pt-3">
           <Col>
-            <LogoImages servers={servers} selectedServer={getSelectedServer()} />
+            <LogoImages
+              servers={servers}
+              selectedServer={getSelectedServer()}
+            />
             <div id="of-intro-text">
               {tagline.split("\n").map((line, index) => (
                 <p className="fw-bold" key={index}>
@@ -566,7 +594,7 @@ export default function Home() {
       </div>
       <div id="config-button-div">
         <Button
-          onClick={() => window.location.href = "/settings"}
+          onClick={() => (window.location.href = "/settings")}
           variant="primary"
           icon="cog"
           tooltip="Settings"
@@ -611,7 +639,7 @@ export default function Home() {
         server={getSelectedServer()}
         versions={versions}
         onSelect={(selected) => {
-          setVersionForServer(getSelectedServer()!.uuid, selected);  
+          setVersionForServer(getSelectedServer()!.uuid, selected);
         }}
       />
       <AboutModal
