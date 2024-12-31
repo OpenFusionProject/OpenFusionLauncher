@@ -153,7 +153,7 @@ export default function Home() {
         alertInfo("Update available: " + updateInfo.version, updateInfo.url);
       }
     } catch (e: unknown) {
-      alertError("Failed to check for updates (" + e + ")");
+      console.warn("Failed to check for updates (" + e + ")");
     }
   };
 

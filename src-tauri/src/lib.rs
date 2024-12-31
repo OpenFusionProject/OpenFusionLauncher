@@ -29,7 +29,7 @@ type Result<T> = std::result::Result<T, Error>;
 type CommandResult<T> = std::result::Result<T, String>;
 
 const UPDATE_CHECK_URL: &str =
-    "https://api.github.com/repos/OpenFusionProject/OpenFusionClient/releases/latest";
+    "https://api.github.com/repos/OpenFusionProject/OpenFusionLauncher/releases/latest";
 
 #[derive(Debug, Deserialize)]
 struct UpdateCheckResponse {
