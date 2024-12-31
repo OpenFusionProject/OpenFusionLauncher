@@ -5,6 +5,7 @@ import Button from "@/components/Button";
 import SettingControlDropdown from "./SettingControlDropdown";
 import SettingControlWindowSize from "./SettingControlWindowSize";
 import SettingControlText from "./SettingControlText";
+import { getDebugMode } from "../util";
 
 export default function GameSettingsTab({
   active,
@@ -15,13 +16,13 @@ export default function GameSettingsTab({
   currentSettings: GameSettings;
   updateSettings: (newSettings: GameSettings) => Promise<void>;
 }) {
-  const [settings, setSettings] = useState<GameSettings | undefined>(undefined);
+  const [settings, setSettings] = useState<GameSettings>(currentSettings);
   const [applying, setApplying] = useState<boolean>(false);
 
+  const [debug, setDebug] = useState<boolean>(false);
+
   useEffect(() => {
-    if (!settings) {
-      setSettings(currentSettings);
-    }
+    getDebugMode().then(setDebug);
   }, [active]);
 
   const applySettings = async () => {
@@ -83,9 +84,12 @@ export default function GameSettingsTab({
               onChange={(value: WindowSize | undefined) => setSettings({ ...settings!, window_size: value })}
             />
           </Form>}
-          <hr className="border-primary" />
-          <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(currentSettings, null, 4)} readOnly />
-          <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(settings, null, 4)} readOnly />
+          {debug && <>
+            <hr className="border-primary" />
+            <h6>Debug</h6>
+            <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(currentSettings, null, 4)} readOnly />
+            <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(settings, null, 4)} readOnly />
+          </>}
         </Col>
         <Col />
       </Row>

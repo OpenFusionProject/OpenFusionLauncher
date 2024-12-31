@@ -934,6 +934,12 @@ async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
     internal.await.map_err(|e: Error| e.to_string())
 }
 
+#[tauri::command]
+async fn is_debug_mode() -> bool {
+    debug!("is_debug_mode");
+    cfg!(debug_assertions)
+}
+
 #[allow(clippy::single_match)]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -963,6 +969,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             reload_state,
+            is_debug_mode,
             check_for_update,
             get_versions,
             get_servers,

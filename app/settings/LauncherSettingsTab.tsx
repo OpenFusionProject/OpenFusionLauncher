@@ -4,6 +4,7 @@ import { Col, Container, Form, Row } from "react-bootstrap";
 import SettingControlDropdown from "./SettingControlDropdown";
 import Button from "@/components/Button";
 import SettingControlText from "./SettingControlText";
+import { getDebugMode } from "../util";
 
 export default function LauncherSettingsTab({
   active,
@@ -14,14 +15,14 @@ export default function LauncherSettingsTab({
   currentSettings: LauncherSettings;
   updateSettings: (newSettings: LauncherSettings) => Promise<void>;
 }) {
-  const [settings, setSettings] = useState<LauncherSettings | undefined>(undefined);
+  const [settings, setSettings] = useState<LauncherSettings>(currentSettings);
   const [applying, setApplying] = useState<boolean>(false);
 
+  const [debug, setDebug] = useState<boolean>(false);
+
   useEffect(() => {
-    if (currentSettings) {
-      setSettings(currentSettings);
-    }
-  }, [active, currentSettings]);
+    getDebugMode().then(setDebug);
+  }, [active]);
 
   const applySettings = async () => {
     setApplying(true);
@@ -129,9 +130,12 @@ export default function LauncherSettingsTab({
               onChange={(value) => setSettings((current) => ({ ...current!, offline_cache_path: value }))}
             />
           </Form>}
-          <hr className="border-primary" />
-          <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(currentSettings, null, 4)} readOnly />
-          <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(settings, null, 4)} readOnly />
+          {debug && <>
+            <hr className="border-primary" />
+            <h6>Debug</h6>
+            <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(currentSettings, null, 4)} readOnly />
+            <textarea id="settings-json" className="w-100" rows={5} value={JSON.stringify(settings, null, 4)} readOnly />
+          </>}
         </Col>
         <Col />
       </Row>

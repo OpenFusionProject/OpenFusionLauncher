@@ -1,5 +1,6 @@
 import { Config, ServerEntry } from "@/app/types";
 import get_seed from "@/app/seed";
+import { invoke } from "@tauri-apps/api/core";
 
 function getSystemTheme() {
   if (typeof window !== "undefined" && window.matchMedia) {
@@ -69,4 +70,15 @@ export function getBackgroundImageStyle(imageUrl?: string) {
 export function getHostnameFromLink(link: string) {
   const url = new URL(link);
   return url.hostname;
+}
+
+let isDebugMode: boolean | undefined = undefined;
+export async function getDebugMode() {
+  if (isDebugMode === undefined) {
+    try {
+      const debugOn: boolean = await invoke("is_debug_mode");
+      isDebugMode = debugOn;
+    } catch (e) {}
+  }
+  return isDebugMode ?? false;
 }

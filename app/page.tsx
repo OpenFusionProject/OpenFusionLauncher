@@ -39,7 +39,7 @@ import LogoImages from "@/components/LogoImages";
 import SelectVersionModal from "@/components/SelectVersionModal";
 import Toasts from "@/components/Toasts";
 import { listen } from "@tauri-apps/api/event";
-import { getTheme, sleep } from "@/app/util";
+import { getDebugMode, getTheme, sleep } from "@/app/util";
 
 const DEFAULT_TAGLINE = "Welcome to OpenFusion.\nSelect a server from the list below to get started.";
 
@@ -163,6 +163,11 @@ export default function Home() {
     if (config.launcher.check_for_updates) {
       checkForUpdate(); // no need to await
     }
+    getDebugMode().then((debug) => {
+      if (debug) {
+        alertWarning("Debug mode enabled");
+      }
+    })
     setInitialFetchDone(true);
   };
 
