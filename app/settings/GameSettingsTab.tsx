@@ -1,11 +1,12 @@
 import { GameSettings, WindowSize } from "@/app/types";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
-import Button from "@/components/Button";
 import SettingControlDropdown from "./SettingControlDropdown";
 import SettingControlWindowSize from "./SettingControlWindowSize";
 import SettingControlText from "./SettingControlText";
-import { getDebugMode } from "../util";
+import { getDebugMode } from "@/app/util";
+import SettingsHeader from "./SettingsHeader";
+import { SettingsCtx } from "@/app/contexts";
 
 export default function GameSettingsTab({
   active,
@@ -14,23 +15,25 @@ export default function GameSettingsTab({
 }: {
   active: boolean;
   currentSettings: GameSettings;
-  updateSettings: (newSettings: GameSettings) => Promise<GameSettings>;
+  updateSettings: (newSettings: GameSettings | undefined) => Promise<GameSettings>;
 }) {
   const [settings, setSettings] = useState<GameSettings>(currentSettings);
-  const [applying, setApplying] = useState<boolean>(false);
+  const [working, setWorking] = useState<boolean>(false);
 
   const [debug, setDebug] = useState<boolean>(false);
+
+  const ctx = useContext(SettingsCtx);
 
   useEffect(() => {
     getDebugMode().then(setDebug);
   }, [active]);
 
   const applySettings = async () => {
-    setApplying(true);
+    setWorking(true);
     // The backend might adjust stuff, so update the state
     const newSettings = await updateSettings(settings!);
     setSettings(newSettings);
-    setApplying(false);
+    setWorking(false);
   };
 
   const areSettingsDifferent = () => {
@@ -40,27 +43,37 @@ export default function GameSettingsTab({
   };
   const canApply = areSettingsDifferent();
 
+  const resetSettings = async () => {
+    setWorking(true);
+    const newConfig = await updateSettings(undefined);
+    setSettings(newConfig);
+    setWorking(false);
+  };
+
+  const showResetConfirmation = () => {
+    if (ctx.showConfirmationModal) {
+      ctx.showConfirmationModal(
+        "Are you sure you want to reset the game settings to their defaults?",
+        "Reset Game Settings",
+        "danger",
+        resetSettings,
+      );
+    }
+  };
+
   return (
     <Container fluid id="settings-container" className="bg-footer">
       <Row>
         <Col />
         <Col xs={12} sm={10} md={8} id="settings-column" className="primary my-5 p-3 rounded border border-primary">
-          <h2 className="d-inline-block">Game Settings</h2>
-          <Button
-            icon="trash"
-            className="d-inline-block float-end ms-1"
-            enabled={canApply}
-            text="Discard"
-            variant="danger"
-            onClick={() => setSettings(currentSettings)} />
-          <Button
-            loading={applying}
-            icon="check"
-            className="d-inline-block float-end"
-            enabled={canApply}
-            text="Apply"
-            variant="success"
-            onClick={() => applySettings()} />
+          <SettingsHeader
+            text="Game Settings"
+            working={working}
+            canApply={canApply}
+            onApply={applySettings}
+            onDiscard={() => setSettings(currentSettings)}
+            onReset={showResetConfirmation}
+          />
           <hr className="border-primary" />
           {settings && <Form>
             <SettingControlDropdown

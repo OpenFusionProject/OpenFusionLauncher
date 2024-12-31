@@ -3,7 +3,7 @@ mod endpoint;
 mod state;
 mod util;
 
-use config::LaunchBehavior;
+use config::{LaunchBehavior, LauncherSettings};
 use endpoint::{InfoResponse, RegisterResponse, Session};
 use ffbuildtool::{ItemProgress, Version};
 use serde::{Deserialize, Serialize};
@@ -916,6 +916,30 @@ async fn update_config(app_handle: tauri::AppHandle, config: Config) -> CommandR
 }
 
 #[tauri::command]
+async fn reset_launcher_config(app_handle: tauri::AppHandle) -> CommandResult<()> {
+    debug!("reset_launcher_config");
+    let default_launcher_config = LauncherSettings::default();
+    let state = app_handle.state::<Mutex<AppState>>();
+    let mut state = state.lock().await;
+    state.config.launcher = default_launcher_config;
+    state.write_config = true;
+    state.save();
+    Ok(())
+}
+
+#[tauri::command]
+async fn reset_game_config(app_handle: tauri::AppHandle) -> CommandResult<()> {
+    debug!("reset_game_config");
+    let default_game_config = config::GameSettings::default();
+    let state = app_handle.state::<Mutex<AppState>>();
+    let mut state = state.lock().await;
+    state.config.game = default_game_config;
+    state.write_config = true;
+    state.save();
+    Ok(())
+}
+
+#[tauri::command]
 async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
     debug!("check_for_update");
     let internal = async {
@@ -975,6 +999,8 @@ pub fn run() {
             get_servers,
             get_config,
             update_config,
+            reset_launcher_config,
+            reset_game_config,
             add_server,
             update_server,
             delete_server,

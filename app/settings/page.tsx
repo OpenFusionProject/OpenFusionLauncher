@@ -102,24 +102,49 @@ export default function SettingsPage() {
   const saveConfig = async (config: Config) => {
     try {
       await invoke("update_config", { config: config });
-      const newConfig = await syncConfig();
       alertSuccess("Changes applied successfully");
-      return newConfig;
     } catch (e) {
       alertError("Error updating config: " + e);
     }
-    return config;
   };
 
-  const updateLauncherSettings = async (newSettings: LauncherSettings) => {
-    const newConfig = { ...config!, launcher: newSettings };
-    const updatedConfig = await saveConfig(newConfig);
+  const resetLauncherSettings = async () => {
+    try {
+      await invoke("reset_launcher_config");
+      alertSuccess("Launcher settings reset successfully");
+    } catch (e) {
+      alertError("Error resetting launcher settings: " + e);
+    }
+  };
+
+  const resetGameSettings = async () => {
+    try {
+      await invoke("reset_game_config");
+      alertSuccess("Game settings reset successfully");
+    } catch (e) {
+      alertError("Error resetting game settings: " + e);
+    }
+  };
+
+  const updateLauncherSettings = async (newSettings?: LauncherSettings) => {
+    if (newSettings) {
+      const newConfig = { ...config!, launcher: newSettings };
+      await saveConfig(newConfig);
+    } else {
+      await resetLauncherSettings();
+    }
+    const updatedConfig = await syncConfig();
     return updatedConfig.launcher;
   };
 
-  const updateGameSettings = async (newSettings: GameSettings) => {
-    const newConfig = { ...config!, game: newSettings };
-    const updatedConfig = await saveConfig(newConfig);
+  const updateGameSettings = async (newSettings?: GameSettings) => {
+    if (newSettings) {
+      const newConfig = { ...config!, game: newSettings };
+      await saveConfig(newConfig);
+    } else {
+      await resetGameSettings();
+    }
+    const updatedConfig = await syncConfig();
     return updatedConfig.game;
   };
 

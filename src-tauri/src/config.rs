@@ -17,7 +17,7 @@ pub enum LaunchBehavior {
     StayOpen,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct LauncherSettings {
     #[serde(default = "util::true_fn")]
     pub check_for_updates: bool,
@@ -40,6 +40,19 @@ pub struct LauncherSettings {
 
     #[serde(default = "util::get_default_offline_cache_dir")]
     pub offline_cache_path: String,
+}
+impl Default for LauncherSettings {
+    fn default() -> Self {
+        Self {
+            check_for_updates: true,
+            theme: None,
+            use_offline_caches: true,
+            verify_offline_caches: false,
+            launch_behavior: LaunchBehavior::Hide,
+            game_cache_path: util::get_default_cache_dir(),
+            offline_cache_path: util::get_default_offline_cache_dir(),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
@@ -66,7 +79,7 @@ pub struct WindowSize {
     pub height: u32,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GameSettings {
     #[serde(default)]
     pub graphics_api: GraphicsApi,
@@ -79,4 +92,14 @@ pub struct GameSettings {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub launch_command: Option<String>,
+}
+impl Default for GameSettings {
+    fn default() -> Self {
+        Self {
+            graphics_api: GraphicsApi::Dx9,
+            fps_fix: FpsFix::On,
+            window_size: None,
+            launch_command: None,
+        }
+    }
 }
