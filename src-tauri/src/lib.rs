@@ -279,7 +279,29 @@ async fn prep_launch(
 
         let base_cache_dir = &state.config.launcher.game_cache_path;
         let cache_dir = util::get_cache_dir_for_version(base_cache_dir, version)?;
-        std::fs::create_dir_all(&cache_dir)?;
+        if !cache_dir.exists() {
+            // check for cache upgrade
+            if let Some(parent_uuid) = version.get_parent_uuid() {
+                if let Some(parent_version) = state.versions.get_entry(parent_uuid) {
+                    let parent_cache_dir =
+                        util::get_cache_dir_for_version(base_cache_dir, parent_version)?;
+                    if parent_cache_dir.exists() {
+                        if let Err(e) = util::copy_dir(&parent_cache_dir, &cache_dir) {
+                            warn!(
+                                "Failed to upgrade cache from parent version {} for {}: {}",
+                                parent_uuid, version_uuid, e
+                            );
+                        } else {
+                            info!(
+                                "Upgraded cache from parent version {} for {}",
+                                parent_uuid, version_uuid
+                            );
+                        }
+                    }
+                }
+            }
+        }
+        let _ = std::fs::create_dir_all(&cache_dir);
         cmd.env("UNITY_FF_CACHE_DIR", cache_dir);
 
         let mut asset_url = version.get_asset_url();

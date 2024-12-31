@@ -124,6 +124,25 @@ pub(crate) fn get_dir_size(dir: &PathBuf) -> Result<u64> {
     Ok(size)
 }
 
+pub(crate) fn copy_dir(src: &PathBuf, dest: &PathBuf) -> Result<()> {
+    if !dest.exists() {
+        std::fs::create_dir_all(dest)?;
+    }
+
+    for entry in std::fs::read_dir(src)? {
+        let entry = entry?;
+        let entry_type = entry.file_type()?;
+        let dest_path = dest.join(entry.file_name());
+        if entry_type.is_dir() {
+            copy_dir(&entry.path(), &dest_path)?;
+        } else {
+            std::fs::copy(entry.path(), dest_path)?;
+        }
+    }
+
+    Ok(())
+}
+
 pub(crate) fn is_dir_empty(dir: &PathBuf) -> Result<bool> {
     match std::fs::read_dir(dir) {
         Ok(mut entries) => Ok(entries.next().is_none()),

@@ -1138,8 +1138,8 @@ dependencies = [
 
 [[package]]
 name = "ffbuildtool"
-version = "4.3.0"
-source = "git+https://github.com/OpenFusionProject/ffbuildtool.git?tag=v4.3.0#6b30fb940341523d2c978f7775cd9e0ee05b1337"
+version = "4.4.0"
+source = "git+https://github.com/OpenFusionProject/ffbuildtool.git?tag=v4.4.0#c68e3550d23e83a1fc0f47ce9954a9305b8d915e"
 dependencies = [
  "futures-util",
  "log",
