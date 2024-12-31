@@ -2,7 +2,7 @@ import { LauncherSettings } from "@/app/types";
 import { useContext, useEffect, useState } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import SettingControlDropdown from "./SettingControlDropdown";
-import SettingControlText from "./SettingControlText";
+import SettingControlBrowse from "./SettingControlBrowse";
 import { getDebugMode } from "@/app/util";
 import { SettingsCtx } from "@/app/contexts";
 import SettingsHeader from "./SettingsHeader";
@@ -137,18 +137,20 @@ export default function LauncherSettingsTab({
               value={settings.launch_behavior}
               onChange={(value) => setSettings((current) => ({ ...current!, launch_behavior: value }))}
             />
-            <SettingControlText
+            <SettingControlBrowse
               id="game_cache_path"
               name="Game Cache Path"
               oldValue={currentSettings.game_cache_path}
               value={settings.game_cache_path}
+              directory={true}
               onChange={(value) => setSettings((current) => ({ ...current!, game_cache_path: value }))}
             />
-            <SettingControlText
+            <SettingControlBrowse
               id="offline_cache_path"
               name="Offline Cache Path"
               oldValue={currentSettings.offline_cache_path}
               value={settings.offline_cache_path}
+              directory={true}
               onChange={(value) => setSettings((current) => ({ ...current!, offline_cache_path: value }))}
             />
           </Form>}
