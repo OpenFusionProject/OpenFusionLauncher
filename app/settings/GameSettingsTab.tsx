@@ -12,17 +12,17 @@ export default function GameSettingsTab({
   updateSettings,
 }: {
   active: boolean;
-  currentSettings?: GameSettings;
+  currentSettings: GameSettings;
   updateSettings: (newSettings: GameSettings) => Promise<void>;
 }) {
   const [settings, setSettings] = useState<GameSettings | undefined>(undefined);
   const [applying, setApplying] = useState<boolean>(false);
 
   useEffect(() => {
-    if (currentSettings) {
+    if (!settings) {
       setSettings(currentSettings);
     }
-  }, [active, currentSettings]);
+  }, [active]);
 
   const applySettings = async () => {
     setApplying(true);
@@ -57,20 +57,20 @@ export default function GameSettingsTab({
               id="graphics_api"
               name="Graphics API"
               options={[
-                { value: "dx9", label: "DirectX 9" },
-                { value: "opengl", label: "OpenGL" },
-                { value: "vulkan", label: "Vulkan" },
+                { key: "dx9", label: "DirectX 9" },
+                { key: "opengl", label: "OpenGL" },
+                { key: "vulkan", label: "Vulkan" },
               ]}
-              defaultValue="dx9"
-              modified={settings?.graphics_api !== currentSettings?.graphics_api}
-              value={settings?.graphics_api}
+              defaultKey="dx9"
+              oldValue={currentSettings.graphics_api}
+              value={settings.graphics_api}
               onChange={(value) => setSettings({ ...settings!, graphics_api: value })}
             />
             <SettingControlText
               id="launch_command"
               name="Custom Launch Command"
-              modified={settings?.launch_command !== currentSettings?.launch_command}
-              value={settings?.launch_command}
+              oldValue={currentSettings.launch_command}
+              value={settings.launch_command}
               placeholder="{}"
               validator={(value) => value === "" || value.indexOf("{}") !== -1}
               onChange={(value) => setSettings({ ...settings!, launch_command: (value === "" ? undefined : value) })}

@@ -150,11 +150,11 @@ export default function SettingsPage() {
               </>
             }
           >
-            <LauncherSettingsTab
+            {config && <LauncherSettingsTab
               active={tab == TAB_LAUNCHER_SETTINGS}
-              currentSettings={config?.launcher}
+              currentSettings={config.launcher}
               updateSettings={updateLauncherSettings}
-            />
+            />}
           </Tab>
           <Tab
             eventKey={TAB_GAME_SETTINGS}
@@ -164,11 +164,11 @@ export default function SettingsPage() {
               </>
             }
           >
-            <GameSettingsTab
+            {config && <GameSettingsTab
               active={tab == TAB_GAME_SETTINGS}
-              currentSettings={config?.game}
+              currentSettings={config.game}
               updateSettings={updateGameSettings}
-            />
+            />}
           </Tab>
           <Tab
             eventKey={TAB_GAME_BUILDS}

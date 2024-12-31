@@ -5,31 +5,34 @@ import { useEffect, useState } from "react";
 export default function SettingControlText({
   id,
   name,
+  oldValue,
   value,
   placeholder,
-  modified,
   validator,
   onChange,
 }: {
   id: string;
   name?: string;
+  oldValue?: string;
   value?: string;
   placeholder?: string;
-  modified?: boolean;
   validator?: (value: string) => boolean;
   onChange: (value: string) => void;
 }) {
   const [text, setText] = useState<string>(value ?? "");
 
+  const oldValueString = oldValue ?? "";
+  const valueString = value ?? "";
+
   useEffect(() => {
-    setText(value ?? "");
-  }, [value]);
+    setText(valueString);
+  }, [oldValueString, valueString]);
 
   return (
     <SettingControlBase id={id} name={name}>
       <Form.Control
         type="text"
-        className={modified ? "border-success" : ""}
+        className={oldValueString != valueString ? "border-success" : ""}
         value={text}
         onChange={(e) => {
           setText(e.target.value);

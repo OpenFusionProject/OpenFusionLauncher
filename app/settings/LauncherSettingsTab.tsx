@@ -11,7 +11,7 @@ export default function LauncherSettingsTab({
   updateSettings,
 }: {
   active: boolean;
-  currentSettings?: LauncherSettings;
+  currentSettings: LauncherSettings;
   updateSettings: (newSettings: LauncherSettings) => Promise<void>;
 }) {
   const [settings, setSettings] = useState<LauncherSettings | undefined>(undefined);
@@ -56,77 +56,77 @@ export default function LauncherSettingsTab({
               id="theme"
               name="Launcher Theme"
               options={[
-                { value: "system", label: "Match system theme" },
-                { value: "dexlabs_dark", label: "DexLabs Dark" },
-                { value: "dexlabs_light", label: "DexLabs Light" },
+                { key: "system", label: "Match system theme" },
+                { key: "dexlabs_dark", label: "DexLabs Dark" },
+                { key: "dexlabs_light", label: "DexLabs Light" },
               ]}
-              defaultValue={"system"}
-              modified={settings?.theme !== currentSettings?.theme}
-              value={settings?.theme}
-              onChange={(value) => setSettings({ ...settings!, theme: value === "system" ? undefined : value })}
+              defaultKey="system"
+              oldValue={currentSettings.theme}
+              value={settings.theme}
+              onChange={(value) => setSettings((current) => ({ ...current!, theme: value === "system" ? undefined : value }))}
             />
             <SettingControlDropdown
               id="check_for_updates"
               name="Check for launcher updates on launch"
               options={[
-                { value: true, label: "Yes" },
-                { value: false, label: "No" },
+                { key: "yes", value: true, label: "Yes" },
+                { key: "no", value: false, label: "No" },
               ]}
-              defaultValue={true}
-              modified={settings?.check_for_updates !== currentSettings?.check_for_updates}
-              value={settings?.check_for_updates}
-              onChange={(value) => setSettings({ ...settings!, check_for_updates: value === "true" })}
+              defaultKey="yes"
+              oldValue={currentSettings.check_for_updates}
+              value={settings.check_for_updates}
+              onChange={(value) => setSettings((current) => ({ ...current!, check_for_updates: value}))}
             />
             <SettingControlDropdown
               id="use_offline_caches"
               name="Use offline caches when downloaded"
               options={[
-                { value: true, label: "Yes" },
-                { value: false, label: "No" },
+                { key: "yes", value: true, label: "Yes" },
+                { key: "no", value: false, label: "No" },
               ]}
-              defaultValue={true}
-              modified={settings?.use_offline_caches !== currentSettings?.use_offline_caches}
-              value={settings?.use_offline_caches}
-              onChange={(value) => setSettings({ ...settings!, use_offline_caches: value === "true" })}
+              defaultKey="yes"
+              oldValue={currentSettings.use_offline_caches}
+              value={settings.use_offline_caches}
+              onChange={(value) => setSettings((current) => ({ ...current!, use_offline_caches: value }))}
             />
             <SettingControlDropdown
               id="verify_offline_caches"
               name="Verify offline caches on launch"
               options={[
-                { value: true, label: "Yes" },
-                { value: false, label: "No" },
+                { key: "yes", value: true, label: "Yes" },
+                { key: "no", value: false, label: "No" },
               ]}
-              defaultValue={false}
-              modified={settings?.verify_offline_caches !== currentSettings?.verify_offline_caches}
-              value={settings?.verify_offline_caches}
-              onChange={(value) => setSettings({ ...settings!, verify_offline_caches: value === "true" })}
+              defaultKey="no"
+              oldValue={currentSettings.verify_offline_caches}
+              value={settings.verify_offline_caches}
+              onChange={(value) => setSettings((current) => ({ ...current!, verify_offline_caches: value }))}
             />
             <SettingControlDropdown
               id="launch_behavior"
               name="Launch behavior"
               options={[
-                { value: "hide", label: "Hide", description: "hide the launcher when the game is launched, show again after game exits" },
-                { value: "quit", label: "Quit", description: "quit the launcher when the game is launched" },
-                { value: "stay_open", label: "Stay Open", description: "keep the launcher open when the game is launched" },
+                { key: "hide", label: "Hide", description: "hide the launcher when the game is launched, show again after game exits" },
+                { key: "quit", label: "Quit", description: "quit the launcher when the game is launched" },
+                { key: "stay_open", label: "Stay Open", description: "keep the launcher open when the game is launched" },
               ]}
-              defaultValue="hide"
-              modified={settings?.launch_behavior !== currentSettings?.launch_behavior}
-              value={settings?.launch_behavior}
-              onChange={(value) => setSettings({ ...settings!, launch_behavior: value })}
+              defaultKey="hide"
+              oldValue={currentSettings.launch_behavior}
+              value={settings.launch_behavior}
+              onChange={(value) => setSettings((current) => ({ ...current!, launch_behavior: value }))}
             />
             <SettingControlText
               id="game_cache_path"
               name="Game Cache Path"
-              modified={settings?.game_cache_path !== currentSettings?.game_cache_path}
-              value={settings?.game_cache_path}
-              onChange={(value) => setSettings({ ...settings!, game_cache_path: value })}
+              oldValue={currentSettings.game_cache_path}
+              value={settings.game_cache_path}
+              onChange={(value) => setSettings((current) => ({ ...current!, game_cache_path: value }))}
             />
             <SettingControlText
               id="offline_cache_path"
               name="Offline Cache Path"
-              modified={settings?.offline_cache_path !== currentSettings?.offline_cache_path}
-              value={settings?.offline_cache_path}
-              onChange={(value) => setSettings({ ...settings!, offline_cache_path: value })}
+              oldValue={currentSettings.offline_cache_path}
+              value={settings.offline_cache_path}
+              onChange={(value) => setSettings((current) => ({ ...current!, offline_cache_path: value }))}
             />
           </Form>}
           <hr className="border-primary" />

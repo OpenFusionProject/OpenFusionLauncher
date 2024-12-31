@@ -133,7 +133,8 @@ export type UpdateInfo = {
 };
 
 export type SettingsOption = {
+  key: string;
   label: string;
   description?: string;
-  value: any | undefined;
+  value?: any;
 };
