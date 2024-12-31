@@ -4,9 +4,10 @@ import { Col, Container, Form, Row } from "react-bootstrap";
 import SettingControlDropdown from "./SettingControlDropdown";
 import SettingControlWindowSize from "./SettingControlWindowSize";
 import SettingControlText from "./SettingControlText";
-import { getDebugMode } from "@/app/util";
+import { deepEqual, getDebugMode } from "@/app/util";
 import SettingsHeader from "./SettingsHeader";
 import { SettingsCtx } from "@/app/contexts";
+import SettingControlFpsFix from "./SettingControlFpsFix";
 
 export default function GameSettingsTab({
   active,
@@ -37,9 +38,7 @@ export default function GameSettingsTab({
   };
 
   const areSettingsDifferent = () => {
-    const currentJson = JSON.stringify(currentSettings, Object.keys(currentSettings).sort());
-    const newJson = JSON.stringify(settings, Object.keys(settings).sort());
-    return currentJson !== newJson;
+    return !deepEqual(currentSettings, settings);
   };
   const canApply = areSettingsDifferent();
 
@@ -104,6 +103,13 @@ export default function GameSettingsTab({
               modified={settings.window_size?.width !== currentSettings?.window_size?.width || settings.window_size?.height !== currentSettings?.window_size?.height}
               value={settings?.window_size}
               onChange={(value: WindowSize | undefined) => setSettings({ ...settings!, window_size: value })}
+            />
+            <SettingControlFpsFix
+              id="fps_fix"
+              name="FPS Fix"
+              oldValue={currentSettings.fps_fix}
+              value={settings.fps_fix}
+              onChange={(value) => setSettings({ ...settings!, fps_fix: value })}
             />
           </Form>}
           {debug && <>

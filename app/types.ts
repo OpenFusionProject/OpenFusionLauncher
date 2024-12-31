@@ -49,10 +49,16 @@ export type WindowSize = {
   height: number;
 };
 
+export type FpsLimit = {
+  on_with_limiter: number;
+};
+export type FpsFix = "on" | FpsLimit | "off";
+
 export type GameSettings = {
   graphics_api: string;
   window_size?: WindowSize;
   launch_command?: string;
+  fps_fix: FpsFix;
 };
 
 export type Config = {

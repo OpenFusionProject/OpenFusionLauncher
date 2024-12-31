@@ -70,7 +70,7 @@ export default function SettingControlWindowSize({
 
   return (
     <SettingControlBase id={id} name={name}>
-      <div className="d-flex">
+      <div className="d-flex align-items-center">
         <Form.Control
           type="text"
           value={width}
@@ -79,7 +79,7 @@ export default function SettingControlWindowSize({
           onChange={(e) => onWidthChange(e.target.value)}
           isInvalid={validateSize(width, DEFAULT_WINDOW_WIDTH) === undefined}
         />
-        <strong className="mx-2 d-flex align-items-center">X</strong>
+        <strong className="mx-2">X</strong>
         <Form.Control
           type="text"
           value={height}

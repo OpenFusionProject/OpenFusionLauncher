@@ -58,6 +58,10 @@ $body-bg-dark: #000;
         color: #fff;
     }
 
+    .form-control:disabled {
+        background-color: var(--bs-secondary-bg) !important;
+    }
+
     select {
         border-color: #0099ff;
         background-color: #000;
