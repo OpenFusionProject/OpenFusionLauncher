@@ -75,12 +75,10 @@ export function getHostnameFromLink(link: string) {
 let isDebugMode: boolean | undefined = undefined;
 export async function getDebugMode() {
   if (isDebugMode === undefined) {
-    try {
-      const debugOn: boolean = await invoke("is_debug_mode");
-      isDebugMode = debugOn;
-    } catch (e) {}
+    const debugOn: boolean = await invoke("is_debug_mode");
+    isDebugMode = debugOn;
   }
-  return isDebugMode ?? false;
+  return isDebugMode;
 }
 
 export function deepEqual(a: any, b: any) {

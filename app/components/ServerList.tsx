@@ -1,4 +1,4 @@
-import { ServerEntry, VersionEntry, Versions } from "@/app/types";
+import { ServerEntry, VersionEntry } from "@/app/types";
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 
@@ -125,7 +125,7 @@ function VersionBadges({
           {endpointVersions.map((versionUuid) => {
             const version = findVersion(versions, versionUuid);
             if (!version) {
-              return <span className="badge bg-danger me-1">unknown</span>;
+              return <span key={versionUuid} className="badge bg-danger me-1">unknown</span>;
             }
             const label = version.name ?? version.uuid;
             return <span key={version.uuid} className="badge bg-success me-1">{label}</span>;

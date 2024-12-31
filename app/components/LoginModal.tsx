@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
@@ -106,6 +106,7 @@ function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
         src={getUpsellImage(server)}
         className={!showUpsell ? "d-none" : ""}
         onLoad={() => setShowUpsell(true)}
+        alt="Upsell"
       />
       <div className="announcements">
         {error ? ERROR_TEXT : announcements.split('\n').map((line, index) => (
@@ -123,7 +124,7 @@ function RequirementsTooltip({
 }: {
   focusedControlId: string | null;
   controlId: string;
-  children: any;
+  children: React.ReactNode;
 }) {
   const target = document.getElementById(controlId);
   const show = !!(focusedControlId && focusedControlId === controlId);
@@ -285,7 +286,7 @@ export default function LoginModal({
               </Form.Group>
               <div className="text-center">
                 <span>
-                  View this server's{" "}
+                  View this server{"'s "}
                   <span
                     role="button"
                     className="text-decoration-underline"

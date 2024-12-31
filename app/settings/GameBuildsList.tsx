@@ -66,7 +66,7 @@ const getMissingTooltip = (items: Record<string, VersionCacheProgressItem>) => {
   }
 
   let tooltip = "Missing:\n";
-  for (const [name, item] of missingItems) {
+  for (const [name, _] of missingItems) {
     tooltip += `${name}\n`;
   }
   return tooltip;

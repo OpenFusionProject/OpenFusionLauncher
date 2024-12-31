@@ -1,6 +1,6 @@
 "use client";
 
-import { startEasterEggs, stopEasterEggs } from "./easter-eggs";
+import { startEasterEggs } from "./easter-eggs";
 
 import { invoke } from "@tauri-apps/api/core";
 import { getVersion } from "@tauri-apps/api/app";
@@ -58,7 +58,6 @@ export default function Home() {
   const [versions, setVersions] = useState<VersionEntry[]>([]);
 
   const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>([]);
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -249,10 +248,6 @@ export default function Home() {
     }
   };
 
-  const stub = () => {
-    alertInfo("hehe dong");
-  };
-
   const connectToServer = async (
     serverUuid: string,
     versionUuid: string,
@@ -342,7 +337,7 @@ export default function Home() {
       try {
         const loginSession: LoginSession = await invoke("get_session", { serverUuid: serverUuid });
         session = loginSession;
-      } catch (e: unknown) {
+      } catch {
         // If we can't get a session token for ANY REASON, we'll grab a new refresh token
         // by making the user log in again
         stopLoading("configure_endpoint");

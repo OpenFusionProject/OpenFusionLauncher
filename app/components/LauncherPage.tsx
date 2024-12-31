@@ -1,4 +1,3 @@
-import { Container, Row, Col } from "react-bootstrap";
 import NavBar from "./NavBar";
 
 export default function LauncherPage({
