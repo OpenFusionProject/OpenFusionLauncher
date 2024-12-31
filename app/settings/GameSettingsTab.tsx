@@ -14,7 +14,7 @@ export default function GameSettingsTab({
 }: {
   active: boolean;
   currentSettings: GameSettings;
-  updateSettings: (newSettings: GameSettings) => Promise<void>;
+  updateSettings: (newSettings: GameSettings) => Promise<GameSettings>;
 }) {
   const [settings, setSettings] = useState<GameSettings>(currentSettings);
   const [applying, setApplying] = useState<boolean>(false);
@@ -27,9 +27,18 @@ export default function GameSettingsTab({
 
   const applySettings = async () => {
     setApplying(true);
-    await updateSettings(settings!);
+    // The backend might adjust stuff, so update the state
+    const newSettings = await updateSettings(settings!);
+    setSettings(newSettings);
     setApplying(false);
   };
+
+  const areSettingsDifferent = () => {
+    const currentJson = JSON.stringify(currentSettings, Object.keys(currentSettings).sort());
+    const newJson = JSON.stringify(settings, Object.keys(settings).sort());
+    return currentJson !== newJson;
+  };
+  const canApply = areSettingsDifferent();
 
   return (
     <Container fluid id="settings-container" className="bg-footer">
@@ -40,7 +49,7 @@ export default function GameSettingsTab({
           <Button
             icon="trash"
             className="d-inline-block float-end ms-1"
-            enabled={JSON.stringify(currentSettings) !== JSON.stringify(settings)}
+            enabled={canApply}
             text="Discard"
             variant="danger"
             onClick={() => setSettings(currentSettings)} />
@@ -48,7 +57,7 @@ export default function GameSettingsTab({
             loading={applying}
             icon="check"
             className="d-inline-block float-end"
-            enabled={JSON.stringify(currentSettings) !== JSON.stringify(settings)}
+            enabled={canApply}
             text="Apply"
             variant="success"
             onClick={() => applySettings()} />

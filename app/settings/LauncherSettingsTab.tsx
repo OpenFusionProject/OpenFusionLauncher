@@ -13,7 +13,7 @@ export default function LauncherSettingsTab({
 }: {
   active: boolean;
   currentSettings: LauncherSettings;
-  updateSettings: (newSettings: LauncherSettings) => Promise<void>;
+  updateSettings: (newSettings: LauncherSettings) => Promise<LauncherSettings>;
 }) {
   const [settings, setSettings] = useState<LauncherSettings>(currentSettings);
   const [applying, setApplying] = useState<boolean>(false);
@@ -26,9 +26,18 @@ export default function LauncherSettingsTab({
 
   const applySettings = async () => {
     setApplying(true);
-    await updateSettings(settings!);
+    // The backend might adjust stuff, so update the state
+    const newConfig = await updateSettings(settings!);
+    setSettings(newConfig);
     setApplying(false);
   };
+
+  const areSettingsDifferent = () => {
+    const currentJson = JSON.stringify(currentSettings, Object.keys(currentSettings).sort());
+    const newJson = JSON.stringify(settings, Object.keys(settings).sort());
+    return currentJson !== newJson;
+  };
+  const canApply = areSettingsDifferent();
 
   return (
     <Container fluid id="settings-container" className="bg-footer">
@@ -39,7 +48,7 @@ export default function LauncherSettingsTab({
           <Button
             icon="trash"
             className="d-inline-block float-end ms-1"
-            enabled={JSON.stringify(currentSettings) !== JSON.stringify(settings)}
+            enabled={canApply}
             text="Discard"
             variant="danger"
             onClick={() => setSettings(currentSettings)} />
@@ -47,7 +56,7 @@ export default function LauncherSettingsTab({
             loading={applying}
             icon="check"
             className="d-inline-block float-end"
-            enabled={JSON.stringify(currentSettings) !== JSON.stringify(settings)}
+            enabled={canApply}
             text="Apply"
             variant="success"
             onClick={() => applySettings()} />

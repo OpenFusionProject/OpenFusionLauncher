@@ -86,6 +86,7 @@ export default function SettingsPage() {
     const theme = getTheme(config);
     document.documentElement.setAttribute("data-bs-theme", theme);
     setConfig(config);
+    return config;
   };
 
   const doInit = async () => {
@@ -101,21 +102,25 @@ export default function SettingsPage() {
   const saveConfig = async (config: Config) => {
     try {
       await invoke("update_config", { config: config });
-      await syncConfig();
+      const newConfig = await syncConfig();
       alertSuccess("Changes applied successfully");
+      return newConfig;
     } catch (e) {
       alertError("Error updating config: " + e);
     }
+    return config;
   };
 
   const updateLauncherSettings = async (newSettings: LauncherSettings) => {
     const newConfig = { ...config!, launcher: newSettings };
-    await saveConfig(newConfig);
+    const updatedConfig = await saveConfig(newConfig);
+    return updatedConfig.launcher;
   };
 
   const updateGameSettings = async (newSettings: GameSettings) => {
     const newConfig = { ...config!, game: newSettings };
-    await saveConfig(newConfig);
+    const updatedConfig = await saveConfig(newConfig);
+    return updatedConfig.game;
   };
 
   useEffect(() => {
