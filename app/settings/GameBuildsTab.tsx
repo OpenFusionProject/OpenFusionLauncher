@@ -149,22 +149,20 @@ export default function GameBuildsTab({
     });
   };
 
-  const importBuild = async (manifest: File) => {
-    // javascript doesn't give us the absolute path of the file,
-    // so we have to read it here and send the bytes to the backend
-    const bytes: ArrayBuffer = await manifest.arrayBuffer();
-    const bytesU8 = new Uint8Array(bytes);
+  const importBuild = async (manifestPath: string) => {
     try {
-      const newVersionLabel: string = await invoke("import_version", { manifestBytes: bytesU8 });
+      const newVersionLabel: string = await invoke("import_version", { uri: manifestPath });
       await fetchVersions();
       if (ctx.alertSuccess) {
         ctx.alertSuccess("Imported build " + newVersionLabel);
       }
+      return true;
     } catch (e: unknown) {
       if (ctx.alertError) {
         ctx.alertError("Failed to import build: " + e);
       }
     }
+    return false;
   };
 
   const addBuildManual = async (name: string, assetUrl: string) => {

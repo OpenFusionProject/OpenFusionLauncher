@@ -775,17 +775,14 @@ async fn delete_server(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResul
 }
 
 #[tauri::command]
-async fn import_version(
-    app_handle: tauri::AppHandle,
-    manifest_bytes: Vec<u8>,
-) -> CommandResult<String> {
+async fn import_version(app_handle: tauri::AppHandle, uri: String) -> CommandResult<String> {
     let internal = async {
-        let state = app_handle.state::<Mutex<AppState>>();
-        let mut state = state.lock().await;
-        let manifest_string = String::from_utf8(manifest_bytes)?;
-        let Ok(version) = serde_json::from_str::<Version>(&manifest_string) else {
+        let Ok(version) = Version::from_manifest(&uri).await else {
             return Err("Invalid manifest".into());
         };
+
+        let state = app_handle.state::<Mutex<AppState>>();
+        let mut state = state.lock().await;
 
         if state.versions.get_entry(version.get_uuid()).is_some() {
             return Err("Version already imported".into());

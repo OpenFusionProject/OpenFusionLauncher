@@ -47,10 +47,10 @@ export default function SettingControlBrowse({
     const result = await open({
       multiple: false,
       directory: isDirectory,
-      filter: {
-        name: isDirectory ? "Folder" : "File",
+      filters: isDirectory ? [] : [{
+        name: "File",
         extensions: extensions ?? ["*"],
-      },
+      }],
     });
     if (result) {
       onTextChange(result);
