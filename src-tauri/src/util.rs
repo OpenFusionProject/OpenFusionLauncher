@@ -6,6 +6,7 @@ use std::{
     path::{Path, PathBuf},
     process::Command,
     sync::{mpsc, OnceLock},
+    time::Duration,
 };
 
 use dns_lookup::lookup_host;
@@ -26,6 +27,7 @@ pub(crate) fn get_http_client() -> &'static reqwest::Client {
     HTTP_CLIENT.get_or_init(|| {
         reqwest::Client::builder()
             .user_agent(APP_USER_AGENT)
+            .timeout(Duration::from_secs(10))
             .build()
             .unwrap()
     })

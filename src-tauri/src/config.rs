@@ -1,14 +1,14 @@
 use crate::util;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy)]
 #[serde(rename_all = "snake_case")]
 pub enum LauncherTheme {
     DexlabsDark,
     DexlabsLight,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Default, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, Default, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum LaunchBehavior {
     #[default]
@@ -55,7 +55,7 @@ impl Default for LauncherSettings {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum GraphicsApi {
     #[default]
@@ -64,7 +64,7 @@ pub enum GraphicsApi {
     Vulkan,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum FpsFix {
     #[default]
@@ -73,7 +73,7 @@ pub enum FpsFix {
     Off,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy)]
 pub struct WindowSize {
     pub width: u32,
     pub height: u32,

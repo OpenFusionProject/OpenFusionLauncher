@@ -8,7 +8,6 @@ use uuid::Uuid;
 
 use crate::{
     config::{GameSettings, LauncherSettings},
-    endpoint::InfoResponse,
     util::{self, AlertVariant},
     NewServerDetails, Result,
 };
@@ -75,7 +74,6 @@ pub struct AppState {
     //
     pub write_config: bool,
     pub launch_cmd: Option<Command>,
-    info_cache: HashMap<String, InfoResponse>,
 }
 impl AppState {
     pub fn load(app_handle: tauri::AppHandle) -> Self {
@@ -111,7 +109,6 @@ impl AppState {
             //
             write_config,
             launch_cmd: None,
-            info_cache: HashMap::new(),
         }
     }
 
@@ -172,14 +169,6 @@ impl AppState {
         let num_imported = imported.len();
         versions.extend(imported);
         Ok(num_imported)
-    }
-
-    pub fn cache_info(&mut self, endpoint_host: &str, info: InfoResponse) {
-        self.info_cache.insert(endpoint_host.to_string(), info);
-    }
-
-    pub fn get_cached_info(&self, endpoint_host: &str) -> Option<&InfoResponse> {
-        self.info_cache.get(endpoint_host)
     }
 }
 

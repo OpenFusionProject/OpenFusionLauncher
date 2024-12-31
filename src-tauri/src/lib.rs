@@ -94,9 +94,12 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
         let mut state = state.lock().await;
+        let launch_behavior = state.config.launcher.launch_behavior;
         let mut cmd = state.launch_cmd.take().ok_or("No launch prepared")?;
+        drop(state);
+
         let mut proc = cmd.spawn()?;
-        if state.config.launcher.launch_behavior == LaunchBehavior::Quit {
+        if launch_behavior == LaunchBehavior::Quit {
             app_handle.exit(0);
             return Ok(0);
         }
@@ -123,11 +126,12 @@ async fn do_register(
             .get_entry(server_uuid)
             .ok_or(format!("Server {} not found", server_uuid))?;
 
-        let ServerInfo::Endpoint { endpoint, .. } = &server.info else {
+        let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
             return Err("Server is not an endpoint server".into());
         };
+        drop(state);
 
-        let response = endpoint::register_user(&username, &password, &email, endpoint).await?;
+        let response = endpoint::register_user(&username, &password, &email, &endpoint).await?;
         Ok(response)
     };
     debug!("do_register");
@@ -142,18 +146,21 @@ async fn do_login(
     password: String,
 ) -> CommandResult<()> {
     let internal = async {
-        let state = app_handle.state::<Mutex<AppState>>();
-        let mut state = state.lock().await;
+        let _state = app_handle.state::<Mutex<AppState>>();
+        let state = _state.lock().await;
         let server = state
             .servers
             .get_entry(server_uuid)
             .ok_or(format!("Server {} not found", server_uuid))?;
 
-        let ServerInfo::Endpoint { endpoint, .. } = &server.info else {
+        let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
             return Err("Server is not an endpoint server".into());
         };
+        drop(state);
 
-        let refresh_token = endpoint::get_refresh_token(&username, &password, endpoint).await?;
+        let refresh_token = endpoint::get_refresh_token(&username, &password, &endpoint).await?;
+
+        let mut state = _state.lock().await;
         state.tokens.save_token(server_uuid, &refresh_token);
         state.save();
         Ok(())
@@ -192,15 +199,17 @@ async fn get_session(app_handle: tauri::AppHandle, server_uuid: Uuid) -> Command
             .get_entry(server_uuid)
             .ok_or(format!("Server {} not found", server_uuid))?;
 
-        let ServerInfo::Endpoint { endpoint, .. } = &server.info else {
+        let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
             return Err("Server is not an endpoint server".into());
         };
 
         let Some(refresh_token) = state.tokens.get_token(server_uuid) else {
             return Err("Not logged in".into());
         };
+        let refresh_token = refresh_token.to_string();
+        drop(state);
 
-        let session = endpoint::get_session(refresh_token, endpoint).await?;
+        let session = endpoint::get_session(&refresh_token, &endpoint).await?;
         Ok(session)
     };
     debug!("get_session");
@@ -244,7 +253,7 @@ async fn prep_launch(
             }
             ServerInfo::Endpoint { endpoint, .. } => {
                 // Ask the endpoint server for the UUID of the current version
-                let Ok(api_info) = endpoint::get_info(&mut state, endpoint).await else {
+                let Ok(api_info) = endpoint::get_info(endpoint).await else {
                     return Err("Failed to contact API server".into());
                 };
 
@@ -414,31 +423,6 @@ async fn prep_launch(
     internal
         .await
         .map_err(|e: Box<dyn std::error::Error>| e.to_string())
-}
-
-#[tauri::command]
-async fn get_cache_size(
-    app_handle: tauri::AppHandle,
-    uuid: Uuid,
-    offline: bool,
-) -> CommandResult<u64> {
-    let internal = async {
-        let state = app_handle.state::<Mutex<AppState>>();
-        let state = state.lock().await;
-        let version = state.versions.get_entry(uuid).ok_or("Version not found")?;
-        let path = if offline {
-            util::get_cache_dir_for_version(&state.config.launcher.offline_cache_path, version)?
-        } else {
-            util::get_cache_dir_for_version(&state.config.launcher.game_cache_path, version)?
-        };
-        if util::is_dir_empty(&path)? {
-            return Err("No cache data".into());
-        }
-        let sz = util::get_dir_size(&path)?;
-        Ok(sz)
-    };
-    debug!("get_cache_size {} {}", uuid, offline);
-    internal.await.map_err(|e: Error| e.to_string())
 }
 
 #[tauri::command]
@@ -680,12 +664,14 @@ async fn get_info_for_server(
     debug!("get_info_for_server {}", uuid);
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
-        let mut state = state.lock().await;
+        let state = state.lock().await;
         let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
         let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
             return Err("Server is not an endpoint server".into());
         };
-        let info = endpoint::get_info(&mut state, &endpoint).await?;
+        drop(state);
+
+        let info = endpoint::get_info(&endpoint).await?;
         Ok(info.clone())
     };
     internal.await.map_err(|e: Error| e.to_string())
@@ -705,6 +691,7 @@ async fn get_announcements_for_server(
             return Err("Server is not an endpoint server".into());
         };
         drop(state);
+
         let announcements = endpoint::get_announcements(&endpoint).await?;
         Ok(announcements)
     };
@@ -725,6 +712,7 @@ async fn get_player_count_for_server(
             return Err("Server is not an endpoint server".into());
         };
         drop(state);
+
         let status = endpoint::get_status(&endpoint).await?;
         Ok(status.player_count)
     };
@@ -839,13 +827,16 @@ async fn get_versions_for_server(
     uuid: Uuid,
 ) -> CommandResult<Vec<Uuid>> {
     let internal = async {
-        let state = app_handle.state::<Mutex<AppState>>();
-        let mut state = state.lock().await;
+        let _state = app_handle.state::<Mutex<AppState>>();
+        let state = _state.lock().await;
         let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
         let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
             return Err("Server is not an endpoint server".into());
         };
-        let info = endpoint::get_info(&mut state, &endpoint).await?;
+        let state_versions = state.versions.clone();
+        drop(state);
+
+        let info = endpoint::get_info(&endpoint).await?;
         let supported_versions = info.get_supported_versions();
         let mut new_versions = Vec::new();
         let mut supported_version_uuids = Vec::new();
@@ -856,7 +847,7 @@ async fn get_versions_for_server(
             };
             supported_version_uuids.push(version_uuid);
 
-            if state.versions.get_entry(version_uuid).is_some() {
+            if state_versions.get_entry(version_uuid).is_some() {
                 debug!("Already have version {}", version_uuid);
                 continue;
             }
@@ -865,12 +856,16 @@ async fn get_versions_for_server(
                 warn!("Failed to fetch version {}", version_uuid);
                 continue;
             };
-            state.versions.add_entry(version.clone());
             new_versions.push(version);
         }
 
-        if let Err(e) = util::import_versions(new_versions) {
+        if let Err(e) = util::import_versions(new_versions.clone()) {
             warn!("Failed to import versions for server {}: {}", uuid, e);
+        }
+
+        let mut state = _state.lock().await;
+        for version in new_versions {
+            state.versions.add_entry(version);
         }
         Ok(supported_version_uuids)
     };
@@ -1018,7 +1013,6 @@ pub fn run() {
             get_session,
             prep_launch,
             do_launch,
-            get_cache_size,
             validate_cache,
             download_cache,
             delete_cache,

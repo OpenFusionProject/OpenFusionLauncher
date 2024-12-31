@@ -5,7 +5,6 @@ use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
-use crate::state::AppState;
 use crate::util;
 use crate::Error;
 use crate::Result;
@@ -75,17 +74,10 @@ fn make_api_error(url: &str, status: StatusCode, body: &str) -> Error {
     format!("API error {}: {} [{}]", status, body, url).into()
 }
 
-pub async fn get_info<'a>(
-    state: &'a mut AppState,
-    endpoint_host: &str,
-) -> Result<&'a InfoResponse> {
-    if state.get_cached_info(endpoint_host).is_none() {
-        let info_json = util::do_simple_get(&format!("http://{}", endpoint_host)).await?;
-        let info: InfoResponse = serde_json::from_str(&info_json)?;
-        debug!("Cached info for {}: {:?}", endpoint_host, info);
-        state.cache_info(endpoint_host, info);
-    }
-    Ok(state.get_cached_info(endpoint_host).unwrap())
+pub async fn get_info(endpoint_host: &str) -> Result<InfoResponse> {
+    let info_json = util::do_simple_get(&format!("http://{}", endpoint_host)).await?;
+    let info = serde_json::from_str(&info_json)?;
+    Ok(info)
 }
 
 pub async fn get_announcements(endpoint_host: &str) -> Result<String> {
