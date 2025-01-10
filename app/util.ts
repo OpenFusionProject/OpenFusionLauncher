@@ -6,7 +6,8 @@ function getSystemTheme() {
   if (typeof window !== "undefined" && window.matchMedia) {
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
       return "dark";
-    } else {
+    }
+    if (window.matchMedia("(prefers-color-scheme: light)").matches) {
       return "light";
     }
   }
