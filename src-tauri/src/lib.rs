@@ -345,7 +345,7 @@ async fn prep_launch(
                     }
                 }
             } else {
-                false
+                true
             };
 
             if use_offline_cache {
