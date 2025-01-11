@@ -98,6 +98,14 @@ pub(crate) fn get_default_offline_cache_dir() -> String {
         .to_string()
 }
 
+pub(crate) fn get_default_launch_command() -> Option<String> {
+    if cfg!(target_os = "windows") {
+        None
+    } else {
+        Some("wine {}".to_string())
+    }
+}
+
 pub(crate) fn get_cache_dir_for_version(
     base_cache_dir: &str,
     version: &Version,

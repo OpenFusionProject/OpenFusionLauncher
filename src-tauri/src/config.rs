@@ -90,6 +90,7 @@ pub struct GameSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub window_size: Option<WindowSize>,
 
+    #[serde(default = "util::get_default_launch_command")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub launch_command: Option<String>,
 }
