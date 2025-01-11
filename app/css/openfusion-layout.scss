@@ -165,21 +165,16 @@ body {
 }
 
 #server-table table .name-column {
-  min-width: 1px;
+  min-width: 290px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   padding-left: 15px;
 }
 
-#server-table table .versions-column {
-  width: fit-content;
-}
-
 #server-table table .status-column {
   width: 150px;
   white-space: nowrap;
-  padding-left: 15px;
   padding-right: 15px;
 }
 
