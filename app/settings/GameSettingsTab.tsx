@@ -89,8 +89,8 @@ export default function GameSettingsTab({
                 name="Graphics API"
                 options={[
                   { key: "dx9", label: "DirectX 9" },
-                  { key: "opengl", label: "OpenGL" },
-                  { key: "vulkan", label: "Vulkan" },
+                  { key: "vulkan", label: "Vulkan (experimental)" },
+                  { key: "opengl", label: "OpenGL (not recommended)" },
                 ]}
                 defaultKey="dx9"
                 oldValue={currentSettings.graphics_api}
