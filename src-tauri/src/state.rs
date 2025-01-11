@@ -288,6 +288,9 @@ impl Versions {
                 };
             }
         }
+
+        // explicit sort to give a consistent ordering
+        versions.sort_by(|v1, v2| v1.get_name().cmp(&v2.get_name()));
         Ok(versions)
     }
 
