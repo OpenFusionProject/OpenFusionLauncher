@@ -4,6 +4,7 @@ export default function Button({
   variant,
   icon,
   iconLeft,
+  iconStyle,
   tooltip,
   text,
   loading,
@@ -14,6 +15,7 @@ export default function Button({
   variant?: string;
   icon?: string;
   iconLeft?: boolean;
+  iconStyle?: string;
   tooltip?: string;
   text?: string;
   loading?: boolean;
@@ -22,13 +24,14 @@ export default function Button({
   const actualVariant = variant ?? "primary";
   const actuallyEnabled = (enabled ?? true) && !loading;
   const tooltipText = tooltip ?? text?.trim();
+  const iconStyleClass = iconStyle ? "-" + iconStyle : "";
 
   const iconElement = loading ? (
     <div className="spinner-border spinner-border-sm" role="status">
       <span className="visually-hidden">Loading...</span>
     </div>
   ) : (
-    <i className={"fa fa-" + icon}></i>
+    <i className={"fa" + iconStyleClass + " fa-" + icon}></i>
   );
   return (
     <button

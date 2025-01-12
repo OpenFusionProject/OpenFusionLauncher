@@ -4,7 +4,7 @@ import Toast from "@/components/Toast";
 
 export default function Toasts({ alerts }: { alerts: Alert[] }) {
   return (
-    <ToastContainer position="top-end" className="p-3">
+    <ToastContainer className="p-3">
       {alerts.map((alert) => (
         <Toast alert={alert} key={alert.id} />
       ))}

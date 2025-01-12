@@ -973,7 +973,13 @@ async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
 }
 
 #[tauri::command]
-async fn is_debug_mode() -> bool {
+fn should_use_custom_titlebar() -> bool {
+    debug!("should_use_custom_titlebar");
+    cfg!(target_os = "linux")
+}
+
+#[tauri::command]
+fn is_debug_mode() -> bool {
     debug!("is_debug_mode");
     cfg!(debug_assertions)
 }
@@ -998,6 +1004,14 @@ pub fn run() {
                 )?;
             }
 
+            // we have a custom title bar on Linux
+            if should_use_custom_titlebar() {
+                app.webview_windows().values_mut().for_each(|w| {
+                    debug!("dec off");
+                    let _ = w.set_decorations(false);
+                });
+            }
+
             state::init_app_statics(app);
             info!("OpenFusion Launcher v{}", get_app_statics().get_version());
             // N.B. AppState::load depends on APP_STATICS
@@ -1008,6 +1022,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             reload_state,
+            should_use_custom_titlebar,
             is_debug_mode,
             check_for_update,
             get_versions,

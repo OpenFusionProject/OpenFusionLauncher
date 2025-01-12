@@ -6,6 +6,7 @@
 
 $body-bg: #f8f9fa;
 $body-bg-dark: #000;
+$title-bar-bg-opacity: 0.05;
 
 @import "../../node_modules/bootstrap/scss/maps";
 @import "../../node_modules/bootstrap/scss/mixins";
@@ -14,6 +15,10 @@ $body-bg-dark: #000;
 /* Dark mode only */
 
 @include color-mode(dark) {
+  .titlebar {
+    background-color: rgba($body-bg, $title-bar-bg-opacity)
+  }
+
   .table-striped thead th {
     background-color: #34476e;
   }
@@ -152,6 +157,10 @@ $body-bg-dark: #000;
 /* Light mode only */
 
 @include color-mode(light) {
+  .titlebar {
+    background-color: rgba($body-bg-dark, $title-bar-bg-opacity)
+  }
+
   .table-striped thead th {
     background-color: $green-300;
   }

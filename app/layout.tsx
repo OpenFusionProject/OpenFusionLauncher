@@ -3,6 +3,7 @@ import "./css/bootstrap.scss";
 import "./css/openfusion-behavior.scss";
 import "./css/openfusion-layout.scss";
 import "./css/openfusion-theming.scss";
+import TitleBar from "./components/TitleBar";
 
 export default function RootLayout({
   children,
@@ -11,7 +12,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-bs-theme="dark">
-      <body>{children}</body>
+      <body>
+        <TitleBar />
+        {children}
+      </body>
     </html>
   );
 }
