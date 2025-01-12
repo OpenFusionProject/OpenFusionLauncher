@@ -340,6 +340,11 @@ fn extract_env_vars_from_tokens(tokens: &mut Vec<String>) -> HashMap<String, Str
         if tokens[i].contains('=') {
             let mut parts = tokens[i].split('=');
             let key = parts.next().unwrap();
+            if key.trim().is_empty() {
+                i += 1;
+                continue;
+            }
+
             let value = parts.next().unwrap();
             env_vars.insert(key.to_string(), value.to_string());
             tokens.remove(i);
@@ -370,6 +375,7 @@ pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Command
         launch_command.env(env.0, env.1.unwrap());
     }
     for (key, value) in user_env_vars {
+        assert!(!key.trim().is_empty());
         launch_command.env(key, value);
     }
 
