@@ -4,7 +4,7 @@
 
 /* Global */
 
-$body-bg: #f8f9fa;
+$body-bg: #d5edf4;
 $body-bg-dark: #000;
 $title-bar-bg-opacity: 0.05;
 
@@ -43,6 +43,7 @@ $title-bar-bg-opacity: 0.05;
   }
 
   .launcher-page-header {
+    color: $body-bg;
     background-image: url("../img/modal-bg-dark.png");
     background-repeat: repeat;
   }
@@ -89,6 +90,7 @@ $title-bar-bg-opacity: 0.05;
 
   .nav button.active {
     background-image: url("../img/modal-footer-bg-dark.png");
+    color: $body-bg !important;
     background-repeat: repeat;
   }
 
@@ -118,6 +120,10 @@ $title-bar-bg-opacity: 0.05;
   .modal-body {
     background-image: url("../img/modal-footer-bg-dark.png");
     background-repeat: repeat;
+  }
+
+  .modal {
+    color: $body-bg;
   }
 
   .contrast-border-hover:hover {
@@ -157,30 +163,25 @@ $title-bar-bg-opacity: 0.05;
 /* Light mode only */
 
 @include color-mode(light) {
+  td, th {
+    color: #fff;
+  }
+  
   .titlebar {
     background-color: rgba($body-bg-dark, $title-bar-bg-opacity)
   }
 
   .table-striped thead th {
-    background-color: $green-300;
+    background-color: #0099d8;
   }
 
   .table-striped tbody tr:nth-of-type(even) > td {
-    background-color: $green-300;
+    background-color: #0099d8;
   }
 
   .table-striped tbody tr:nth-of-type(odd) > td,
   th {
-    background-color: $green-100;
-  }
-
-  .btn-primary {
-    background-image: url("../img/btn-primary-bg-light.png");
-    background-repeat: repeat;
-    box-shadow: inset 0 0 20px #22d94f;
-    --bs-btn-hover-bg: #198754;
-    --bs-btn-hover-border-color: #198754;
-    --bs-btn-border-color: #198754;
+    background-color: #0078b9;
   }
 
   #of-logo-dark {
@@ -188,30 +189,74 @@ $title-bar-bg-opacity: 0.05;
   }
 
   #of-intro-text {
-    text-shadow: 1px 1px 8px #22d94f;
+    color: #486f9a;
+    text-shadow: 1px 1px 8px #bfe7f5;
     font-size: 18px;
   }
 
-  .table-active > td {
-    background-color: $green !important;
+  .nav {
+    --bs-nav-tabs-link-active-border-color: #90d1e4 #90d1e4 #091a23;
+    --bs-nav-tabs-link-hover-border-color: #90d1e4 #90d1e4 #90d1e4;
+    background-image: url("../img/modal-bg-light.png");
+    background-repeat: repeat;
+  }
+
+  .nav button {
+    border-bottom: 1px solid #4f6da7;
+    background-image: url("../img/modal-bg-light.png");
+    background-repeat: repeat;
+  }
+
+  .nav button.active {
+    background-image: url("../img/modal-footer-bg-light.png");
+    color: $body-bg !important;
+    background-repeat: repeat;
+    border-bottom: 1px solid #4f6da7;
+  }
+
+  .launcher-page-header {
+    color: #fff;
+    background-image: url("../img/modal-bg-light.png");
+    background-repeat: repeat;
+  }
+
+  #launcher-page-settings {
+    background-image: url("../img/modal-footer-bg-light.png");
+    background-repeat: repeat;
+  }
+
+  #game-builds-buttonstack {
+    background-image: url("../img/modal-footer-bg-light.png");
+    background-repeat: repeat;
   }
 
   .border-primary {
-    border-color: $green !important;
-    box-shadow: 0 0 15px 0px $green;
+      border-color: #82e2f2 !important;
+      box-shadow: 0 0 15px 0px #00eefe;
+  }
+
+  .btn-primary {
+    background-image: url("../img/btn-primary-bg-light.png");
+    background-repeat: repeat;
+    box-shadow: inset 0 0 20px #7edeef;
+    border-color: #82e2f2;
   }
 
   .table {
-    border-color: $green !important;
+    border-color: #00eefe !important;
+  }
+
+  .table-active>td {
+    background-color: #00eefe !important;
   }
 
   .modal-content {
     background-image: url("../img/modal-bg-light.png");
     background-repeat: repeat;
-    border-color: #2af568;
-    box-shadow: 0 0 15px 0px #479f76;
-    --bs-modal-header-border-color: #2af568;
-    --bs-modal-footer-border-color: #2af568;
+    border-color: #90d1e4;
+    box-shadow: 0 0 15px 0px #0097fc;
+    --bs-modal-header-border-color: #90d1e4;
+    --bs-modal-footer-border-color: #90d1e4;
   }
 
   .modal-body {
@@ -219,8 +264,8 @@ $title-bar-bg-opacity: 0.05;
     background-repeat: repeat;
   }
 
-  .modal-header {
-    color: #f8f9fa;
+  .modal {
+    color: $body-bg;
   }
 
   .contrast-border-hover:hover {
@@ -229,7 +274,7 @@ $title-bar-bg-opacity: 0.05;
 
   .progress {
     background-color: #f8f9fa;
-    border: 1px solid $green;
+    border: 1px solid #00eefe;
   }
 
   .bg-blend {

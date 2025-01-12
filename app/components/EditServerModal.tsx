@@ -145,7 +145,7 @@ export default function EditServerModal({
       </Modal.Header>
       <Modal.Body className="px-0">
         <Form>
-          <Form.Group className="mb-3 px-3" controlId="editServerDescription">
+          <Form.Group className="mb-4 px-3" controlId="editServerDescription">
             <Form.Label>Server Name</Form.Label>
             <Form.Control
               type="text"
