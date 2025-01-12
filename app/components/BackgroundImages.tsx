@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ServerEntry } from "@/app/types";
 import {
   getBackgroundImageStyle,
@@ -12,13 +12,22 @@ export default function BackgroundImages({
   servers: ServerEntry[];
   selectedServer?: ServerEntry;
 }) {
-  // Preload images
+  const [loaded, setLoaded] = useState<Record<string, boolean>>({});
+
   useEffect(() => {
     servers.forEach((server) => {
-      const imageUrl = getBackgroundImageUrlForServer(server);
-      if (imageUrl) {
-        const img = new Image();
-        img.src = imageUrl;
+      if (!loaded[server.uuid]) {
+        const imageUrl = getBackgroundImageUrlForServer(server);
+        if (imageUrl) {
+          const img = new Image();
+          img.src = imageUrl;
+          img.onload = () => {
+            setLoaded((loaded) => ({ ...loaded, [server.uuid]: true }));
+          };
+          img.onerror = () => {
+            setLoaded((loaded) => ({ ...loaded, [server.uuid]: false }));
+          };
+        }
       }
     });
   }, [servers]);
@@ -28,7 +37,8 @@ export default function BackgroundImages({
       {servers.map((server) => {
         const imageUrl = getBackgroundImageUrlForServer(server);
         const selected = server.uuid === selectedServer?.uuid;
-        const className = selected ? "opacity-on" : "opacity-off";
+        const className =
+          selected && loaded[server.uuid] ? "opacity-on" : "opacity-off";
         const style = getBackgroundImageStyle(imageUrl);
         return (
           <div
