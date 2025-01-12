@@ -382,16 +382,10 @@ async fn prep_launch(
                 }
             };
 
-            let rankurl = format!("http://{}/getranks", endpoint);
-            let images = format!("http://{}/upsell/", endpoint);
-            let sponsor = format!("http://{}/upsell/sponsor.png", endpoint);
-            cmd.args(["-r", &rankurl])
-                .args(["-i", &images])
-                .args(["-s", &sponsor]);
+            cmd.args(["-e", endpoint]);
 
             if custom_loading_screen {
-                let loading_images_url = format!("http://{}/launcher/loading", endpoint);
-                cmd.args(["--loaderimages", &loading_images_url]);
+                cmd.arg("--loader-images");
             }
         }
 
