@@ -333,6 +333,23 @@ fn tokenize_launch_command(launch_cmd: &str) -> Vec<String> {
     tokens
 }
 
+fn extract_env_vars_from_tokens(tokens: &mut Vec<String>) -> HashMap<String, String> {
+    let mut env_vars = HashMap::new();
+    let mut i = 0;
+    while i < tokens.len() {
+        if tokens[i].contains('=') {
+            let mut parts = tokens[i].split('=');
+            let key = parts.next().unwrap();
+            let value = parts.next().unwrap();
+            env_vars.insert(key.to_string(), value.to_string());
+            tokens.remove(i);
+        } else {
+            i += 1;
+        }
+    }
+    env_vars
+}
+
 pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Command {
     const REPLACEMENT_TOKEN: &str = "{}";
 
@@ -343,12 +360,19 @@ pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Command
     }
 
     let launch_command_str = launch_fmt.replace(REPLACEMENT_TOKEN, &base_command_str);
-    let launch_command_tokens = tokenize_launch_command(&launch_command_str);
+    let mut launch_command_tokens = tokenize_launch_command(&launch_command_str);
+    let user_env_vars = extract_env_vars_from_tokens(&mut launch_command_tokens);
+
     let mut launch_command = Command::new(&launch_command_tokens[0]);
     launch_command.current_dir(base_cmd.get_current_dir().unwrap());
+
     for env in base_cmd.get_envs() {
         launch_command.env(env.0, env.1.unwrap());
     }
+    for (key, value) in user_env_vars {
+        launch_command.env(key, value);
+    }
+
     launch_command.args(&launch_command_tokens[1..]);
     launch_command
 }
