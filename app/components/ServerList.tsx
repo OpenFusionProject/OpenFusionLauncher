@@ -144,7 +144,7 @@ function VersionBadges({
             }
             const label = version.name ?? version.uuid;
             return (
-              <span key={version.uuid} className="badge bg-success me-1">
+              <span key={version.uuid} className="badge bg-success me-1" title={version.uuid}>
                 {label}
               </span>
             );
@@ -159,7 +159,7 @@ function VersionBadges({
       return <span className="badge bg-danger">unknown</span>;
     }
     const label = version.name ?? version.uuid;
-    return <span className="badge bg-secondary">{label}</span>;
+    return <span className="badge bg-secondary" title={version.uuid}>{label}</span>;
   }
 }
 
