@@ -148,12 +148,13 @@ async fn do_login(
     let internal = async {
         let _state = app_handle.state::<Mutex<AppState>>();
         let state = _state.lock().await;
-        let server = state
+        let mut server = state
             .servers
             .get_entry(server_uuid)
-            .ok_or(format!("Server {} not found", server_uuid))?;
+            .ok_or(format!("Server {} not found", server_uuid))?
+            .clone();
 
-        let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
+        let ServerInfo::Endpoint { endpoint, .. } = server.info else {
             return Err("Server is not an endpoint server".into());
         };
         drop(state);
@@ -161,6 +162,16 @@ async fn do_login(
         let refresh_token = endpoint::get_refresh_token(&username, &password, &endpoint).await?;
 
         let mut state = _state.lock().await;
+
+        // Clear the preferred version
+        server.info = ServerInfo::Endpoint {
+            preferred_version: None,
+            endpoint,
+        };
+        if let Err(e) = state.servers.update_entry(server) {
+            warn!("Failed to clear preferred version for server: {}", e);
+        }
+
         state.tokens.save_token(server_uuid, &refresh_token);
         state.save();
         Ok(())
