@@ -11,6 +11,8 @@ import { EndpointInfo, ServerEntry } from "@/app/types";
 import { Overlay, Tooltip } from "react-bootstrap";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-shell";
+import { parse } from "marked";
+import DOMPurify  from "dompurify";
 import get_seed from "../seed";
 
 const TAB_LOGIN = "login";
@@ -88,7 +90,8 @@ function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
           },
         );
         setError(false);
-        setAnnouncements(announcements);
+        const parsed: string = await parse(announcements);
+        setAnnouncements(parsed);
         setShowAnnouncements(true);
       } catch (e) {
         console.warn(e);
@@ -114,13 +117,7 @@ function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
         alt="Upsell"
       />
       <div className="announcements">
-        {error
-          ? ERROR_TEXT
-          : announcements.split("\n").map((line, index) => (
-              <p className="mb-1" key={index}>
-                {line}
-              </p>
-            ))}
+        {error ? ERROR_TEXT : <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(announcements) }} />}
       </div>
     </div>
   );
