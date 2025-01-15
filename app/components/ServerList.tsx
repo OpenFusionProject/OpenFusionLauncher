@@ -31,7 +31,7 @@ const getPlayerCountForServer = async (server: ServerEntry) => {
   return count;
 };
 
-function PlayerCount({ server }: { server: ServerEntry }) {
+function PlayerCount({ server, refreshes }: { server: ServerEntry, refreshes: number }) {
   const [playerCount, setPlayerCount] = useState<number | undefined>(undefined);
   const [error, setError] = useState<boolean>(false);
 
@@ -47,8 +47,10 @@ function PlayerCount({ server }: { server: ServerEntry }) {
       }
     };
 
+    setError(false);
+    setPlayerCount(undefined);
     fetchPlayerCount();
-  }, [server]);
+  }, [server, refreshes]);
 
   if (playerCount !== undefined) {
     return (
@@ -91,11 +93,13 @@ function PlayerCount({ server }: { server: ServerEntry }) {
 function VersionBadges({
   server,
   versions,
-  refreshVersions,
+  reloadVersions,
+  refreshes,
 }: {
   server: ServerEntry;
   versions: VersionEntry[];
-  refreshVersions: () => Promise<void>;
+  reloadVersions: () => Promise<void>;
+  refreshes: number;
 }) {
   const [endpointVersions, setEndpointVersions] = useState<
     string[] | undefined
@@ -105,8 +109,8 @@ function VersionBadges({
     const fetchEndpointVersions = async () => {
       try {
         const versionUuids: string[] = await getVersionsForServer(server);
-        // FEAT: maybe store which versions are new so we can show badges fot them
-        await refreshVersions();
+        // FEAT: maybe store which versions are new so we can show badges for them
+        await reloadVersions();
         setEndpointVersions(versionUuids);
       } catch (e) {
         console.warn(e);
@@ -114,10 +118,11 @@ function VersionBadges({
       }
     };
 
+    setEndpointVersions(undefined);
     if (server.endpoint) {
       fetchEndpointVersions();
     }
-  }, [server]);
+  }, [server, refreshes]);
 
   if (server.endpoint) {
     if (!endpointVersions) {
@@ -169,15 +174,18 @@ export default function ServerList({
   selectedServer,
   setSelectedServer,
   onConnect,
-  refreshVersions,
+  reloadVersions,
 }: {
   servers?: ServerEntry[];
   versions: VersionEntry[];
   selectedServer?: string;
   setSelectedServer: (server: string) => void;
   onConnect: (server: string) => void;
-  refreshVersions: () => Promise<void>;
+  reloadVersions: () => Promise<void>;
 }) {
+  const [statusRefreshes, setStatusRefreshes] = useState(0);
+  const [supportedVersionRefreshes, setSupportedVersionRefreshes] = useState(0);
+
   return (
     <div
       className="table-responsive text-center border rounded border-primary"
@@ -187,8 +195,14 @@ export default function ServerList({
         <thead>
           <tr>
             <th className="text-start name-column">Server Name</th>
-            <th className="versions-column">Game Versions</th>
-            <th className="text-end status-column">Status</th>
+            <th className="versions-column">
+              Game Versions
+              <i onClick={() => setSupportedVersionRefreshes((r) => r + 1)} className="fa fa-rotate-right ms-2 clickable"></i>
+            </th>
+            <th className="text-end status-column">
+              Status
+              <i onClick={() => setStatusRefreshes((r) => r + 1)} className="fa fa-rotate-right ms-2 clickable"></i>
+            </th>
           </tr>
         </thead>
         <tbody id="server-tablebody">
@@ -222,11 +236,12 @@ export default function ServerList({
                   <VersionBadges
                     server={server}
                     versions={versions}
-                    refreshVersions={refreshVersions}
+                    reloadVersions={reloadVersions}
+                    refreshes={supportedVersionRefreshes}
                   />
                 </td>
                 <td className="font-monospace text-end status-column">
-                  <PlayerCount server={server} />
+                  <PlayerCount server={server} refreshes={statusRefreshes} />
                 </td>
               </tr>
             ))

@@ -533,7 +533,7 @@ export default function Home() {
               versions={versions}
               selectedServer={getSelectedServer()?.uuid}
               setSelectedServer={setSelectedServer}
-              refreshVersions={syncVersions}
+              reloadVersions={syncVersions}
               onConnect={(serverUuid) => {
                 setSelectedServer(serverUuid);
                 setConnecting(true);
