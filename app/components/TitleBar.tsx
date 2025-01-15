@@ -1,6 +1,5 @@
 "use client";
 
-import { getName } from "@tauri-apps/api/app";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import Button from "@/components/Button";
@@ -23,12 +22,9 @@ const onClickMinimize = () => getCurrentWindow().minimize();
 
 export default function TitleBar() {
   const [show, setShow] = useState<boolean>(false);
-  const [appName, setAppName] = useState<string>("");
 
   useEffect(() => {
     const fetch = async () => {
-      const name = await getName();
-      setAppName(name);
       const shouldShow: boolean = await invoke("should_use_custom_titlebar");
       setShow(shouldShow);
     };
@@ -37,7 +33,7 @@ export default function TitleBar() {
 
   return show && (
     <div className="titlebar">
-      <span data-tauri-drag-region>{appName}</span>
+      <span data-tauri-drag-region>OpenFusion{" "}Launcher</span>
       <Stack direction="horizontal" className="flex-row-reverse" gap={1}>
         <Button
           variant="danger"
