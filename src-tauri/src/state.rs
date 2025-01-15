@@ -244,12 +244,14 @@ impl From<LegacyVersion> for Version {
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct Versions {
     versions: Vec<Version>,
+    filenames: HashMap<Uuid, String>,
 }
 impl Versions {
     fn new() -> Self {
         let mut versions = Vec::new();
+        let mut filenames = HashMap::new();
 
-        match Self::load_builtins() {
+        match Self::load_builtins(&mut filenames) {
             Ok(builtins) => {
                 info!("Loaded {} built-in versions", builtins.len());
                 versions.extend(builtins);
@@ -257,7 +259,7 @@ impl Versions {
             Err(e) => warn!("Failed to load built-in versions: {}", e),
         }
 
-        match Self::load_appdata() {
+        match Self::load_appdata(&mut filenames) {
             Ok(loaded) => {
                 let to_merge = Self::calculate_merge(&versions, loaded);
                 info!("Loaded {} versions from app data", to_merge.len());
@@ -266,10 +268,13 @@ impl Versions {
             Err(e) => warn!("Failed to load versions: {}", e),
         };
 
-        Self { versions }
+        Self {
+            versions,
+            filenames,
+        }
     }
 
-    fn load_internal(path: &str) -> Result<Vec<Version>> {
+    fn load_internal(path: &str, filenames: &mut HashMap<Uuid, String>) -> Result<Vec<Version>> {
         if !std::fs::exists(path)? {
             return Ok(Vec::new());
         }
@@ -281,7 +286,11 @@ impl Versions {
             let path = file.path();
             if path.is_file() && path.extension().is_some_and(|ext| ext == "json") {
                 match Version::from_manifest_file(&path.to_string_lossy()) {
-                    Ok(version) => versions.push(version),
+                    Ok(version) => {
+                        let filename = path.file_name().unwrap().to_string_lossy().to_string();
+                        filenames.insert(version.get_uuid(), filename);
+                        versions.push(version);
+                    }
                     Err(e) => {
                         warn!("Failed to load version: {}", e);
                     }
@@ -294,14 +303,14 @@ impl Versions {
         Ok(versions)
     }
 
-    fn load_appdata() -> Result<Vec<Version>> {
+    fn load_appdata(filenames: &mut HashMap<Uuid, String>) -> Result<Vec<Version>> {
         let versions_path = get_app_statics().app_data_dir.join("versions");
-        Self::load_internal(&versions_path.to_string_lossy())
+        Self::load_internal(&versions_path.to_string_lossy(), filenames)
     }
 
-    fn load_builtins() -> Result<Vec<Version>> {
+    fn load_builtins(filenames: &mut HashMap<Uuid, String>) -> Result<Vec<Version>> {
         let builtins_path = get_app_statics().resource_dir.join("defaults/versions");
-        Self::load_internal(&builtins_path.to_string_lossy())
+        Self::load_internal(&builtins_path.to_string_lossy(), filenames)
     }
 
     fn load_from_openfusionclient() -> Result<Vec<Version>> {
@@ -341,12 +350,20 @@ impl Versions {
         self.versions.push(version);
     }
 
+    pub fn remove_entry(&mut self, uuid: Uuid) {
+        self.versions.retain(|v| v.get_uuid() != uuid);
+    }
+
     pub fn get_entry(&self, uuid: Uuid) -> Option<&Version> {
         self.versions.iter().find(|v| v.get_uuid() == uuid)
     }
 
     pub fn get_entry_by_name(&self, name: &str) -> Option<&Version> {
         self.versions.iter().find(|v| v.get_name() == Some(name))
+    }
+
+    pub fn get_file_names(&self) -> &HashMap<Uuid, String> {
+        &self.filenames
     }
 }
 

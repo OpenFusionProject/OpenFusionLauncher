@@ -289,13 +289,13 @@ async fn prep_launch(
         };
 
         let base_cache_dir = &state.config.launcher.game_cache_path;
-        let cache_dir = util::get_cache_dir_for_version(base_cache_dir, version)?;
+        let cache_dir = util::get_cache_dir_for_version(base_cache_dir, version);
         if !cache_dir.exists() {
             // check for cache upgrade
             if let Some(parent_uuid) = version.get_parent_uuid() {
                 if let Some(parent_version) = state.versions.get_entry(parent_uuid) {
                     let parent_cache_dir =
-                        util::get_cache_dir_for_version(base_cache_dir, parent_version)?;
+                        util::get_cache_dir_for_version(base_cache_dir, parent_version);
                     if parent_cache_dir.exists() {
                         if let Err(e) = util::copy_dir(&parent_cache_dir, &cache_dir) {
                             warn!(
@@ -320,7 +320,7 @@ async fn prep_launch(
 
         // use offline cache if available
         let base_offline_cache_dir = &state.config.launcher.offline_cache_path;
-        let offline_cache_dir = util::get_cache_dir_for_version(base_offline_cache_dir, version)?;
+        let offline_cache_dir = util::get_cache_dir_for_version(base_offline_cache_dir, version);
         if state.config.launcher.use_offline_caches && offline_cache_dir.exists() {
             let offline_asset_url = util::get_path_as_file_uri(&offline_cache_dir);
             let offline_cache_dir = offline_cache_dir.to_string_lossy().to_string();
@@ -477,9 +477,9 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
             .ok_or("Version not found")?
             .clone();
         let path = if offline {
-            util::get_cache_dir_for_version(&state.config.launcher.offline_cache_path, &version)?
+            util::get_cache_dir_for_version(&state.config.launcher.offline_cache_path, &version)
         } else {
-            util::get_cache_dir_for_version(&state.config.launcher.game_cache_path, &version)?
+            util::get_cache_dir_for_version(&state.config.launcher.game_cache_path, &version)
         };
         drop(state);
 
@@ -551,9 +551,9 @@ async fn download_cache(
             .ok_or("Version not found")?
             .clone();
         let path = if offline {
-            util::get_cache_dir_for_version(&state.config.launcher.offline_cache_path, &version)?
+            util::get_cache_dir_for_version(&state.config.launcher.offline_cache_path, &version)
         } else {
-            util::get_cache_dir_for_version(&state.config.launcher.game_cache_path, &version)?
+            util::get_cache_dir_for_version(&state.config.launcher.game_cache_path, &version)
         };
         drop(state);
 
@@ -622,9 +622,9 @@ async fn delete_cache(
         let state = state.lock().await;
         let version = state.versions.get_entry(uuid).ok_or("Version not found")?;
         let path = if offline {
-            util::get_cache_dir_for_version(&state.config.launcher.offline_cache_path, version)?
+            util::get_cache_dir_for_version(&state.config.launcher.offline_cache_path, version)
         } else {
-            util::get_cache_dir_for_version(&state.config.launcher.game_cache_path, version)?
+            util::get_cache_dir_for_version(&state.config.launcher.game_cache_path, version)
         };
 
         {
@@ -846,6 +846,44 @@ async fn add_version_manual(
 }
 
 #[tauri::command]
+async fn remove_version(
+    app_handle: tauri::AppHandle,
+    uuid: Uuid,
+    delete_caches: bool,
+) -> CommandResult<()> {
+    let internal = async {
+        let _state = app_handle.state::<Mutex<AppState>>();
+        let state = _state.lock().await;
+        let version = state.versions.get_entry(uuid).ok_or("Version not found")?;
+        let base_cache_dir = &state.config.launcher.game_cache_path;
+        let cache_dir = util::get_cache_dir_for_version(base_cache_dir, version);
+        let base_offline_cache_dir = &state.config.launcher.offline_cache_path;
+        let offline_cache_dir = util::get_cache_dir_for_version(base_offline_cache_dir, version);
+        util::remove_version(uuid, state.versions.get_file_names())?;
+        drop(state);
+
+        let mut state = _state.lock().await;
+        state.versions.remove_entry(uuid);
+
+        if delete_caches {
+            if cache_dir.exists() && std::fs::remove_dir_all(&cache_dir).is_err() {
+                warn!("Failed to remove game cache directory for version {}", uuid);
+            }
+            if offline_cache_dir.exists() && std::fs::remove_dir_all(&offline_cache_dir).is_err() {
+                warn!(
+                    "Failed to remove offline cache directory for version {}",
+                    uuid
+                );
+            }
+        }
+
+        Ok(())
+    };
+    debug!("remove_build {} {}", uuid, delete_caches);
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
 async fn get_versions_for_server(
     app_handle: tauri::AppHandle,
     uuid: Uuid,
@@ -1041,6 +1079,7 @@ pub fn run() {
             delete_server,
             import_version,
             add_version_manual,
+            remove_version,
             live_check,
             get_info_for_server,
             get_announcements_for_server,

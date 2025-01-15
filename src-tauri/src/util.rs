@@ -106,13 +106,9 @@ pub(crate) fn get_default_launch_command() -> Option<String> {
     }
 }
 
-pub(crate) fn get_cache_dir_for_version(
-    base_cache_dir: &str,
-    version: &Version,
-) -> Result<PathBuf> {
+pub(crate) fn get_cache_dir_for_version(base_cache_dir: &str, version: &Version) -> PathBuf {
     let cache_dir = PathBuf::from(base_cache_dir);
-    let build_dir = cache_dir.join(version.get_uuid().to_string());
-    Ok(build_dir)
+    cache_dir.join(version.get_uuid().to_string())
 }
 
 pub(crate) fn get_dir_size(dir: &PathBuf) -> Result<u64> {
@@ -188,6 +184,21 @@ pub(crate) fn import_versions(to_import: Vec<Version>) -> Result<Vec<Version>> {
         versions.push(version);
     }
     Ok(versions)
+}
+
+pub(crate) fn remove_version(uuid: Uuid, filenames: &HashMap<Uuid, String>) -> Result<()> {
+    let versions_path = get_app_statics().app_data_dir.join("versions");
+    let filename = match filenames.get(&uuid) {
+        Some(filename) => filename.clone(),
+        None => format!("{}.json", uuid),
+    };
+    let version_path = versions_path.join(filename);
+    if version_path.exists() {
+        std::fs::remove_file(version_path)?;
+    } else {
+        return Err(format!("Version file not found: {}", version_path.to_string_lossy()).into());
+    }
+    Ok(())
 }
 
 pub(crate) async fn do_live_check(url: &str) -> bool {

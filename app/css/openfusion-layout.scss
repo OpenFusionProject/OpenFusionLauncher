@@ -221,6 +221,23 @@ body {
   min-width: 360px;
 }
 
+#builds-table table td {
+  height: 140px;
+}
+
+#builds-table table td:last-of-type {
+  width: 66px;
+}
+
+#builds-table table td:last-of-type > button {
+  margin-left: auto;
+  padding-inline: 0px !important;
+}
+
+.cache-col {
+  min-width: 250px;
+}
+
 .fps-input {
   width: 80px;
 }
