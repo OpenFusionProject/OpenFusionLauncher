@@ -31,9 +31,9 @@ const getPrivacyPolicyUrl = (server: ServerEntry) => {
 
 const getUpsellImage = (server?: ServerEntry) => {
   if (server?.endpoint) {
-    // HACK: add the counter to the url as a parameter to prevent caching across launches
+    // HACK: add the counter to the url as a parameter to prevent caching across reloads
     return (
-      "http://" + server.endpoint + "/upsell/sponsor.png?seed=" + get_seed()
+      "http://" + server.endpoint + "/announcements.png?seed=" + get_seed()
     );
   }
   return undefined;

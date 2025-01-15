@@ -81,7 +81,7 @@ pub async fn get_info(endpoint_host: &str) -> Result<InfoResponse> {
 }
 
 pub async fn get_announcements(endpoint_host: &str) -> Result<String> {
-    let url = format!("http://{}/announcements", endpoint_host);
+    let url = format!("http://{}/announcements.md", endpoint_host);
     let announcements = util::do_simple_get(&url).await?;
     Ok(announcements)
 }
