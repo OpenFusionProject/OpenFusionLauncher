@@ -122,6 +122,32 @@ export default function LauncherSettingsTab({
                   }))
                 }
               />
+              <SettingControlBrowse
+                id="game_cache_path"
+                name="Game Cache Path"
+                oldValue={currentSettings.game_cache_path}
+                value={settings.game_cache_path}
+                directory={true}
+                onChange={(value) =>
+                  setSettings((current) => ({
+                    ...current!,
+                    game_cache_path: value,
+                  }))
+                }
+              />
+              <SettingControlBrowse
+                id="offline_cache_path"
+                name="Offline Cache Path"
+                oldValue={currentSettings.offline_cache_path}
+                value={settings.offline_cache_path}
+                directory={true}
+                onChange={(value) =>
+                  setSettings((current) => ({
+                    ...current!,
+                    offline_cache_path: value,
+                  }))
+                }
+              />
               <SettingControlDropdown
                 id="use_offline_caches"
                 name="Use offline caches when downloaded"
@@ -185,32 +211,6 @@ export default function LauncherSettingsTab({
                   setSettings((current) => ({
                     ...current!,
                     launch_behavior: value,
-                  }))
-                }
-              />
-              <SettingControlBrowse
-                id="game_cache_path"
-                name="Game Cache Path"
-                oldValue={currentSettings.game_cache_path}
-                value={settings.game_cache_path}
-                directory={true}
-                onChange={(value) =>
-                  setSettings((current) => ({
-                    ...current!,
-                    game_cache_path: value,
-                  }))
-                }
-              />
-              <SettingControlBrowse
-                id="offline_cache_path"
-                name="Offline Cache Path"
-                oldValue={currentSettings.offline_cache_path}
-                value={settings.offline_cache_path}
-                directory={true}
-                onChange={(value) =>
-                  setSettings((current) => ({
-                    ...current!,
-                    offline_cache_path: value,
                   }))
                 }
               />
