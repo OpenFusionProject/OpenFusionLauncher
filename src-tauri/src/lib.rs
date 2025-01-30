@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 use state::{
     get_app_statics, AppState, Config, FlatServer, FlatServers, Server, ServerInfo, Versions,
 };
+use tauri_plugin_shell::ShellExt;
 use util::AlertVariant;
 
 use std::{
@@ -884,6 +885,35 @@ async fn remove_version(
 }
 
 #[tauri::command]
+async fn open_folder_for_version(
+    app_handle: tauri::AppHandle,
+    uuid: Uuid,
+    offline: bool,
+) -> CommandResult<()> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let version = state.versions.get_entry(uuid).ok_or("Version not found")?;
+        let base_cache_dir = if offline {
+            &state.config.launcher.offline_cache_path
+        } else {
+            &state.config.launcher.game_cache_path
+        };
+        let cache_dir = util::get_cache_dir_for_version(base_cache_dir, version);
+        drop(state);
+
+        if cache_dir.exists() {
+            app_handle.shell().open(cache_dir.to_str().unwrap(), None)?;
+        } else {
+            return Err("Cache directory does not exist".into());
+        }
+        Ok(())
+    };
+    debug!("open_folder_for_version {} {}", uuid, offline);
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
 async fn get_versions_for_server(
     app_handle: tauri::AppHandle,
     uuid: Uuid,
@@ -1080,6 +1110,7 @@ pub fn run() {
             import_version,
             add_version_manual,
             remove_version,
+            open_folder_for_version,
             live_check,
             get_info_for_server,
             get_announcements_for_server,

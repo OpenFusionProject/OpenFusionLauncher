@@ -6,6 +6,7 @@ import {
   VersionCacheProgressItem,
   VersionEntry,
 } from "@/app/types";
+import { invoke } from "@tauri-apps/api/core";
 
 const BYTES_PER_GB = 1024 * 1024 * 1024;
 
@@ -231,6 +232,12 @@ export default function GameBuildsList({
                       </ProgressBar>
                       <br />
                       <Button
+                        enabled={Object.keys(versionData.gameItems).length > 0}
+                        icon="folder"
+                        onClick={() => invoke("open_folder_for_version", { uuid: version.uuid, offline: false })}
+                        tooltip="Open game cache folder"
+                      />{" "}
+                      <Button
                         loading={!versionData.gameDone}
                         enabled={!!getValidatedSize(versionData.gameItems)}
                         icon="trash"
@@ -269,6 +276,12 @@ export default function GameBuildsList({
                         )}
                       </ProgressBar>
                       <br />
+                      <Button
+                        enabled={Object.keys(versionData.offlineItems).length > 0}
+                        icon="folder"
+                        onClick={() => invoke("open_folder_for_version", { uuid: version.uuid, offline: true })}
+                        tooltip="Open offline cache folder"
+                      />{" "}
                       <Button
                         loading={!versionData.offlineDone}
                         enabled={
