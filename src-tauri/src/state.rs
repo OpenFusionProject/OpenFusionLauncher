@@ -81,6 +81,7 @@ pub struct AppState {
     pub servers: Servers,
     pub tokens: Tokens,
     //
+    pub temp_tokens: HashMap<Uuid, String>,
     pub write_config: bool,
     pub launch_cmd: Option<Command>,
 }
@@ -116,6 +117,7 @@ impl AppState {
             servers,
             tokens,
             //
+            temp_tokens: HashMap::new(),
             write_config,
             launch_cmd: None,
         }
@@ -604,8 +606,8 @@ impl Tokens {
         self.tokens.insert(server_uuid, token.to_string());
     }
 
-    pub fn get_token(&self, server_uuid: Uuid) -> Option<&str> {
-        self.tokens.get(&server_uuid).map(|t| t.as_str())
+    pub fn get_token(&self, server_uuid: Uuid) -> Option<String> {
+        self.tokens.get(&server_uuid).cloned()
     }
 
     pub fn remove_token(&mut self, server_uuid: Uuid) {

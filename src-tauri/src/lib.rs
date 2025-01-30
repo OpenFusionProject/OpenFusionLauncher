@@ -145,6 +145,7 @@ async fn do_login(
     server_uuid: Uuid,
     username: String,
     password: String,
+    remember: bool,
 ) -> CommandResult<()> {
     let internal = async {
         let _state = app_handle.state::<Mutex<AppState>>();
@@ -173,8 +174,12 @@ async fn do_login(
             warn!("Failed to clear preferred version for server: {}", e);
         }
 
-        state.tokens.save_token(server_uuid, &refresh_token);
-        state.save();
+        if remember {
+            state.tokens.save_token(server_uuid, &refresh_token);
+            state.save();
+        } else {
+            state.temp_tokens.insert(server_uuid, refresh_token);
+        }
         Ok(())
     };
     debug!("do_login");
@@ -205,7 +210,7 @@ async fn do_logout(app_handle: tauri::AppHandle, server_uuid: Option<Uuid>) -> C
 async fn get_session(app_handle: tauri::AppHandle, server_uuid: Uuid) -> CommandResult<Session> {
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
-        let state = state.lock().await;
+        let mut state = state.lock().await;
         let server = state
             .servers
             .get_entry(server_uuid)
@@ -215,7 +220,14 @@ async fn get_session(app_handle: tauri::AppHandle, server_uuid: Uuid) -> Command
             return Err("Server is not an endpoint server".into());
         };
 
-        let Some(refresh_token) = state.tokens.get_token(server_uuid) else {
+        // We first check the temp tokens, then the saved tokens.
+        // Temp tokens are one-time use, so they are removed here
+        let token = match state.temp_tokens.remove(&server_uuid) {
+            Some(token) => Some(token),
+            None => state.tokens.get_token(server_uuid),
+        };
+
+        let Some(refresh_token) = token else {
             return Err("Not logged in".into());
         };
         let refresh_token = refresh_token.to_string();

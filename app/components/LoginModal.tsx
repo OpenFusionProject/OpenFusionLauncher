@@ -20,6 +20,7 @@ const TAB_REGISTER = "register";
 
 const CONTROL_ID_USERNAME = "username";
 const CONTROL_ID_PASSWORD = "password";
+const CONTROL_ID_REMEMBER = "remember";
 const CONTROL_ID_NEW_USERNAME = "newUsername";
 const CONTROL_ID_NEW_PASSWORD = "newPassword";
 const CONTROL_ID_CONFIRM_PASSWORD = "confirmPassword";
@@ -144,18 +145,21 @@ function RequirementsTooltip({
 export default function LoginModal({
   server,
   show,
+  alwaysRemember,
   onClose,
   onSubmitLogin,
   onSubmitRegister,
 }: {
   server?: ServerEntry;
   show: boolean;
+  alwaysRemember: boolean;
   onClose: () => void;
-  onSubmitLogin: (username: string, password: string) => void;
+  onSubmitLogin: (username: string, password: string, remember: boolean) => void;
   onSubmitRegister: (username: string, password: string, email: string) => void;
 }) {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [remember, setRemember] = useState<boolean>(alwaysRemember);
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [email, setEmail] = useState<string>("");
 
@@ -184,6 +188,7 @@ export default function LoginModal({
     setPassword("");
     setConfirmPassword("");
     setEmail("");
+    setRemember(alwaysRemember);
   };
 
   useEffect(() => {
@@ -201,7 +206,7 @@ export default function LoginModal({
     if (!canSubmit(tab)) return;
     onClose();
     if (tab === TAB_LOGIN) {
-      onSubmitLogin(username, password);
+      onSubmitLogin(username, password, remember);
     } else if (tab === TAB_REGISTER) {
       onSubmitRegister(username, password, email);
     }
@@ -243,6 +248,15 @@ export default function LoginModal({
                   value={password}
                   onFocus={() => setActiveControl(CONTROL_ID_PASSWORD)}
                   onChange={(e) => setPassword(e.target.value)}
+                />
+              </Form.Group>
+              <Form.Group controlId={CONTROL_ID_REMEMBER}>
+                <Form.Check
+                  type="checkbox"
+                  label="Remember Me"
+                  disabled={alwaysRemember}
+                  checked={remember}
+                  onChange={(e) => setRemember(e.target.checked)}
                 />
               </Form.Group>
             </Tab>

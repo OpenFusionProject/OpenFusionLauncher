@@ -77,6 +77,7 @@ function ListEntry({
         serverUuid: server.uuid,
         username: username,
         password: password,
+        remember: true,
       });
       if (ctx.alertSuccess) {
         ctx.alertSuccess("Logged in successfully");
@@ -209,6 +210,7 @@ function ListEntry({
       <LoginModal
         show={showLoginModal}
         server={server}
+        alwaysRemember={true}
         onClose={() => setShowLoginModal(false)}
         onSubmitLogin={doLogin}
         onSubmitRegister={doRegister}

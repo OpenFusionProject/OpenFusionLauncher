@@ -306,7 +306,7 @@ export default function Home() {
 
       if (res.can_login) {
         alertSuccess(res.resp);
-        onLogin(serverUuid, username, password);
+        onLogin(serverUuid, username, password, false);
       } else {
         alertInfo(res.resp);
       }
@@ -320,6 +320,7 @@ export default function Home() {
     serverUuid: string,
     username: string,
     password: string,
+    remember: boolean,
   ) => {
     startLoading("do_login");
     try {
@@ -327,6 +328,7 @@ export default function Home() {
         serverUuid: serverUuid,
         username: username,
         password: password,
+        remember: remember,
       });
     } catch (e: unknown) {
       alertError("Failed to login (" + e + ")");
@@ -625,9 +627,10 @@ export default function Home() {
       <LoginModal
         server={getSelectedServer()}
         show={showLoginModal}
+        alwaysRemember={false}
         onClose={() => setShowLoginModal(false)}
-        onSubmitLogin={(username, password) => {
-          onLogin(getSelectedServer()!.uuid, username, password);
+        onSubmitLogin={(username, password, remember) => {
+          onLogin(getSelectedServer()!.uuid, username, password, remember);
         }}
         onSubmitRegister={(username, password, email) => {
           onRegister(getSelectedServer()!.uuid, username, password, email);
