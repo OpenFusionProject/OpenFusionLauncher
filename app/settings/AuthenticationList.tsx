@@ -134,13 +134,9 @@ function ListEntry({
     }
 
     loadSession();
-  }, []);
-
-  useEffect(() => {
-    loadSession();
   }, [refreshes]);
 
-  const bgUrl = getBackgroundImageUrlForServer(server);
+  const bgUrl = getBackgroundImageUrlForServer(server) + "&r=" + refreshes;
   const rowStyle: CSSProperties = {
     ...getBackgroundImageStyle(bgUrl),
     backgroundSize: "cover",
