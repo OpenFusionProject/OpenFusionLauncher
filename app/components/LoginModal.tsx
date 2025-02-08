@@ -8,12 +8,13 @@ import Tab from "react-bootstrap/Tab";
 import Button from "./Button";
 
 import { EndpointInfo, ServerEntry } from "@/app/types";
+import { validateUsername, validatePassword, validateEmail, getPrivacyPolicyUrlForServer } from "@/app/util";
 import { Overlay, Tooltip } from "react-bootstrap";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-shell";
 import { parse } from "marked";
 import DOMPurify  from "dompurify";
-import get_seed from "../seed";
+import get_seed from "@/app/seed";
 
 const TAB_LOGIN = "login";
 const TAB_REGISTER = "register";
@@ -25,10 +26,6 @@ const CONTROL_ID_NEW_USERNAME = "newUsername";
 const CONTROL_ID_NEW_PASSWORD = "newPassword";
 const CONTROL_ID_CONFIRM_PASSWORD = "confirmPassword";
 const CONTROL_ID_EMAIL = "email";
-
-const getPrivacyPolicyUrl = (server: ServerEntry) => {
-  return "https://" + server.endpoint + "/privacy";
-};
 
 const getUpsellImage = (server?: ServerEntry) => {
   if (server?.endpoint) {
@@ -46,29 +43,6 @@ const checkEmailRequired = async (server: ServerEntry) => {
     uuid: server.uuid,
   });
   return info.email_required ?? false;
-};
-
-const validateUsername = (username: string) => {
-  // From OpenFusion:
-  // Login has to be 4 - 32 characters long and can't contain
-  // special characters other than dash and underscore
-  const regex = /^[a-zA-Z0-9_-]{4,32}$/;
-  return regex.test(username);
-};
-
-const validatePassword = (password: string) => {
-  // From OpenFusion:
-  // Password has to be 8 - 32 characters long
-  const regex = /^.{8,32}$/;
-  return regex.test(password);
-};
-
-const validateEmail = (email: string, required: boolean) => {
-  if (!required && email.length === 0) return true;
-
-  // normal email regex
-  const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  return regex.test(email);
 };
 
 function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
@@ -181,7 +155,7 @@ export default function LoginModal({
       validateUsername(username) &&
       validatePassword(password) &&
       password === confirmPassword &&
-      validateEmail(email, emailRequired)
+      validateEmail(email, !emailRequired)
     );
   };
 
@@ -316,7 +290,7 @@ export default function LoginModal({
                   onFocus={() => setActiveControl(CONTROL_ID_EMAIL)}
                   onChange={(e) => setEmail(e.target.value)}
                   isInvalid={
-                    email.length > 0 && !validateEmail(email, emailRequired)
+                    email.length > 0 && !validateEmail(email, !emailRequired)
                   }
                 />
               </Form.Group>
@@ -327,7 +301,7 @@ export default function LoginModal({
                     role="button"
                     className="text-decoration-underline"
                     onClick={() => {
-                      const url = getPrivacyPolicyUrl(server!);
+                      const url = getPrivacyPolicyUrlForServer(server!);
                       open(url);
                     }}
                   >

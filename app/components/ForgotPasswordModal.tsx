@@ -1,13 +1,8 @@
 import { Form, Modal } from "react-bootstrap";
 import Button from "@/components/Button";
 import { useState, useEffect } from "react";
-import { ServerEntry } from "../types";
-
-const validateEmail = (email: string) => {
-  // normal email regex
-  const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  return regex.test(email);
-};
+import { ServerEntry } from "@/app/types";
+import { validateEmail } from "@/app/util";
 
 export default function ForgotPasswordModal({
   show,
@@ -53,7 +48,7 @@ export default function ForgotPasswordModal({
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
               isInvalid={
-                email.length > 0 && !validateEmail(email)
+                email.length > 0 && !validateEmail(email, false)
               }
             />
           </Form.Group>
@@ -72,7 +67,7 @@ export default function ForgotPasswordModal({
           variant="success"
           text={"Send Temporary Password"}
           loading={loading}
-          enabled={validateEmail(email)}
+          enabled={validateEmail(email, false)}
           onClick={() => onHitSubmit()}
         />
       </Modal.Footer>

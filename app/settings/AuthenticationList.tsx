@@ -10,6 +10,7 @@ import { CSSProperties, useContext, useEffect, useState } from "react";
 import { SettingsCtx } from "@/app/contexts";
 import LoginModal from "@/components/LoginModal";
 import ForgotPasswordModal from "@/components/ForgotPasswordModal";
+import ManageAccountModal from "./ManageAccountModal";
 
 function ListEntry({
   server,
@@ -27,6 +28,7 @@ function ListEntry({
 
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const [showManageAccountModal, setShowManageAccountModal] = useState(false);
 
   const ctx = useContext(SettingsCtx);
 
@@ -140,6 +142,36 @@ function ListEntry({
     }
   };
 
+  const updateEmail = async (newEmail: string) => {
+    try {
+      await invoke("update_email", { email: newEmail, serverUuid: server.uuid });
+      if (ctx.alertSuccess) {
+        ctx.alertSuccess("Verification email sent to " + newEmail);
+      }
+      setShowManageAccountModal(false);
+    } catch (e: unknown) {
+      if (ctx.alertError) {
+        ctx.alertError("Failed to send verification email: " + e);
+      }
+    }
+  };
+
+  const updatePassword = async (newPassword: string) => {
+    try {
+      await invoke("update_password", {
+        password: newPassword,
+        serverUuid: server.uuid,
+      });
+      if (ctx.alertSuccess) {
+        ctx.alertSuccess("Password updated successfully");
+      }
+    } catch (e: unknown) {
+      if (ctx.alertError) {
+        ctx.alertError("Failed to update password: " + e);
+      }
+    }
+  };
+
   useEffect(() => {
     const logoUrl = getLogoImageUrlForServer(server);
     if (logoUrl) {
@@ -208,6 +240,14 @@ function ListEntry({
                 </span>
                 <Button
                   loading={buttonLoading}
+                  icon="user"
+                  text="Manage Account"
+                  onClick={() => setShowManageAccountModal(true)}
+                  variant="primary"
+                  className="me-2"
+                />
+                <Button
+                  loading={buttonLoading}
                   icon="sign-out-alt"
                   text="Log Out"
                   onClick={logOut}
@@ -232,6 +272,14 @@ function ListEntry({
         setShow={setShowForgotPasswordModal}
         server={server}
         onSubmit={(email) => sendOneTimePassword(email)}
+      />
+      <ManageAccountModal
+        show={showManageAccountModal}
+        setShow={setShowManageAccountModal}
+        server={server}
+        session={session || undefined}
+        onUpdateEmail={updateEmail}
+        onUpdatePassword={updatePassword}
       />
     </>
   );

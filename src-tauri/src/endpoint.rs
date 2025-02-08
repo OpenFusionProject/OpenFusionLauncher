@@ -62,12 +62,35 @@ pub struct RegisterResponse {
     can_login: bool,
 }
 
-#[allow(dead_code)]
 #[derive(Deserialize)]
 pub struct CookieResponse {
     username: String,
     cookie: String,
     expires: u64,
+}
+
+#[derive(Deserialize)]
+struct AccountInfoResponse {
+    username: String,
+    email: String,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct AccountInfo {
+    username: String,
+    email: Option<String>,
+}
+impl From<AccountInfoResponse> for AccountInfo {
+    fn from(info: AccountInfoResponse) -> Self {
+        AccountInfo {
+            username: info.username,
+            email: if info.email.is_empty() {
+                None
+            } else {
+                Some(info.email)
+            },
+        }
+    }
 }
 
 fn make_api_error(url: &str, status: StatusCode, body: &str) -> Error {
@@ -162,6 +185,26 @@ pub async fn get_session(refresh_token: &str, endpoint_host: &str) -> Result<Ses
     if status.is_success() {
         let session: Session = serde_json::from_str(&body)?;
         Ok(session)
+    } else {
+        Err(make_api_error(&url, status, &body))
+    }
+}
+
+pub async fn get_account_info(token: &str, endpoint_host: &str) -> Result<AccountInfo> {
+    debug!("Getting account info");
+    let url = format!("https://{}/account", endpoint_host);
+    let client = util::get_http_client();
+    let res = client
+        .get(&url)
+        .header("Authorization", format!("Bearer {}", token))
+        .send()
+        .await?;
+
+    let status = res.status();
+    let body = res.text().await?;
+    if status.is_success() {
+        let info: AccountInfoResponse = serde_json::from_str(&body)?;
+        Ok(info.into())
     } else {
         Err(make_api_error(&url, status, &body))
     }

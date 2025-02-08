@@ -4,7 +4,7 @@ mod state;
 mod util;
 
 use config::{LaunchBehavior, LauncherSettings};
-use endpoint::{InfoResponse, RegisterResponse, Session};
+use endpoint::{AccountInfo, InfoResponse, RegisterResponse, Session};
 use ffbuildtool::{ItemProgress, Version};
 use serde::{Deserialize, Serialize};
 use state::{
@@ -229,6 +229,32 @@ async fn send_otp(
         Ok(())
     };
     debug!("send_otp");
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
+async fn get_account_info(
+    app_handle: tauri::AppHandle,
+    server_uuid: Uuid,
+    session_token: String,
+) -> CommandResult<AccountInfo> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let server = state
+            .servers
+            .get_entry(server_uuid)
+            .ok_or(format!("Server {} not found", server_uuid))?;
+
+        let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
+            return Err("Server is not an endpoint server".into());
+        };
+        drop(state);
+
+        let info = endpoint::get_account_info(&session_token, &endpoint).await?;
+        Ok(info)
+    };
+    debug!("get_account_info");
     internal.await.map_err(|e: Error| e.to_string())
 }
 
@@ -1159,6 +1185,7 @@ pub fn run() {
             do_login,
             do_logout,
             get_session,
+            get_account_info,
             send_otp,
             prep_launch,
             do_launch,

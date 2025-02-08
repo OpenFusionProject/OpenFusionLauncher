@@ -88,6 +88,11 @@ export type LoginSession = {
   session_token: string;
 };
 
+export type AccountInfo = {
+  username: string;
+  email?: string;
+};
+
 export type RegistrationResult = {
   resp: string;
   can_login: boolean;
