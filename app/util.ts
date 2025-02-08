@@ -15,16 +15,18 @@ function getSystemTheme() {
 }
 
 export function getTheme(config: Config) {
-  const themeName = config.launcher.theme;
-  if (themeName) {
-    switch (themeName) {
-      case "dexlabs_light":
-        return "light";
-      case "dexlabs_dark":
-        return "dark";
-    }
-  }
-  return getSystemTheme();
+  // const themeName = config.launcher.theme;
+  // if (themeName) {
+  //   switch (themeName) {
+  //     case "dexlabs_light":
+  //       return "light";
+  //     case "dexlabs_dark":
+  //       return "dark";
+  //   }
+  // }
+  // return getSystemTheme();
+  // TODO: uncomment when light theme is ready
+  return "dark";
 }
 
 export function variantToLabel(variant: string) {

@@ -87,7 +87,7 @@ export default function LauncherSettingsTab({
           <hr className="border-primary" />
           {settings && (
             <Form>
-              <SettingControlDropdown
+              {/* <SettingControlDropdown
                 id="theme"
                 name="Launcher Theme"
                 options={[
@@ -104,7 +104,7 @@ export default function LauncherSettingsTab({
                     theme: value === "system" ? undefined : value,
                   }))
                 }
-              />
+              /> */}
               <SettingControlDropdown
                 id="check_for_updates"
                 name="Check for launcher updates on launch"
