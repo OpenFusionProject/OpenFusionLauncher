@@ -207,6 +207,32 @@ async fn do_logout(app_handle: tauri::AppHandle, server_uuid: Option<Uuid>) -> C
 }
 
 #[tauri::command]
+async fn send_otp(
+    app_handle: tauri::AppHandle,
+    server_uuid: Uuid,
+    email: String,
+) -> CommandResult<()> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let server = state
+            .servers
+            .get_entry(server_uuid)
+            .ok_or(format!("Server {} not found", server_uuid))?;
+
+        let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
+            return Err("Server is not an endpoint server".into());
+        };
+        drop(state);
+
+        endpoint::send_otp(&endpoint, &email).await?;
+        Ok(())
+    };
+    debug!("send_otp");
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
 async fn get_session(app_handle: tauri::AppHandle, server_uuid: Uuid) -> CommandResult<Session> {
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
@@ -1133,6 +1159,7 @@ pub fn run() {
             do_login,
             do_logout,
             get_session,
+            send_otp,
             prep_launch,
             do_launch,
             validate_cache,

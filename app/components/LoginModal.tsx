@@ -149,6 +149,7 @@ export default function LoginModal({
   onClose,
   onSubmitLogin,
   onSubmitRegister,
+  onForgotPassword,
 }: {
   server?: ServerEntry;
   show: boolean;
@@ -156,6 +157,7 @@ export default function LoginModal({
   onClose: () => void;
   onSubmitLogin: (username: string, password: string, remember: boolean) => void;
   onSubmitRegister: (username: string, password: string, email: string) => void;
+  onForgotPassword: () => void;
 }) {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -250,15 +252,27 @@ export default function LoginModal({
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </Form.Group>
-              <Form.Group controlId={CONTROL_ID_REMEMBER}>
-                <Form.Check
-                  type="checkbox"
-                  label="Remember Me"
-                  disabled={alwaysRemember}
-                  checked={remember}
-                  onChange={(e) => setRemember(e.target.checked)}
-                />
-              </Form.Group>
+              <div className="d-flex justify-content-between">
+                <Form.Group controlId={CONTROL_ID_REMEMBER}>
+                  <Form.Check
+                    type="checkbox"
+                    label="Remember Me"
+                    disabled={alwaysRemember}
+                    checked={remember}
+                    onChange={(e) => setRemember(e.target.checked)}
+                  />
+                </Form.Group>
+                <span
+                  role="button"
+                  className="text-decoration-underline"
+                  onClick={() => {
+                    onForgotPassword();
+                    onClose(); // bootstrap doesn't support nested modals
+                  }}
+                >
+                Forgot your password?
+                </span>
+              </div>
             </Tab>
             <Tab eventKey={TAB_REGISTER} title="Register" className="p-3">
               <Form.Group className="mb-3" controlId={CONTROL_ID_NEW_USERNAME}>

@@ -228,3 +228,22 @@ pub async fn fetch_version(endpoint_host: &str, version_uuid: Uuid) -> Result<Ve
         }
     }
 }
+
+pub async fn send_otp(endpoint_host: &str, email: &str) -> Result<()> {
+    debug!("Sending OTP to {}", email);
+    let url = format!("https://{}/account/otp", endpoint_host);
+    let client = util::get_http_client();
+    let res = client
+        .post(&url)
+        .json(&serde_json::json!({ "email": email }))
+        .send()
+        .await?;
+
+    let status = res.status();
+    let body = res.text().await?;
+    if status.is_success() {
+        Ok(())
+    } else {
+        Err(make_api_error(&url, status, &body))
+    }
+}

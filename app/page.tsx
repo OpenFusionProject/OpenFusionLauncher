@@ -40,6 +40,7 @@ import SelectVersionModal from "@/components/SelectVersionModal";
 import Toasts from "@/components/Toasts";
 import { listen } from "@tauri-apps/api/event";
 import { getDebugMode, getTheme, sleep } from "@/app/util";
+import ForgotPasswordModal from "./components/ForgotPasswordModal";
 
 const DEFAULT_TAGLINE =
   "Welcome to OpenFusion.\nSelect a server from the list below to get started.";
@@ -68,6 +69,7 @@ export default function Home() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const [showVersionSelectorModal, setShowVersionSelectorModal] =
     useState(false);
 
@@ -475,6 +477,16 @@ export default function Home() {
     }
   };
 
+  const sendOneTimePassword = async (email: string) => {
+    try {
+      await invoke("send_otp", { email, serverUuid: getSelectedServer()!.uuid });
+      setShowForgotPasswordModal(false);
+      alertSuccess("One-time password sent");
+    } catch (e: unknown) {
+      alertError("Failed to send one-time password (" + e + ")");
+    }
+  };
+
   const handleAlert = (alert: AlertEvent) => {
     console.log("alert", alert);
     pushAlert(alert.variant, alert.message);
@@ -635,6 +647,13 @@ export default function Home() {
         onSubmitRegister={(username, password, email) => {
           onRegister(getSelectedServer()!.uuid, username, password, email);
         }}
+        onForgotPassword={() => setShowForgotPasswordModal(true)}
+      />
+      <ForgotPasswordModal
+        show={showForgotPasswordModal}
+        setShow={setShowForgotPasswordModal}
+        server={getSelectedServer()}
+        onSubmit={(email) => sendOneTimePassword(email)}
       />
       <SelectVersionModal
         show={showVersionSelectorModal}
