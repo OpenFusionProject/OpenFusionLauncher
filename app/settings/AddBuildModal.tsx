@@ -114,7 +114,7 @@ export default function AddBuildModal({
                   type="text"
                   value={assetUrl}
                   onChange={(e) => setAssetUrl(e.target.value)}
-                  placeholder="http://cdn.example.com/build"
+                  placeholder="https://cdn.example.com/build"
                 />
               </Form.Group>
             </Form>

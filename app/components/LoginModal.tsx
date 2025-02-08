@@ -27,14 +27,14 @@ const CONTROL_ID_CONFIRM_PASSWORD = "confirmPassword";
 const CONTROL_ID_EMAIL = "email";
 
 const getPrivacyPolicyUrl = (server: ServerEntry) => {
-  return "http://" + server.endpoint + "/privacy";
+  return "https://" + server.endpoint + "/privacy";
 };
 
 const getUpsellImage = (server?: ServerEntry) => {
   if (server?.endpoint) {
     // HACK: add the counter to the url as a parameter to prevent caching across reloads
     return (
-      "http://" + server.endpoint + "/announcements.png?seed=" + get_seed()
+      "https://" + server.endpoint + "/announcements.png?seed=" + get_seed()
     );
   }
   return undefined;

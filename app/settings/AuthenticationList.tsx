@@ -30,7 +30,7 @@ function ListEntry({
   const loadSession = async () => {
     setOffline(undefined);
     setSession(undefined);
-    const endpoint = "http://" + server.endpoint!;
+    const endpoint = "https://" + server.endpoint!;
     const live: boolean = await invoke("live_check", { url: endpoint });
     if (!live) {
       setOffline(true);

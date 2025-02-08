@@ -75,19 +75,19 @@ fn make_api_error(url: &str, status: StatusCode, body: &str) -> Error {
 }
 
 pub async fn get_info(endpoint_host: &str) -> Result<InfoResponse> {
-    let info_json = util::do_simple_get(&format!("http://{}", endpoint_host)).await?;
+    let info_json = util::do_simple_get(&format!("https://{}", endpoint_host)).await?;
     let info = serde_json::from_str(&info_json)?;
     Ok(info)
 }
 
 pub async fn get_announcements(endpoint_host: &str) -> Result<String> {
-    let url = format!("http://{}/announcements.md", endpoint_host);
+    let url = format!("https://{}/announcements.md", endpoint_host);
     let announcements = util::do_simple_get(&url).await?;
     Ok(announcements)
 }
 
 pub async fn get_status(endpoint_host: &str) -> Result<StatusResponse> {
-    let status_json = util::do_simple_get(&format!("http://{}/status", endpoint_host)).await?;
+    let status_json = util::do_simple_get(&format!("https://{}/status", endpoint_host)).await?;
     let status: StatusResponse = serde_json::from_str(&status_json)?;
     Ok(status)
 }
