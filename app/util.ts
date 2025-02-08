@@ -89,6 +89,15 @@ export async function getDebugMode() {
   return isDebugMode;
 }
 
+let useCustomTitlebar: boolean | undefined = undefined;
+export async function getUseCustomTitlebar() {
+  if (useCustomTitlebar === undefined) {
+    const useCustom: boolean = await invoke("should_use_custom_titlebar");
+    useCustomTitlebar = useCustom;
+  }
+  return useCustomTitlebar;
+}
+
 export function deepEqual(a: any, b: any) {
   if (a === b) return true;
   if (typeof a !== "object" || typeof b !== "object") return false;

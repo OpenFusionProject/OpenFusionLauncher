@@ -1,10 +1,10 @@
 "use client";
 
-import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import Button from "@/components/Button";
 import { useEffect, useState } from "react";
 import { Stack } from "react-bootstrap";
+import { getUseCustomTitlebar } from "@/app/util";
 
 const onClickClose = () => getCurrentWindow().close();
 
@@ -25,7 +25,7 @@ export default function TitleBar() {
 
   useEffect(() => {
     const fetch = async () => {
-      const shouldShow: boolean = await invoke("should_use_custom_titlebar");
+      const shouldShow: boolean = await getUseCustomTitlebar();
       setShow(shouldShow);
     };
     fetch();
