@@ -9,6 +9,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { CSSProperties, useContext, useEffect, useState } from "react";
 import { SettingsCtx } from "@/app/contexts";
 import LoginModal from "@/components/LoginModal";
+import ForgotPasswordModal from "@/components/ForgotPasswordModal";
 
 function ListEntry({
   server,
@@ -23,7 +24,9 @@ function ListEntry({
   const [session, setSession] = useState<LoginSession | undefined | null>(
     undefined,
   );
+
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
 
   const ctx = useContext(SettingsCtx);
 
@@ -123,6 +126,20 @@ function ListEntry({
     setButtonLoading(false);
   };
 
+  const sendOneTimePassword = async (email: string) => {
+    try {
+      await invoke("send_otp", { email, serverUuid: server.uuid });
+      setShowForgotPasswordModal(false);
+      if (ctx.alertSuccess) {
+        ctx.alertSuccess("One-time password sent");
+      }
+    } catch (e: unknown) {
+      if (ctx.alertError) {
+        ctx.alertError("Failed to send one-time password (" + e + ")");
+      }
+    }
+  };
+
   useEffect(() => {
     const logoUrl = getLogoImageUrlForServer(server);
     if (logoUrl) {
@@ -181,7 +198,6 @@ function ListEntry({
                   text="Log In"
                   onClick={logIn}
                   variant="success"
-                  tooltip="Log in"
                 />
               </div>
             ) : (
@@ -196,7 +212,6 @@ function ListEntry({
                   text="Log Out"
                   onClick={logOut}
                   variant="danger"
-                  tooltip="Log out"
                 />
               </div>
             )}
@@ -210,6 +225,13 @@ function ListEntry({
         onClose={() => setShowLoginModal(false)}
         onSubmitLogin={doLogin}
         onSubmitRegister={doRegister}
+        onForgotPassword={() => setShowForgotPasswordModal(true)}
+      />
+      <ForgotPasswordModal
+        show={showForgotPasswordModal}
+        setShow={setShowForgotPasswordModal}
+        server={server}
+        onSubmit={(email) => sendOneTimePassword(email)}
       />
     </>
   );
