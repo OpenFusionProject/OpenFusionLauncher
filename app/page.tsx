@@ -282,7 +282,7 @@ export default function Home() {
       setTagline("Thanks for playing!");
       await getCurrentWindow().show();
       if (exitCode != 0) {
-        alertError("Game exited with code " + exitCode);
+        console.warn("Game exited with code " + exitCode);
       }
     } catch (e: unknown) {
       await getCurrentWindow().show();
