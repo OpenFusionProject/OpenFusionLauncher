@@ -37,11 +37,11 @@ jobs:
     - name: Build ffrunner
       run: make -C resources/ffrunner
     - name: Download webplayer DLLs
-      run: wget -r -np -R "index.html*" -nH --cut-dirs=2 https://cdn.dexlabs.systems/webplayer/patched-latest/ -P resources/ffrunner/
+      run: wget -r -l 7 -np -R "index.html*" -nH --cut-dirs=2 https://cdn.dexlabs.systems/webplayer/patched-latest/ -P resources/ffrunner/
     - name: Install NPM packages
       run: npm install
     - name: Build
-      run: cargo tauri build
+      run: cargo tauri build --no-bundle
     - name: Package
       run: |
         cd src-tauri/target/release
