@@ -28,6 +28,7 @@ export default function ManageAccountModal({
 }) {
   const [tab, setTab] = useState(TAB_DEFAULT);
   const [accountInfo, setAccountInfo] = useState<AccountInfo | undefined | null>(undefined);
+  const [working, setWorking] = useState<boolean>(false);
 
   // Update email tab
   const [newEmail, setNewEmail] = useState<string>("");
@@ -59,6 +60,7 @@ export default function ManageAccountModal({
     if (show) {
       setAccountInfo(undefined);
       setTab(TAB_DEFAULT);
+      setWorking(false);
       setNewEmail("");
       setNewEmailConfirm("");
       setNewPassword("");
@@ -70,10 +72,20 @@ export default function ManageAccountModal({
     }
   }, [show]);
 
+  const onSubmit = async () => {
+    setWorking(true);
+    if (tab == TAB_UPDATE_EMAIL) {
+      await onUpdateEmail(newEmail);
+    } else if (tab == TAB_UPDATE_PASSWORD) {
+      await onUpdatePassword(newPassword);
+    }
+    setWorking(false);
+  };
+
   return (
     <Modal show={show} onHide={() => setShow(false)} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Manage Account</Modal.Title>
+        <Modal.Title>Manage Account - {server?.description}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="p-0">
         {accountInfo === undefined ? (
@@ -166,14 +178,9 @@ export default function ManageAccountModal({
         <Button
           variant="success"
           text={tab == TAB_UPDATE_EMAIL ? "Send Verification Email" : "Update Password"}
+          loading={working}
           enabled={tab == TAB_UPDATE_EMAIL ? validateNewEmail() : validateNewPassword()}
-          onClick={() => {
-            if (tab == TAB_UPDATE_EMAIL) {
-              onUpdateEmail(newEmail);
-            } else {
-              onUpdatePassword(newPassword);
-            }
-          }}
+          onClick={onSubmit}
         />
       </Modal.Footer>
     </Modal>

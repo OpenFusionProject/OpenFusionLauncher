@@ -144,7 +144,7 @@ function ListEntry({
 
   const updateEmail = async (newEmail: string) => {
     try {
-      await invoke("update_email", { email: newEmail, serverUuid: server.uuid });
+      await invoke("update_email", { newEmail, serverUuid: server.uuid, sessionToken: session!.session_token });
       if (ctx.alertSuccess) {
         ctx.alertSuccess("Verification email sent to " + newEmail);
       }
@@ -158,13 +158,11 @@ function ListEntry({
 
   const updatePassword = async (newPassword: string) => {
     try {
-      await invoke("update_password", {
-        password: newPassword,
-        serverUuid: server.uuid,
-      });
+      await invoke("update_password", { newPassword, serverUuid: server.uuid, sessionToken: session!.session_token });
       if (ctx.alertSuccess) {
         ctx.alertSuccess("Password updated successfully");
       }
+      setShowManageAccountModal(false);
     } catch (e: unknown) {
       if (ctx.alertError) {
         ctx.alertError("Failed to update password: " + e);

@@ -259,6 +259,60 @@ async fn get_account_info(
 }
 
 #[tauri::command]
+async fn update_email(
+    app_handle: tauri::AppHandle,
+    server_uuid: Uuid,
+    new_email: String,
+    session_token: String,
+) -> CommandResult<()> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let server = state
+            .servers
+            .get_entry(server_uuid)
+            .ok_or(format!("Server {} not found", server_uuid))?;
+
+        let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
+            return Err("Server is not an endpoint server".into());
+        };
+        drop(state);
+
+        endpoint::update_email(&endpoint, &session_token, &new_email).await?;
+        Ok(())
+    };
+    debug!("update_email");
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
+async fn update_password(
+    app_handle: tauri::AppHandle,
+    server_uuid: Uuid,
+    new_password: String,
+    session_token: String,
+) -> CommandResult<()> {
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let state = state.lock().await;
+        let server = state
+            .servers
+            .get_entry(server_uuid)
+            .ok_or(format!("Server {} not found", server_uuid))?;
+
+        let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
+            return Err("Server is not an endpoint server".into());
+        };
+        drop(state);
+
+        endpoint::update_password(&endpoint, &session_token, &new_password).await?;
+        Ok(())
+    };
+    debug!("update_password");
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
 async fn get_session(app_handle: tauri::AppHandle, server_uuid: Uuid) -> CommandResult<Session> {
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
@@ -1187,6 +1241,8 @@ pub fn run() {
             get_session,
             get_account_info,
             send_otp,
+            update_email,
+            update_password,
             prep_launch,
             do_launch,
             validate_cache,

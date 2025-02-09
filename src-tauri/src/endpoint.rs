@@ -93,6 +93,16 @@ impl From<AccountInfoResponse> for AccountInfo {
     }
 }
 
+#[derive(Serialize)]
+pub struct EmailUpdateRequest {
+    new_email: String,
+}
+
+#[derive(Serialize)]
+pub struct PasswordUpdateRequest {
+    new_password: String,
+}
+
 fn make_api_error(url: &str, status: StatusCode, body: &str) -> Error {
     format!("API error {}: {} [{}]", status, body, url).into()
 }
@@ -279,6 +289,52 @@ pub async fn send_otp(endpoint_host: &str, email: &str) -> Result<()> {
     let res = client
         .post(&url)
         .json(&serde_json::json!({ "email": email }))
+        .send()
+        .await?;
+
+    let status = res.status();
+    let body = res.text().await?;
+    if status.is_success() {
+        Ok(())
+    } else {
+        Err(make_api_error(&url, status, &body))
+    }
+}
+
+pub async fn update_email(endpoint_host: &str, token: &str, new_email: &str) -> Result<()> {
+    debug!("Updating email to {}", new_email);
+    let req = EmailUpdateRequest {
+        new_email: new_email.to_string(),
+    };
+    let url = format!("https://{}/account/update/email", endpoint_host);
+    let client = util::get_http_client();
+    let res = client
+        .post(&url)
+        .header("Authorization", format!("Bearer {}", token))
+        .json(&req)
+        .send()
+        .await?;
+
+    let status = res.status();
+    let body = res.text().await?;
+    if status.is_success() {
+        Ok(())
+    } else {
+        Err(make_api_error(&url, status, &body))
+    }
+}
+
+pub async fn update_password(endpoint_host: &str, token: &str, new_password: &str) -> Result<()> {
+    debug!("Updating password");
+    let req = PasswordUpdateRequest {
+        new_password: new_password.to_string(),
+    };
+    let url = format!("https://{}/account/update/password", endpoint_host);
+    let client = util::get_http_client();
+    let res = client
+        .post(&url)
+        .header("Authorization", format!("Bearer {}", token))
+        .json(&req)
         .send()
         .await?;
 
