@@ -1,0 +1,52 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Install dependencies
+      run: |
+        sudo apt update && sudo apt install -y gcc-mingw-w64-i686 \
+          libwebkit2gtk-4.1-dev \
+          build-essential \
+          curl \
+          wget \
+          file \
+          libxdo-dev \
+          libssl-dev \
+          libayatana-appindicator3-dev \
+          librsvg2-dev \
+          wget \
+          zip
+    - name: Install NPM
+      run: sudo apt install npm
+    - name: Install Tauri CLI
+      run: cargo install tauri-cli --version "^2.0.0" --locked
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+    - name: Build ffrunner
+      run: make -C resources/ffrunner
+    - name: Download webplayer DLLs
+      run: wget -r -np -R "index.html*" -nH --cut-dirs=2 https://cdn.dexlabs.systems/webplayer/patched-latest/ -P resources/ffrunner/
+    - name: Install NPM packages
+      run: npm install
+    - name: Build
+      run: cargo tauri build
+    - name: Package
+      run: |
+        cd src-tauri/target/release
+        zip -r linux-standalone.zip openfusionlauncher ffrunner.exe assets defaults loader player mono
+    - uses: actions/upload-artifact@v4.6.0
+      with:
+        name: openfusionlauncher-linux-standalone
+        path: src-tauri/target/release/linux-standalone.zip
