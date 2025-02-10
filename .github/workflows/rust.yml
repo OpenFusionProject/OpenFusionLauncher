@@ -31,7 +31,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: /home/runner/.cargo
-        key: tauri-cli-${{ runner.os }}
+        key: tauri-cli-Linux
 
     - name: Install Tauri CLI
       if: steps.cache-tauri.outputs.cache-hit != 'true'
@@ -59,7 +59,7 @@ jobs:
           src-tauri/target/release/build
           src-tauri/target/release/.fingerprint
           src-tauri/target/release/incremental
-        key: cargo-deps-${{ runner.os }}
+        key: cargo-deps-Linux
 
     - name: Build
       run: cargo tauri build --no-bundle
@@ -74,3 +74,56 @@ jobs:
       with:
         name: openfusionlauncher-linux-standalone
         path: src-tauri/target/release/linux-standalone/
+
+  build-windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Restore Tauri CLI
+        id: cache-tauri
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cargo
+          key: tauri-cli-Windows
+      
+      - name: Install Tauri CLI
+        if: steps.cache-tauri.outputs.cache-hit != 'true'
+        run: cargo install tauri-cli --version "^2.0.0" --locked
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Build ffrunner
+        working-directory: resources/ffrunner
+        run: |
+          $configurations = "Release"
+          $vsPath = "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise"
+          Import-Module "$vsPath\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
+          Enter-VsDevShell -VsInstallPath $vsPath -SkipAutomaticLocation
+          Invoke-Expression "cmake -B build"
+          Invoke-Expression "msbuild build\ffrunner.sln /maxcpucount:8 /p:BuildInParallel=true /p:CL_MPCount=8 /p:UseMultiToolTask=true /p:Configuration=$configuration"
+          Move-Item "build\$configuration\ffrunner.exe" .
+      
+      - name: Download webplayer DLLs
+        run: echo "stub"
+
+      - name: Install NPM packages
+        run: npm install
+
+      - name: Restore Cargo dependencies
+        id: cache-cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            src-tauri/target/release/deps
+            src-tauri/target/release/build
+            src-tauri/target/release/.fingerprint
+            src-tauri/target/release/incremental
+          key: cargo-deps-Windows
+
+      - name: Build
+        run: cargo tauri build
