@@ -25,28 +25,52 @@ jobs:
           libssl-dev \
           libayatana-appindicator3-dev \
           librsvg2-dev \
-          wget \
-          zip
+          wget
+
     - name: Install NPM
       run: sudo apt install npm
+
+    - name: Restore Tauri CLI
+      id: cache-tauri
+      uses: actions/cache@v4
+      with:
+        path: /home/runner/.cargo
+        key: tauri-cli-${{ runner.os }}
+
     - name: Install Tauri CLI
+      if: steps.cache-tauri.outputs.cache-hit != 'true'
       run: cargo install tauri-cli --version "^2.0.0" --locked
+
     - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
+
     - name: Build ffrunner
       run: make -C resources/ffrunner
+
     - name: Download webplayer DLLs
       run: wget -r -l 7 -np -R "index.html*" -nH --cut-dirs=2 https://cdn.dexlabs.systems/webplayer/patched-latest/ -P resources/ffrunner/
+
     - name: Install NPM packages
       run: npm install
+
+    - name: Restore Cargo dependencies
+      id: cache-cargo
+      uses: actions/cache@v4
+      with:
+        path: target/release
+        key: cargo-deps-${{ runner.os }}
+
     - name: Build
       run: cargo tauri build --no-bundle
+
     - name: Package
       run: |
         cd src-tauri/target/release
-        zip -r linux-standalone.zip openfusionlauncher ffrunner.exe assets defaults loader player mono
+        mkdir linux-standalone
+        mv -t linux-standalone openfusionlauncher ffrunner.exe assets defaults loader player mono
+
     - uses: actions/upload-artifact@v4.6.0
       with:
         name: openfusionlauncher-linux-standalone
-        path: src-tauri/target/release/linux-standalone.zip
+        path: src-tauri/target/release/linux-standalone/
