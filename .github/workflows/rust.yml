@@ -25,10 +25,8 @@ jobs:
           libssl-dev \
           libayatana-appindicator3-dev \
           librsvg2-dev \
-          wget
-
-    - name: Install NPM
-      run: sudo apt install npm
+          wget \
+          npm
 
     - name: Restore Tauri CLI
       id: cache-tauri
@@ -58,7 +56,7 @@ jobs:
       id: cache-cargo
       uses: actions/cache@v4
       with:
-        path: target/release
+        path: src-tauri/target/release
         key: cargo-deps-${{ runner.os }}
 
     - name: Build
