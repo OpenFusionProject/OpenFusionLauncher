@@ -30,3 +30,4 @@ reqwest = "0.12.9"
 ffbuildtool = { git = "https://github.com/OpenFusionProject/ffbuildtool.git", tag = "v4.4.0", default-features = false }
 tauri-plugin-shell = "2.0.2"
 tauri-plugin-dialog = "2"
+regex = "1.11.1"

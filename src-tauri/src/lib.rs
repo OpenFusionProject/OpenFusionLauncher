@@ -6,6 +6,7 @@ mod util;
 use config::{LaunchBehavior, LauncherSettings};
 use endpoint::{AccountInfo, InfoResponse, RegisterResponse, Session};
 use ffbuildtool::{ItemProgress, Version};
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use state::{
     get_app_statics, AppState, Config, FlatServer, FlatServers, Server, ServerInfo, Versions,
@@ -16,7 +17,7 @@ use util::AlertVariant;
 use std::{
     collections::{HashMap, HashSet},
     env,
-    sync::{mpsc, Arc, OnceLock},
+    sync::{mpsc, Arc, LazyLock, OnceLock},
     vec,
 };
 use tokio::sync::{Mutex, Semaphore};
@@ -29,6 +30,8 @@ type Error = Box<dyn std::error::Error>;
 type Result<T> = std::result::Result<T, Error>;
 type CommandResult<T> = std::result::Result<T, String>;
 
+static VERSION_NUMBER_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^\d+\.\d+\.\d+$").unwrap());
 const UPDATE_CHECK_URL: &str =
     "https://api.github.com/repos/OpenFusionProject/OpenFusionLauncher/releases/latest";
 
@@ -1150,6 +1153,9 @@ async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
     let internal = async {
         let resp_raw = util::do_simple_get(UPDATE_CHECK_URL).await?;
         let resp: UpdateCheckResponse = serde_json::from_str(&resp_raw)?;
+        if !VERSION_NUMBER_REGEX.is_match(&resp.tag_name) {
+            return Err(format!("Invalid version number: {}", resp.tag_name).into());
+        }
         let current_version = util::string_version_to_u32(get_app_statics().get_version());
         let latest_version = util::string_version_to_u32(&resp.tag_name);
         if latest_version <= current_version {

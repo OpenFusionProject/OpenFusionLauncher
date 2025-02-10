@@ -2730,6 +2730,7 @@ dependencies = [
  "dns-lookup",
  "ffbuildtool",
  "log",
+ "regex",
  "reqwest",
  "serde",
  "serde_json",
