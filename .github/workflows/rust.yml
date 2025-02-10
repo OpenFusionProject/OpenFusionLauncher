@@ -79,7 +79,6 @@ jobs:
       with:
         path: |
           src-tauri/target/release/deps
-          src-tauri/target/release/build
           src-tauri/target/release/.fingerprint
           src-tauri/target/release/incremental
         key: cargo-deps-Linux
@@ -134,7 +133,6 @@ jobs:
         with:
           path: |
             src-tauri/target/release/deps
-            src-tauri/target/release/build
             src-tauri/target/release/.fingerprint
             src-tauri/target/release/incremental
           key: cargo-deps-Windows
