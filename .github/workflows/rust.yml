@@ -11,6 +11,10 @@ jobs:
   build-linux:
     runs-on: ubuntu-24.04
     steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+
     - name: Install dependencies
       run: |
         sudo apt update && sudo apt install -y gcc-mingw-w64-i686 \
@@ -23,8 +27,7 @@ jobs:
           libssl-dev \
           libayatana-appindicator3-dev \
           librsvg2-dev \
-          wget \
-          npm
+          wget
 
     - name: Restore Tauri CLI
       id: cache-tauri
@@ -86,7 +89,7 @@ jobs:
         id: cache-tauri
         uses: actions/cache@v4
         with:
-          path: /home/runner/.cargo
+          path: C:\Users\runneradmin\.cargo
           key: tauri-cli-Windows
       
       - name: Install Tauri CLI
