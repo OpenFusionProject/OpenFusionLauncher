@@ -40,7 +40,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt update && sudo apt install -y gcc-mingw-w64-i686 \
+        sudo apt update && sudo apt install -y \
           libwebkit2gtk-4.1-dev \
           build-essential \
           curl \
@@ -49,8 +49,7 @@ jobs:
           libxdo-dev \
           libssl-dev \
           libayatana-appindicator3-dev \
-          librsvg2-dev \
-          wget
+          librsvg2-dev
 
     - name: Restore Tauri CLI
       id: cache-tauri
@@ -142,3 +141,19 @@ jobs:
 
       - name: Build
         run: cargo tauri build
+
+      - name: Package
+        run: |
+          cd src-tauri/target/release
+          mkdir windows-standalone
+          Move-Item -Destination windows-standalone -Path openfusionlauncher.exe,ffrunner.exe,assets,defaults,loader,player,mono
+      
+      - uses: actions/upload-artifact@v4.6.0
+        with:
+          name: openfusionlauncher-windows-standalone
+          path: src-tauri/target/release/windows-standalone/
+
+      - uses: actions/upload-artifact@v4.6.0
+        with:
+          name: openfusionlauncher-windows-installer
+          path: src-tauri/target/release/bundle/nsis/
