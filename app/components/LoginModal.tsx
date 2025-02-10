@@ -27,6 +27,12 @@ const CONTROL_ID_NEW_PASSWORD = "newPassword";
 const CONTROL_ID_CONFIRM_PASSWORD = "confirmPassword";
 const CONTROL_ID_EMAIL = "email";
 
+const replaceLinksWithShellOpen = (html: string) => {
+  return html.replace(/<a href="([^"]+)">([^<]+)<\/a>/g, (match, href, text) => {
+    return `<a href="#" onclick="window.__TAURI__.shell.open('${href}'); return false;">${text}</a>`;
+  });
+};
+
 const getUpsellImage = (server?: ServerEntry) => {
   if (server?.endpoint) {
     // HACK: add the counter to the url as a parameter to prevent caching across reloads
@@ -66,7 +72,9 @@ function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
         );
         setError(false);
         const parsed: string = await parse(announcements);
-        setAnnouncements(parsed);
+        const sanitized: string = DOMPurify.sanitize(parsed);
+        const linksReplaced: string = replaceLinksWithShellOpen(sanitized);
+        setAnnouncements(linksReplaced);
         setShowAnnouncements(true);
       } catch (e) {
         console.warn(e);
@@ -92,7 +100,7 @@ function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
         alt="Upsell"
       />
       <div className="announcements">
-        {error ? ERROR_TEXT : <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(announcements) }} />}
+        {error ? ERROR_TEXT : <div dangerouslySetInnerHTML={{ __html: announcements }} />}
       </div>
     </div>
   );
