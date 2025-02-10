@@ -73,15 +73,15 @@ jobs:
     - name: Install NPM packages
       run: npm install
 
-    - name: Restore Cargo dependencies
-      id: cache-cargo
-      uses: actions/cache@v4
-      with:
-        path: |
-          src-tauri/target/release/deps
-          src-tauri/target/release/.fingerprint
-          src-tauri/target/release/incremental
-        key: cargo-deps-Linux
+    # - name: Restore Cargo dependencies
+    #   id: cache-cargo
+    #   uses: actions/cache@v4
+    #   with:
+    #     path: |
+    #       src-tauri/target/release/deps
+    #       src-tauri/target/release/.fingerprint
+    #       src-tauri/target/release/incremental
+    #     key: cargo-deps-Linux
 
     - name: Build
       run: cargo tauri build --no-bundle
@@ -127,15 +127,15 @@ jobs:
       - name: Install NPM packages
         run: npm install
 
-      - name: Restore Cargo dependencies
-        id: cache-cargo
-        uses: actions/cache@v4
-        with:
-          path: |
-            src-tauri/target/release/deps
-            src-tauri/target/release/.fingerprint
-            src-tauri/target/release/incremental
-          key: cargo-deps-Windows
+      # - name: Restore Cargo dependencies
+      #   id: cache-cargo
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       src-tauri/target/release/deps
+      #       src-tauri/target/release/.fingerprint
+      #       src-tauri/target/release/incremental
+      #     key: cargo-deps-Windows
 
       - name: Build
         run: cargo tauri build
