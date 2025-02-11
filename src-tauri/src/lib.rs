@@ -31,7 +31,7 @@ type Result<T> = std::result::Result<T, Error>;
 type CommandResult<T> = std::result::Result<T, String>;
 
 static VERSION_NUMBER_REGEX: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^\d+\.\d+\.\d+$").unwrap());
+    LazyLock::new(|| Regex::new(r"^v?\d+(?:\.\d)*$").unwrap());
 const UPDATE_CHECK_URL: &str =
     "https://api.github.com/repos/OpenFusionProject/OpenFusionLauncher/releases/latest";
 
@@ -1157,7 +1157,7 @@ async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
             return Err(format!("Invalid version number: {}", resp.tag_name).into());
         }
         let current_version = util::string_version_to_u32(get_app_statics().get_version());
-        let latest_version = util::string_version_to_u32(&resp.tag_name);
+        let latest_version = util::string_version_to_u32(resp.tag_name.trim_start_matches("v"));
         if latest_version <= current_version {
             return Ok(None);
         }
