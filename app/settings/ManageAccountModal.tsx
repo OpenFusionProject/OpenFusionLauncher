@@ -3,6 +3,7 @@ import { Tabs, Tab } from "react-bootstrap";
 import Button from "@/components/Button";
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { open } from "@tauri-apps/plugin-shell";
 import { AccountInfo, LoginSession, ServerEntry } from "@/app/types";
 import { getPrivacyPolicyUrlForServer, validateEmail, validatePassword } from "@/app/util";
 
