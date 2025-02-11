@@ -51,6 +51,10 @@
       "../resources/ffrunner/mono/fusion-2.x.x/Data/etc/mono/2.0/*": "mono/fusion-2.x.x/Data/etc/mono/2.0/"
     },
     "windows": {
+      "webviewInstallMode": {
+        "silent": true,
+        "type": "embedBootstrapper"
+      },
       "nsis": {
         "installMode": "currentUser"
       }
