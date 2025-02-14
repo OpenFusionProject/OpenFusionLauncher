@@ -41,14 +41,12 @@ impl AppStatics {
         let path_resolver = app.handle().path();
         let app_data_dir = path_resolver.app_data_dir().unwrap();
 
-        let resource_dir = if cfg!(target_os = "linux") {
-            // HACK: tauri's path resolver doesn't work correctly on linux standalone builds.
-            // it reports /usr/lib/OpenFusionLauncher for the resource directory,
-            // but the resources are actually in the same directory as the executable.
-            std::env::current_exe().unwrap().parent().unwrap().into()
-        } else {
-            path_resolver.resource_dir().unwrap()
-        };
+        let mut resource_dir = path_resolver.resource_dir().unwrap();
+        if !std::fs::exists(resource_dir.join("ffrunner.exe")).unwrap_or(false) {
+            // Resource directory is incorrect. Assume standalone build
+            // and use the current executable's directory as the resource dir.
+            resource_dir = std::env::current_exe().unwrap().parent().unwrap().into();
+        }
 
         let ff_cache_dir = path_resolver
             .resolve("ffcache", BaseDirectory::AppCache)
