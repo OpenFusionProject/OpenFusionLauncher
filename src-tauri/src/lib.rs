@@ -438,7 +438,9 @@ async fn prep_launch(
         cmd.env("UNITY_FF_CACHE_DIR", cache_dir);
 
         let mut asset_url = version.get_asset_url();
-        let mut main_url = format!("{}/main.unity3d", asset_url);
+        let mut main_url = version
+            .get_main_file_url()
+            .unwrap_or(format!("{}/main.unity3d", asset_url));
 
         // use offline cache if available
         let base_offline_cache_dir = &state.config.launcher.offline_cache_path;
