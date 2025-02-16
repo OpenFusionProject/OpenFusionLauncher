@@ -15,7 +15,7 @@
     "@tauri-apps/plugin-shell": "^2.0.1",
     "@types/uuid": "^10.0.0",
     "bootstrap": "^5.3.3",
-    "dompurify": "^3.2.3",
+    "dompurify": "^3.2.4",
     "magic-snowflakes": "^6.3.0",
     "marked": "^15.0.6",
     "next": "^14.2.15",
