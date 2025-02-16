@@ -95,23 +95,23 @@ struct NewServerDetails {
 
 #[tauri::command]
 async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
-    let internal = async {
-        let state = app_handle.state::<Mutex<AppState>>();
-        let mut state = state.lock().await;
-        let launch_behavior = state.config.launcher.launch_behavior;
-        let mut cmd = state.launch_cmd.take().ok_or("No launch prepared")?;
-        drop(state);
-
-        let mut proc = cmd.spawn()?;
-        if launch_behavior == LaunchBehavior::Quit {
-            app_handle.exit(0);
-            return Ok(0);
-        }
-        let exit_code = proc.wait()?;
-        Ok(exit_code.code().unwrap_or(0))
-    };
     debug!("do_launch");
-    internal.await.map_err(|e: Error| e.to_string())
+    let state = app_handle.state::<Mutex<AppState>>();
+    let mut state = state.lock().await;
+    let launch_behavior = state.config.launcher.launch_behavior;
+    let mut cmd = state.launch_cmd.take().ok_or("No launch prepared")?;
+    let cmd_str = util::get_launch_cmd_dbg_str(&cmd, false);
+    drop(state);
+
+    let mut proc = cmd
+        .spawn()
+        .map_err(|e| format!("{} (launch command was: {})", e, cmd_str))?;
+    if launch_behavior == LaunchBehavior::Quit {
+        app_handle.exit(0);
+        return Ok(0);
+    }
+    let exit_code = proc.wait().map_err(|e| e.to_string())?;
+    Ok(exit_code.code().unwrap_or(0))
 }
 
 #[tauri::command]

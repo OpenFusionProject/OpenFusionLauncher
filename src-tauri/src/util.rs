@@ -394,22 +394,29 @@ pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Command
     launch_command
 }
 
-pub(crate) fn log_command(command: &Command) {
+pub(crate) fn get_launch_cmd_dbg_str(command: &Command, with_env: bool) -> String {
     let mut command_str = format!("\"{}\"", command.get_program().to_string_lossy());
     for arg in command.get_args() {
         command_str.push(' ');
         command_str.push_str(arg.to_string_lossy().to_string().as_str());
     }
 
-    for env in command.get_envs() {
-        command_str.push_str("\n\t");
-        let env_str = format!(
-            "{}={}",
-            env.0.to_string_lossy(),
-            env.1.unwrap().to_string_lossy()
-        );
-        command_str.push_str(&env_str);
+    if with_env {
+        for env in command.get_envs() {
+            command_str.push_str("\n\t");
+            let env_str = format!(
+                "{}={}",
+                env.0.to_string_lossy(),
+                env.1.unwrap().to_string_lossy()
+            );
+            command_str.push_str(&env_str);
+        }
     }
 
+    command_str
+}
+
+pub(crate) fn log_command(command: &Command) {
+    let command_str = get_launch_cmd_dbg_str(command, true);
     debug!("Launching game: {}", command_str);
 }
