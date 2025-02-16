@@ -57,9 +57,10 @@ export default function Home() {
   const [initialFetchDone, setInitialFetchDone] = useState(false);
   const [config, setConfig] = useState<Config | undefined>(undefined);
   const [servers, setServers] = useState<ServerEntry[]>([]);
-  const [selectedIdx, setSelectedIdx] = useState<number>(-1);
-
   const [versions, setVersions] = useState<VersionEntry[]>([]);
+
+  const [selectedIdx, setSelectedIdx] = useState<number>(-1);
+  const [currentSession, setCurrentSession] = useState<LoginSession | undefined>(undefined);
 
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>([]);
@@ -93,6 +94,7 @@ export default function Home() {
     } else {
       setSelectedIdx(-1);
     }
+    setCurrentSession(undefined);
   };
 
   const pushAlert = (variant: string, text: string, link?: string) => {
@@ -274,7 +276,7 @@ export default function Home() {
         await sleep(timeout * 1000);
       }
       stopLoading("launch");
-
+      setCurrentSession(undefined);
       if (config!.launcher.launch_behavior == "hide") {
         await getCurrentWindow().hide();
       }
@@ -349,24 +351,27 @@ export default function Home() {
       return;
     }
 
-    let session: LoginSession | undefined = undefined;
+    let session: LoginSession | undefined = currentSession;
     let version: string | undefined = versionUuid ?? server.version;
     if (server.endpoint) {
       startLoading("configure_endpoint");
 
       // authenticate before worrying about versions
-      try {
-        const loginSession: LoginSession = await invoke("get_session", {
-          serverUuid: serverUuid,
-        });
-        session = loginSession;
-      } catch {
-        // If we can't get a session token for ANY REASON, we'll grab a new refresh token
-        // by making the user log in again
-        stopLoading("configure_endpoint");
-        setShowLoginModal(true);
-        setConnecting(false);
-        return;
+      if (!session) {
+        try {
+          const loginSession: LoginSession = await invoke("get_session", {
+            serverUuid: serverUuid,
+          });
+          session = loginSession;
+          setCurrentSession(loginSession);
+        } catch {
+          // If we can't get a session token for ANY REASON, we'll grab a new refresh token
+          // by making the user log in again
+          stopLoading("configure_endpoint");
+          setShowLoginModal(true);
+          setConnecting(false);
+          return;
+        }
       }
 
       // check supported versions
