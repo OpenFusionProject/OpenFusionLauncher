@@ -39,7 +39,7 @@ import LogoImages from "@/components/LogoImages";
 import SelectVersionModal from "@/components/SelectVersionModal";
 import Toasts from "@/components/Toasts";
 import { listen } from "@tauri-apps/api/event";
-import { getDebugMode, getTheme, sleep } from "@/app/util";
+import { getDebugMode, getTheme, getUseCustomTitlebar, sleep } from "@/app/util";
 import ForgotPasswordModal from "./components/ForgotPasswordModal";
 
 const DEFAULT_TAGLINE =
@@ -53,6 +53,7 @@ export default function Home() {
     UpdateInfo | undefined
   >(undefined);
   const [tagline, setTagline] = useState(DEFAULT_TAGLINE);
+  const [topOffset, setTopOffset] = useState<string>("0");
 
   const [initialFetchDone, setInitialFetchDone] = useState(false);
   const [config, setConfig] = useState<Config | undefined>(undefined);
@@ -518,6 +519,17 @@ export default function Home() {
     };
   }, [servers, selectedIdx]);
 
+  // Padding for custom titlebar
+  useEffect(() => {
+    const fetch = async () => {
+      const shouldShow: boolean = await getUseCustomTitlebar();
+      if (shouldShow) {
+        setTopOffset("42px");
+      }
+    };
+    fetch();
+  }, []);
+
   return initialFetchDone ? (
     <>
       <Toasts alerts={alerts} />
@@ -526,7 +538,9 @@ export default function Home() {
         servers={servers}
         selectedServer={getSelectedServer()}
       />
-      <Container id="serverselector-container">
+      <Container id="serverselector-container" style={{
+        paddingTop: topOffset,
+      }}>
         <Row id="of-logoheader" className="text-center pt-3">
           <Col>
             <LogoImages
