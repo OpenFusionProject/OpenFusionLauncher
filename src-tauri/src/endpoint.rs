@@ -175,6 +175,8 @@ pub async fn get_refresh_token(
     let body = res.text().await?;
     if status.is_success() {
         Ok(body)
+    } else if status == StatusCode::UNAUTHORIZED {
+        Err("Incorrect username or password".into())
     } else {
         Err(make_api_error(&url, status, &body))
     }
