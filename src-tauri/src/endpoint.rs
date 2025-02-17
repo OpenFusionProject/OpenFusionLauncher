@@ -239,7 +239,7 @@ pub async fn get_cookie(token: &str, endpoint_host: &str) -> Result<(String, Str
 
     let time_now = util::get_timestamp();
     if cookie.expires < time_now {
-        return Err("Cookie expired".into());
+        return Err("Cookie expired; try syncing your system clock".into());
     }
 
     Ok((cookie.username, cookie.cookie))
