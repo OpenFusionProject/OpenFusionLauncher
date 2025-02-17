@@ -1,7 +1,6 @@
 "use client";
 
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import Button from "@/components/Button";
 import { useEffect, useState } from "react";
 import { Stack } from "react-bootstrap";
 import { getUseCustomTitlebar } from "@/app/util";
@@ -21,6 +20,14 @@ const onClickMaximize = async () => {
 
 const onClickMinimize = () => getCurrentWindow().minimize();
 
+function TitleBarButton({ icon, onClick }: { icon: string; onClick: () => Promise<void> }) {
+  return (
+    <div className="titlebar-button" onClick={onClick}>
+      <i className={"fa-solid fa-" + icon}></i>
+    </div>
+  )
+}
+
 export default function TitleBar() {
   const [show, setShow] = useState<boolean>(false);
   const [appName, setAppName] = useState<string>("");
@@ -39,22 +46,16 @@ export default function TitleBar() {
     <div className="titlebar">
       <span data-tauri-drag-region>{appName}</span>
       <Stack direction="horizontal" className="flex-row-reverse" gap={1}>
-        <Button
-          variant="danger"
+        <TitleBarButton
           icon="x"
-          iconStyle="solid"
           onClick={onClickClose}
         />
-        <Button
-          variant="primary"
+        <TitleBarButton
           icon="window-maximize"
-          iconStyle="solid"
           onClick={onClickMaximize}
         />
-        <Button
-          variant="primary"
+        <TitleBarButton
           icon="window-minimize"
-          iconStyle="solid"
           onClick={onClickMinimize}
         />
       </Stack>

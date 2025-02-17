@@ -19,6 +19,10 @@ $title-bar-bg-opacity: 0.05;
     background-color: rgba($body-bg, $title-bar-bg-opacity)
   }
 
+  .titlebar-button:hover {
+    background-color: rgba($body-bg, $title-bar-bg-opacity * 2);
+  }
+
   .table-striped thead th {
     background-color: #34476e;
   }
@@ -171,6 +175,10 @@ $title-bar-bg-opacity: 0.05;
     background-color: rgba($body-bg-dark, $title-bar-bg-opacity)
   }
 
+  .titlebar-button:hover {
+    background-color: rgba($body-bg-dark, $title-bar-bg-opacity * 2);
+  }
+
   .table-striped thead th {
     background-color: #0099d8;
   }
@@ -316,6 +324,10 @@ $title-bar-bg-opacity: 0.05;
 
 #page-config {
   background-color: $body-bg-dark;
+}
+
+.titlebar-button {
+  border-radius: 100%;
 }
 
 .btn {
