@@ -5,16 +5,18 @@ import { open } from "@tauri-apps/plugin-shell";
 export default function AboutModal({
   show,
   setShow,
+  name,
   version,
 }: {
   show: boolean;
   setShow: (newShow: boolean) => void;
+  name: string;
   version: string;
 }) {
   return (
     <Modal show={show} onHide={() => setShow(false)} centered={true}>
       <Modal.Header>
-        <Modal.Title>About OpenFusion Launcher</Modal.Title>
+        <Modal.Title>About {name}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p className="font-monospace">Version {version}</p>

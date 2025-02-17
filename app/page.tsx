@@ -3,7 +3,7 @@
 import { startEasterEggs } from "./easter-eggs";
 
 import { invoke } from "@tauri-apps/api/core";
-import { getVersion } from "@tauri-apps/api/app";
+import { getName, getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useState, useEffect, useRef } from "react";
 import Container from "react-bootstrap/Container";
@@ -48,6 +48,7 @@ const DEFAULT_TAGLINE =
 export default function Home() {
   const loadedRef = useRef(false);
 
+  const [appName, setAppName] = useState("");
   const [launcherVersion, setLauncherVersion] = useState("--");
   const [updateAvailable, setUpdateAvailable] = useState<
     UpdateInfo | undefined
@@ -246,6 +247,8 @@ export default function Home() {
 
   const doInit = async () => {
     try {
+      const appName = await getName();
+      setAppName(appName);
       const appVersion = await getVersion();
       setLauncherVersion(appVersion);
       const firstRun: boolean = await invoke("reload_state");
@@ -686,6 +689,7 @@ export default function Home() {
       <AboutModal
         show={showAboutModal}
         setShow={setShowAboutModal}
+        name={appName}
         version={launcherVersion}
       />
     </>

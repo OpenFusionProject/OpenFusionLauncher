@@ -5,6 +5,7 @@ import Button from "@/components/Button";
 import { useEffect, useState } from "react";
 import { Stack } from "react-bootstrap";
 import { getUseCustomTitlebar } from "@/app/util";
+import { getName } from "@tauri-apps/api/app";
 
 const onClickClose = () => getCurrentWindow().close();
 
@@ -22,9 +23,12 @@ const onClickMinimize = () => getCurrentWindow().minimize();
 
 export default function TitleBar() {
   const [show, setShow] = useState<boolean>(false);
+  const [appName, setAppName] = useState<string>("");
 
   useEffect(() => {
     const fetch = async () => {
+      const appName: string = await getName();
+      setAppName(appName);
       const shouldShow: boolean = await getUseCustomTitlebar();
       setShow(shouldShow);
     };
@@ -33,7 +37,7 @@ export default function TitleBar() {
 
   return show && (
     <div className="titlebar">
-      <span data-tauri-drag-region>OpenFusion{" "}Launcher</span>
+      <span data-tauri-drag-region>{appName}</span>
       <Stack direction="horizontal" className="flex-row-reverse" gap={1}>
         <Button
           variant="danger"
