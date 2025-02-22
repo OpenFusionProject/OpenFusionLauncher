@@ -24,6 +24,12 @@ jobs:
     - name: Download webplayer DLLs
       run: wget -r -l 7 -np -R "index.html*" -nH --cut-dirs=2 https://cdn.dexlabs.systems/webplayer/patched-latest/ -P resources/ffrunner/
 
+    - name: Download & extract Vulkan wrapper DLL
+      run: |
+        wget https://github.com/doitsujin/dxvk/releases/download/v1.10.3/dxvk-1.10.3.tar.gz
+        tar -xvf dxvk-1.10.3.tar.gz
+        mv dxvk-1.10.3/x32/d3d9.dll resources/ffrunner/d3d9_vulkan.dll
+
     - name: Upload ffrunner
       uses: actions/upload-artifact@v4.6.0
       with:
@@ -90,7 +96,7 @@ jobs:
       run: |
         cd src-tauri/target/release
         mkdir linux-standalone
-        mv -t linux-standalone openfusionlauncher ffrunner.exe assets defaults loader player mono
+        mv -t linux-standalone openfusionlauncher ffrunner.exe d3d9_vulkan.dll assets defaults loader player mono
 
     - uses: actions/upload-artifact@v4.6.0
       with:
@@ -144,7 +150,7 @@ jobs:
         run: |
           cd src-tauri/target/release
           mkdir windows-standalone
-          Move-Item -Destination windows-standalone -Path openfusionlauncher.exe,ffrunner.exe,assets,defaults,loader,player,mono
+          Move-Item -Destination windows-standalone -Path openfusionlauncher.exe,ffrunner.exe,d3d9_vulkan.dll,assets,defaults,loader,player,mono
       
       - uses: actions/upload-artifact@v4.6.0
         with:

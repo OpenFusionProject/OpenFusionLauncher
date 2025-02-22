@@ -542,6 +542,8 @@ async fn prep_launch(
             }
             config::GraphicsApi::Vulkan => {
                 cmd.arg("--force-vulkan");
+                #[cfg(debug_assertions)]
+                cmd.env("DXVK_HUD", "1");
             }
         }
 
