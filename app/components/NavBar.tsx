@@ -2,6 +2,7 @@ import { Row, Col, Container, Stack } from "react-bootstrap";
 import Button from "@/components/Button";
 import { useEffect, useState } from "react";
 import { getUseCustomTitlebar } from "@/app/util";
+import { useRouter } from "next/navigation";
 
 export default function NavBar({
   title,
@@ -11,6 +12,7 @@ export default function NavBar({
   buttons?: React.ReactNode;
 }) {
   const [topOffset, setTopOffset] = useState<string>("0");
+  const router = useRouter();
 
   useEffect(() => {
     const fetch = async () => {
@@ -23,16 +25,20 @@ export default function NavBar({
   }, []);
 
   return (
-    <Container fluid className="px-0 pb-0 m-0 nav-bar" style={{
-      paddingTop: topOffset,
-    }}>
+    <Container
+      fluid
+      className="px-0 pb-0 m-0 nav-bar"
+      style={{
+        paddingTop: topOffset,
+      }}
+    >
       <Row className="m-0 w-100">
         <Col className="p-0">
           <Button
             text="Back"
             icon="angle-double-left"
             iconLeft
-            onClick={() => window.history.back()}
+            onClick={() => router.back()}
             tooltip="Back"
             variant="primary"
           />
