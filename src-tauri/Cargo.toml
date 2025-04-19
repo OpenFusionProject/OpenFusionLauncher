@@ -31,3 +31,6 @@ ffbuildtool = { git = "https://github.com/OpenFusionProject/ffbuildtool.git", ta
 tauri-plugin-shell = "2.0.2"
 tauri-plugin-dialog = "2"
 regex = "1.11.1"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-single-instance = "2"
