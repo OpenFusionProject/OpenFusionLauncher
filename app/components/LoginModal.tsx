@@ -8,13 +8,17 @@ import Tab from "react-bootstrap/Tab";
 import Button from "./Button";
 
 import { EndpointInfo, ServerEntry } from "@/app/types";
-import { validateUsername, validatePassword, validateEmail, getPrivacyPolicyUrlForServer } from "@/app/util";
+import {
+  validateUsername,
+  validatePassword,
+  validateEmail,
+  getPrivacyPolicyUrlForServer,
+} from "@/app/util";
 import { Overlay, Tooltip } from "react-bootstrap";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-shell";
-import { parse } from "marked";
-import DOMPurify  from "dompurify";
 import get_seed from "@/app/seed";
+import Markdown from "react-markdown";
 
 const TAB_LOGIN = "login";
 const TAB_REGISTER = "register";
@@ -26,12 +30,6 @@ const CONTROL_ID_NEW_USERNAME = "newUsername";
 const CONTROL_ID_NEW_PASSWORD = "newPassword";
 const CONTROL_ID_CONFIRM_PASSWORD = "confirmPassword";
 const CONTROL_ID_EMAIL = "email";
-
-const replaceLinksWithShellOpen = (html: string) => {
-  return html.replace(/<a href="([^"]+)">([^<]+)<\/a>/g, (match, href, text) => {
-    return `<a href="#" onclick="window.__TAURI__.shell.open('${href}'); return false;">${text}</a>`;
-  });
-};
 
 const getUpsellImage = (server?: ServerEntry) => {
   if (server?.endpoint) {
@@ -68,13 +66,10 @@ function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
           "get_announcements_for_server",
           {
             uuid: server!.uuid,
-          },
+          }
         );
         setError(false);
-        const parsed: string = await parse(announcements);
-        const sanitized: string = DOMPurify.sanitize(parsed);
-        const linksReplaced: string = replaceLinksWithShellOpen(sanitized);
-        setAnnouncements(linksReplaced);
+        setAnnouncements(announcements);
         setShowAnnouncements(true);
       } catch (e) {
         console.warn(e);
@@ -100,7 +95,29 @@ function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
         alt="Upsell"
       />
       <div className="announcements">
-        {error ? ERROR_TEXT : <div dangerouslySetInnerHTML={{ __html: announcements }} />}
+        {error ? (
+          ERROR_TEXT
+        ) : (
+          <Markdown
+            components={{
+              a: (props) => {
+                const { href, ...rest } = props;
+                return (
+                  <a
+                    href="#"
+                    onClick={() => {
+                      open(href || "");
+                      return false;
+                    }}
+                    {...rest}
+                  />
+                );
+              },
+            }}
+          >
+            {announcements}
+          </Markdown>
+        )}
       </div>
     </div>
   );
@@ -137,7 +154,11 @@ export default function LoginModal({
   show: boolean;
   alwaysRemember: boolean;
   onClose: () => void;
-  onSubmitLogin: (username: string, password: string, remember: boolean) => void;
+  onSubmitLogin: (
+    username: string,
+    password: string,
+    remember: boolean
+  ) => void;
   onSubmitRegister: (username: string, password: string, email: string) => void;
   onForgotPassword: () => void;
 }) {
@@ -252,7 +273,7 @@ export default function LoginModal({
                     onClose(); // bootstrap doesn't support nested modals
                   }}
                 >
-                Forgot your password?
+                  Forgot your password?
                 </span>
               </div>
             </Tab>

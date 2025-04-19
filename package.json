@@ -13,7 +13,6 @@
     "@tauri-apps/api": "^2.0.3",
     "@tauri-apps/plugin-dialog": "^2.2.0",
     "@tauri-apps/plugin-shell": "^2.0.1",
-    "@types/uuid": "^10.0.0",
     "bootstrap": "^5.3.3",
     "dompurify": "^3.2.4",
     "magic-snowflakes": "^6.3.0",
@@ -22,10 +21,12 @@
     "react": "^18",
     "react-bootstrap": "^2.10.5",
     "react-dom": "^18",
+    "react-markdown": "^10.1.0",
     "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",
+    "@types/uuid": "^10.0.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
