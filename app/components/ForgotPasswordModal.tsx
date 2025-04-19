@@ -12,7 +12,7 @@ export default function ForgotPasswordModal({
 }: {
   show: boolean;
   setShow: (show: boolean) => void;
-  server?: ServerEntry,
+  server?: ServerEntry;
   onSubmit: (email: string) => Promise<void>;
 }) {
   const [email, setEmail] = useState<string>("");
@@ -28,7 +28,7 @@ export default function ForgotPasswordModal({
       await onSubmit(email);
       setLoading(false);
     }
-  }
+  };
 
   return (
     <Modal show={show} onHide={() => setShow(false)} centered>
@@ -37,8 +37,8 @@ export default function ForgotPasswordModal({
       </Modal.Header>
       <Modal.Body className="p-0">
         <p className="px-3 pt-3 mb-0">
-          Enter the email address associated with your account below
-          to receive a one-time password that can be used to log in.
+          Enter the email address associated with your account below to receive
+          a one-time password that can be used to log in.
         </p>
         <Form className="p-3">
           <Form.Group controlId="editEmail">
@@ -47,14 +47,14 @@ export default function ForgotPasswordModal({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
-              isInvalid={
-                email.length > 0 && !validateEmail(email, false)
-              }
+              isInvalid={email.length > 0 && !validateEmail(email, false)}
             />
           </Form.Group>
         </Form>
         <p className="px-3">
-          {"Once you have logged in, you can change your password in Settings -> Authentication -> Manage Account -> Change Password."}
+          {
+            "Once you have logged in, you can change your password in Settings -> Authentication -> Manage Account -> Change Password."
+          }
         </p>
       </Modal.Body>
       <Modal.Footer>

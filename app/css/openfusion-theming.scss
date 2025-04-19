@@ -16,7 +16,7 @@ $title-bar-bg-opacity: 0.05;
 
 @include color-mode(dark) {
   .titlebar {
-    background-color: rgba($body-bg, $title-bar-bg-opacity)
+    background-color: rgba($body-bg, $title-bar-bg-opacity);
   }
 
   .titlebar-button:hover {
@@ -167,12 +167,13 @@ $title-bar-bg-opacity: 0.05;
 /* Light mode only */
 
 @include color-mode(light) {
-  td, th {
+  td,
+  th {
     color: #fff;
   }
-  
+
   .titlebar {
-    background-color: rgba($body-bg-dark, $title-bar-bg-opacity)
+    background-color: rgba($body-bg-dark, $title-bar-bg-opacity);
   }
 
   .titlebar-button:hover {
@@ -239,8 +240,8 @@ $title-bar-bg-opacity: 0.05;
   }
 
   .border-primary {
-      border-color: #82e2f2 !important;
-      box-shadow: 0 0 15px 0px #00eefe;
+    border-color: #82e2f2 !important;
+    box-shadow: 0 0 15px 0px #00eefe;
   }
 
   .btn-primary {
@@ -254,7 +255,7 @@ $title-bar-bg-opacity: 0.05;
     border-color: #00eefe !important;
   }
 
-  .table-active>td {
+  .table-active > td {
     background-color: #00eefe !important;
   }
 

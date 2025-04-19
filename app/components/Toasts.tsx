@@ -18,9 +18,12 @@ export default function Toasts({ alerts }: { alerts: Alert[] }) {
   }, []);
 
   return (
-    <ToastContainer className="p-3" style={{
-      top: topOffset,
-    }}>
+    <ToastContainer
+      className="p-3"
+      style={{
+        top: topOffset,
+      }}
+    >
       {alerts.map((alert) => (
         <Toast alert={alert} key={alert.id} />
       ))}

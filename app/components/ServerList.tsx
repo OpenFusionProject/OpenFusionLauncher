@@ -31,7 +31,13 @@ const getPlayerCountForServer = async (server: ServerEntry) => {
   return count;
 };
 
-function PlayerCount({ server, refreshes }: { server: ServerEntry, refreshes: number }) {
+function PlayerCount({
+  server,
+  refreshes,
+}: {
+  server: ServerEntry;
+  refreshes: number;
+}) {
   const [playerCount, setPlayerCount] = useState<number | undefined>(undefined);
   const [error, setError] = useState<boolean>(false);
 
@@ -149,7 +155,11 @@ function VersionBadges({
             }
             const label = version.name ?? version.uuid;
             return (
-              <span key={version.uuid} className="badge bg-success me-1" title={version.uuid}>
+              <span
+                key={version.uuid}
+                className="badge bg-success me-1"
+                title={version.uuid}
+              >
                 {label}
               </span>
             );
@@ -164,7 +174,11 @@ function VersionBadges({
       return <span className="badge bg-danger">unknown</span>;
     }
     const label = version.name ?? version.uuid;
-    return <span className="badge bg-secondary" title={version.uuid}>{label}</span>;
+    return (
+      <span className="badge bg-secondary" title={version.uuid}>
+        {label}
+      </span>
+    );
   }
 }
 
@@ -197,11 +211,17 @@ export default function ServerList({
             <th className="text-start name-column">Server Name</th>
             <th className="versions-column">
               Game Versions
-              <i onClick={() => setSupportedVersionRefreshes((r) => r + 1)} className="fa fa-rotate-right ms-2 clickable"></i>
+              <i
+                onClick={() => setSupportedVersionRefreshes((r) => r + 1)}
+                className="fa fa-rotate-right ms-2 clickable"
+              ></i>
             </th>
             <th className="text-end status-column">
               Status
-              <i onClick={() => setStatusRefreshes((r) => r + 1)} className="fa fa-rotate-right ms-2 clickable"></i>
+              <i
+                onClick={() => setStatusRefreshes((r) => r + 1)}
+                className="fa fa-rotate-right ms-2 clickable"
+              ></i>
             </th>
           </tr>
         </thead>

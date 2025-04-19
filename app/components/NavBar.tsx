@@ -23,9 +23,13 @@ export default function NavBar({
   }, []);
 
   return (
-    <Container fluid className="px-0 pb-0 m-0 nav-bar" style={{
-      paddingTop: topOffset,
-    }}>
+    <Container
+      fluid
+      className="px-0 pb-0 m-0 nav-bar"
+      style={{
+        paddingTop: topOffset,
+      }}
+    >
       <Row className="m-0 w-100">
         <Col className="p-0">
           <Button

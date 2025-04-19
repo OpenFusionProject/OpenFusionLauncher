@@ -39,7 +39,12 @@ import LogoImages from "@/components/LogoImages";
 import SelectVersionModal from "@/components/SelectVersionModal";
 import Toasts from "@/components/Toasts";
 import { listen } from "@tauri-apps/api/event";
-import { getDebugMode, getTheme, getUseCustomTitlebar, sleep } from "@/app/util";
+import {
+  getDebugMode,
+  getTheme,
+  getUseCustomTitlebar,
+  sleep,
+} from "@/app/util";
 import ForgotPasswordModal from "./components/ForgotPasswordModal";
 
 const DEFAULT_TAGLINE =
@@ -62,7 +67,9 @@ export default function Home() {
   const [versions, setVersions] = useState<VersionEntry[]>([]);
 
   const [selectedIdx, setSelectedIdx] = useState<number>(-1);
-  const [currentSession, setCurrentSession] = useState<LoginSession | undefined>(undefined);
+  const [currentSession, setCurrentSession] = useState<
+    LoginSession | undefined
+  >(undefined);
 
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>([]);
@@ -488,7 +495,10 @@ export default function Home() {
 
   const sendOneTimePassword = async (email: string) => {
     try {
-      await invoke("send_otp", { email, serverUuid: getSelectedServer()!.uuid });
+      await invoke("send_otp", {
+        email,
+        serverUuid: getSelectedServer()!.uuid,
+      });
       setShowForgotPasswordModal(false);
       alertSuccess("One-time password sent");
     } catch (e: unknown) {
@@ -541,9 +551,12 @@ export default function Home() {
         servers={servers}
         selectedServer={getSelectedServer()}
       />
-      <Container id="serverselector-container" style={{
-        paddingTop: topOffset,
-      }}>
+      <Container
+        id="serverselector-container"
+        style={{
+          paddingTop: topOffset,
+        }}
+      >
         <Row id="of-logoheader" className="text-center pt-3">
           <Col>
             <LogoImages

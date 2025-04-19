@@ -2,7 +2,7 @@ name: Rust
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 env:
   CARGO_TERM_COLOR: always
@@ -11,97 +11,97 @@ jobs:
   build-ffrunner:
     runs-on: ubuntu-24.04
     steps:
-    - name: Install dependencies
-      run: sudo apt update && sudo apt install -y gcc-mingw-w64-i686 wget
+      - name: Install dependencies
+        run: sudo apt update && sudo apt install -y gcc-mingw-w64-i686 wget
 
-    - uses: actions/checkout@v4
-      with:
-       submodules: 'recursive'
+      - uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
 
-    - name: Build 
-      run: make -C resources/ffrunner
+      - name: Build
+        run: make -C resources/ffrunner
 
-    - name: Download webplayer DLLs
-      run: wget -r -l 7 -np -R "index.html*" -nH --cut-dirs=2 https://cdn.dexlabs.systems/webplayer/patched-latest/ -P resources/ffrunner/
+      - name: Download webplayer DLLs
+        run: wget -r -l 7 -np -R "index.html*" -nH --cut-dirs=2 https://cdn.dexlabs.systems/webplayer/patched-latest/ -P resources/ffrunner/
 
-    - name: Download & extract Vulkan wrapper DLL
-      run: |
-        wget https://github.com/doitsujin/dxvk/releases/download/v1.10.3/dxvk-1.10.3.tar.gz
-        tar -xvf dxvk-1.10.3.tar.gz
-        mv dxvk-1.10.3/x32/d3d9.dll resources/ffrunner/d3d9_vulkan.dll
+      - name: Download & extract Vulkan wrapper DLL
+        run: |
+          wget https://github.com/doitsujin/dxvk/releases/download/v1.10.3/dxvk-1.10.3.tar.gz
+          tar -xvf dxvk-1.10.3.tar.gz
+          mv dxvk-1.10.3/x32/d3d9.dll resources/ffrunner/d3d9_vulkan.dll
 
-    - name: Upload ffrunner
-      uses: actions/upload-artifact@v4.6.0
-      with:
-        name: ffrunner-mingw
-        path: resources/ffrunner/
+      - name: Upload ffrunner
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: ffrunner-mingw
+          path: resources/ffrunner/
 
   build-linux:
     needs: build-ffrunner
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
 
-    - name: Install dependencies
-      run: |
-        sudo apt update && sudo apt install -y \
-          libwebkit2gtk-4.1-dev \
-          build-essential \
-          curl \
-          wget \
-          file \
-          libxdo-dev \
-          libssl-dev \
-          libayatana-appindicator3-dev \
-          librsvg2-dev
+      - name: Install dependencies
+        run: |
+          sudo apt update && sudo apt install -y \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev
 
-    - name: Restore Tauri CLI
-      id: cache-tauri
-      uses: actions/cache@v4
-      with:
-        path: /home/runner/.cargo
-        key: tauri-cli-Linux
+      - name: Restore Tauri CLI
+        id: cache-tauri
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cargo
+          key: tauri-cli-Linux
 
-    - name: Install Tauri CLI
-      if: steps.cache-tauri.outputs.cache-hit != 'true'
-      run: cargo install tauri-cli --version "^2.0.0" --locked
+      - name: Install Tauri CLI
+        if: steps.cache-tauri.outputs.cache-hit != 'true'
+        run: cargo install tauri-cli --version "^2.0.0" --locked
 
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Download ffrunner
-      uses: actions/download-artifact@v4.1.8
-      with:
-        name: ffrunner-mingw
-        path: resources/ffrunner
+      - name: Download ffrunner
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: ffrunner-mingw
+          path: resources/ffrunner
 
-    - name: Install NPM packages
-      run: npm install
+      - name: Install NPM packages
+        run: npm install
 
-    # - name: Restore Cargo dependencies
-    #   id: cache-cargo
-    #   uses: actions/cache@v4
-    #   with:
-    #     path: |
-    #       src-tauri/target/release/deps
-    #       src-tauri/target/release/.fingerprint
-    #       src-tauri/target/release/incremental
-    #     key: cargo-deps-Linux
+      # - name: Restore Cargo dependencies
+      #   id: cache-cargo
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       src-tauri/target/release/deps
+      #       src-tauri/target/release/.fingerprint
+      #       src-tauri/target/release/incremental
+      #     key: cargo-deps-Linux
 
-    - name: Build
-      run: cargo tauri build --no-bundle
+      - name: Build
+        run: cargo tauri build --no-bundle
 
-    - name: Package
-      run: |
-        cd src-tauri/target/release
-        mkdir linux-standalone
-        mv -t linux-standalone openfusionlauncher ffrunner.exe d3d9_vulkan.dll assets defaults loader player mono
+      - name: Package
+        run: |
+          cd src-tauri/target/release
+          mkdir linux-standalone
+          mv -t linux-standalone openfusionlauncher ffrunner.exe d3d9_vulkan.dll assets defaults loader player mono
 
-    - uses: actions/upload-artifact@v4.6.0
-      with:
-        name: openfusionlauncher-linux-standalone
-        path: src-tauri/target/release/linux-standalone/
+      - uses: actions/upload-artifact@v4.6.0
+        with:
+          name: openfusionlauncher-linux-standalone
+          path: src-tauri/target/release/linux-standalone/
 
   build-windows:
     needs: build-ffrunner
@@ -117,7 +117,7 @@ jobs:
         with:
           path: C:\Users\runneradmin\.cargo
           key: tauri-cli-Windows
-      
+
       - name: Install Tauri CLI
         if: steps.cache-tauri.outputs.cache-hit != 'true'
         run: cargo install tauri-cli --version "^2.0.0" --locked
@@ -151,7 +151,7 @@ jobs:
           cd src-tauri/target/release
           mkdir windows-standalone
           Move-Item -Destination windows-standalone -Path openfusionlauncher.exe,ffrunner.exe,d3d9_vulkan.dll,assets,defaults,loader,player,mono
-      
+
       - uses: actions/upload-artifact@v4.6.0
         with:
           name: openfusionlauncher-windows-standalone
