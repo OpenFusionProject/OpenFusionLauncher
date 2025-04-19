@@ -8,12 +8,7 @@ import Tab from "react-bootstrap/Tab";
 import Button from "./Button";
 
 import { EndpointInfo, ServerEntry } from "@/app/types";
-import {
-  validateUsername,
-  validatePassword,
-  validateEmail,
-  getPrivacyPolicyUrlForServer,
-} from "@/app/util";
+import { validateUsername, validatePassword, validateEmail, getPrivacyPolicyUrlForServer } from "@/app/util";
 import { Overlay, Tooltip } from "react-bootstrap";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-shell";
@@ -66,7 +61,7 @@ function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
           "get_announcements_for_server",
           {
             uuid: server!.uuid,
-          }
+          },
         );
         setError(false);
         setAnnouncements(announcements);
@@ -154,12 +149,7 @@ export default function LoginModal({
   show: boolean;
   alwaysRemember: boolean;
   onClose: () => void;
-  onSubmitLogin: (
-    username: string,
-    password: string,
-    remember: boolean
-  ) => void;
-  onSubmitRegister: (username: string, password: string, email: string) => void;
+  onSubmitLogin: (username: string, password: string, remember: boolean) => void;  onSubmitRegister: (username: string, password: string, email: string) => void;
   onForgotPassword: () => void;
 }) {
   const [username, setUsername] = useState<string>("");
