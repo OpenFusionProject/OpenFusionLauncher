@@ -2,6 +2,9 @@
   "name": "scamper-next",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -13,7 +16,6 @@
     "@tauri-apps/api": "^2.0.3",
     "@tauri-apps/plugin-dialog": "^2.2.0",
     "@tauri-apps/plugin-shell": "^2.0.1",
-    "@types/uuid": "^10.0.0",
     "bootstrap": "^5.3.3",
     "dompurify": "^3.2.4",
     "magic-snowflakes": "^6.3.0",
@@ -30,7 +32,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.2.15",
+    "eslint-config-next": "^14.2.15",
     "sass": "^1.80.3",
     "typescript": "^5"
   }
