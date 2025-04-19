@@ -149,7 +149,8 @@ export default function LoginModal({
   show: boolean;
   alwaysRemember: boolean;
   onClose: () => void;
-  onSubmitLogin: (username: string, password: string, remember: boolean) => void;  onSubmitRegister: (username: string, password: string, email: string) => void;
+  onSubmitLogin: (username: string, password: string, remember: boolean) => void;
+  onSubmitRegister: (username: string, password: string, email: string) => void;
   onForgotPassword: () => void;
 }) {
   const [username, setUsername] = useState<string>("");
