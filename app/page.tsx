@@ -165,9 +165,8 @@ export default function Home() {
 
   const checkForUpdate = async () => {
     try {
-      const updateInfo: UpdateInfo | undefined = await invoke(
-        "check_for_update"
-      );
+      const updateInfo: UpdateInfo | undefined =
+        await invoke("check_for_update");
       if (updateInfo) {
         setUpdateAvailable(updateInfo);
         alertInfo("Update available: " + updateInfo.version, updateInfo.url);
@@ -223,7 +222,7 @@ export default function Home() {
 
   const setVersionForServer = async (
     serverUuid: string,
-    versionUuid: string
+    versionUuid: string,
   ) => {
     const server = servers.find((s) => s.uuid == serverUuid);
     if (!server) {
@@ -277,7 +276,7 @@ export default function Home() {
   const connectToServer = async (
     serverUuid: string,
     versionUuid: string,
-    sessionToken?: string
+    sessionToken?: string,
   ) => {
     try {
       startLoading("launch");
@@ -311,7 +310,7 @@ export default function Home() {
     serverUuid: string,
     username: string,
     password: string,
-    email: string
+    email: string,
   ) => {
     startLoading("do_register");
     try {
@@ -338,7 +337,7 @@ export default function Home() {
     serverUuid: string,
     username: string,
     password: string,
-    remember: boolean
+    remember: boolean,
   ) => {
     startLoading("do_login");
     try {
@@ -446,7 +445,7 @@ export default function Home() {
   const updateServer = async (
     details: NewServerDetails,
     uuid: string,
-    showSucc?: boolean
+    showSucc?: boolean,
   ) => {
     try {
       const entry: ServerEntry = { ...details, uuid };
