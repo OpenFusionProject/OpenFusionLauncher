@@ -46,12 +46,14 @@ import {
   sleep,
 } from "@/app/util";
 import ForgotPasswordModal from "./components/ForgotPasswordModal";
+import { useRouter } from "next/navigation";
 
 const DEFAULT_TAGLINE =
   "Welcome to OpenFusion.\nSelect a server from the list below to get started.";
 
 export default function Home() {
   const loadedRef = useRef(false);
+  const router = useRouter();
 
   const [appName, setAppName] = useState("");
   const [launcherVersion, setLauncherVersion] = useState("--");
@@ -163,8 +165,9 @@ export default function Home() {
 
   const checkForUpdate = async () => {
     try {
-      const updateInfo: UpdateInfo | undefined =
-        await invoke("check_for_update");
+      const updateInfo: UpdateInfo | undefined = await invoke(
+        "check_for_update"
+      );
       if (updateInfo) {
         setUpdateAvailable(updateInfo);
         alertInfo("Update available: " + updateInfo.version, updateInfo.url);
@@ -220,7 +223,7 @@ export default function Home() {
 
   const setVersionForServer = async (
     serverUuid: string,
-    versionUuid: string,
+    versionUuid: string
   ) => {
     const server = servers.find((s) => s.uuid == serverUuid);
     if (!server) {
@@ -274,7 +277,7 @@ export default function Home() {
   const connectToServer = async (
     serverUuid: string,
     versionUuid: string,
-    sessionToken?: string,
+    sessionToken?: string
   ) => {
     try {
       startLoading("launch");
@@ -308,7 +311,7 @@ export default function Home() {
     serverUuid: string,
     username: string,
     password: string,
-    email: string,
+    email: string
   ) => {
     startLoading("do_register");
     try {
@@ -335,7 +338,7 @@ export default function Home() {
     serverUuid: string,
     username: string,
     password: string,
-    remember: boolean,
+    remember: boolean
   ) => {
     startLoading("do_login");
     try {
@@ -443,7 +446,7 @@ export default function Home() {
   const updateServer = async (
     details: NewServerDetails,
     uuid: string,
-    showSucc?: boolean,
+    showSucc?: boolean
   ) => {
     try {
       const entry: ServerEntry = { ...details, uuid };
@@ -643,7 +646,7 @@ export default function Home() {
       </div>
       <div id="config-button-div">
         <Button
-          onClick={() => (window.location.href = "/settings")}
+          onClick={() => router.push("/settings")}
           variant="primary"
           icon="cog"
           tooltip="Settings"
