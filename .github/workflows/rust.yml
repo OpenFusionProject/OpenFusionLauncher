@@ -22,7 +22,7 @@ jobs:
       run: make -C resources/ffrunner
 
     - name: Download webplayer DLLs
-      run: wget -e robots=off -r -l 7 -np -R "index.html*" -nH --cut-dirs=2 https://cdn.dexlabs.systems/webplayer/patched-latest/ -P resources/ffrunner/
+      run: wget -r -l 7 -np -R "index.html*" -nH --cut-dirs=2 https://cdn.dexlabs.systems/webplayer/patched-latest/ -P resources/ffrunner/
 
     - name: Download & extract Vulkan wrapper DLL
       run: |
