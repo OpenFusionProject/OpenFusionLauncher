@@ -194,7 +194,9 @@ export default function GameBuildsList({
                           </>
                         )}
                       </h3>
-                      {version.name && <h6 className="mb-0 text-muted">{version.uuid}</h6>}
+                      {version.name && (
+                        <h6 className="mb-0 text-muted">{version.uuid}</h6>
+                      )}
                     </td>
                     <td className="text-center cache-col px-5">
                       <p>
@@ -234,7 +236,12 @@ export default function GameBuildsList({
                       <Button
                         enabled={Object.keys(versionData.gameItems).length > 0}
                         icon="folder"
-                        onClick={() => invoke("open_folder_for_version", { uuid: version.uuid, offline: false })}
+                        onClick={() =>
+                          invoke("open_folder_for_version", {
+                            uuid: version.uuid,
+                            offline: false,
+                          })
+                        }
                         tooltip="Open game cache folder"
                       />{" "}
                       <Button
@@ -277,9 +284,16 @@ export default function GameBuildsList({
                       </ProgressBar>
                       <br />
                       <Button
-                        enabled={Object.keys(versionData.offlineItems).length > 0}
+                        enabled={
+                          Object.keys(versionData.offlineItems).length > 0
+                        }
                         icon="folder"
-                        onClick={() => invoke("open_folder_for_version", { uuid: version.uuid, offline: true })}
+                        onClick={() =>
+                          invoke("open_folder_for_version", {
+                            uuid: version.uuid,
+                            offline: true,
+                          })
+                        }
                         tooltip="Open offline cache folder"
                       />{" "}
                       <Button
@@ -313,13 +327,19 @@ export default function GameBuildsList({
                     </td>
                     <td className="text-end p-1">
                       <Button
-                        loading={!versionData.gameDone || !versionData.offlineDone}
+                        loading={
+                          !versionData.gameDone || !versionData.offlineDone
+                        }
                         enabled={!DEFAULT_VERSION_UUIDS.includes(version.uuid)}
                         className="d-block w-50 h-100"
                         icon="x"
                         onClick={() => removeVersion(version.uuid)}
                         variant="danger"
-                        tooltip={DEFAULT_VERSION_UUIDS.includes(version.uuid) ? "Cannot remove default build" : "Remove build"}
+                        tooltip={
+                          DEFAULT_VERSION_UUIDS.includes(version.uuid)
+                            ? "Cannot remove default build"
+                            : "Remove build"
+                        }
                       />
                     </td>
                   </tr>

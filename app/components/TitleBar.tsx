@@ -16,16 +16,22 @@ const onClickMaximize = async () => {
   } else {
     win.maximize();
   }
-}
+};
 
 const onClickMinimize = () => getCurrentWindow().minimize();
 
-function TitleBarButton({ icon, onClick }: { icon: string; onClick: () => Promise<void> }) {
+function TitleBarButton({
+  icon,
+  onClick,
+}: {
+  icon: string;
+  onClick: () => Promise<void>;
+}) {
   return (
     <div className="titlebar-button" onClick={onClick}>
       <i className={"fa-solid fa-" + icon}></i>
     </div>
-  )
+  );
 }
 
 export default function TitleBar() {
@@ -42,23 +48,16 @@ export default function TitleBar() {
     fetch();
   }, []);
 
-  return show && (
-    <div className="titlebar">
-      <span data-tauri-drag-region>{appName}</span>
-      <Stack direction="horizontal" className="flex-row-reverse" gap={1}>
-        <TitleBarButton
-          icon="x"
-          onClick={onClickClose}
-        />
-        <TitleBarButton
-          icon="window-maximize"
-          onClick={onClickMaximize}
-        />
-        <TitleBarButton
-          icon="window-minimize"
-          onClick={onClickMinimize}
-        />
-      </Stack>
-    </div>
+  return (
+    show && (
+      <div className="titlebar">
+        <span data-tauri-drag-region>{appName}</span>
+        <Stack direction="horizontal" className="flex-row-reverse" gap={1}>
+          <TitleBarButton icon="x" onClick={onClickClose} />
+          <TitleBarButton icon="window-maximize" onClick={onClickMaximize} />
+          <TitleBarButton icon="window-minimize" onClick={onClickMinimize} />
+        </Stack>
+      </div>
+    )
   );
 }
