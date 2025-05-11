@@ -10,18 +10,18 @@ export default function RemoveBuildModal({
 }: {
   show: boolean;
   setShow: (show: boolean) => void;
-  version?: VersionEntry,
+  version?: VersionEntry;
   onConfirm: (uuid: string, deleteCaches: boolean) => void;
 }) {
-
   return (
     <Modal show={show} onHide={() => setShow(false)} centered>
       <Modal.Header closeButton>
         <Modal.Title>Remove Build</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        Are you sure you want to remove build <strong>{version?.name ?? version?.uuid}</strong>?
-        It will be automatically fetched again if it is required by a server.
+        Are you sure you want to remove build{" "}
+        <strong>{version?.name ?? version?.uuid}</strong>? It will be
+        automatically fetched again if it is required by a server.
       </Modal.Body>
       <Modal.Footer>
         <Button

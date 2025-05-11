@@ -144,7 +144,11 @@ function ListEntry({
 
   const updateEmail = async (newEmail: string) => {
     try {
-      await invoke("update_email", { newEmail, serverUuid: server.uuid, sessionToken: session!.session_token });
+      await invoke("update_email", {
+        newEmail,
+        serverUuid: server.uuid,
+        sessionToken: session!.session_token,
+      });
       if (ctx.alertSuccess) {
         ctx.alertSuccess("Verification email sent to " + newEmail);
       }
@@ -158,7 +162,11 @@ function ListEntry({
 
   const updatePassword = async (newPassword: string) => {
     try {
-      await invoke("update_password", { newPassword, serverUuid: server.uuid, sessionToken: session!.session_token });
+      await invoke("update_password", {
+        newPassword,
+        serverUuid: server.uuid,
+        sessionToken: session!.session_token,
+      });
       if (ctx.alertSuccess) {
         ctx.alertSuccess("Password updated successfully");
       }
