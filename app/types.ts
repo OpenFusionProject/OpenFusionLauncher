@@ -38,6 +38,7 @@ export type LauncherSettings = {
   check_for_updates: boolean;
   use_offline_caches: boolean;
   verify_offline_caches: boolean;
+  delete_old_game_caches: boolean;
   launch_behavior: string;
   game_cache_path: string;
   offline_cache_path: string;

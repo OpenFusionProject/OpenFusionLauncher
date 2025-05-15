@@ -429,6 +429,19 @@ async fn prep_launch(
                                 "Upgraded cache from parent version {} for {}",
                                 parent_uuid, version_uuid
                             );
+                            if state.config.launcher.delete_old_game_caches {
+                                if let Err(e) = util::delete_dir(&parent_cache_dir) {
+                                    warn!(
+                                        "Failed to delete cache for parent version {}: {}",
+                                        parent_uuid, e
+                                    );
+                                } else {
+                                    info!(
+                                        "Deleted cache for parent version {}",
+                                        parent_uuid
+                                    );
+                                }
+                            }
                         }
                     }
                 }
