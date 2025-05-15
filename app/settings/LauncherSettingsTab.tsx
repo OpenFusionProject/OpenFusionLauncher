@@ -183,6 +183,23 @@ export default function LauncherSettingsTab({
                 }
               />
               <SettingControlDropdown
+                id="delete_old_game_caches"
+                name="Delete old game caches on upgrades"
+                options={[
+                  { key: "yes", value: true, label: "Yes" },
+                  { key: "no", value: false, label: "No" },
+                ]}
+                defaultKey="no"
+                oldValue={currentSettings.delete_old_game_caches}
+                value={settings.delete_old_game_caches}
+                onChange={(value) =>
+                  setSettings((current) => ({
+                    ...current!,
+                    delete_old_game_caches: value,
+                  }))
+                }
+              />
+              <SettingControlDropdown
                 id="launch_behavior"
                 name="Launch behavior"
                 options={[
