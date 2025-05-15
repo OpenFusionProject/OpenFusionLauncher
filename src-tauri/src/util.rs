@@ -147,6 +147,13 @@ pub(crate) fn copy_dir(src: &PathBuf, dest: &PathBuf) -> Result<()> {
     Ok(())
 }
 
+pub(crate) fn delete_dir(dir: &PathBuf) -> Result<()> {
+    if dir.exists() {
+        std::fs::remove_dir_all(dir)?;
+    }
+    Ok(())
+}
+
 pub(crate) fn is_dir_empty(dir: &PathBuf) -> Result<bool> {
     match std::fs::read_dir(dir) {
         Ok(mut entries) => Ok(entries.next().is_none()),
