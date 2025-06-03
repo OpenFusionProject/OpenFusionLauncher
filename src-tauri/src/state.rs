@@ -179,6 +179,23 @@ impl AppState {
         versions.extend(imported);
         Ok(num_imported)
     }
+
+    pub fn get_version_use_count(&self, uuid: Uuid) -> usize {
+        self.servers
+            .servers
+            .iter()
+            .filter(|s| match &s.info {
+                ServerInfo::Simple { version, .. } => version == &uuid.to_string(),
+                // for endpoint servers, this is less straightforward since we don't know the versions
+                // until we query the endpoint, and we really don't want to query every endpoint server to get this info.
+                // we can use the user's preferred version as a best guess here
+                // and it'll be fine since most cache upgrades happen only when a version is deprecated by a server anyway.
+                ServerInfo::Endpoint {
+                    preferred_version, ..
+                } => preferred_version.as_ref() == Some(&uuid.to_string()),
+            })
+            .count()
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
