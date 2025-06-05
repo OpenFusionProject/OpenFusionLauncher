@@ -8,14 +8,14 @@ export function validateUsername(username: string) {
   // special characters other than dash and underscore
   const regex = /^[a-zA-Z0-9_-]{4,32}$/;
   return regex.test(username);
-};
+}
 
 export function validatePassword(password: string) {
   // From OpenFusion:
   // Password has to be 8 - 32 characters long
   const regex = /^.{8,32}$/;
   return regex.test(password);
-};
+}
 
 export function validateEmail(email: string, allow_empty: boolean) {
   if (email.length == 0 && allow_empty) return true;
@@ -23,7 +23,7 @@ export function validateEmail(email: string, allow_empty: boolean) {
   // normal email regex
   const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return regex.test(email);
-};
+}
 
 function getSystemTheme() {
   if (typeof window !== "undefined" && window.matchMedia) {
