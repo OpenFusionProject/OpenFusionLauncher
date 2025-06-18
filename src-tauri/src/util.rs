@@ -162,7 +162,14 @@ pub(crate) fn is_dir_empty(dir: &PathBuf) -> Result<bool> {
 }
 
 pub(crate) fn get_path_as_file_uri(path: &Path) -> String {
-    let uri = format!("file:///{}", path.to_string_lossy());
+    let protocol = if cfg!(target_os = "windows") {
+        "file:///"
+    } else {
+        "file://"
+    };
+
+    let mut uri = String::from(protocol);
+    uri.push_str(&path.to_string_lossy());
     uri.replace("\\", "/")
 }
 
