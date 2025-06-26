@@ -2,7 +2,7 @@ name: Rust
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "console-on-windows" ]
 
 env:
   CARGO_TERM_COLOR: always
