@@ -80,5 +80,15 @@
   "Do you really want to delete {server}?": "Вы действительно хотите удалить {server}?",
   "You could always re-add it later.": "Вы всегда можете добавить его снова.",
   "Language": "Язык",
-  "api.myserver.xyz": "api.myserver.xyz"
+  "api.myserver.xyz": "api.myserver.xyz",
+  "Are you sure you want to reset the game settings to their defaults?": "Вы действительно хотите сбросить настройки игры к значениям по умолчанию?",
+  "Reset Game Settings": "Сбросить настройки игры",
+  "Graphics API": "API графики",
+  "DirectX 9": "DirectX 9",
+  "Vulkan (experimental)": "Vulkan (экспериментальный)",
+  "OpenGL (not recommended)": "OpenGL (не рекомендуется)",
+  "Custom Launch Command": "Пользовательская команда запуска",
+  "Window Size": "Размер окна",
+  "FPS Fix": "Исправление FPS",
+  "Debug": "Отладка"
 }

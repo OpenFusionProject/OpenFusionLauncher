@@ -80,5 +80,15 @@
   "Do you really want to delete {server}?": "Do you really want to delete {server}?",
   "You could always re-add it later.": "You could always re-add it later.",
   "Language": "Language",
-  "api.myserver.xyz": "api.myserver.xyz"
+  "api.myserver.xyz": "api.myserver.xyz",
+  "Are you sure you want to reset the game settings to their defaults?": "Are you sure you want to reset the game settings to their defaults?",
+  "Reset Game Settings": "Reset Game Settings",
+  "Graphics API": "Graphics API",
+  "DirectX 9": "DirectX 9",
+  "Vulkan (experimental)": "Vulkan (experimental)",
+  "OpenGL (not recommended)": "OpenGL (not recommended)",
+  "Custom Launch Command": "Custom Launch Command",
+  "Window Size": "Window Size",
+  "FPS Fix": "FPS Fix",
+  "Debug": "Debug"
 }

@@ -8,6 +8,7 @@ import { deepEqual, getDebugMode } from "@/app/util";
 import SettingsHeader from "./SettingsHeader";
 import { SettingsCtx } from "@/app/contexts";
 import SettingControlFpsFix from "./SettingControlFpsFix";
+import { useT } from "@/app/i18n";
 
 export default function GameSettingsTab({
   active,
@@ -26,6 +27,7 @@ export default function GameSettingsTab({
   const [debug, setDebug] = useState<boolean>(false);
 
   const ctx = useContext(SettingsCtx);
+  const t = useT();
 
   useEffect(() => {
     getDebugMode().then(setDebug);
@@ -54,8 +56,8 @@ export default function GameSettingsTab({
   const showResetConfirmation = () => {
     if (ctx.showConfirmationModal) {
       ctx.showConfirmationModal(
-        "Are you sure you want to reset the game settings to their defaults?",
-        "Reset Game Settings",
+        t("Are you sure you want to reset the game settings to their defaults?"),
+        t("Reset Game Settings"),
         "danger",
         resetSettings,
       );
@@ -74,7 +76,7 @@ export default function GameSettingsTab({
           className="primary my-5 p-3 rounded border border-primary"
         >
           <SettingsHeader
-            text="Game Settings"
+            text={t("Game Settings")}
             working={working}
             canApply={canApply}
             onApply={applySettings}
@@ -86,11 +88,11 @@ export default function GameSettingsTab({
             <Form>
               <SettingControlDropdown
                 id="graphics_api"
-                name="Graphics API"
+                name={t("Graphics API")}
                 options={[
-                  { key: "dx9", label: "DirectX 9" },
-                  { key: "vulkan", label: "Vulkan (experimental)" },
-                  { key: "opengl", label: "OpenGL (not recommended)" },
+                  { key: "dx9", label: t("DirectX 9") },
+                  { key: "vulkan", label: t("Vulkan (experimental)") },
+                  { key: "opengl", label: t("OpenGL (not recommended)") },
                 ]}
                 defaultKey="dx9"
                 oldValue={currentSettings.graphics_api}
@@ -101,7 +103,7 @@ export default function GameSettingsTab({
               />
               <SettingControlText
                 id="launch_command"
-                name="Custom Launch Command"
+                name={t("Custom Launch Command")}
                 oldValue={currentSettings.launch_command}
                 value={settings.launch_command}
                 placeholder="{}"
@@ -117,7 +119,7 @@ export default function GameSettingsTab({
               />
               <SettingControlWindowSize
                 id="window_size"
-                name="Window Size"
+                name={t("Window Size")}
                 modified={
                   settings.window_size?.width !==
                     currentSettings?.window_size?.width ||
@@ -131,7 +133,7 @@ export default function GameSettingsTab({
               />
               <SettingControlFpsFix
                 id="fps_fix"
-                name="FPS Fix"
+                name={t("FPS Fix")}
                 oldValue={currentSettings.fps_fix}
                 value={settings.fps_fix}
                 onChange={(value) =>
@@ -143,7 +145,7 @@ export default function GameSettingsTab({
           {debug && (
             <>
               <hr className="border-primary" />
-              <h6>Debug</h6>
+              <h6>{t("Debug")}</h6>
               <textarea
                 id="settings-json"
                 className="w-100"
