@@ -80,5 +80,7 @@
   "Do you really want to delete {server}?": "Вы действительно хотите удалить {server}?",
   "You could always re-add it later.": "Вы всегда можете добавить его снова.",
   "Language": "Язык",
-  "api.myserver.xyz": "api.myserver.xyz"
+  "api.myserver.xyz": "api.myserver.xyz",
+  "Select Game Version": "Выберите версию игры",
+  "The server {server} supports multiple game versions. Please select a version to use.": "Сервер {server} поддерживает несколько версий игры. Пожалуйста, выберите используемую версию."
 }
