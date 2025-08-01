@@ -81,6 +81,11 @@
   "You could always re-add it later.": "Вы всегда можете добавить его снова.",
   "Language": "Язык",
   "api.myserver.xyz": "api.myserver.xyz",
+  "Forgot Password": "Забыли пароль",
+  "Enter the email address associated with your account below to receive a one-time password that can be used to log in.": "Введите адрес электронной почты, связанный с вашей учетной записью, чтобы получить одноразовый пароль для входа.",
+  "Once you have logged in, you can change your password in Settings -> Authentication -> Manage Account -> Change Password.": "После входа вы можете изменить пароль в Настройки -> Аутентификация -> Управление аккаунтом -> Изменить пароль.",
+  "Email": "Электронная почта",
+  "Send Temporary Password": "Отправить временный пароль",
   "Select Game Version": "Выберите версию игры",
   "The server {server} supports multiple game versions. Please select a version to use.": "Сервер {server} поддерживает несколько версий игры. Пожалуйста, выберите используемую версию."
 }
