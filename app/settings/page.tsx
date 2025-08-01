@@ -21,7 +21,7 @@ import { getTheme } from "@/app/util";
 import AuthenticationTab from "./AuthenticationTab";
 import LauncherSettingsTab from "./LauncherSettingsTab";
 import GameSettingsTab from "./GameSettingsTab";
-import { useT } from "@/app/i18n";
+import { useT, useLanguage, type Language } from "@/app/i18n";
 
 const TAB_LAUNCHER_SETTINGS = "launcher-settings";
 const TAB_GAME_SETTINGS = "game-settings";
@@ -37,6 +37,7 @@ export default function SettingsPage() {
   const [tab, setTab] = useState(DEFAULT_TAB);
 
   const t = useT();
+  const { setLang } = useLanguage();
 
   const [config, setConfig] = useState<Config | undefined>(undefined);
 
@@ -104,6 +105,7 @@ export default function SettingsPage() {
     const theme = getTheme(config);
     document.documentElement.setAttribute("data-bs-theme", theme);
     setConfig(config);
+    setLang(config.launcher.language as Language);
     return config;
   };
 

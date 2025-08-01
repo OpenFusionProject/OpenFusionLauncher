@@ -6,7 +6,13 @@ import SettingControlBrowse from "./SettingControlBrowse";
 import { getDebugMode } from "@/app/util";
 import { SettingsCtx } from "@/app/contexts";
 import SettingsHeader from "./SettingsHeader";
-import { useT } from "@/app/i18n";
+import {
+  useT,
+  useLanguage,
+  availableLanguages,
+  languageNames,
+  type Language,
+} from "@/app/i18n";
 
 export default function LauncherSettingsTab({
   active,
@@ -26,6 +32,7 @@ export default function LauncherSettingsTab({
 
   const ctx = useContext(SettingsCtx);
   const t = useT();
+  const { setLang } = useLanguage();
 
   useEffect(() => {
     getDebugMode().then(setDebug);
@@ -36,6 +43,7 @@ export default function LauncherSettingsTab({
     // The backend might adjust stuff, so update the state
     const newConfig = await updateSettings(settings!);
     setSettings(newConfig);
+    setLang(newConfig.language as Language);
     setWorking(false);
   };
 
@@ -53,6 +61,7 @@ export default function LauncherSettingsTab({
     setWorking(true);
     const newConfig = await updateSettings(undefined);
     setSettings(newConfig);
+    setLang(newConfig.language as Language);
     setWorking(false);
   };
 
@@ -89,6 +98,21 @@ export default function LauncherSettingsTab({
           <hr className="border-primary" />
           {settings && (
             <Form>
+              <SettingControlDropdown
+                id="language"
+                name={t("Language")}
+                options={availableLanguages.map((code) => ({
+                  key: code,
+                  value: code,
+                  label: languageNames[code],
+                }))}
+                defaultKey="en"
+                oldValue={currentSettings.language}
+                value={settings.language}
+                onChange={(value) =>
+                  setSettings((current) => ({ ...current!, language: value }))
+                }
+              />
               {/* <SettingControlDropdown
                 id="theme"
                 name="Launcher Theme"

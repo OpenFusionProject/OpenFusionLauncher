@@ -1,6 +1,7 @@
 import { ServerEntry, VersionEntry } from "@/app/types";
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { useT } from "@/app/i18n";
 
 const findVersion = (versions: VersionEntry[], uuid: string) => {
   return versions.find((version) => version.uuid == uuid);
@@ -31,9 +32,10 @@ const getPlayerCountForServer = async (server: ServerEntry) => {
   return count;
 };
 
-function PlayerCount({ server, refreshes }: { server: ServerEntry, refreshes: number }) {
+function PlayerCount({ server, refreshes }: { server: ServerEntry; refreshes: number }) {
   const [playerCount, setPlayerCount] = useState<number | undefined>(undefined);
   const [error, setError] = useState<boolean>(false);
+  const t = useT();
 
   useEffect(() => {
     const fetchPlayerCount = async () => {
@@ -54,7 +56,7 @@ function PlayerCount({ server, refreshes }: { server: ServerEntry, refreshes: nu
 
   if (playerCount !== undefined) {
     return (
-      <span className="fw-bold text-success" title="Current player count">
+      <span className="fw-bold text-success" title={t("Current player count")}>
         <i className="fa fa-user fa-sm"></i> {playerCount}
       </span>
     );
@@ -66,7 +68,7 @@ function PlayerCount({ server, refreshes }: { server: ServerEntry, refreshes: nu
         <span className="fw-bold text-danger">
           <i
             className="fa fa-plug-circle-xmark"
-            title="Could not connect to server"
+            title={t("Could not connect to server")}
           ></i>
         </span>
       );
@@ -81,12 +83,12 @@ function PlayerCount({ server, refreshes }: { server: ServerEntry, refreshes: nu
   }
 
   return (
-    <span>
-      <i
-        className="fa-solid fa-circle-question"
-        title="No information provided"
-      ></i>
-    </span>
+      <span>
+        <i
+          className="fa-solid fa-circle-question"
+          title={t("No information provided")}
+        ></i>
+      </span>
   );
 }
 
@@ -101,9 +103,10 @@ function VersionBadges({
   reloadVersions: () => Promise<void>;
   refreshes: number;
 }) {
-  const [endpointVersions, setEndpointVersions] = useState<
-    string[] | undefined
-  >(undefined);
+  const [endpointVersions, setEndpointVersions] = useState<string[] | undefined>(
+    undefined,
+  );
+  const t = useT();
 
   useEffect(() => {
     const fetchEndpointVersions = async () => {
@@ -134,7 +137,7 @@ function VersionBadges({
         ></span>
       );
     } else if (endpointVersions.length == 0) {
-      return <span className="badge bg-danger">no versions</span>;
+      return <span className="badge bg-danger">{t("No versions")}</span>;
     } else {
       return (
         <>
@@ -143,7 +146,7 @@ function VersionBadges({
             if (!version) {
               return (
                 <span key={versionUuid} className="badge bg-danger me-1">
-                  unknown
+                  {t("unknown")}
                 </span>
               );
             }
@@ -161,7 +164,7 @@ function VersionBadges({
     const versionUuid = server.version!;
     const version = findVersion(versions, versionUuid);
     if (!version) {
-      return <span className="badge bg-danger">unknown</span>;
+      return <span className="badge bg-danger">{t("unknown")}</span>;
     }
     const label = version.name ?? version.uuid;
     return <span className="badge bg-secondary" title={version.uuid}>{label}</span>;
@@ -185,6 +188,7 @@ export default function ServerList({
 }) {
   const [statusRefreshes, setStatusRefreshes] = useState(0);
   const [supportedVersionRefreshes, setSupportedVersionRefreshes] = useState(0);
+  const t = useT();
 
   return (
     <div
@@ -194,13 +198,13 @@ export default function ServerList({
       <table className="table table-striped table-hover mb-0">
         <thead>
           <tr>
-            <th className="text-start name-column">Server Name</th>
+            <th className="text-start name-column">{t("Server Name")}</th>
             <th className="versions-column">
-              Game Versions
+              {t("Game Versions")}
               <i onClick={() => setSupportedVersionRefreshes((r) => r + 1)} className="fa fa-rotate-right ms-2 clickable"></i>
             </th>
             <th className="text-end status-column">
-              Status
+              {t("Status")}
               <i onClick={() => setStatusRefreshes((r) => r + 1)} className="fa fa-rotate-right ms-2 clickable"></i>
             </th>
           </tr>
@@ -218,7 +222,7 @@ export default function ServerList({
             </tr>
           ) : servers.length === 0 ? (
             <tr>
-              <td colSpan={3}>No servers available.</td>
+              <td colSpan={3}>{t("No servers available.")}</td>
             </tr>
           ) : (
             servers.map((server) => (

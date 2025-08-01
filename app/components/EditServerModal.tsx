@@ -7,11 +7,11 @@ import Tab from "react-bootstrap/Tab";
 import Button from "./Button";
 
 import { ServerEntry, VersionEntry, NewServerDetails } from "@/app/types";
+import { useT } from "@/app/i18n";
 
 const TAB_SIMPLE = "simple";
 const TAB_ENDPOINT = "endpoint";
 
-const DEFAULT_DESCRIPTION = "My OpenFusion Server";
 const DEFAULT_IP = "localhost";
 const DEFAULT_PORT = "23000"; // used only for placeholder text; backend adds port if not present
 
@@ -88,6 +88,8 @@ export default function EditServerModal({
   setShow: (newShow: boolean) => void;
   saveServer: (details: NewServerDetails, uuid?: string) => void;
 }) {
+  const t = useT();
+
   const doHide = () => {
     setShow(false);
   };
@@ -120,7 +122,7 @@ export default function EditServerModal({
     const endpointTrimmed = endpoint.trim();
     const ipTrimmed = ip.trim();
 
-    const desc = descTrimmed == "" ? DEFAULT_DESCRIPTION : descTrimmed;
+    const desc = descTrimmed == "" ? t("My OpenFusion Server") : descTrimmed;
     const newServerDetails =
       tab == TAB_ENDPOINT
         ? {
@@ -141,17 +143,17 @@ export default function EditServerModal({
   return (
     <Modal show={show} onHide={() => doHide()} centered={true}>
       <Modal.Header>
-        <Modal.Title>{isAdd ? "Add Server" : "Edit Server"}</Modal.Title>
+        <Modal.Title>{isAdd ? t("Add server") : t("Edit server")}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="px-0">
         <Form>
           <Form.Group className="mb-4 px-3" controlId="editServerDescription">
-            <Form.Label>Server Name</Form.Label>
+            <Form.Label>{t("Server Name")}</Form.Label>
             <Form.Control
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder={DEFAULT_DESCRIPTION}
+              placeholder={t("My OpenFusion Server")}
             />
           </Form.Group>
           <Tabs
@@ -160,9 +162,9 @@ export default function EditServerModal({
             className="mb-3"
             fill
           >
-            <Tab eventKey={TAB_SIMPLE} title="Simple Server">
+            <Tab eventKey={TAB_SIMPLE} title={t("Simple Server")}>
               <Form.Group className="mb-3 px-3" controlId="editServerIp">
-                <Form.Label>Server Host</Form.Label>
+                <Form.Label>{t("Server Host")}</Form.Label>
                 <Form.Control
                   type="text"
                   value={ip}
@@ -172,7 +174,7 @@ export default function EditServerModal({
                 />
               </Form.Group>
               <Form.Group className="mb-3 px-3" controlId="editServerVersion">
-                <Form.Label>Server Version</Form.Label>
+                <Form.Label>{t("Server Version")}</Form.Label>
                 <Form.Select
                   value={version}
                   onChange={(e) => setVersion(e.target.value)}
@@ -188,14 +190,14 @@ export default function EditServerModal({
                 </Form.Select>
               </Form.Group>
             </Tab>
-            <Tab eventKey={TAB_ENDPOINT} title="Endpoint Server">
+            <Tab eventKey={TAB_ENDPOINT} title={t("Endpoint Server")}>
               <Form.Group className="mb-3 px-3" controlId="editServerEndpoint">
-                <Form.Label>API Host</Form.Label>
+                <Form.Label>{t("API Host")}</Form.Label>
                 <Form.Control
                   type="text"
                   value={endpoint}
                   onChange={(e) => setEndpoint(e.target.value)}
-                  placeholder="api.myserver.xyz"
+                  placeholder={t("api.myserver.xyz")}
                   isInvalid={endpoint.length > 0 && !validateEndpoint(endpoint)}
                 />
               </Form.Group>
