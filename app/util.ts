@@ -52,16 +52,16 @@ export function getTheme(config: Config) {
   return "dark";
 }
 
-export function variantToLabel(variant: string) {
+export function variantToLabel(variant: string, t: (key: string) => string) {
   switch (variant) {
     case "success":
-      return "Success";
+      return t("Success");
     case "danger":
-      return "Error";
+      return t("Error");
     case "warning":
-      return "Warning";
+      return t("Warning");
     case "primary":
-      return "Info";
+      return t("Info");
     default:
       return "";
   }

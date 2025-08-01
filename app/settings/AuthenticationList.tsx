@@ -5,6 +5,7 @@ import {
   getBackgroundImageUrlForServer,
   getLogoImageUrlForServer,
 } from "@/app/util";
+import { useT } from "@/app/i18n";
 import { invoke } from "@tauri-apps/api/core";
 import { CSSProperties, useContext, useEffect, useState } from "react";
 import { SettingsCtx } from "@/app/contexts";
@@ -20,6 +21,7 @@ function ListEntry({
   server: ServerEntry;
   refreshes: number;
 }) {
+  const t = useT();
   const [logo, setLogo] = useState<string | undefined>(undefined);
   const [offline, setOffline] = useState<boolean | undefined>(undefined);
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
@@ -214,7 +216,7 @@ function ListEntry({
               <small className="text-muted">{server.endpoint}</small>
               {offline !== undefined && (
                 <small className={"text-" + (offline! ? "danger" : "success")}>
-                  {" " + (offline! ? "offline" : "online")}
+                  {" " + (offline! ? t("offline") : t("online"))}
                 </small>
               )}
             </div>
@@ -226,7 +228,7 @@ function ListEntry({
               ></span>
             ) : offline === true ? null : session === null ? (
               <div className="text-end">
-                <small className="mb-1 d-block text-muted">not logged in</small>
+                <small className="mb-1 d-block text-muted">{t("not logged in")}</small>
                 <Button
                   loading={buttonLoading}
                   icon="sign-in-alt"
@@ -238,7 +240,7 @@ function ListEntry({
             ) : (
               <div className="text-end">
                 <span className="mb-1 d-block">
-                  <small className="text-muted">logged in as</small>
+                  <small className="text-muted">{t("logged in as")}</small>
                   <h4 className="d-inline">{" " + session.username}</h4>
                 </span>
                 <Button

@@ -13,8 +13,9 @@ import { Overlay, Tooltip } from "react-bootstrap";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-shell";
 import { parse } from "marked";
-import DOMPurify  from "dompurify";
+import DOMPurify from "dompurify";
 import get_seed from "@/app/seed";
+import { useT } from "@/app/i18n";
 
 const TAB_LOGIN = "login";
 const TAB_REGISTER = "register";
@@ -52,7 +53,8 @@ const checkEmailRequired = async (server: ServerEntry) => {
 };
 
 function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
-  const ERROR_TEXT = "This server has no announcements.";
+  const t = useT();
+  const ERROR_TEXT = t("This server has no announcements.");
 
   const [showUpsell, setShowUpsell] = useState<boolean>(false);
   const [showAnnouncements, setShowAnnouncements] = useState<boolean>(false);
@@ -97,7 +99,7 @@ function AnnouncementsPanel({ server }: { server?: ServerEntry }) {
         src={getUpsellImage(server)}
         className={!showUpsell ? "d-none" : ""}
         onLoad={() => setShowUpsell(true)}
-        alt="Upsell"
+        alt={t("Upsell")}
       />
       <div className="announcements">
         {error ? ERROR_TEXT : <div dangerouslySetInnerHTML={{ __html: announcements }} />}
@@ -141,6 +143,7 @@ export default function LoginModal({
   onSubmitRegister: (username: string, password: string, email: string) => void;
   onForgotPassword: () => void;
 }) {
+  const t = useT();
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [remember, setRemember] = useState<boolean>(alwaysRemember);
@@ -215,11 +218,11 @@ export default function LoginModal({
             className="mb-3"
             fill
           >
-            <Tab eventKey={TAB_LOGIN} title="Log In" className="p-3">
+            <Tab eventKey={TAB_LOGIN} title={t("Log In")} className="p-3">
               <Form.Group className="mb-3" controlId={CONTROL_ID_USERNAME}>
                 <Form.Control
                   type="text"
-                  placeholder="Username"
+                  placeholder={t("Username")}
                   value={username}
                   onFocus={() => setActiveControl(CONTROL_ID_USERNAME)}
                   onChange={(e) => setUsername(e.target.value)}
@@ -228,7 +231,7 @@ export default function LoginModal({
               <Form.Group className="mb-3" controlId={CONTROL_ID_PASSWORD}>
                 <Form.Control
                   type="password"
-                  placeholder="Password"
+                  placeholder={t("Password")}
                   value={password}
                   onFocus={() => setActiveControl(CONTROL_ID_PASSWORD)}
                   onChange={(e) => setPassword(e.target.value)}
@@ -238,7 +241,7 @@ export default function LoginModal({
                 <Form.Group controlId={CONTROL_ID_REMEMBER}>
                   <Form.Check
                     type="checkbox"
-                    label="Remember Me"
+                    label={t("Remember Me")}
                     disabled={alwaysRemember}
                     checked={remember}
                     onChange={(e) => setRemember(e.target.checked)}
@@ -252,15 +255,15 @@ export default function LoginModal({
                     onClose(); // bootstrap doesn't support nested modals
                   }}
                 >
-                Forgot your password?
+                {t("Forgot your password?")}
                 </span>
               </div>
             </Tab>
-            <Tab eventKey={TAB_REGISTER} title="Register" className="p-3">
+            <Tab eventKey={TAB_REGISTER} title={t("Register")} className="p-3">
               <Form.Group className="mb-3" controlId={CONTROL_ID_NEW_USERNAME}>
                 <Form.Control
                   type="text"
-                  placeholder="Username"
+                  placeholder={t("Username")}
                   value={username}
                   onFocus={() => setActiveControl(CONTROL_ID_NEW_USERNAME)}
                   onChange={(e) => setUsername(e.target.value)}
@@ -270,7 +273,7 @@ export default function LoginModal({
               <Form.Group className="mb-3" controlId={CONTROL_ID_NEW_PASSWORD}>
                 <Form.Control
                   type="password"
-                  placeholder="Password"
+                  placeholder={t("Password")}
                   value={password}
                   onFocus={() => setActiveControl(CONTROL_ID_NEW_PASSWORD)}
                   onChange={(e) => setPassword(e.target.value)}
@@ -283,7 +286,7 @@ export default function LoginModal({
               >
                 <Form.Control
                   type="password"
-                  placeholder="Confirm Password"
+                  placeholder={t("Confirm Password")}
                   value={confirmPassword}
                   onFocus={() => setActiveControl(CONTROL_ID_CONFIRM_PASSWORD)}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -293,7 +296,7 @@ export default function LoginModal({
               <Form.Group className="mb-3" controlId={CONTROL_ID_EMAIL}>
                 <Form.Control
                   type="text"
-                  placeholder={"Email" + (emailRequired ? "" : " (optional)")}
+                  placeholder={t("Email") + (emailRequired ? "" : " " + t("(optional)"))}
                   value={email}
                   onFocus={() => setActiveControl(CONTROL_ID_EMAIL)}
                   onChange={(e) => setEmail(e.target.value)}
@@ -303,18 +306,15 @@ export default function LoginModal({
                 />
               </Form.Group>
               <div className="text-center">
-                <span>
-                  View this server{"'s "}
-                  <span
-                    role="button"
-                    className="text-decoration-underline"
-                    onClick={() => {
-                      const url = getPrivacyPolicyUrlForServer(server!);
-                      open(url);
-                    }}
-                  >
-                    privacy policy
-                  </span>
+                <span
+                  role="button"
+                  className="text-decoration-underline"
+                  onClick={() => {
+                    const url = getPrivacyPolicyUrlForServer(server!);
+                    open(url);
+                  }}
+                >
+                  {t("View this server's privacy policy")}
                 </span>
               </div>
               <RequirementsTooltip
@@ -322,8 +322,8 @@ export default function LoginModal({
                 controlId={CONTROL_ID_NEW_USERNAME}
               >
                 <div className="text-start lh-small">
-                  • 4 - 32 characters long
-                  <br />• No special characters besides - and _
+                  {"\u2022 " + t("4 - 32 characters long")}
+                  <br />{"\u2022 " + t("No special characters besides - and _")}
                 </div>
               </RequirementsTooltip>
               <RequirementsTooltip
@@ -331,7 +331,7 @@ export default function LoginModal({
                 controlId={CONTROL_ID_NEW_PASSWORD}
               >
                 <div className="text-start lh-small">
-                  • 8 - 32 characters long
+                  {"\u2022 " + t("8 - 32 characters long")}
                 </div>
               </RequirementsTooltip>
             </Tab>
