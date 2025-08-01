@@ -13,6 +13,7 @@ import { useT } from "@/app/i18n";
 import LoginModal from "@/components/LoginModal";
 import ForgotPasswordModal from "@/components/ForgotPasswordModal";
 import ManageAccountModal from "./ManageAccountModal";
+import { useT } from "@/app/i18n";
 
 function ListEntry({
   server,
@@ -297,6 +298,7 @@ export default function AuthenticationList({
   servers?: ServerEntry[];
   refreshes: number;
 }) {
+  const t = useT();
   return (
     <div className="table-responsive" id="auth-table">
       <table className="table table-striped table-hover mb-0">
@@ -313,7 +315,7 @@ export default function AuthenticationList({
             </tr>
           ) : servers.length == 0 ? (
             <tr>
-              <td colSpan={3}>No servers available.</td>
+              <td colSpan={3}>{t("No servers available.")}</td>
             </tr>
           ) : (
             servers.map((server: ServerEntry) => {

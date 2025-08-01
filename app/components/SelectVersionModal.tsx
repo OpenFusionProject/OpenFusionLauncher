@@ -50,7 +50,6 @@ export default function SelectVersionModal({
   onSelect: (selectedVersionUuid: string) => void;
 }) {
   const t = useT();
-
   const doHide = () => {
     setShow(false);
   };
