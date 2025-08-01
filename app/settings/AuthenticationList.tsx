@@ -5,11 +5,9 @@ import {
   getBackgroundImageUrlForServer,
   getLogoImageUrlForServer,
 } from "@/app/util";
-import { useT } from "@/app/i18n";
 import { invoke } from "@tauri-apps/api/core";
 import { CSSProperties, useContext, useEffect, useState } from "react";
 import { SettingsCtx } from "@/app/contexts";
-import { useT } from "@/app/i18n";
 import LoginModal from "@/components/LoginModal";
 import ForgotPasswordModal from "@/components/ForgotPasswordModal";
 import ManageAccountModal from "./ManageAccountModal";
@@ -35,7 +33,6 @@ function ListEntry({
   const [showManageAccountModal, setShowManageAccountModal] = useState(false);
 
   const ctx = useContext(SettingsCtx);
-  const t = useT();
 
   const loadSession = async () => {
     setOffline(undefined);
