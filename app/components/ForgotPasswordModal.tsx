@@ -3,6 +3,7 @@ import Button from "@/components/Button";
 import { useState, useEffect } from "react";
 import { ServerEntry } from "@/app/types";
 import { validateEmail } from "@/app/util";
+import { useT } from "@/app/i18n";
 
 export default function ForgotPasswordModal({
   show,
@@ -17,6 +18,7 @@ export default function ForgotPasswordModal({
 }) {
   const [email, setEmail] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const t = useT();
 
   useEffect(() => {
     setEmail("");
@@ -33,12 +35,13 @@ export default function ForgotPasswordModal({
   return (
     <Modal show={show} onHide={() => setShow(false)} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Forgot Password</Modal.Title>
+        <Modal.Title>{t("Forgot Password")}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="p-0">
         <p className="px-3 pt-3 mb-0">
-          Enter the email address associated with your account below
-          to receive a one-time password that can be used to log in.
+          {t(
+            "Enter the email address associated with your account below to receive a one-time password that can be used to log in."
+          )}
         </p>
         <Form className="p-3">
           <Form.Group controlId="editEmail">
@@ -46,7 +49,7 @@ export default function ForgotPasswordModal({
               type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
+              placeholder={t("Email")}
               isInvalid={
                 email.length > 0 && !validateEmail(email, false)
               }
@@ -54,7 +57,9 @@ export default function ForgotPasswordModal({
           </Form.Group>
         </Form>
         <p className="px-3">
-          {"Once you have logged in, you can change your password in Settings -> Authentication -> Manage Account -> Change Password."}
+          {t(
+            "Once you have logged in, you can change your password in Settings -> Authentication -> Manage Account -> Change Password."
+          )}
         </p>
       </Modal.Body>
       <Modal.Footer>
@@ -65,7 +70,7 @@ export default function ForgotPasswordModal({
         />
         <Button
           variant="success"
-          text={"Send Temporary Password"}
+          text={t("Send Temporary Password")}
           loading={loading}
           enabled={validateEmail(email, false)}
           onClick={() => onHitSubmit()}

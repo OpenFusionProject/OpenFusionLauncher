@@ -5,9 +5,11 @@ import {
   getBackgroundImageUrlForServer,
   getLogoImageUrlForServer,
 } from "@/app/util";
+import { useT } from "@/app/i18n";
 import { invoke } from "@tauri-apps/api/core";
 import { CSSProperties, useContext, useEffect, useState } from "react";
 import { SettingsCtx } from "@/app/contexts";
+import { useT } from "@/app/i18n";
 import LoginModal from "@/components/LoginModal";
 import ForgotPasswordModal from "@/components/ForgotPasswordModal";
 import ManageAccountModal from "./ManageAccountModal";
@@ -19,6 +21,7 @@ function ListEntry({
   server: ServerEntry;
   refreshes: number;
 }) {
+  const t = useT();
   const [logo, setLogo] = useState<string | undefined>(undefined);
   const [offline, setOffline] = useState<boolean | undefined>(undefined);
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
@@ -31,6 +34,7 @@ function ListEntry({
   const [showManageAccountModal, setShowManageAccountModal] = useState(false);
 
   const ctx = useContext(SettingsCtx);
+  const t = useT();
 
   const loadSession = async () => {
     setOffline(undefined);
@@ -63,8 +67,9 @@ function ListEntry({
     try {
       await invoke("do_logout", { serverUuid: server.uuid });
       if (ctx.alertSuccess) {
-        const txt = "Logged out of " + server.description;
-        ctx.alertSuccess(txt);
+        ctx.alertSuccess(
+          t("Logged out of {server}", { server: server.description }),
+        );
       }
       loadSession();
     } catch (e: unknown) {
@@ -85,7 +90,7 @@ function ListEntry({
         remember: true,
       });
       if (ctx.alertSuccess) {
-        ctx.alertSuccess("Logged in successfully");
+        ctx.alertSuccess(t("Logged in successfully"));
       }
       loadSession();
     } catch (e: unknown) {
@@ -133,7 +138,7 @@ function ListEntry({
       await invoke("send_otp", { email, serverUuid: server.uuid });
       setShowForgotPasswordModal(false);
       if (ctx.alertSuccess) {
-        ctx.alertSuccess("One-time password sent");
+        ctx.alertSuccess(t("One-time password sent"));
       }
     } catch (e: unknown) {
       if (ctx.alertError) {
@@ -146,7 +151,9 @@ function ListEntry({
     try {
       await invoke("update_email", { newEmail, serverUuid: server.uuid, sessionToken: session!.session_token });
       if (ctx.alertSuccess) {
-        ctx.alertSuccess("Verification email sent to " + newEmail);
+        ctx.alertSuccess(
+          t("Verification email sent to {email}", { email: newEmail }),
+        );
       }
       setShowManageAccountModal(false);
     } catch (e: unknown) {
@@ -160,7 +167,7 @@ function ListEntry({
     try {
       await invoke("update_password", { newPassword, serverUuid: server.uuid, sessionToken: session!.session_token });
       if (ctx.alertSuccess) {
-        ctx.alertSuccess("Password updated successfully");
+        ctx.alertSuccess(t("Password updated successfully"));
       }
       setShowManageAccountModal(false);
     } catch (e: unknown) {
@@ -209,7 +216,7 @@ function ListEntry({
               <small className="text-muted">{server.endpoint}</small>
               {offline !== undefined && (
                 <small className={"text-" + (offline! ? "danger" : "success")}>
-                  {" " + (offline! ? "offline" : "online")}
+                  {" " + (offline! ? t("offline") : t("online"))}
                 </small>
               )}
             </div>
@@ -221,7 +228,7 @@ function ListEntry({
               ></span>
             ) : offline === true ? null : session === null ? (
               <div className="text-end">
-                <small className="mb-1 d-block text-muted">not logged in</small>
+                <small className="mb-1 d-block text-muted">{t("not logged in")}</small>
                 <Button
                   loading={buttonLoading}
                   icon="sign-in-alt"
@@ -233,7 +240,7 @@ function ListEntry({
             ) : (
               <div className="text-end">
                 <span className="mb-1 d-block">
-                  <small className="text-muted">logged in as</small>
+                  <small className="text-muted">{t("logged in as")}</small>
                   <h4 className="d-inline">{" " + session.username}</h4>
                 </span>
                 <Button

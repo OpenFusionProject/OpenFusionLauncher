@@ -122,7 +122,7 @@ export default function SettingsPage() {
   const saveConfig = async (config: Config) => {
     try {
       await invoke("update_config", { config: config });
-      alertSuccess("Changes applied successfully");
+      alertSuccess(t("Changes applied successfully"));
     } catch (e) {
       alertError("Error updating config: " + e);
     }
@@ -131,7 +131,7 @@ export default function SettingsPage() {
   const resetLauncherSettings = async () => {
     try {
       await invoke("reset_launcher_config");
-      alertSuccess("Launcher settings reset successfully");
+      alertSuccess(t("Launcher settings reset successfully"));
     } catch (e) {
       alertError("Error resetting launcher settings: " + e);
     }
@@ -140,7 +140,7 @@ export default function SettingsPage() {
   const resetGameSettings = async () => {
     try {
       await invoke("reset_game_config");
-      alertSuccess("Game settings reset successfully");
+      alertSuccess(t("Game settings reset successfully"));
     } catch (e) {
       alertError("Error resetting game settings: " + e);
     }
