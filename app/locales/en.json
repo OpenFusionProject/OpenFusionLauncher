@@ -5,6 +5,8 @@
   "Delete server": "Delete server",
   "Connect": "Connect",
   "About OpenFusion Launcher": "About OpenFusion Launcher",
+  "About {name}": "About {name}",
+  "Version {version}": "Version {version}",
   "Settings": "Settings",
   "Welcome to OpenFusion.\nSelect a server from the list below to get started.": "Welcome to OpenFusion.\nSelect a server from the list below to get started.",
   "Launcher Settings": "Launcher Settings",
