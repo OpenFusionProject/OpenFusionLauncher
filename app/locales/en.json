@@ -91,6 +91,16 @@
   "Info": "Info",
   "Language": "Language",
   "api.myserver.xyz": "api.myserver.xyz",
+  "Are you sure you want to reset the game settings to their defaults?": "Are you sure you want to reset the game settings to their defaults?",
+  "Reset Game Settings": "Reset Game Settings",
+  "Graphics API": "Graphics API",
+  "DirectX 9": "DirectX 9",
+  "Vulkan (experimental)": "Vulkan (experimental)",
+  "OpenGL (not recommended)": "OpenGL (not recommended)",
+  "Custom Launch Command": "Custom Launch Command",
+  "Window Size": "Window Size",
+  "FPS Fix": "FPS Fix",
+  "Debug": "Debug",
   "Logged in as {username}": "Logged in as {username}",
   "Server added": "Server added",
   "Server updated": "Server updated",
@@ -150,4 +160,5 @@
   "Send Temporary Password": "Send Temporary Password",
   "Select Game Version": "Select Game Version",
   "The server {server} supports multiple game versions. Please select a version to use.": "The server {server} supports multiple game versions. Please select a version to use."
+
 }
