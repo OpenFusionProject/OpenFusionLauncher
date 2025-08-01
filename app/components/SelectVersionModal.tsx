@@ -6,6 +6,7 @@ import Form from "react-bootstrap/Form";
 import Button from "./Button";
 
 import { ServerEntry, VersionEntry } from "@/app/types";
+import { useT } from "@/app/i18n";
 
 const findVersion = (versions: VersionEntry[], uuid: string) => {
   return versions.find((version) => version.uuid == uuid);
@@ -48,6 +49,8 @@ export default function SelectVersionModal({
   setShow: (newShow: boolean) => void;
   onSelect: (selectedVersionUuid: string) => void;
 }) {
+  const t = useT();
+
   const doHide = () => {
     setShow(false);
   };
@@ -75,11 +78,19 @@ export default function SelectVersionModal({
   return (
     <Modal show={show} onHide={() => doHide()} centered={true}>
       <Modal.Header>
-        <Modal.Title>Select Game Version</Modal.Title>
+        <Modal.Title>{t("Select Game Version")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        The server <strong>{server?.description}</strong> supports multiple game
-        versions. Please select a version to use.
+        <span
+          dangerouslySetInnerHTML={{
+            __html: t(
+              "The server {server} supports multiple game versions. Please select a version to use."
+            ).replace(
+              "{server}",
+              `<strong>${server?.description ?? ""}</strong>`
+            ),
+          }}
+        />
         <br />
         {available ? (
           <Form className="mt-2">
