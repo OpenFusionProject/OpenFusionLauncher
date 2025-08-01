@@ -1,6 +1,7 @@
 import Button from "./Button";
 import { Stack, Modal } from "react-bootstrap";
 import { open } from "@tauri-apps/plugin-shell";
+import { useT } from "@/app/i18n";
 
 export default function AboutModal({
   show,
@@ -13,13 +14,16 @@ export default function AboutModal({
   name: string;
   version: string;
 }) {
+  const t = useT();
   return (
     <Modal show={show} onHide={() => setShow(false)} centered={true}>
       <Modal.Header>
-        <Modal.Title>About {name}</Modal.Title>
+        <Modal.Title>{t("About {name}").replace("{name}", name)}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p className="font-monospace">Version {version}</p>
+        <p className="font-monospace">
+          {t("Version {version}").replace("{version}", version)}
+        </p>
         <p>
           ©2020-2025 OpenFusion Contributors
           <br />
