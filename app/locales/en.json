@@ -80,5 +80,10 @@
   "Do you really want to delete {server}?": "Do you really want to delete {server}?",
   "You could always re-add it later.": "You could always re-add it later.",
   "Language": "Language",
-  "api.myserver.xyz": "api.myserver.xyz"
+  "api.myserver.xyz": "api.myserver.xyz",
+  "Forgot Password": "Forgot Password",
+  "Enter the email address associated with your account below to receive a one-time password that can be used to log in.": "Enter the email address associated with your account below to receive a one-time password that can be used to log in.",
+  "Once you have logged in, you can change your password in Settings -> Authentication -> Manage Account -> Change Password.": "Once you have logged in, you can change your password in Settings -> Authentication -> Manage Account -> Change Password.",
+  "Email": "Email",
+  "Send Temporary Password": "Send Temporary Password"
 }
