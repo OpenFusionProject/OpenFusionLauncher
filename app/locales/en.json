@@ -5,6 +5,8 @@
   "Delete server": "Delete server",
   "Connect": "Connect",
   "About OpenFusion Launcher": "About OpenFusion Launcher",
+  "About {name}": "About {name}",
+  "Version {version}": "Version {version}",
   "Settings": "Settings",
   "Welcome to OpenFusion.\nSelect a server from the list below to get started.": "Welcome to OpenFusion.\nSelect a server from the list below to get started.",
   "Launcher Settings": "Launcher Settings",
@@ -109,5 +111,12 @@
   "New Password": "New Password",
   "Confirm New Password": "Confirm New Password",
   "Send Verification Email": "Send Verification Email",
-  "Update Password": "Update Password"
+  "Update Password": "Update Password",
+  "Forgot Password": "Forgot Password",
+  "Enter the email address associated with your account below to receive a one-time password that can be used to log in.": "Enter the email address associated with your account below to receive a one-time password that can be used to log in.",
+  "Once you have logged in, you can change your password in Settings -> Authentication -> Manage Account -> Change Password.": "Once you have logged in, you can change your password in Settings -> Authentication -> Manage Account -> Change Password.",
+  "Email": "Email",
+  "Send Temporary Password": "Send Temporary Password",
+  "Select Game Version": "Select Game Version",
+  "The server {server} supports multiple game versions. Please select a version to use.": "The server {server} supports multiple game versions. Please select a version to use."
 }
