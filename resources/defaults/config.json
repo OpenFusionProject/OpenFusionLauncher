@@ -1,6 +1,7 @@
 {
   "launcher": {
     "check_for_updates": true,
+    "language": "en",
     "use_offline_caches": true,
     "verify_offline_caches": false,
     "launch_behavior": "hide"

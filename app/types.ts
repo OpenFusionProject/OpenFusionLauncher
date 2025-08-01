@@ -1,3 +1,5 @@
+import type { Language } from "./i18n";
+
 export type ServerEntry = {
   uuid: string;
   description: string;
@@ -36,6 +38,7 @@ export type Versions = {
 
 export type LauncherSettings = {
   check_for_updates: boolean;
+  language: Language;
   use_offline_caches: boolean;
   verify_offline_caches: boolean;
   delete_old_game_caches: boolean;

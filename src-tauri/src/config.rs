@@ -22,6 +22,9 @@ pub struct LauncherSettings {
     #[serde(default = "util::true_fn")]
     pub check_for_updates: bool,
 
+    #[serde(default = "default_language")]
+    pub language: String,
+
     // none = system default
     #[serde(skip_serializing_if = "Option::is_none")]
     pub theme: Option<LauncherTheme>,
@@ -48,6 +51,7 @@ impl Default for LauncherSettings {
     fn default() -> Self {
         Self {
             check_for_updates: true,
+            language: default_language(),
             theme: None,
             use_offline_caches: true,
             verify_offline_caches: false,
@@ -57,6 +61,10 @@ impl Default for LauncherSettings {
             offline_cache_path: util::get_default_offline_cache_dir(),
         }
     }
+}
+
+fn default_language() -> String {
+    "en".into()
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, Default)]
