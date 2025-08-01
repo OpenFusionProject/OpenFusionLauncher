@@ -163,6 +163,8 @@
   "Once you have logged in, you can change your password in Settings -> Authentication -> Manage Account -> Change Password.": "Once you have logged in, you can change your password in Settings -> Authentication -> Manage Account -> Change Password.",
   "Email": "Email",
   "Send Temporary Password": "Send Temporary Password",
+  "{server} Logo": "{server} Logo",
+  "OpenFusion Logo": "OpenFusion Logo",
   "Select Game Version": "Select Game Version",
   "The server {server} supports multiple game versions. Please select a version to use.": "The server {server} supports multiple game versions. Please select a version to use."
   "Loading...": "Loading..."

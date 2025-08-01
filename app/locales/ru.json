@@ -163,6 +163,8 @@
   "Once you have logged in, you can change your password in Settings -> Authentication -> Manage Account -> Change Password.": "После входа вы можете изменить пароль в Настройки -> Аутентификация -> Управление аккаунтом -> Изменить пароль.",
   "Email": "Электронная почта",
   "Send Temporary Password": "Отправить временный пароль",
+  "{server} Logo": "Логотип {server}",
+  "OpenFusion Logo": "Логотип OpenFusion",
   "Select Game Version": "Выберите версию игры",
   "The server {server} supports multiple game versions. Please select a version to use.": "Сервер {server} поддерживает несколько версий игры. Пожалуйста, выберите используемую версию.",
   "Loading...": "Загрузка..."
