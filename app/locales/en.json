@@ -79,6 +79,10 @@
   "Are you sure?": "Are you sure?",
   "Do you really want to delete {server}?": "Do you really want to delete {server}?",
   "You could always re-add it later.": "You could always re-add it later.",
+  "Success": "Success",
+  "Error": "Error",
+  "Warning": "Warning",
+  "Info": "Info",
   "Language": "Language",
   "api.myserver.xyz": "api.myserver.xyz"
 }

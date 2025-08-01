@@ -3,10 +3,12 @@ import { useState } from "react";
 import { open } from "@tauri-apps/plugin-shell";
 import { Alert } from "@/app/types";
 import { getHostnameFromLink, variantToLabel } from "@/app/util";
+import { useT } from "@/app/i18n";
 import Button from "./Button";
 
 export default function Toast({ alert }: { alert: Alert }) {
   const [show, setShow] = useState(true);
+  const t = useT();
 
   return (
     <_Toast
@@ -18,7 +20,7 @@ export default function Toast({ alert }: { alert: Alert }) {
       onClose={() => setShow(false)}
     >
       <_Toast.Header>
-        <strong className="me-auto">{variantToLabel(alert.variant)}</strong>
+        <strong className="me-auto">{variantToLabel(alert.variant, t)}</strong>
       </_Toast.Header>
       <_Toast.Body className={"rounded-bottom btn-" + alert.variant}>
         {alert.text}
