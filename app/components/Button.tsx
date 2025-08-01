@@ -1,3 +1,6 @@
+"use client";
+import { useT } from "@/app/i18n";
+
 export default function Button({
   onClick,
   enabled,
@@ -21,9 +24,10 @@ export default function Button({
   loading?: boolean;
   className?: string;
 }) {
+  const t = useT();
   const actualVariant = variant ?? "primary";
   const actuallyEnabled = (enabled ?? true) && !loading;
-  const tooltipText = tooltip ?? text?.trim();
+  const tooltipText = tooltip ? t(tooltip) : text ? t(text.trim()) : undefined;
   const iconStyleClass = iconStyle ? "-" + iconStyle : "";
 
   const iconElement = loading ? (
@@ -52,7 +56,7 @@ export default function Button({
       <>
         {iconLeft && icon && iconElement}
         {iconLeft && icon && text && " "}
-        {text && <span>{text}</span>}
+        {text && <span>{t(text)}</span>}
         {!iconLeft && icon && text && " "}
         {!iconLeft && icon && iconElement}
       </>

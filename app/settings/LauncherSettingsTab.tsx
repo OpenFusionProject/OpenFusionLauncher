@@ -6,6 +6,7 @@ import SettingControlBrowse from "./SettingControlBrowse";
 import { getDebugMode } from "@/app/util";
 import { SettingsCtx } from "@/app/contexts";
 import SettingsHeader from "./SettingsHeader";
+import { useT } from "@/app/i18n";
 
 export default function LauncherSettingsTab({
   active,
@@ -24,6 +25,7 @@ export default function LauncherSettingsTab({
   const [debug, setDebug] = useState<boolean>(false);
 
   const ctx = useContext(SettingsCtx);
+  const t = useT();
 
   useEffect(() => {
     getDebugMode().then(setDebug);
@@ -57,8 +59,8 @@ export default function LauncherSettingsTab({
   const showResetConfirmation = () => {
     if (ctx.showConfirmationModal) {
       ctx.showConfirmationModal(
-        "Are you sure you want to reset the launcher settings to their defaults?",
-        "Reset Launcher Settings",
+        t("Are you sure you want to reset the launcher settings to their defaults?"),
+        t("Reset Launcher Settings"),
         "danger",
         resetSettings,
       );
@@ -77,7 +79,7 @@ export default function LauncherSettingsTab({
           className="primary my-5 p-3 rounded border border-primary"
         >
           <SettingsHeader
-            text="Launcher Settings"
+            text={t("Launcher Settings")}
             working={working}
             canApply={canApply}
             onApply={applySettings}
@@ -107,10 +109,10 @@ export default function LauncherSettingsTab({
               /> */}
               <SettingControlDropdown
                 id="check_for_updates"
-                name="Check for launcher updates on launch"
+                name={t("Check for launcher updates on launch")}
                 options={[
-                  { key: "yes", value: true, label: "Yes" },
-                  { key: "no", value: false, label: "No" },
+                  { key: "yes", value: true, label: t("Yes") },
+                  { key: "no", value: false, label: t("No") },
                 ]}
                 defaultKey="yes"
                 oldValue={currentSettings.check_for_updates}
@@ -124,7 +126,7 @@ export default function LauncherSettingsTab({
               />
               <SettingControlBrowse
                 id="game_cache_path"
-                name="Game Cache Path"
+                name={t("Game Cache Path")}
                 oldValue={currentSettings.game_cache_path}
                 value={settings.game_cache_path}
                 directory={true}
@@ -137,7 +139,7 @@ export default function LauncherSettingsTab({
               />
               <SettingControlBrowse
                 id="offline_cache_path"
-                name="Offline Cache Path"
+                name={t("Offline Cache Path")}
                 oldValue={currentSettings.offline_cache_path}
                 value={settings.offline_cache_path}
                 directory={true}
@@ -150,10 +152,10 @@ export default function LauncherSettingsTab({
               />
               <SettingControlDropdown
                 id="use_offline_caches"
-                name="Use offline caches when downloaded"
+                name={t("Use offline caches when downloaded")}
                 options={[
-                  { key: "yes", value: true, label: "Yes" },
-                  { key: "no", value: false, label: "No" },
+                  { key: "yes", value: true, label: t("Yes") },
+                  { key: "no", value: false, label: t("No") },
                 ]}
                 defaultKey="yes"
                 oldValue={currentSettings.use_offline_caches}
@@ -167,10 +169,10 @@ export default function LauncherSettingsTab({
               />
               <SettingControlDropdown
                 id="verify_offline_caches"
-                name="Verify offline caches on launch"
+                name={t("Verify offline caches on launch")}
                 options={[
-                  { key: "yes", value: true, label: "Yes" },
-                  { key: "no", value: false, label: "No" },
+                  { key: "yes", value: true, label: t("Yes") },
+                  { key: "no", value: false, label: t("No") },
                 ]}
                 defaultKey="no"
                 oldValue={currentSettings.verify_offline_caches}
@@ -184,10 +186,10 @@ export default function LauncherSettingsTab({
               />
               <SettingControlDropdown
                 id="delete_old_game_caches"
-                name="Delete old game caches on upgrades"
+                name={t("Delete old game caches on upgrades")}
                 options={[
-                  { key: "yes", value: true, label: "Yes" },
-                  { key: "no", value: false, label: "No" },
+                  { key: "yes", value: true, label: t("Yes") },
+                  { key: "no", value: false, label: t("No") },
                 ]}
                 defaultKey="no"
                 oldValue={currentSettings.delete_old_game_caches}
@@ -201,22 +203,22 @@ export default function LauncherSettingsTab({
               />
               <SettingControlDropdown
                 id="launch_behavior"
-                name="Launch behavior"
+                name={t("Launch behavior")}
                 options={[
                   {
                     key: "hide",
-                    label: "Hide",
+                    label: t("Hide"),
                     description:
                       "hide the launcher when the game is launched, show again after game exits",
                   },
                   {
                     key: "quit",
-                    label: "Quit",
+                    label: t("Quit"),
                     description: "quit the launcher when the game is launched",
                   },
                   {
                     key: "stay_open",
-                    label: "Stay Open",
+                    label: t("Stay Open"),
                     description:
                       "keep the launcher open when the game is launched",
                   },

@@ -21,6 +21,7 @@ import { getTheme } from "@/app/util";
 import AuthenticationTab from "./AuthenticationTab";
 import LauncherSettingsTab from "./LauncherSettingsTab";
 import GameSettingsTab from "./GameSettingsTab";
+import { useT } from "@/app/i18n";
 
 const TAB_LAUNCHER_SETTINGS = "launcher-settings";
 const TAB_GAME_SETTINGS = "game-settings";
@@ -34,6 +35,8 @@ export default function SettingsPage() {
   const [initialFetchDone, setInitialFetchDone] = useState(false);
 
   const [tab, setTab] = useState(DEFAULT_TAB);
+
+  const t = useT();
 
   const [config, setConfig] = useState<Config | undefined>(undefined);
 
@@ -181,13 +184,13 @@ export default function SettingsPage() {
     <SettingsCtx.Provider value={ctx}>
       <Toasts alerts={alerts} />
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
-      <LauncherPage title="Settings" id="launcher-page-settings">
+      <LauncherPage title={t("Settings")} id="launcher-page-settings">
         <Tabs activeKey={tab} onSelect={(k) => setTab(k ?? DEFAULT_TAB)} fill>
           <Tab
             eventKey={TAB_LAUNCHER_SETTINGS}
             title={
               <>
-                <i className="fas fa-rocket"></i> <span>Launcher Settings</span>
+                <i className="fas fa-rocket"></i> <span>{t("Launcher Settings")}</span>
               </>
             }
           >
@@ -203,7 +206,7 @@ export default function SettingsPage() {
             eventKey={TAB_GAME_SETTINGS}
             title={
               <>
-                <i className="fas fa-gamepad"></i> <span>Game Settings</span>
+                <i className="fas fa-gamepad"></i> <span>{t("Game Settings")}</span>
               </>
             }
           >
@@ -219,7 +222,7 @@ export default function SettingsPage() {
             eventKey={TAB_GAME_BUILDS}
             title={
               <>
-                <i className="fas fa-download"></i> <span>Game Builds</span>
+                <i className="fas fa-download"></i> <span>{t("Game Builds")}</span>
               </>
             }
           >
@@ -229,7 +232,7 @@ export default function SettingsPage() {
             eventKey={TAB_AUTHENTICATION}
             title={
               <>
-                <i className="fas fa-key"></i> <span>Authentication</span>
+                <i className="fas fa-key"></i> <span>{t("Authentication")}</span>
               </>
             }
           >

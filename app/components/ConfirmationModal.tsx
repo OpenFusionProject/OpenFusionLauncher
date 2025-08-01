@@ -1,5 +1,7 @@
+"use client";
 import { Modal } from "react-bootstrap";
 import Button from "./Button";
+import { useT } from "@/app/i18n";
 
 export default function ConfirmationModal({
   show,
@@ -16,10 +18,11 @@ export default function ConfirmationModal({
   confirmVariant: string;
   onConfirm: () => void;
 }) {
+  const t = useT();
   return (
     <Modal show={show} onHide={() => setShow(false)} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Confirm</Modal.Title>
+        <Modal.Title>{t("Confirm")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>{message}</p>

@@ -161,6 +161,13 @@ body {
   left: 8px;
 }
 
+#language-button-div {
+  position: fixed;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 #alerts {
   position: fixed;
   width: 100%;
