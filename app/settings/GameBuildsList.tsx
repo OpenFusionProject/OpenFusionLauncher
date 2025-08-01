@@ -1,5 +1,6 @@
 import { ProgressBar } from "react-bootstrap";
 import Button from "../components/Button";
+import { useT } from "@/app/i18n";
 
 import {
   VersionCacheData,
@@ -139,14 +140,15 @@ export default function GameBuildsList({
   deleteOfflineCache: (uuid: string) => void;
   removeVersion: (uuid: string) => void;
 }) {
+  const t = useT();
   return (
     <div className="table-responsive" id="builds-table">
       <table className="table table-striped table-hover mb-0">
         <thead>
           <tr>
-            <th>Version</th>
-            <th className="text-center cache-col">Game Cache</th>
-            <th className="text-center px-5 cache-col">Offline Cache</th>
+            <th>{t("Version")}</th>
+            <th className="text-center cache-col">{t("Game Cache")}</th>
+            <th className="text-center px-5 cache-col">{t("Offline Cache")}</th>
             <th className="text-end"></th>
           </tr>
         </thead>
@@ -163,7 +165,7 @@ export default function GameBuildsList({
             </tr>
           ) : versions.length == 0 ? (
             <tr>
-              <td colSpan={3}>No builds available</td>
+              <td colSpan={3}>{t("No builds available")}</td>
             </tr>
           ) : (
             versions.map((version) => {
