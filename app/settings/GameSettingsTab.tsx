@@ -8,6 +8,7 @@ import { deepEqual, getDebugMode } from "@/app/util";
 import SettingsHeader from "./SettingsHeader";
 import { SettingsCtx } from "@/app/contexts";
 import SettingControlFpsFix from "./SettingControlFpsFix";
+import { useT } from "@/app/i18n";
 
 export default function GameSettingsTab({
   active,
@@ -26,6 +27,7 @@ export default function GameSettingsTab({
   const [debug, setDebug] = useState<boolean>(false);
 
   const ctx = useContext(SettingsCtx);
+  const t = useT();
 
   useEffect(() => {
     getDebugMode().then(setDebug);
@@ -143,7 +145,7 @@ export default function GameSettingsTab({
           {debug && (
             <>
               <hr className="border-primary" />
-              <h6>Debug</h6>
+              <h6>{t("Debug")}</h6>
               <textarea
                 id="settings-json"
                 className="w-100"
