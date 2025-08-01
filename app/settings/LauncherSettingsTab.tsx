@@ -232,19 +232,21 @@ export default function LauncherSettingsTab({
                   {
                     key: "hide",
                     label: t("Hide"),
-                    description:
+                    description: t(
                       "hide the launcher when the game is launched, show again after game exits",
+                    ),
                   },
                   {
                     key: "quit",
                     label: t("Quit"),
-                    description: "quit the launcher when the game is launched",
+                    description: t("quit the launcher when the game is launched"),
                   },
                   {
                     key: "stay_open",
                     label: t("Stay Open"),
-                    description:
+                    description: t(
                       "keep the launcher open when the game is launched",
+                    ),
                   },
                 ]}
                 defaultKey="hide"
@@ -262,7 +264,7 @@ export default function LauncherSettingsTab({
           {debug && (
             <>
               <hr className="border-primary" />
-              <h6>Debug</h6>
+              <h6>{t("Debug")}</h6>
               <textarea
                 className="w-100"
                 rows={5}
