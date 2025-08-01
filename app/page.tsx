@@ -47,6 +47,7 @@ import {
 } from "@/app/util";
 import ForgotPasswordModal from "./components/ForgotPasswordModal";
 import { useRouter } from "next/navigation";
+import { useT } from "@/app/i18n";
 
 const DEFAULT_TAGLINE =
   "Welcome to OpenFusion.\nSelect a server from the list below to get started.";
@@ -54,6 +55,7 @@ const DEFAULT_TAGLINE =
 export default function Home() {
   const loadedRef = useRef(false);
   const router = useRouter();
+  const t = useT();
 
   const [appName, setAppName] = useState("");
   const [launcherVersion, setLauncherVersion] = useState("--");
@@ -567,11 +569,13 @@ export default function Home() {
               selectedServer={getSelectedServer()}
             />
             <div id="of-intro-text">
-              {tagline.split("\n").map((line, index) => (
-                <p className="fw-bold" key={index}>
-                  {line}
-                </p>
-              ))}
+              {t(tagline)
+                .split("\n")
+                .map((line, index) => (
+                  <p className="fw-bold" key={index}>
+                    {line}
+                  </p>
+                ))}
             </div>
           </Col>
         </Row>
