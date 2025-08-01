@@ -172,7 +172,10 @@ export default function Home() {
       );
       if (updateInfo) {
         setUpdateAvailable(updateInfo);
-        alertInfo("Update available: " + updateInfo.version, updateInfo.url);
+        alertInfo(
+          t("Update available: {version}", { version: updateInfo.version }),
+          updateInfo.url,
+        );
       }
     } catch (e: unknown) {
       console.warn("Failed to check for updates (" + e + ")");
@@ -187,7 +190,7 @@ export default function Home() {
     }
     getDebugMode().then((debug) => {
       if (debug) {
-        alertWarning("Debug mode enabled");
+        alertWarning(t("Debug mode enabled"));
       }
     });
     setInitialFetchDone(true);
@@ -416,7 +419,7 @@ export default function Home() {
         }
       }
 
-      alertSuccess("Logged in as " + session.username);
+      alertSuccess(t("Logged in as {username}", { username: session.username }));
     }
 
     if (!version) {
@@ -438,7 +441,7 @@ export default function Home() {
         return [...servers, newServer];
       });
       setSelectedServer(uuid);
-      alertSuccess("Server added");
+      alertSuccess(t("Server added"));
     } catch (e: unknown) {
       alertError("Failed to add server (" + e + ")");
     }
@@ -463,7 +466,7 @@ export default function Home() {
         return newServers;
       });
       if (showSucc ?? true) {
-        alertSuccess("Server updated");
+        alertSuccess(t("Server updated"));
       }
     } catch (e: unknown) {
       alertError("Failed to update server (" + e + ")");
@@ -491,7 +494,7 @@ export default function Home() {
             break;
           }
         }
-        alertSuccess("Server deleted");
+        alertSuccess(t("Server deleted"));
       } catch (e: unknown) {
         alertError("Failed to delete server (" + e + ")");
       }
@@ -505,7 +508,7 @@ export default function Home() {
         serverUuid: getSelectedServer()!.uuid,
       });
       setShowForgotPasswordModal(false);
-      alertSuccess("One-time password sent");
+      alertSuccess(t("One-time password sent"));
     } catch (e: unknown) {
       alertError("Failed to send one-time password (" + e + ")");
     }

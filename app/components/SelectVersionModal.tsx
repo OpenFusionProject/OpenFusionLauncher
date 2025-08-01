@@ -80,8 +80,16 @@ export default function SelectVersionModal({
         <Modal.Title>{t("Select Game Version")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        The server <strong>{server?.description}</strong> supports multiple game
-        versions. Please select a version to use.
+        <span
+          dangerouslySetInnerHTML={{
+            __html: t(
+              "The server {server} supports multiple game versions. Please select a version to use."
+            ).replace(
+              "{server}",
+              `<strong>${server?.description ?? ""}</strong>`
+            ),
+          }}
+        />
         <br />
         {available ? (
           <Form className="mt-2">
