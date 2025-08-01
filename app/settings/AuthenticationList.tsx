@@ -8,6 +8,7 @@ import {
 import { invoke } from "@tauri-apps/api/core";
 import { CSSProperties, useContext, useEffect, useState } from "react";
 import { SettingsCtx } from "@/app/contexts";
+import { useT } from "@/app/i18n";
 import LoginModal from "@/components/LoginModal";
 import ForgotPasswordModal from "@/components/ForgotPasswordModal";
 import ManageAccountModal from "./ManageAccountModal";
@@ -31,6 +32,7 @@ function ListEntry({
   const [showManageAccountModal, setShowManageAccountModal] = useState(false);
 
   const ctx = useContext(SettingsCtx);
+  const t = useT();
 
   const loadSession = async () => {
     setOffline(undefined);
@@ -63,8 +65,9 @@ function ListEntry({
     try {
       await invoke("do_logout", { serverUuid: server.uuid });
       if (ctx.alertSuccess) {
-        const txt = "Logged out of " + server.description;
-        ctx.alertSuccess(txt);
+        ctx.alertSuccess(
+          t("Logged out of {server}", { server: server.description }),
+        );
       }
       loadSession();
     } catch (e: unknown) {
@@ -85,7 +88,7 @@ function ListEntry({
         remember: true,
       });
       if (ctx.alertSuccess) {
-        ctx.alertSuccess("Logged in successfully");
+        ctx.alertSuccess(t("Logged in successfully"));
       }
       loadSession();
     } catch (e: unknown) {
@@ -133,7 +136,7 @@ function ListEntry({
       await invoke("send_otp", { email, serverUuid: server.uuid });
       setShowForgotPasswordModal(false);
       if (ctx.alertSuccess) {
-        ctx.alertSuccess("One-time password sent");
+        ctx.alertSuccess(t("One-time password sent"));
       }
     } catch (e: unknown) {
       if (ctx.alertError) {
@@ -146,7 +149,9 @@ function ListEntry({
     try {
       await invoke("update_email", { newEmail, serverUuid: server.uuid, sessionToken: session!.session_token });
       if (ctx.alertSuccess) {
-        ctx.alertSuccess("Verification email sent to " + newEmail);
+        ctx.alertSuccess(
+          t("Verification email sent to {email}", { email: newEmail }),
+        );
       }
       setShowManageAccountModal(false);
     } catch (e: unknown) {
@@ -160,7 +165,7 @@ function ListEntry({
     try {
       await invoke("update_password", { newPassword, serverUuid: server.uuid, sessionToken: session!.session_token });
       if (ctx.alertSuccess) {
-        ctx.alertSuccess("Password updated successfully");
+        ctx.alertSuccess(t("Password updated successfully"));
       }
       setShowManageAccountModal(false);
     } catch (e: unknown) {
