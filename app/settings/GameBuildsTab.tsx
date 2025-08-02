@@ -309,7 +309,7 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
       >
         <Button
           icon="plus"
-          text="Add Build"
+          text={t("Add Build")}
           tooltip="Add a new build from a manifest or asset URL"
           variant="success"
           onClick={() => setShowAddBuildModal(true)}
@@ -317,14 +317,14 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
         <div className="p-2 ms-auto"></div>
         <Button
           icon="trash"
-          text="Delete All Offline"
+          text={t("Delete All Offline")}
           tooltip="Delete all offline caches"
           variant="danger"
           onClick={() => {
             if (ctx.showConfirmationModal) {
               ctx.showConfirmationModal(
-                "Are you sure you want to delete all offline caches?",
-                "Delete All",
+                t("Are you sure you want to delete all offline caches?"),
+                t("Delete All"),
                 "danger",
                 deleteAllOfflineCaches,
               );
@@ -333,14 +333,14 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
         />
         <Button
           icon="trash"
-          text="Clear All Game"
+          text={t("Clear All Game")}
           tooltip="Clear all game caches"
           variant="danger"
           onClick={() => {
             if (ctx.showConfirmationModal) {
               ctx.showConfirmationModal(
-                "Are you sure you want to clear all game caches?",
-                "Clear All",
+                t("Are you sure you want to clear all game caches?"),
+                t("Clear All"),
                 "danger",
                 clearAllGameCaches,
               );
@@ -356,10 +356,10 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
             const version = versions!.find((v) => v.uuid == uuid)!;
             const label = version.name ?? "version " + version.uuid;
             ctx.showConfirmationModal(
-              "Are you sure you want to clear the game cache for " +
-                label +
-                "?",
-              "Clear",
+              t("Are you sure you want to clear the game cache for {name}?", {
+                name: label,
+              }),
+              t("Clear"),
               "danger",
               clearGameCache.bind(null, uuid),
             );
@@ -372,10 +372,10 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
             const version = versions!.find((v) => v.uuid == uuid)!;
             const label = version.name ?? "version " + version.uuid;
             ctx.showConfirmationModal(
-              "Are you sure you want to delete the offline cache for " +
-                label +
-                "?",
-              "Delete",
+              t("Are you sure you want to delete the offline cache for {name}?", {
+                name: label,
+              }),
+              t("Delete"),
               "danger",
               deleteOfflineCache.bind(null, uuid),
             );
