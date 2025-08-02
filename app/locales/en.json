@@ -127,6 +127,8 @@
   "Logged in successfully": "Logged in successfully",
   "Verification email sent to {email}": "Verification email sent to {email}",
   "Password updated successfully": "Password updated successfully",
+  "Failed to log out of all game servers: {error}": "Failed to log out of all game servers: {error}",
+  "Are you sure you want to log out of all game servers?": "Are you sure you want to log out of all game servers?",
   "Logged out of all game servers": "Logged out of all game servers",
   "Game cache for {name} cleared successfully": "Game cache for {name} cleared successfully",
   "Game cache cleared successfully": "Game cache cleared successfully",

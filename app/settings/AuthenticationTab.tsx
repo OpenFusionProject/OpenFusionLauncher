@@ -28,7 +28,12 @@ export default function AuthenticationTab({ active }: { active: boolean }) {
       refresh();
     } catch (e) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to log out of all game servers: " + e);
+        ctx.alertError(
+          t("Failed to log out of all game servers: {error}").replace(
+            "{error}",
+            "" + e,
+          ),
+        );
       }
     }
   };
@@ -68,8 +73,8 @@ export default function AuthenticationTab({ active }: { active: boolean }) {
           onClick={() => {
             if (ctx.showConfirmationModal) {
               ctx.showConfirmationModal(
-                "Are you sure you want to log out of all game servers?",
-                "Log Out All",
+                t("Are you sure you want to log out of all game servers?"),
+                t("Log Out All"),
                 "danger",
                 logOutAll,
               );
