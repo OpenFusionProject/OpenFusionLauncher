@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ServerEntry } from "@/app/types";
 import { getLogoImageUrlForServer } from "@/app/util";
 import NextImage from "next/image";
+import { useT } from "@/app/i18n";
 
 export default function BackgroundImages({
   servers,
@@ -15,6 +16,7 @@ export default function BackgroundImages({
 }) {
   // map of server UUIDs to bools indicating whether the image is loaded
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
+  const t = useT();
 
   const isImageLoaded = (server: ServerEntry) => {
     return loadedImages[server.uuid] || false;
@@ -41,7 +43,7 @@ export default function BackgroundImages({
         <img
           src={imageUrl}
           className="logo-image"
-          alt={selectedServer.description + " Logo"}
+          alt={t("{server} Logo").replace("{server}", selectedServer.description)}
         />
       </div>
     );
@@ -52,13 +54,13 @@ export default function BackgroundImages({
       <NextImage
         id="of-logo-light"
         src={ofLogoLight}
-        alt="OpenFusion Logo"
+        alt={t("OpenFusion Logo")}
         width={256}
       />
       <NextImage
         id="of-logo-dark"
         src={ofLogoDark}
-        alt="OpenFusion Logo"
+        alt={t("OpenFusion Logo")}
         width={256}
       />
     </>
