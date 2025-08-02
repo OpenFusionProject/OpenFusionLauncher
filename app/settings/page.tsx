@@ -115,7 +115,9 @@ export default function SettingsPage() {
       await syncConfig();
       setInitialFetchDone(true);
     } catch (e) {
-      alertError("Error during init: " + e);
+      alertError(
+        t("Error during init: {error}", { error: String(e) }),
+      );
     }
   };
 
@@ -124,7 +126,9 @@ export default function SettingsPage() {
       await invoke("update_config", { config: config });
       alertSuccess(t("Changes applied successfully"));
     } catch (e) {
-      alertError("Error updating config: " + e);
+      alertError(
+        t("Error updating config: {error}", { error: String(e) }),
+      );
     }
   };
 
@@ -133,7 +137,11 @@ export default function SettingsPage() {
       await invoke("reset_launcher_config");
       alertSuccess(t("Launcher settings reset successfully"));
     } catch (e) {
-      alertError("Error resetting launcher settings: " + e);
+      alertError(
+        t("Error resetting launcher settings: {error}", {
+          error: String(e),
+        }),
+      );
     }
   };
 
@@ -142,7 +150,11 @@ export default function SettingsPage() {
       await invoke("reset_game_config");
       alertSuccess(t("Game settings reset successfully"));
     } catch (e) {
-      alertError("Error resetting game settings: " + e);
+      alertError(
+        t("Error resetting game settings: {error}", {
+          error: String(e),
+        }),
+      );
     }
   };
 
