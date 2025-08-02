@@ -49,7 +49,7 @@ import ForgotPasswordModal from "./components/ForgotPasswordModal";
 import { useRouter } from "next/navigation";
 import { useT } from "@/app/i18n";
 
-const DEFAULT_TAGLINE =
+const DEFAULT_TAGLINE_KEY =
   "Welcome to OpenFusion.\nSelect a server from the list below to get started.";
 
 export default function Home() {
@@ -62,7 +62,7 @@ export default function Home() {
   const [updateAvailable, setUpdateAvailable] = useState<
     UpdateInfo | undefined
   >(undefined);
-  const [tagline, setTagline] = useState(DEFAULT_TAGLINE);
+  const [tagline, setTagline] = useState(t(DEFAULT_TAGLINE_KEY));
   const [topOffset, setTopOffset] = useState<string>("0");
 
   const [initialFetchDone, setInitialFetchDone] = useState(false);
@@ -173,7 +173,10 @@ export default function Home() {
       if (updateInfo) {
         setUpdateAvailable(updateInfo);
         alertInfo(
-          t("Update available: {version}", { version: updateInfo.version }),
+          t("Update available: {version}").replace(
+            "{version}",
+            updateInfo.version,
+          ),
           updateInfo.url,
         );
       }
@@ -197,31 +200,36 @@ export default function Home() {
   };
 
   const importFromOpenFusionClient = async () => {
-    startLoading("import", "Importing");
+    startLoading("import", t("Importing"));
     try {
       const counts: ImportCounts = await invoke("import_from_openfusionclient");
       if (counts.server_count == 0 && counts.version_count == 0) {
-        console.log("Nothing to import");
+        console.log(t("Nothing to import"));
       } else {
-        let text = "Imported ";
+        let text = t("Imported");
         if (counts.version_count > 0) {
-          text +=
-            counts.version_count +
-            (counts.version_count > 1 ? " versions " : " version ");
+          text += ` ${counts.version_count} ${
+            counts.version_count > 1 ? t("versions") : t("version")
+          }`;
           if (counts.server_count > 0) {
-            text += "and ";
+            text += ` ${t("and")} `;
           }
         }
         if (counts.server_count > 0) {
-          text +=
-            counts.server_count +
-            (counts.server_count > 1 ? " servers " : " server ");
+          text += `${counts.server_count} ${
+            counts.server_count > 1 ? t("servers") : t("server")
+          }`;
         }
-        text += "from OpenFusionClient";
+        text += ` ${t("from OpenFusionClient")}`;
         alertSuccess(text);
       }
     } catch (e: unknown) {
-      alertError("Failed to import from OpenFusionClient (" + e + ")");
+      alertError(
+        t("Failed to import from OpenFusionClient: {error}").replace(
+          "{error}",
+          String(e),
+        ),
+      );
     }
     stopLoading("import");
   };
@@ -275,7 +283,9 @@ export default function Home() {
       await getCurrentWindow().setFocus();
     } catch (e: unknown) {
       await getCurrentWindow().show();
-      alertError("Error during init (" + e + ")");
+      alertError(
+        t("Error during init: {error}").replace("{error}", String(e)),
+      );
     }
   };
 
@@ -300,14 +310,16 @@ export default function Home() {
         await getCurrentWindow().hide();
       }
       const exitCode: number = await invoke("do_launch");
-      setTagline("Thanks for playing!");
+      setTagline(t("Thanks for playing!"));
       await getCurrentWindow().show();
       if (exitCode != 0) {
         console.warn("Game exited with code " + exitCode);
       }
     } catch (e: unknown) {
       await getCurrentWindow().show();
-      alertError("Failed to launch (" + e + ")");
+      alertError(
+        t("Failed to launch: {error}").replace("{error}", String(e)),
+      );
     }
     stopLoading("launch");
   };
@@ -334,7 +346,7 @@ export default function Home() {
         alertInfo(res.resp);
       }
     } catch (e: unknown) {
-      alertError("Failed to register (" + e + ")");
+      alertError(t("Failed to register: {error}").replace("{error}", String(e)));
     }
     stopLoading("do_register");
   };
@@ -354,7 +366,7 @@ export default function Home() {
         remember: remember,
       });
     } catch (e: unknown) {
-      alertError("Failed to login (" + e + ")");
+      alertError(t("Failed to login: {error}").replace("{error}", String(e)));
       return;
     } finally {
       stopLoading("do_login");
@@ -365,7 +377,7 @@ export default function Home() {
   const onConnect = async (serverUuid: string, versionUuid?: string) => {
     const server = servers.find((s) => s.uuid == serverUuid);
     if (!server) {
-      alertError("Server not found");
+      alertError(t("Server not found"));
       setConnecting(false);
       return;
     }
@@ -401,7 +413,9 @@ export default function Home() {
         });
       } catch (e: unknown) {
         stopLoading("configure_endpoint");
-        alertError("Failed to get versions: " + e);
+        alertError(
+          t("Failed to get versions: {error}").replace("{error}", String(e)),
+        );
         setConnecting(false);
         return;
       }
@@ -419,11 +433,16 @@ export default function Home() {
         }
       }
 
-      alertSuccess(t("Logged in as {username}", { username: session.username }));
+      alertSuccess(
+        t("Logged in as {username}").replace(
+          "{username}",
+          session.username,
+        ),
+      );
     }
 
     if (!version) {
-      alertError("No version selected");
+      alertError(t("No version selected"));
       setConnecting(false);
       return;
     }
@@ -443,7 +462,9 @@ export default function Home() {
       setSelectedServer(uuid);
       alertSuccess(t("Server added"));
     } catch (e: unknown) {
-      alertError("Failed to add server (" + e + ")");
+      alertError(
+        t("Failed to add server: {error}").replace("{error}", String(e)),
+      );
     }
     stopLoading("add_server");
   };
@@ -469,7 +490,9 @@ export default function Home() {
         alertSuccess(t("Server updated"));
       }
     } catch (e: unknown) {
-      alertError("Failed to update server (" + e + ")");
+      alertError(
+        t("Failed to update server: {error}").replace("{error}", String(e)),
+      );
     }
     stopLoading("update_server");
   };
@@ -496,7 +519,9 @@ export default function Home() {
         }
         alertSuccess(t("Server deleted"));
       } catch (e: unknown) {
-        alertError("Failed to delete server (" + e + ")");
+        alertError(
+          t("Failed to delete server: {error}").replace("{error}", String(e)),
+        );
       }
     }
   };
@@ -510,7 +535,12 @@ export default function Home() {
       setShowForgotPasswordModal(false);
       alertSuccess(t("One-time password sent"));
     } catch (e: unknown) {
-      alertError("Failed to send one-time password (" + e + ")");
+      alertError(
+        t("Failed to send one-time password ({error})").replace(
+          "{error}",
+          String(e),
+        ),
+      );
     }
   };
 
