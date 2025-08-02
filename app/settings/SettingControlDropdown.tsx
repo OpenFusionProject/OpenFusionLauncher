@@ -2,6 +2,7 @@ import { SettingsOption } from "@/app/types";
 import { Form } from "react-bootstrap";
 import SettingControlBase from "./SettingControlBase";
 import { useEffect, useState } from "react";
+import { useT } from "@/app/i18n";
 
 export default function SettingControlDropdown({
   id,
@@ -20,6 +21,7 @@ export default function SettingControlDropdown({
   defaultKey: string;
   onChange: (value: any) => void;
 }) {
+  const t = useT();
   const getOptionValueFromKey = (key: string) => {
     const option = options.find((option) => option.key === key);
     if (!option) {
@@ -65,7 +67,7 @@ export default function SettingControlDropdown({
           <option key={option.key} value={option.key}>
             {option.label +
               (option.description ? " - " + option.description : "") +
-              (option.key === defaultKey ? " (default)" : "")}
+              (option.key === defaultKey ? ` ${t("(default)")}` : "")}
           </option>
         ))}
       </Form.Select>
