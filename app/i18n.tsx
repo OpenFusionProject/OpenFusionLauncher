@@ -7,23 +7,14 @@ import {
   useLayoutEffect,
 } from "react";
 import { invoke } from "@tauri-apps/api/core";
-export const availableLanguages = ["en", "ru"] as const;
-export type Language = (typeof availableLanguages)[number];
-export const languageNames: Record<Language, string> = {
-  en: "English",
-  ru: "Русский",
-};
+export const availableLanguages: string[] = [];
+export type Language = string;
+export const languageNames: Record<string, string> = {};
 
-const localeCache: Partial<Record<Language, Record<string, string>>> = {};
+const localeCache: Record<string, Record<string, string>> = {};
 
 async function loadLocale(lang: Language): Promise<Record<string, string>> {
-  switch (lang) {
-    case "en":
-      return (await import("./locales/en.json")).default;
-    case "ru":
-      return (await import("./locales/ru.json")).default;
-  }
-  throw new Error(`Unsupported language: ${lang}`);
+  return invoke<Record<string, string>>("load_language", { lang });
 }
 
 interface LangContextType {
@@ -39,15 +30,7 @@ const LangCtx = createContext<LangContextType>({
 });
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLang] = useState<Language>(() => {
-    if (typeof window !== "undefined") {
-      const stored = window.localStorage.getItem("lang") as Language | null;
-      if (stored && availableLanguages.includes(stored as Language)) {
-        return stored as Language;
-      }
-    }
-    return "en";
-  });
+  const [lang, setLang] = useState<Language>("en");
   const [translations, setTranslations] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -67,19 +50,31 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   }, [lang]);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    if (window.localStorage.getItem("lang")) {
-      return;
-    }
     const init = async () => {
       try {
-        await invoke("reload_state");
-        const cfg = await invoke<{ launcher: { language: Language } }>(
-          "get_config",
-        );
-        setLang(cfg.launcher.language);
+        const langs = await invoke<string[]>("get_languages");
+        availableLanguages.splice(0, availableLanguages.length, ...langs);
+        langs.forEach((code) => {
+          const name =
+            new Intl.DisplayNames([code], { type: "language" }).of(code) || code;
+          languageNames[code] = name;
+        });
+        let chosen = "en";
+        if (typeof window !== "undefined") {
+          const stored = window.localStorage.getItem("lang");
+          if (stored && langs.includes(stored)) {
+            chosen = stored;
+          } else {
+            await invoke("reload_state");
+            const cfg = await invoke<{ launcher: { language: string } }>(
+              "get_config",
+            );
+            if (langs.includes(cfg.launcher.language)) {
+              chosen = cfg.launcher.language;
+            }
+          }
+        }
+        setLang(chosen);
       } catch {
         // ignore errors
       }

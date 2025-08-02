@@ -40,6 +40,7 @@
       "../resources/defaults/*": "defaults/",
       "../resources/defaults/versions/*": "defaults/versions/",
       "../resources/assets/img/*": "assets/img/",
+      "../resources/locales/*": "locales/",
       "../resources/ffrunner/ffrunner.exe": "ffrunner.exe",
       "../resources/ffrunner/d3d9_vulkan.dll": "d3d9_vulkan.dll",
       "../resources/ffrunner/loader/*": "loader/",
