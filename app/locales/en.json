@@ -53,6 +53,7 @@
   "Remove and Clear Caches": "Remove and Clear Caches",
   "Remove": "Remove",
   "Browse...": "Browse...",
+  "File": "File",
   "Add Build": "Add Build",
   "Clear All Game": "Clear All Game",
   "Delete All Offline": "Delete All Offline",
@@ -172,6 +173,6 @@
   "{server} Logo": "{server} Logo",
   "OpenFusion Logo": "OpenFusion Logo",
   "Select Game Version": "Select Game Version",
-  "The server {server} supports multiple game versions. Please select a version to use.": "The server {server} supports multiple game versions. Please select a version to use."
+  "The server {server} supports multiple game versions. Please select a version to use.": "The server {server} supports multiple game versions. Please select a version to use.",
   "Loading...": "Loading..."
 }
