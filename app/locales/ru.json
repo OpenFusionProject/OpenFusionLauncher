@@ -127,6 +127,8 @@
   "Logged in successfully": "Вход выполнен успешно",
   "Verification email sent to {email}": "Письмо для подтверждения отправлено на {email}",
   "Password updated successfully": "Пароль успешно обновлен",
+  "Failed to log out of all game servers: {error}": "Не удалось выйти из всех игровых серверов: {error}",
+  "Are you sure you want to log out of all game servers?": "Вы действительно хотите выйти из всех игровых серверов?",
   "Logged out of all game servers": "Вы вышли из всех игровых серверов",
   "Game cache for {name} cleared successfully": "Кэш игры для {name} успешно очищен",
   "Game cache cleared successfully": "Кэш игры успешно очищен",
