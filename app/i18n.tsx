@@ -30,24 +30,20 @@ const LangCtx = createContext<LangContextType>({
 });
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLang] = useState<Language>("en");
+  const [lang, setLangState] = useState<Language>("en");
   const [translations, setTranslations] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    let active = true;
-    const load = async () => {
-      if (!localeCache[lang]) {
-        localeCache[lang] = await loadLocale(lang);
-      }
-      if (active) {
-        setTranslations(localeCache[lang]!);
-      }
-    };
-    load();
-    return () => {
-      active = false;
-    };
-  }, [lang]);
+  const setLang = (newLang: Language) => {
+    setLangState(newLang);
+    if (localeCache[newLang]) {
+      setTranslations(localeCache[newLang]!);
+    } else {
+      loadLocale(newLang).then((map) => {
+        localeCache[newLang] = map;
+        setTranslations(map);
+      });
+    }
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -74,7 +70,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
             }
           }
         }
-        setLang(chosen);
+        if (!localeCache[chosen]) {
+          localeCache[chosen] = await loadLocale(chosen);
+        }
+        setTranslations(localeCache[chosen]!);
+        setLangState(chosen);
       } catch {
         // ignore errors
       }
