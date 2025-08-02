@@ -47,7 +47,7 @@ import {
 } from "@/app/util";
 import ForgotPasswordModal from "./components/ForgotPasswordModal";
 import { useRouter } from "next/navigation";
-import { useT } from "@/app/i18n";
+import { useT, useLanguage, type Language } from "@/app/i18n";
 
 const DEFAULT_TAGLINE_KEY =
   "Welcome to OpenFusion.\nSelect a server from the list below to get started.";
@@ -56,6 +56,7 @@ export default function Home() {
   const loadedRef = useRef(false);
   const router = useRouter();
   const t = useT();
+  const { setLang } = useLanguage();
 
   const [appName, setAppName] = useState("");
   const [launcherVersion, setLauncherVersion] = useState("--");
@@ -157,6 +158,7 @@ export default function Home() {
     const theme = getTheme(config);
     document.documentElement.setAttribute("data-bs-theme", theme);
     setConfig(config);
+    setLang(config.launcher.language as Language);
     return config;
   };
 
