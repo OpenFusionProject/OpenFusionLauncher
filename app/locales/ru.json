@@ -156,6 +156,7 @@
   "logged in as": "вход выполнен как",
   "Could not load account information": "Не удалось загрузить информацию об аккаунте",
   "Current email": "Текущий email",
+  "(default)": "(по умолчанию)",
   "(not set)": "(не указан)",
   "Change Email": "Изменить email",
   "New Email": "Новый email",
