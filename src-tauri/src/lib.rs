@@ -58,6 +58,23 @@ static OFFLINE_CACHE_OPS: OnceLock<Mutex<HashSet<Uuid>>> = OnceLock::new();
 
 const CACHE_PROGRESS_EVENT: &str = "cache_progress";
 
+// error keys
+const ERR_NO_LAUNCH_PREPARED: &str = "No launch prepared";
+const ERR_SERVER_NOT_ENDPOINT: &str = "Server is not an endpoint server";
+const ERR_NOT_LOGGED_IN: &str = "Not logged in";
+const ERR_FAILED_CONTACT_API: &str = "Failed to contact API server";
+const ERR_CACHE_OP_IN_PROGRESS: &str = "Cache operation in progress";
+const ERR_NOT_IMPLEMENTED: &str = "Not implemented";
+const ERR_CACHE_DIR_NOT_EMPTY: &str = "Cache directory not empty";
+const ERR_INVALID_MANIFEST: &str = "Invalid manifest";
+const ERR_VERSION_ALREADY_IMPORTED: &str = "Version already imported";
+const ERR_CACHE_DIR_DOES_NOT_EXIST: &str = "Cache directory does not exist";
+const ERR_VERSION_NOT_FOUND: &str = "Version not found";
+const ERR_SERVER_NOT_FOUND: &str = "Server not found";
+const ERR_INVALID_LOG_FILE_PATH: &str = "Invalid log file path";
+const ERR_VERSION_NOT_SUPPORTED: &str = "Version not supported by server";
+const ERR_INVALID_VERSION_NUMBER: &str = "Invalid version number";
+
 #[derive(Debug, Serialize, Clone)]
 struct CacheProgressItem {
     item_size: u64,
@@ -99,7 +116,7 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
     let launch_behavior = state.config.launcher.launch_behavior;
-    let mut cmd = state.launch_cmd.take().ok_or("No launch prepared")?;
+    let mut cmd = state.launch_cmd.take().ok_or(ERR_NO_LAUNCH_PREPARED)?;
     let cmd_str = util::get_launch_cmd_dbg_str(&cmd, false);
     drop(state);
 
@@ -128,10 +145,10 @@ async fn do_register(
         let server = state
             .servers
             .get_entry(server_uuid)
-            .ok_or(format!("Server {} not found", server_uuid))?;
+            .ok_or(ERR_SERVER_NOT_FOUND)?;
 
         let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
-            return Err("Server is not an endpoint server".into());
+            return Err(ERR_SERVER_NOT_ENDPOINT.into());
         };
         drop(state);
 
@@ -156,11 +173,11 @@ async fn do_login(
         let mut server = state
             .servers
             .get_entry(server_uuid)
-            .ok_or(format!("Server {} not found", server_uuid))?
+            .ok_or(ERR_SERVER_NOT_FOUND)?
             .clone();
 
         let ServerInfo::Endpoint { endpoint, .. } = server.info else {
-            return Err("Server is not an endpoint server".into());
+            return Err(ERR_SERVER_NOT_ENDPOINT.into());
         };
         drop(state);
 
@@ -221,10 +238,10 @@ async fn send_otp(
         let server = state
             .servers
             .get_entry(server_uuid)
-            .ok_or(format!("Server {} not found", server_uuid))?;
+            .ok_or(ERR_SERVER_NOT_FOUND)?;
 
         let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
-            return Err("Server is not an endpoint server".into());
+            return Err(ERR_SERVER_NOT_ENDPOINT.into());
         };
         drop(state);
 
@@ -247,10 +264,10 @@ async fn get_account_info(
         let server = state
             .servers
             .get_entry(server_uuid)
-            .ok_or(format!("Server {} not found", server_uuid))?;
+            .ok_or(ERR_SERVER_NOT_FOUND)?;
 
         let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
-            return Err("Server is not an endpoint server".into());
+            return Err(ERR_SERVER_NOT_ENDPOINT.into());
         };
         drop(state);
 
@@ -274,10 +291,10 @@ async fn update_email(
         let server = state
             .servers
             .get_entry(server_uuid)
-            .ok_or(format!("Server {} not found", server_uuid))?;
+            .ok_or(ERR_SERVER_NOT_FOUND)?;
 
         let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
-            return Err("Server is not an endpoint server".into());
+            return Err(ERR_SERVER_NOT_ENDPOINT.into());
         };
         drop(state);
 
@@ -301,10 +318,10 @@ async fn update_password(
         let server = state
             .servers
             .get_entry(server_uuid)
-            .ok_or(format!("Server {} not found", server_uuid))?;
+            .ok_or(ERR_SERVER_NOT_FOUND)?;
 
         let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
-            return Err("Server is not an endpoint server".into());
+            return Err(ERR_SERVER_NOT_ENDPOINT.into());
         };
         drop(state);
 
@@ -323,10 +340,10 @@ async fn get_session(app_handle: tauri::AppHandle, server_uuid: Uuid) -> Command
         let server = state
             .servers
             .get_entry(server_uuid)
-            .ok_or(format!("Server {} not found", server_uuid))?;
+            .ok_or(ERR_SERVER_NOT_FOUND)?;
 
         let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
-            return Err("Server is not an endpoint server".into());
+            return Err(ERR_SERVER_NOT_ENDPOINT.into());
         };
 
         // We first check the temp tokens, then the saved tokens.
@@ -337,7 +354,7 @@ async fn get_session(app_handle: tauri::AppHandle, server_uuid: Uuid) -> Command
         };
 
         let Some(refresh_token) = token else {
-            return Err("Not logged in".into());
+            return Err(ERR_NOT_LOGGED_IN.into());
         };
         let refresh_token = refresh_token.to_string();
         drop(state);
@@ -373,7 +390,7 @@ async fn prep_launch(
         let server = state
             .servers
             .get_entry(server_uuid)
-            .ok_or(format!("Server {} not found", server_uuid))?
+            .ok_or(ERR_SERVER_NOT_FOUND)?
             .clone();
 
         let addr;
@@ -387,7 +404,7 @@ async fn prep_launch(
             ServerInfo::Endpoint { endpoint, .. } => {
                 // Ask the endpoint server for the UUID of the current version
                 let Ok(api_info) = endpoint::get_info(endpoint).await else {
-                    return Err("Failed to contact API server".into());
+                    return Err(ERR_FAILED_CONTACT_API.into());
                 };
 
                 if api_info.custom_loading_screen.is_some_and(|b| b) {
@@ -401,13 +418,13 @@ async fn prep_launch(
 
         // Ensure the version is supported
         if !versions.contains(&version_uuid.to_string()) {
-            return Err(format!("Version {} not supported by server", version_uuid).into());
+            return Err(ERR_VERSION_NOT_SUPPORTED.into());
         }
 
         let ip = util::resolve_server_addr(&addr)?;
 
         let Some(version) = state.versions.get_entry(version_uuid) else {
-            return Err(format!("Version {} not found", version_uuid).into());
+            return Err(ERR_VERSION_NOT_FOUND.into());
         };
 
         let base_cache_dir = &state.config.launcher.game_cache_path;
@@ -517,7 +534,10 @@ async fn prep_launch(
         cmd.args(["-m", &main_url])
             .args(["-a", &ip])
             .args(["--asseturl", &format!("{}/", asset_url)])
-            .args(["-l", log_file_path.to_str().ok_or("Invalid log file path")?]);
+            .args([
+                "-l",
+                log_file_path.to_str().ok_or(ERR_INVALID_LOG_FILE_PATH)?,
+            ]);
 
         if let ServerInfo::Endpoint { endpoint, .. } = &server.info {
             match session_token {
@@ -613,7 +633,7 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
         let version = state
             .versions
             .get_entry(uuid)
-            .ok_or("Version not found")?
+            .ok_or(ERR_VERSION_NOT_FOUND)?
             .clone();
         let path = if offline {
             util::get_cache_dir_for_version(&state.config.launcher.offline_cache_path, &version)
@@ -625,7 +645,7 @@ async fn validate_cache(app_handle: tauri::AppHandle, uuid: Uuid, offline: bool)
         {
             let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
             if ops.contains(&uuid) {
-                return Err("Cache operation in progress".into());
+                return Err(ERR_CACHE_OP_IN_PROGRESS.into());
             }
             ops.insert(uuid);
         }
@@ -679,7 +699,7 @@ async fn download_cache(
         };
 
         if !offline {
-            return Err("Not implemented".into());
+            return Err(ERR_NOT_IMPLEMENTED.into());
         }
 
         let state = app_handle.state::<Mutex<AppState>>();
@@ -687,7 +707,7 @@ async fn download_cache(
         let version = state
             .versions
             .get_entry(uuid)
-            .ok_or("Version not found")?
+            .ok_or(ERR_VERSION_NOT_FOUND)?
             .clone();
         let path = if offline {
             util::get_cache_dir_for_version(&state.config.launcher.offline_cache_path, &version)
@@ -698,7 +718,7 @@ async fn download_cache(
 
         std::fs::create_dir_all(&path)?;
         if !repair && !util::is_dir_empty(&path)? {
-            return Err("Cache directory not empty".into());
+            return Err(ERR_CACHE_DIR_NOT_EMPTY.into());
         }
 
         let (tx, rx) = mpsc::channel();
@@ -711,7 +731,7 @@ async fn download_cache(
         {
             let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
             if ops.contains(&uuid) {
-                return Err("Cache operation in progress".into());
+                return Err(ERR_CACHE_OP_IN_PROGRESS.into());
             }
             ops.insert(uuid);
         }
@@ -759,7 +779,10 @@ async fn delete_cache(
 
         let state = app_handle.state::<Mutex<AppState>>();
         let state = state.lock().await;
-        let version = state.versions.get_entry(uuid).ok_or("Version not found")?;
+        let version = state
+            .versions
+            .get_entry(uuid)
+            .ok_or(ERR_VERSION_NOT_FOUND)?;
         let path = if offline {
             util::get_cache_dir_for_version(&state.config.launcher.offline_cache_path, version)
         } else {
@@ -769,7 +792,7 @@ async fn delete_cache(
         {
             let mut ops = ops.get_or_init(|| Mutex::new(HashSet::new())).lock().await;
             if ops.contains(&uuid) {
-                return Err("Cache operation in progress".into());
+                return Err(ERR_CACHE_OP_IN_PROGRESS.into());
             }
             ops.insert(uuid);
         }
@@ -831,9 +854,9 @@ async fn get_info_for_server(
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
         let state = state.lock().await;
-        let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
+        let server = state.servers.get_entry(uuid).ok_or(ERR_SERVER_NOT_FOUND)?;
         let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
-            return Err("Server is not an endpoint server".into());
+            return Err(ERR_SERVER_NOT_ENDPOINT.into());
         };
         drop(state);
 
@@ -852,9 +875,9 @@ async fn get_announcements_for_server(
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
         let state = state.lock().await;
-        let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
+        let server = state.servers.get_entry(uuid).ok_or(ERR_SERVER_NOT_FOUND)?;
         let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
-            return Err("Server is not an endpoint server".into());
+            return Err(ERR_SERVER_NOT_ENDPOINT.into());
         };
         drop(state);
 
@@ -873,9 +896,9 @@ async fn get_player_count_for_server(
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
         let state = state.lock().await;
-        let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
+        let server = state.servers.get_entry(uuid).ok_or(ERR_SERVER_NOT_FOUND)?;
         let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
-            return Err("Server is not an endpoint server".into());
+            return Err(ERR_SERVER_NOT_ENDPOINT.into());
         };
         drop(state);
 
@@ -899,7 +922,7 @@ async fn add_server(
         if let Some(version) = &details.version {
             let version_uuid = Uuid::parse_str(version)?;
             if state.versions.get_entry(version_uuid).is_none() {
-                return Err(format!("Version {} not found", version).into());
+                return Err(ERR_VERSION_NOT_FOUND.into());
             }
         }
 
@@ -944,14 +967,14 @@ async fn delete_server(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResul
 async fn import_version(app_handle: tauri::AppHandle, uri: String) -> CommandResult<String> {
     let internal = async {
         let Ok(version) = Version::from_manifest(&uri).await else {
-            return Err("Invalid manifest".into());
+            return Err(ERR_INVALID_MANIFEST.into());
         };
 
         let state = app_handle.state::<Mutex<AppState>>();
         let mut state = state.lock().await;
 
         if state.versions.get_entry(version.get_uuid()).is_some() {
-            return Err("Version already imported".into());
+            return Err(ERR_VERSION_ALREADY_IMPORTED.into());
         }
 
         let version_label = match version.get_name() {
@@ -993,7 +1016,10 @@ async fn remove_version(
     let internal = async {
         let _state = app_handle.state::<Mutex<AppState>>();
         let state = _state.lock().await;
-        let version = state.versions.get_entry(uuid).ok_or("Version not found")?;
+        let version = state
+            .versions
+            .get_entry(uuid)
+            .ok_or(ERR_VERSION_NOT_FOUND)?;
         let base_cache_dir = &state.config.launcher.game_cache_path;
         let cache_dir = util::get_cache_dir_for_version(base_cache_dir, version);
         let base_offline_cache_dir = &state.config.launcher.offline_cache_path;
@@ -1031,7 +1057,10 @@ async fn open_folder_for_version(
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
         let state = state.lock().await;
-        let version = state.versions.get_entry(uuid).ok_or("Version not found")?;
+        let version = state
+            .versions
+            .get_entry(uuid)
+            .ok_or(ERR_VERSION_NOT_FOUND)?;
         let base_cache_dir = if offline {
             &state.config.launcher.offline_cache_path
         } else {
@@ -1043,7 +1072,7 @@ async fn open_folder_for_version(
         if cache_dir.exists() {
             app_handle.shell().open(cache_dir.to_str().unwrap(), None)?;
         } else {
-            return Err("Cache directory does not exist".into());
+            return Err(ERR_CACHE_DIR_DOES_NOT_EXIST.into());
         }
         Ok(())
     };
@@ -1059,9 +1088,9 @@ async fn get_versions_for_server(
     let internal = async {
         let _state = app_handle.state::<Mutex<AppState>>();
         let state = _state.lock().await;
-        let server = state.servers.get_entry(uuid).ok_or("Server not found")?;
+        let server = state.servers.get_entry(uuid).ok_or(ERR_SERVER_NOT_FOUND)?;
         let ServerInfo::Endpoint { endpoint, .. } = server.info.clone() else {
-            return Err("Server is not an endpoint server".into());
+            return Err(ERR_SERVER_NOT_ENDPOINT.into());
         };
         let state_versions = state.versions.clone();
         drop(state);
@@ -1171,7 +1200,7 @@ async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
         let resp_raw = util::do_simple_get(UPDATE_CHECK_URL).await?;
         let resp: UpdateCheckResponse = serde_json::from_str(&resp_raw)?;
         if !VERSION_NUMBER_REGEX.is_match(&resp.tag_name) {
-            return Err(format!("Invalid version number: {}", resp.tag_name).into());
+            return Err(ERR_INVALID_VERSION_NUMBER.into());
         }
         let current_version = util::string_version_to_u32(get_app_statics().get_version());
         let latest_version = util::string_version_to_u32(resp.tag_name.trim_start_matches("v"));

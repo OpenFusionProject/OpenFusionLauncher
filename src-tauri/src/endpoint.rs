@@ -9,6 +9,11 @@ use crate::util;
 use crate::Error;
 use crate::Result;
 
+// error keys
+const ERR_INCORRECT_USERNAME_OR_PASSWORD: &str = "Incorrect username or password";
+const ERR_COOKIE_EXPIRED: &str = "Cookie expired; try syncing your system clock";
+const ERR_VERSION_MISMATCH: &str = "Version mismatch";
+
 #[allow(dead_code)]
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct InfoResponse {
@@ -176,7 +181,7 @@ pub async fn get_refresh_token(
     if status.is_success() {
         Ok(body)
     } else if status == StatusCode::UNAUTHORIZED {
-        Err("Incorrect username or password".into())
+        Err(ERR_INCORRECT_USERNAME_OR_PASSWORD.into())
     } else {
         Err(make_api_error(&url, status, &body))
     }
@@ -241,7 +246,7 @@ pub async fn get_cookie(token: &str, endpoint_host: &str) -> Result<(String, Str
 
     let time_now = util::get_timestamp();
     if cookie.expires < time_now {
-        return Err("Cookie expired; try syncing your system clock".into());
+        return Err(ERR_COOKIE_EXPIRED.into());
     }
 
     Ok((cookie.username, cookie.cookie))
@@ -270,9 +275,7 @@ pub async fn fetch_version(endpoint_host: &str, version_uuid: Uuid) -> Result<Ve
     match version {
         Ok(v) => {
             if v.get_uuid() != version_uuid {
-                return Err(
-                    format!("Version mismatch: {} != {}", v.get_uuid(), version_uuid).into(),
-                );
+                return Err(ERR_VERSION_MISMATCH.into());
             }
 
             Ok(v)
