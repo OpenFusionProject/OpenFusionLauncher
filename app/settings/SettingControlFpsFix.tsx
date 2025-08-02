@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import SettingControlBase from "./SettingControlBase";
 import { FpsFix, FpsLimit } from "@/app/types";
+import { useT } from "@/app/i18n";
 
 const KEY_FIX_ON = "on";
 const KEY_FIX_ON_WITH_LIMITER = "on_with_limiter";
@@ -45,6 +46,7 @@ export default function SettingControlFpsFix({
   value: FpsFix;
   onChange: (value: FpsFix) => void;
 }) {
+  const t = useT();
   const [selected, setSelected] = useState<string>(getKeyForValue(value));
   const [fpsLimit, setFpsLimit] = useState<string>(
     getFpsLimitForValue(value)?.toString() ?? "",
@@ -81,9 +83,11 @@ export default function SettingControlFpsFix({
     : getFpsLimitForValue(value) !== getFpsLimitForValue(oldValue);
 
   const EXPLANATION = [
-    "FusionFall's framerate is normally capped around 64 FPS.",
-    "This setting activates a patch to remove this limit.",
-    "You can restore the original behavior by turning it off or tweak it to your own soft cap.",
+    t("FusionFall's framerate is normally capped around 64 FPS."),
+    t("This setting activates a patch to remove this limit."),
+    t(
+      "You can restore the original behavior by turning it off or tweak it to your own soft cap.",
+    ),
   ];
 
   return (
@@ -92,7 +96,7 @@ export default function SettingControlFpsFix({
       <Form.Check
         type="radio"
         id={`${id}-on`}
-        label="On (experimental, default)"
+        label={t("On (experimental, default)")}
         checked={selected === KEY_FIX_ON}
         className={selected === KEY_FIX_ON && keyModified ? "text-success" : ""}
         onChange={() => {
@@ -104,7 +108,7 @@ export default function SettingControlFpsFix({
         <Form.Check
           type="radio"
           id={`${id}-on-with-limiter`}
-          label="On with limiter"
+          label={t("On with limiter")}
           checked={selected === KEY_FIX_ON_WITH_LIMITER}
           className={
             selected === KEY_FIX_ON_WITH_LIMITER && keyModified
@@ -133,7 +137,7 @@ export default function SettingControlFpsFix({
       <Form.Check
         type="radio"
         id={`${id}-off`}
-        label="Off"
+        label={t("Off")}
         checked={selected === KEY_FIX_OFF}
         className={
           selected === KEY_FIX_OFF && keyModified ? "text-success" : ""
