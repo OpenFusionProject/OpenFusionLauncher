@@ -7,6 +7,7 @@ import {
   useLayoutEffect,
 } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { once, type UnlistenFn } from "@tauri-apps/api/event";
 export const availableLanguages: string[] = [];
 export type Language = string;
 export const languageNames: Record<string, string> = {};
@@ -46,6 +47,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    let unlisten: UnlistenFn | undefined;
     const init = async () => {
       try {
         const langs = await invoke<string[]>("get_languages");
@@ -80,6 +82,14 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       }
     };
     init();
+    once("tauri://ready", init).then((fn) => {
+      unlisten = fn;
+    });
+    return () => {
+      if (unlisten) {
+        unlisten();
+      }
+    };
   }, []);
 
   useLayoutEffect(() => {
