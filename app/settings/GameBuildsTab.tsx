@@ -34,7 +34,6 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
   const t = useT();
 
   const clearGameCache = async (uuid: string, name?: string) => {
-    const txt = name ? " for " + name : "";
     try {
       await invoke("delete_cache", { uuid, offline: false });
       if (ctx.alertSuccess) {
@@ -54,7 +53,13 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
       });
     } catch (e) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to clear game cache" + txt + ": " + e);
+        const message = name
+          ? t("Failed to clear game cache for {name}: {error}", {
+              name,
+              error: String(e),
+            })
+          : t("Failed to clear game cache: {error}", { error: String(e) });
+        ctx.alertError(message);
       }
     }
   };
@@ -83,7 +88,11 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
       });
     } catch (e) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to kickoff offline cache download: " + e);
+        ctx.alertError(
+          t("Failed to kickoff offline cache download: {error}", {
+            error: String(e),
+          }),
+        );
       }
     }
   };
@@ -96,13 +105,16 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
       }
     } catch (e) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to kickoff offline cache repair: " + e);
+        ctx.alertError(
+          t("Failed to kickoff offline cache repair: {error}", {
+            error: String(e),
+          }),
+        );
       }
     }
   };
 
   const deleteOfflineCache = async (uuid: string, name?: string) => {
-    const txt = name ? " for " + name : "";
     try {
       await invoke("delete_cache", { uuid, offline: true });
       if (ctx.alertSuccess) {
@@ -126,7 +138,15 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
       });
     } catch (e) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to delete offline cache" + txt + ": " + e);
+        const message = name
+          ? t("Failed to delete offline cache for {name}: {error}", {
+              name,
+              error: String(e),
+            })
+          : t("Failed to delete offline cache: {error}", {
+              error: String(e),
+            });
+        ctx.alertError(message);
       }
     }
   };
@@ -191,7 +211,9 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
       return true;
     } catch (e: unknown) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to import build: " + e);
+        ctx.alertError(
+          t("Failed to import build: {error}", { error: String(e) }),
+        );
       }
     }
     return false;
@@ -209,7 +231,9 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
       }
     } catch (e: unknown) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to remove build: " + e);
+        ctx.alertError(
+          t("Failed to remove build: {error}", { error: String(e) }),
+        );
       }
     }
   };
@@ -223,7 +247,7 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
       }
     } catch (e: unknown) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to add build: " + e);
+        ctx.alertError(t("Failed to add build: {error}", { error: String(e) }));
       }
     }
   };
