@@ -72,7 +72,9 @@ function ListEntry({
       loadSession();
     } catch (e: unknown) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to log out: " + e);
+        ctx.alertError(
+          t("Failed to log out: {error}", { error: String(e) }),
+        );
       }
     }
     setButtonLoading(false);
@@ -93,7 +95,9 @@ function ListEntry({
       loadSession();
     } catch (e: unknown) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to login: " + e);
+        ctx.alertError(
+          t("Failed to login: {error}", { error: String(e) }),
+        );
       }
     }
     setButtonLoading(false);
@@ -125,7 +129,9 @@ function ListEntry({
       }
     } catch (e: unknown) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to register: " + e);
+        ctx.alertError(
+          t("Failed to register: {error}", { error: String(e) }),
+        );
       }
     }
     setButtonLoading(false);
@@ -140,7 +146,11 @@ function ListEntry({
       }
     } catch (e: unknown) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to send one-time password (" + e + ")");
+        ctx.alertError(
+          t("Failed to send one-time password ({error})", {
+            error: String(e),
+          }),
+        );
       }
     }
   };
@@ -156,7 +166,11 @@ function ListEntry({
       setShowManageAccountModal(false);
     } catch (e: unknown) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to send verification email: " + e);
+        ctx.alertError(
+          t("Failed to send verification email: {error}", {
+            error: String(e),
+          }),
+        );
       }
     }
   };
@@ -170,7 +184,9 @@ function ListEntry({
       setShowManageAccountModal(false);
     } catch (e: unknown) {
       if (ctx.alertError) {
-        ctx.alertError("Failed to update password: " + e);
+        ctx.alertError(
+          t("Failed to update password: {error}", { error: String(e) }),
+        );
       }
     }
   };
