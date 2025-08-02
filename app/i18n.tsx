@@ -23,14 +23,23 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Language>("en");
 
   useEffect(() => {
-    const stored = window.localStorage.getItem("lang") as Language | null;
-    if (stored) {
-      setLang(stored);
-    } else {
-      invoke<{ launcher: { language: Language } }>("get_config")
-        .then((cfg) => setLang(cfg.launcher.language))
-        .catch(() => {});
-    }
+    const init = async () => {
+      const stored = window.localStorage.getItem("lang") as Language | null;
+      if (stored) {
+        setLang(stored);
+      } else {
+        try {
+          await invoke("reload_state");
+          const cfg = await invoke<{ launcher: { language: Language } }>(
+            "get_config",
+          );
+          setLang(cfg.launcher.language);
+        } catch {
+          // ignore errors
+        }
+      }
+    };
+    init();
   }, []);
 
   useEffect(() => {
