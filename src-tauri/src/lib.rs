@@ -111,6 +111,32 @@ struct NewServerDetails {
 }
 
 #[tauri::command]
+async fn get_languages() -> CommandResult<Vec<String>> {
+    let mut langs = Vec::new();
+    let locales_dir = state::get_app_statics().resource_dir.join("locales");
+    if let Ok(entries) = std::fs::read_dir(locales_dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.extension().and_then(|e| e.to_str()) == Some("json") {
+                if let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
+                    langs.push(stem.to_string());
+                }
+            }
+        }
+    }
+    Ok(langs)
+}
+
+#[tauri::command]
+async fn load_language(lang: String) -> CommandResult<HashMap<String, String>> {
+    let locales_dir = state::get_app_statics().resource_dir.join("locales");
+    let file_path = locales_dir.join(format!("{}.json", lang));
+    let contents = std::fs::read_to_string(file_path).map_err(|e| e.to_string())?;
+    let map = serde_json::from_str(&contents).map_err(|e| e.to_string())?;
+    Ok(map)
+}
+
+#[tauri::command]
 async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
     debug!("do_launch");
     let state = app_handle.state::<Mutex<AppState>>();
@@ -1300,6 +1326,8 @@ pub fn run() {
             validate_cache,
             download_cache,
             delete_cache,
+            get_languages,
+            load_language,
         ])
         .build(tauri::generate_context![])
         .unwrap()
