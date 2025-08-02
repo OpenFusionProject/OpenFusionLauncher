@@ -7,34 +7,64 @@ import {
   useLayoutEffect,
 } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import en from "./locales/en.json";
-import ru from "./locales/ru.json";
-
-export const translations = { en, ru } as const;
-export type Language = keyof typeof translations;
-export const availableLanguages = Object.keys(translations) as Language[];
+export const availableLanguages = ["en", "ru"] as const;
+export type Language = (typeof availableLanguages)[number];
 export const languageNames: Record<Language, string> = {
   en: "English",
   ru: "Русский",
 };
 
+const localeCache: Partial<Record<Language, Record<string, string>>> = {};
+
+async function loadLocale(lang: Language): Promise<Record<string, string>> {
+  switch (lang) {
+    case "en":
+      return (await import("./locales/en.json")).default;
+    case "ru":
+      return (await import("./locales/ru.json")).default;
+  }
+  throw new Error(`Unsupported language: ${lang}`);
+}
+
 interface LangContextType {
   lang: Language;
   setLang: (lang: Language) => void;
+  translations: Record<string, string>;
 }
 
-const LangCtx = createContext<LangContextType>({ lang: "en", setLang: () => {} });
+const LangCtx = createContext<LangContextType>({
+  lang: "en",
+  setLang: () => {},
+  translations: {},
+});
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Language>(() => {
     if (typeof window !== "undefined") {
       const stored = window.localStorage.getItem("lang") as Language | null;
-      if (stored && stored in translations) {
+      if (stored && availableLanguages.includes(stored as Language)) {
         return stored as Language;
       }
     }
     return "en";
   });
+  const [translations, setTranslations] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      if (!localeCache[lang]) {
+        localeCache[lang] = await loadLocale(lang);
+      }
+      if (active) {
+        setTranslations(localeCache[lang]!);
+      }
+    };
+    load();
+    return () => {
+      active = false;
+    };
+  }, [lang]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -62,7 +92,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     window.localStorage.setItem("lang", lang);
   }, [lang]);
 
-  return <LangCtx.Provider value={{ lang, setLang }}>{children}</LangCtx.Provider>;
+  return (
+    <LangCtx.Provider value={{ lang, setLang, translations }}>
+      {children}
+    </LangCtx.Provider>
+  );
 }
 
 export function useLanguage() {
@@ -70,6 +104,6 @@ export function useLanguage() {
 }
 
 export function useT() {
-  const { lang } = useLanguage();
-  return (key: string) => translations[lang][key] || key;
+  const { translations } = useLanguage();
+  return (key: string) => translations[key] || key;
 }
