@@ -1,14 +1,18 @@
 {
+  "common": {
+    "addServer": "Добавить сервер",
+    "editServer": "Редактировать сервер",
+    "settings": "Настройки"
+  },
+  "home": {
+    "tagline": "Добро пожаловать в OpenFusion.\nВыберите сервер из списка ниже, чтобы начать."
+  },
   "Back": "Назад",
-  "Add server": "Добавить сервер",
-  "Edit server": "Редактировать сервер",
   "Delete server": "Удалить сервер",
   "Connect": "Подключиться",
   "About OpenFusion Launcher": "О программе OpenFusion Launcher",
   "About {name}": "О программе {name}",
   "Version {version}": "Версия {version}",
-  "Settings": "Настройки",
-  "Welcome to OpenFusion.\nSelect a server from the list below to get started.": "Добро пожаловать в OpenFusion.\nВыберите сервер из списка ниже, чтобы начать.",
   "Launcher Settings": "Настройки лаунчера",
   "Game Settings": "Настройки игры",
   "Game Builds": "Сборки игры",

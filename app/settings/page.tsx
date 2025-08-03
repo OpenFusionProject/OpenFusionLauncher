@@ -198,7 +198,7 @@ export default function SettingsPage() {
     <SettingsCtx.Provider value={ctx}>
       <Toasts alerts={alerts} />
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
-      <LauncherPage title={t("Settings")} id="launcher-page-settings">
+      <LauncherPage title={t("common.settings")} id="launcher-page-settings">
         <Tabs activeKey={tab} onSelect={(k) => setTab(k ?? DEFAULT_TAB)} fill>
           <Tab
             eventKey={TAB_LAUNCHER_SETTINGS}

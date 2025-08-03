@@ -143,7 +143,9 @@ export default function EditServerModal({
   return (
     <Modal show={show} onHide={() => doHide()} centered={true}>
       <Modal.Header>
-        <Modal.Title>{isAdd ? t("Add server") : t("Edit server")}</Modal.Title>
+        <Modal.Title>
+          {t(isAdd ? "common.addServer" : "common.editServer")}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body className="px-0">
         <Form>

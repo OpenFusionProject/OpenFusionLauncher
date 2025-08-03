@@ -1,14 +1,18 @@
 {
+  "common": {
+    "addServer": "Add server",
+    "editServer": "Edit server",
+    "settings": "Settings"
+  },
+  "home": {
+    "tagline": "Welcome to OpenFusion.\nSelect a server from the list below to get started."
+  },
   "Back": "Back",
-  "Add server": "Add server",
-  "Edit server": "Edit server",
   "Delete server": "Delete server",
   "Connect": "Connect",
   "About OpenFusion Launcher": "About OpenFusion Launcher",
   "About {name}": "About {name}",
   "Version {version}": "Version {version}",
-  "Settings": "Settings",
-  "Welcome to OpenFusion.\nSelect a server from the list below to get started.": "Welcome to OpenFusion.\nSelect a server from the list below to get started.",
   "Launcher Settings": "Launcher Settings",
   "Game Settings": "Game Settings",
   "Game Builds": "Game Builds",

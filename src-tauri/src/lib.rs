@@ -132,7 +132,27 @@ async fn load_language(lang: String) -> CommandResult<HashMap<String, String>> {
     let locales_dir = state::get_app_statics().resource_dir.join("locales");
     let file_path = locales_dir.join(format!("{}.json", lang));
     let contents = std::fs::read_to_string(file_path).map_err(|e| e.to_string())?;
-    let map = serde_json::from_str(&contents).map_err(|e| e.to_string())?;
+    let value: serde_json::Value = serde_json::from_str(&contents).map_err(|e| e.to_string())?;
+    let mut map = HashMap::new();
+    fn flatten(prefix: String, val: &serde_json::Value, out: &mut HashMap<String, String>) {
+        match val {
+            serde_json::Value::String(s) => {
+                out.insert(prefix, s.clone());
+            }
+            serde_json::Value::Object(obj) => {
+                for (k, v) in obj {
+                    let new_prefix = if prefix.is_empty() {
+                        k.clone()
+                    } else {
+                        format!("{}.{}", prefix, k)
+                    };
+                    flatten(new_prefix, v, out);
+                }
+            }
+            _ => {}
+        }
+    }
+    flatten(String::new(), &value, &mut map);
     Ok(map)
 }
 

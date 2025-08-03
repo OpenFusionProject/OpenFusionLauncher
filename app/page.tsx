@@ -49,8 +49,7 @@ import ForgotPasswordModal from "./components/ForgotPasswordModal";
 import { useRouter } from "next/navigation";
 import { useT, useLanguage, type Language } from "@/app/i18n";
 
-const DEFAULT_TAGLINE_KEY =
-  "Welcome to OpenFusion.\nSelect a server from the list below to get started.";
+const DEFAULT_TAGLINE_KEY = "home.tagline" as const;
 
 export default function Home() {
   const loadedRef = useRef(false);

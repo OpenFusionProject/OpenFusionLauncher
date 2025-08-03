@@ -8,6 +8,7 @@ import {
 } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { once, type UnlistenFn } from "@tauri-apps/api/event";
+import type { TranslationKey } from "./i18n-keys";
 export const availableLanguages: string[] = [];
 export type Language = string;
 export const languageNames: Record<string, string> = {};
@@ -110,5 +111,5 @@ export function useLanguage() {
 
 export function useT() {
   const { translations } = useLanguage();
-  return (key: string) => translations[key] || key;
+  return (key: TranslationKey | string) => translations[key] || key;
 }
