@@ -38,7 +38,9 @@ jobs:
 
   build-linux:
     needs: build-ffrunner
-    runs-on: ubuntu-24.04
+    # This runner image should stay the same, otherwise there is potential to break compatibility.
+    # See https://v2.tauri.app/distribute/appimage/#limitations
+    runs-on: ubuntu-22.04 
     steps:
     - uses: actions/setup-node@v4
       with:
@@ -90,18 +92,29 @@ jobs:
     #     key: cargo-deps-Linux
 
     - name: Build
-      run: cargo tauri build --no-bundle
+      run: cargo tauri build --bundles appimage
 
-    - name: Package
+    - name: Package Standalone
       run: |
         cd src-tauri/target/release
         mkdir linux-standalone
-        mv -t linux-standalone openfusionlauncher ffrunner.exe d3d9_vulkan.dll assets defaults loader player mono
+        cp -r -t linux-standalone openfusionlauncher ffrunner.exe d3d9_vulkan.dll assets defaults loader player mono
+
+    - name: Package AppImage
+      run: |
+        cd src-tauri/target/release
+        mkdir linux-appimage
+        cp -r -t linux-appimage bundle/appimage/OpenFusionLauncher_*.AppImage ffrunner.exe d3d9_vulkan.dll assets defaults loader player mono
 
     - uses: actions/upload-artifact@v4.6.0
       with:
         name: openfusionlauncher-linux-standalone
         path: src-tauri/target/release/linux-standalone/
+
+    - uses: actions/upload-artifact@v4.6.0
+      with:
+        name: openfusionlauncher-linux-appimage
+        path: src-tauri/target/release/linux-appimage/
 
   build-windows:
     needs: build-ffrunner
