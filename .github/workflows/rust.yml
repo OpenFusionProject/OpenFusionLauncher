@@ -116,6 +116,46 @@ jobs:
         name: openfusionlauncher-linux-appimage
         path: src-tauri/target/release/linux-appimage/
 
+  build-macos:
+    needs: build-ffrunner
+    runs-on: macos-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2.0.0" --locked
+
+      - uses: actions/checkout@v4
+
+      - name: Download ffrunner
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: ffrunner-mingw
+          path: resources/ffrunner
+
+      - name: Install NPM packages
+        run: npm install
+
+      - name: Ensure targets for Universal binary are present
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+
+      - name: Build
+        run: cargo tauri build --bundles app dmg --target universal-apple-darwin
+
+      - name: Package
+        run: |
+          cd src-tauri/target/universal-apple-darwin/release/
+          mkdir macos-universal
+          mv bundle/macos/OpenFusionLauncher.app/ macos-universal
+          mv bundle/dmg/OpenFusionLauncher_*.dmg macos-universal
+
+      - uses: actions/upload-artifact@v4.6.0
+        with:
+          name: openfusionlauncher-macos-universal
+          path: src-tauri/target/universal-apple-darwin/release/macos-universal/
+
   build-windows:
     needs: build-ffrunner
     runs-on: windows-latest
