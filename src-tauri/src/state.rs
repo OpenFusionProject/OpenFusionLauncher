@@ -54,9 +54,7 @@ impl AppStatics {
         let offline_cache_dir = path_resolver
             .resolve("offline_cache", BaseDirectory::AppCache)
             .unwrap();
-        let ffrunner_log_path = path_resolver
-            .resolve("ffrunner.log", BaseDirectory::AppCache)
-            .unwrap();
+        let ffrunner_log_path = app_data_dir.join("ffrunner.log");
         Self {
             version,
             app_data_dir,
