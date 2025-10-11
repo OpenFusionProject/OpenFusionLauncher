@@ -41,6 +41,8 @@ jobs:
     # This runner image should stay the same, otherwise there is potential to break compatibility.
     # See https://v2.tauri.app/distribute/appimage/#limitations
     runs-on: ubuntu-22.04 
+    env:
+      TAURI_BUNDLER_NEW_APPIMAGE_FORMAT: true
     steps:
     - uses: actions/setup-node@v4
       with:
@@ -59,16 +61,8 @@ jobs:
           libayatana-appindicator3-dev \
           librsvg2-dev
 
-    - name: Restore Tauri CLI
-      id: cache-tauri
-      uses: actions/cache@v4
-      with:
-        path: /home/runner/.cargo
-        key: tauri-cli-Linux
-
     - name: Install Tauri CLI
-      if: steps.cache-tauri.outputs.cache-hit != 'true'
-      run: cargo install tauri-cli --version "^2.0.0" --locked
+      run: cargo install tauri-cli --git https://github.com/tauri-apps/tauri --branch feat/truly-portable-appimage
 
     - uses: actions/checkout@v4
 
