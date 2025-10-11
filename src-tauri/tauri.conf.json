@@ -50,6 +50,19 @@
       "../resources/ffrunner/mono/fusion-2.x.x/Data/lib/*": "mono/fusion-2.x.x/Data/lib/",
       "../resources/ffrunner/mono/fusion-2.x.x/Data/etc/mono/2.0/*": "mono/fusion-2.x.x/Data/etc/mono/2.0/"
     },
+    "linux": {
+      "appimage": {
+        "files": {
+          "/bin/defaults": "../resources/defaults/",
+          "/bin/assets/img": "../resources/assets/img/",
+          "/bin/ffrunner.exe": "../resources/ffrunner/ffrunner.exe",
+          "/bin/d3d9_vulkan.dll": "../resources/ffrunner/d3d9_vulkan.dll",
+          "/bin/loader": "../resources/ffrunner/loader/",
+          "/bin/player": "../resources/ffrunner/player/",
+          "/bin/mono": "../resources/ffrunner/mono/"
+        }
+      }
+    },
     "windows": {
       "webviewInstallMode": {
         "silent": true,
