@@ -579,7 +579,7 @@ async fn prep_launch(
             cmd = util::gen_launch_command(cmd, launch_fmt);
         }
 
-        #[cfg(target_os = "linux")]
+        #[cfg(not(target_os = "windows"))]
         {
             // The compat data dir is, in order of priority:
             // 1. WINEPREFIX env var in the launch command, if set
