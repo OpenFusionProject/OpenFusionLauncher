@@ -119,8 +119,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+
+      - name: Restore Tauri CLI
+        id: cache-tauri
+        uses: actions/cache@v4
+        with:
+          path: /Users/runner/.cargo
+          key: tauri-cli-MacOS
       
       - name: Install Tauri CLI
+        if: steps.cache-tauri.outputs.cache-hit != 'true'
         run: cargo install tauri-cli --version "^2.0.0" --locked
 
       - uses: actions/checkout@v4
