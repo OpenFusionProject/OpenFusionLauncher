@@ -34,6 +34,7 @@ static VERSION_NUMBER_REGEX: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"^v?\d+(?:\.\d)*$").unwrap());
 const UPDATE_CHECK_URL: &str =
     "https://api.github.com/repos/OpenFusionProject/OpenFusionLauncher/releases/latest";
+const DOWNLOAD_PAGE_URL: &str = "https://openfusion.dev/download/";
 
 #[derive(Debug, Deserialize)]
 struct UpdateCheckResponse {
@@ -1216,7 +1217,7 @@ async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
         }
         Ok(Some(UpdateInfo {
             version: resp.tag_name,
-            url: resp.html_url,
+            url: String::from(DOWNLOAD_PAGE_URL),
         }))
     };
     internal.await.map_err(|e: Error| e.to_string())
