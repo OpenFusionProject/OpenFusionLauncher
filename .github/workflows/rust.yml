@@ -70,7 +70,7 @@ jobs:
 
     - name: Install Tauri CLI
       if: steps.cache-tauri.outputs.cache-hit != 'true'
-      run: cargo install tauri-cli --git https://github.com/tauri-apps/tauri --branch feat/truly-portable-appimage
+      run: cargo install tauri-cli --git https://github.com/tauri-apps/tauri --rev f0511be705661dba2e505d7a86f513f5b4dbe240
 
     - uses: actions/checkout@v4
 
