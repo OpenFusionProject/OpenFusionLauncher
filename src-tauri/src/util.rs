@@ -98,7 +98,7 @@ pub(crate) fn get_default_offline_cache_dir() -> String {
         .to_string()
 }
 
-fn is_device_steam_deck() -> bool {
+pub(crate) fn is_device_steam_deck() -> bool {
     if cfg!(target_os = "linux") {
         if let Ok(content) = std::fs::read_to_string("/sys/devices/virtual/dmi/id/board_vendor") {
             if content.trim() == "Valve" {
