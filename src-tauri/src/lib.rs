@@ -362,6 +362,15 @@ async fn prep_launch(
         let mut timeout_sec = None;
 
         let app_statics = get_app_statics();
+
+        #[cfg(target_os = "linux")]
+        {
+            // Ensure that the compat data directory exists
+            if !app_statics.compat_data_dir.exists() {
+                std::fs::create_dir_all(&app_statics.compat_data_dir)?;
+            }
+        }
+
         let working_dir = &app_statics.resource_dir;
         let mut ffrunner_path = working_dir.clone();
         ffrunner_path.push("ffrunner.exe");
