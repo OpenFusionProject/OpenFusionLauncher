@@ -157,9 +157,33 @@ fn find_proton() -> Option<PathBuf> {
     candidates.first().map(|(path, _)| path.clone())
 }
 
+fn find_macos_wine() -> Option<PathBuf> {
+    const CANDIDATES: [&str; 5] = [
+        "/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/CrossOver-Hosted Application/wineloader",
+        "/Applications/Wine Crossover.app/Contents/Resources/wine/bin/wine",
+        "/Applications/Wine Stable.app/Contents/Resources/wine/bin/wine",
+        "/Applications/Wine Devel.app/Contents/Resources/wine/bin/wine",
+        "/Applications/Wine Staging.app/Contents/Resources/wine/bin/wine"
+    ];
+
+    for p in &CANDIDATES {
+        let path = PathBuf::from(p);
+        if path.exists() {
+            return Some(path);
+        }
+    }
+    None
+}
+
 pub(crate) fn get_default_launch_command() -> Option<String> {
     if cfg!(target_os = "windows") {
         None
+    } else if cfg!(target_os = "macos") {
+        if let Some(wine_path) = find_macos_wine() {
+            Some(format!("\"{}\" {{}}", wine_path.to_string_lossy()))
+        } else {
+            Some("wine {}".to_string())
+        }
     } else if is_device_steam_deck() {
         let steam_compat_data_path = get_app_statics().compat_data_dir.clone();
         let steam_compat_client_install_path = get_steam_client_path()?;
