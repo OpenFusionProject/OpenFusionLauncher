@@ -104,7 +104,7 @@ impl Default for GameSettings {
             graphics_api: GraphicsApi::Dx9,
             fps_fix: FpsFix::On,
             window_size: None,
-            launch_command: None,
+            launch_command: util::get_default_launch_command(),
         }
     }
 }
