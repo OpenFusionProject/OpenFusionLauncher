@@ -98,9 +98,78 @@ pub(crate) fn get_default_offline_cache_dir() -> String {
         .to_string()
 }
 
+fn is_device_steam_deck() -> bool {
+    if cfg!(target_os = "linux") {
+        if let Ok(content) = std::fs::read_to_string("/sys/devices/virtual/dmi/id/board_vendor") {
+            if content.trim() == "Valve" {
+                return true;
+            }
+        }
+    }
+    false
+}
+
+fn get_steam_client_path() -> Option<PathBuf> {
+    let home_path = PathBuf::from(env::var("HOME").ok()?);
+    let steam_path = home_path.join(".steam/steam");
+    if steam_path.exists() {
+        Some(steam_path)
+    } else {
+        None
+    }
+}
+
+fn get_steam_root_path() -> Option<PathBuf> {
+    let home_path = PathBuf::from(env::var("HOME").ok()?);
+    let steam_root_path = home_path.join(".steam/root");
+    if steam_root_path.exists() {
+        Some(steam_root_path)
+    } else {
+        None
+    }
+}
+
+fn find_proton() -> Option<PathBuf> {
+    let steam_root = get_steam_root_path()?;
+    let steamapps_common_path = steam_root.join("steamapps/common/");
+    if !steamapps_common_path.exists() {
+        return None;
+    }
+
+    // Find all installed Proton versions
+    let entries = std::fs::read_dir(steamapps_common_path).ok()?;
+    let mut candidates = Vec::new();
+    for entry in entries {
+        let entry = entry.ok()?;
+        let file_name = entry.file_name();
+        let file_name_str = file_name.to_string_lossy();
+        if file_name_str.starts_with("Proton ") {
+            let proton_path = entry.path().join("proton");
+            if proton_path.exists() {
+                let date = entry.metadata().ok()?.modified().ok()?;
+                candidates.push((proton_path, date));
+            }
+        }
+    }
+
+    // Sort by modification date, newest first
+    candidates.sort_by(|a, b| b.1.cmp(&a.1));
+    candidates.first().map(|(path, _)| path.clone())
+}
+
 pub(crate) fn get_default_launch_command() -> Option<String> {
     if cfg!(target_os = "windows") {
         None
+    } else if is_device_steam_deck() {
+        let steam_compat_data_path = get_app_statics().compat_data_dir.clone();
+        let steam_compat_client_install_path = get_steam_client_path()?;
+        let proton_path = find_proton()?;
+        Some(format!(
+            "STEAM_COMPAT_DATA_PATH=\"{}\" STEAM_COMPAT_CLIENT_INSTALL_PATH=\"{}\" \"{}\" run {{}}",
+            steam_compat_data_path.to_string_lossy(),
+            steam_compat_client_install_path.to_string_lossy(),
+            proton_path.to_string_lossy()
+        ))
     } else {
         Some("wine {}".to_string())
     }
