@@ -46,11 +46,7 @@ import {
 } from "@/app/util";
 import ForgotPasswordModal from "./components/ForgotPasswordModal";
 import { useRouter } from "next/navigation";
-
-// Dynamically import EasterEggs to prevent pre-rendering issues
-const EasterEggs = dynamicImport(() => import("./components/EasterEggs"), {
-  ssr: false,
-});
+import { EasterEggs } from "./components/EasterEggs";
 
 const DEFAULT_TAGLINE =
   "Welcome to OpenFusion.\nSelect a server from the list below to get started.";

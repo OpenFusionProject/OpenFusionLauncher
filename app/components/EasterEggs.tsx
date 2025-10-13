@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import Snowflakes from "magic-snowflakes";
 
-export default function EasterEggs() {
+export function EasterEggs() {
   const snowflakesRef = useRef<Snowflakes>(null);
 
   useEffect(() => {
