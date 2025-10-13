@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type ISnowflakes from "magic-snowflakes";
+import Snowflakes from "magic-snowflakes";
 
 export default function EasterEggs() {
-  const snowflakesRef = useRef<ISnowflakes | null>(null);
+  const snowflakesRef = useRef<Snowflakes>(null);
 
   useEffect(() => {
     const initEasterEggs = async () => {
@@ -14,8 +14,6 @@ export default function EasterEggs() {
 
       if (today >= christmasBegin && today <= christmasEnd) {
         try {
-          // Dynamically import the library to avoid pre-rendering issues
-          const { default: Snowflakes } = await import("magic-snowflakes");
           snowflakesRef.current = new Snowflakes({ zIndex: -100 });
           console.log("Christmas Activated.");
           snowflakesRef.current.start();
