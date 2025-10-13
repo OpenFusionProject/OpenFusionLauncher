@@ -1,11 +1,10 @@
 "use client";
 
-import { startEasterEggs } from "./easter-eggs";
-
 import { invoke } from "@tauri-apps/api/core";
 import { getName, getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useState, useEffect, useRef } from "react";
+import dynamicImport from "next/dynamic";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -47,6 +46,11 @@ import {
 } from "@/app/util";
 import ForgotPasswordModal from "./components/ForgotPasswordModal";
 import { useRouter } from "next/navigation";
+
+// Dynamically import EasterEggs to prevent pre-rendering issues
+const EasterEggs = dynamicImport(() => import("./components/EasterEggs"), {
+  ssr: false,
+});
 
 const DEFAULT_TAGLINE =
   "Welcome to OpenFusion.\nSelect a server from the list below to get started.";
@@ -518,7 +522,6 @@ export default function Home() {
     if (!loadedRef.current) {
       console.log("init");
       doInit();
-      startEasterEggs();
 
       listen<AlertEvent>("alert", (e) => {
         handleAlert(e.payload);
@@ -548,6 +551,7 @@ export default function Home() {
 
   return initialFetchDone ? (
     <>
+      <EasterEggs />
       <Toasts alerts={alerts} />
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
       <BackgroundImages
