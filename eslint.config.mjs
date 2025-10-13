@@ -17,6 +17,8 @@ const eslintConfig = [
     },
   },
   {
+    // "ignores" must in its own object to work properly
+    // https://github.com/eslint/eslint/discussions/17429#discussioncomment-6579229
     ignores: [
       "node_modules/**",
       ".next/**",
