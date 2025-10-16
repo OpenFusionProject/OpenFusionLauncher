@@ -12,7 +12,10 @@ OpenFusionClient rewrite with Tauri 2.0, Next.js and React.
 
 ### Setup required assets
 
-#### Setup all assets in one go
+> [!NOTE]
+> GitHub workflow artifacts are retained for 90 days max. Which means prebuilt artifacts may not be available by the time you read this.
+
+#### Setup all assets in one step
 
 1. Open the latest workflow at <https://github.com/OpenFusionProject/OpenFusionLauncher/actions>
 2. Download the artifact named `ffrunner-mingw`
