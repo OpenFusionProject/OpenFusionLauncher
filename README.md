@@ -18,7 +18,7 @@ OpenFusionClient rewrite with Tauri 2.0, Next.js and React.
 2. Download the artifact named `ffrunner-mingw`
 3. Copy contents to `resources/ffrunner`
 
-#### Setup assets separately
+#### Or setup assets separately
 
 1. FFRunner binary
    1. To build locally on Ubuntu
