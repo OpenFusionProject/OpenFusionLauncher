@@ -35,10 +35,10 @@ OpenFusionClient rewrite with Tauri 2.0, Next.js and React.
    2. run `tar -xvf dxvk-1.10.3.tar.gz`
    3. run `mv dxvk-1.10.3/x32/d3d9.dll resources/ffrunner/d3d9_vulkan.dll`
 
-## Dev
+## Development
 
 Run `cargo tauri dev` to spawn the app. **Hot reload is on, so any changes you make will immediately reflect.**
 
 ## Production
 
-Run `cargo tauri build` to build a production binary and any applicable installers or bundles for the current platform. Note that `cargo build --release` will not produce a useful binary as it does not embed the web pages into the application.
+Run `cargo tauri build` to build a production binary and any applicable installers or bundles for the current platform.
