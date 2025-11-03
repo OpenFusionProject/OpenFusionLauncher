@@ -153,5 +153,5 @@ export type SettingsOption = {
   key: string;
   label: string;
   description?: string;
-  value?: any;
+  value?: unknown;
 };
