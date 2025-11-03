@@ -17,7 +17,7 @@ OpenFusionClient rewrite with Tauri 2.0, Next.js and React.
 
 #### Setup all assets in one step
 
-1. Open the latest workflow at <https://github.com/OpenFusionProject/OpenFusionLauncher/actions>
+1. Open the latest workflow at <https://github.com/OpenFusionProject/OpenFusionLauncher/actions?query=branch%3Amain>
 2. Download the artifact named `ffrunner-mingw`
 3. Copy contents to `resources/ffrunner`
 
