@@ -28,7 +28,7 @@ OpenFusionClient rewrite with Tauri 2.0, Next.js and React.
       1. run `sudo apt update && sudo apt install -y gcc-mingw-w64-i686 wget`
       2. run `make -C resources/ffrunner`
    2. Can't build locally? Consider a prebuilt binary
-      1. Open the latest workflow at <https://github.com/OpenFusionProject/ffrunner/actions>
+      1. Open the latest workflow at <https://github.com/OpenFusionProject/ffrunner/actions?query=branch%3Amaster>
       2. Download the artifact named `ffrunner`
       3. Copy contents to `resources/ffrunner`
 2. Webplayer DLLs
