@@ -520,12 +520,19 @@ async fn prep_launch(
         debug!("Asset URL: {}", asset_url);
         debug!("Main URL: {}", main_url);
 
-        let log_file_path = &app_statics.ffrunner_log_path;
+        let log_file_path = format!(
+            "\"{}\"",
+            app_statics
+                .ffrunner_log_path
+                .clone()
+                .to_str()
+                .ok_or("Invalid log file path")?
+        );
 
         cmd.args(["-m", &main_url])
             .args(["-a", &ip])
             .args(["--asseturl", &format!("{}/", asset_url)])
-            .args(["-l", log_file_path.to_str().ok_or("Invalid log file path")?]);
+            .args(["-l", &log_file_path]);
 
         if let ServerInfo::Endpoint { endpoint, .. } = &server.info {
             match session_token {
