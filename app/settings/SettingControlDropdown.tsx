@@ -30,7 +30,7 @@ export default function SettingControlDropdown({
     return optionVal;
   };
 
-  const getKeyFromOptionValue = (value: unknown) => {
+  const getKeyFromOptionValue = (value: any) => {
     const option = options.find((option) => {
       const optionVal = option.value ?? option.key;
       return optionVal === value;
