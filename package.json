@@ -18,9 +18,9 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.1.0",
-    "@tauri-apps/api": "^2.8.0",
-    "@tauri-apps/plugin-dialog": "^2.4.0",
-    "@tauri-apps/plugin-shell": "^2.3.1",
+    "@tauri-apps/api": "~2.8.0",
+    "@tauri-apps/plugin-dialog": "~2.4.0",
+    "@tauri-apps/plugin-shell": "~2.3.1",
     "bootstrap": "^5.3.3",
     "dompurify": "^3.2.4",
     "magic-snowflakes": "^7.0.2",
