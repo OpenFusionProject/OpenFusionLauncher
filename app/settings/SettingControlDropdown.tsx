@@ -15,10 +15,10 @@ export default function SettingControlDropdown({
   id: string;
   name?: string;
   options: SettingsOption[];
-  oldValue?: unknown;
-  value?: unknown;
+  oldValue?: any;
+  value?: any;
   defaultKey: string;
-  onChange: (value: unknown) => void;
+  onChange: (value: any) => void;
 }) {
   const getOptionValueFromKey = (key: string) => {
     const option = options.find((option) => option.key === key);
