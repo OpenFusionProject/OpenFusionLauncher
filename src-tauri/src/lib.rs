@@ -30,6 +30,8 @@ type Error = Box<dyn std::error::Error>;
 type Result<T> = std::result::Result<T, Error>;
 type CommandResult<T> = std::result::Result<T, String>;
 
+static LOGIN_COOKIE_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"-t (\S+)"#).unwrap());
+
 static VERSION_NUMBER_REGEX: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"^v?\d+(?:\.\d)*$").unwrap());
 const UPDATE_CHECK_URL: &str =
@@ -104,9 +106,13 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
     let cmd_str = util::get_launch_cmd_dbg_str(&cmd, false);
     drop(state);
 
-    let mut proc = cmd
-        .spawn()
-        .map_err(|e| format!("{} (launch command was: {})", e, cmd_str))?;
+    let mut proc = cmd.spawn().map_err(|e| {
+        // we want to censor the login cookie if present
+        let censored_cmd_str = LOGIN_COOKIE_REGEX
+            .replace_all(&cmd_str, "-t ***")
+            .to_string();
+        format!("{} (launch command was: {})", e, censored_cmd_str)
+    })?;
     if launch_behavior == LaunchBehavior::Quit {
         app_handle.exit(0);
         return Ok(0);
@@ -514,12 +520,19 @@ async fn prep_launch(
         debug!("Asset URL: {}", asset_url);
         debug!("Main URL: {}", main_url);
 
-        let log_file_path = &app_statics.ffrunner_log_path;
+        let log_file_path = format!(
+            "\"{}\"",
+            app_statics
+                .ffrunner_log_path
+                .clone()
+                .to_str()
+                .ok_or("Invalid log file path")?
+        );
 
         cmd.args(["-m", &main_url])
             .args(["-a", &ip])
             .args(["--asseturl", &format!("{}/", asset_url)])
-            .args(["-l", log_file_path.to_str().ok_or("Invalid log file path")?]);
+            .args(["-l", &log_file_path]);
 
         if let ServerInfo::Endpoint { endpoint, .. } = &server.info {
             match session_token {
