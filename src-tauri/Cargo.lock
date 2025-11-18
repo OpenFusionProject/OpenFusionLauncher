@@ -2618,7 +2618,7 @@ dependencies = [
 
 [[package]]
 name = "openfusionlauncher"
-version = "2.1.1"
+version = "2.1.2"
 dependencies = [
  "dns-lookup",
  "ffbuildtool",

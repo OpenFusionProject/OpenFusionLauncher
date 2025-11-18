@@ -5,34 +5,39 @@
   "engines": {
     "node": ">=20"
   },
+  "devEngines": {
+    "packageManager": {
+      "name": "npm"
+    }
+  },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "next dev --webpack -p 3000",
+    "build": "next build --webpack",
+    "start": "next start -p 3000",
+    "lint": "eslint"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^6.6.0",
-    "@tauri-apps/api": "^2.8.0",
-    "@tauri-apps/plugin-dialog": "^2.4.0",
-    "@tauri-apps/plugin-shell": "^2.3.1",
+    "@fortawesome/fontawesome-free": "^7.1.0",
+    "@tauri-apps/api": "~2.8.0",
+    "@tauri-apps/plugin-dialog": "~2.4.0",
+    "@tauri-apps/plugin-shell": "~2.3.1",
     "bootstrap": "^5.3.3",
     "dompurify": "^3.2.4",
-    "magic-snowflakes": "^6.3.0",
-    "marked": "^15.0.6",
-    "next": "^14.2.15",
-    "react": "^18",
+    "magic-snowflakes": "^7.0.2",
+    "marked": "^16.4.0",
+    "next": "16.0.3",
+    "react": "19.2.0",
     "react-bootstrap": "^2.10.5",
-    "react-dom": "^18",
+    "react-dom": "19.2.0",
     "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "^14.2.15",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.3",
     "sass": "^1.80.3",
     "typescript": "^5"
   }

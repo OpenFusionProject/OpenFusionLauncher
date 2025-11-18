@@ -1,7 +1,5 @@
 "use client";
 
-import { startEasterEggs } from "./easter-eggs";
-
 import { invoke } from "@tauri-apps/api/core";
 import { getName, getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -47,6 +45,7 @@ import {
 } from "@/app/util";
 import ForgotPasswordModal from "./components/ForgotPasswordModal";
 import { useRouter } from "next/navigation";
+import { EasterEggs } from "./components/EasterEggs";
 
 const DEFAULT_TAGLINE =
   "Welcome to OpenFusion.\nSelect a server from the list below to get started.";
@@ -518,7 +517,6 @@ export default function Home() {
     if (!loadedRef.current) {
       console.log("init");
       doInit();
-      startEasterEggs();
 
       listen<AlertEvent>("alert", (e) => {
         handleAlert(e.payload);
@@ -548,6 +546,7 @@ export default function Home() {
 
   return initialFetchDone ? (
     <>
+      <EasterEggs />
       <Toasts alerts={alerts} />
       {loadingTasks.length > 0 && <LoadingScreen tasks={loadingTasks} />}
       <BackgroundImages
