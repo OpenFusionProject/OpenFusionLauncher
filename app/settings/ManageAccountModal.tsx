@@ -135,7 +135,7 @@ export default function ManageAccountModal({
             <Form className="p-3">
               <Form.Group className="mb-3" controlId="editNewPassword">
                 <Form.Control
-                  type="text"
+                  type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="New Password"
@@ -144,7 +144,7 @@ export default function ManageAccountModal({
               </Form.Group>
               <Form.Group controlId="editNewPasswordConfirm">
                 <Form.Control
-                  type="text"
+                  type="password"
                   value={newPasswordConfirm}
                   onChange={(e) => setNewPasswordConfirm(e.target.value)}
                   placeholder="Confirm New Password"
