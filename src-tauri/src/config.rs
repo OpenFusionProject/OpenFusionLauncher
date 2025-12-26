@@ -94,17 +94,22 @@ pub struct GameSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub window_size: Option<WindowSize>,
 
-    #[serde(default = "util::get_default_launch_command")]
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[deprecated]
+    #[serde(skip_serializing)]
     pub launch_command: Option<String>,
+
+    #[serde(default = "util::get_default_launch_profile_name")]
+    pub launch_profile: String,
 }
 impl Default for GameSettings {
+    #[allow(deprecated)]
     fn default() -> Self {
         Self {
             graphics_api: GraphicsApi::Dx9,
             fps_fix: FpsFix::On,
             window_size: None,
-            launch_command: util::get_default_launch_command(),
+            launch_command: None,
+            launch_profile: util::get_default_launch_profile_name(),
         }
     }
 }

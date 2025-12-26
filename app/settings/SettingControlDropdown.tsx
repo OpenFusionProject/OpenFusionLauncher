@@ -63,9 +63,9 @@ export default function SettingControlDropdown({
       >
         {options.map((option) => (
           <option key={option.key} value={option.key}>
-            {option.label +
-              (option.description ? " - " + option.description : "") +
+            {(option.label ?? option.key) +
               (option.key === defaultKey ? " (default)" : "")}
+            {option.description && <p>: {option.description}</p>}
           </option>
         ))}
       </Form.Select>

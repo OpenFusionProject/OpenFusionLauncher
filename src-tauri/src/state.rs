@@ -79,6 +79,7 @@ impl AppStatics {
 #[derive(Default)]
 pub struct AppState {
     pub config: Config,
+    pub launch_profiles: LaunchProfiles,
     pub versions: Versions,
     pub servers: Servers,
     pub tokens: Tokens,
@@ -90,7 +91,7 @@ pub struct AppState {
 impl AppState {
     pub fn load(app_handle: tauri::AppHandle) -> Self {
         let config = Config::new();
-        let (config, write_config) = match config {
+        let (mut config, write_config) = match config {
             Ok(config) => (config, true),
             Err(e) => {
                 let config_exists = get_app_statics().app_data_dir.join("config.json").exists();
@@ -105,6 +106,7 @@ impl AppState {
         };
 
         let versions = Versions::new();
+        let launch_profiles = LaunchProfiles::new(&mut config);
         let mut servers = Servers::new();
         let tokens = Tokens::new();
 
@@ -115,6 +117,7 @@ impl AppState {
 
         Self {
             config,
+            launch_profiles,
             versions,
             servers,
             tokens,
@@ -146,6 +149,9 @@ impl AppState {
             }
         }
 
+        if let Err(e) = self.launch_profiles.save() {
+            warn!("Failed to save launch profiles: {}", e);
+        }
         if let Err(e) = self.servers.save() {
             warn!("Failed to save servers: {}", e);
         }
@@ -594,6 +600,84 @@ impl From<FlatServers> for Servers {
             servers: flat.servers.into_iter().map(Server::from).collect(),
             favorites: flat.favorites,
         }
+    }
+}
+
+/// Saved launch profile
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct LaunchProfile {
+    name: String,
+    command: String,
+}
+impl LaunchProfile {
+    pub fn new(name: &str, command: &str) -> Self {
+        Self {
+            name: name.to_string(),
+            command: command.to_string(),
+        }
+    }
+
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn get_command(&self) -> &str {
+        &self.command
+    }
+}
+
+/// Container for saved launch profiles
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+pub struct LaunchProfiles {
+    profiles: Vec<LaunchProfile>,
+}
+impl LaunchProfiles {
+    pub fn new(config: &mut Config) -> Self {
+        Self::load(config)
+    }
+
+    pub fn get(&self, name: &str) -> Option<&LaunchProfile> {
+        self.profiles.iter().find(|p| p.get_name() == name)
+    }
+
+    #[allow(deprecated)]
+    fn load(config: &mut Config) -> Self {
+        const CUSTOM_PROFILE_NAME: &str = "Custom Profile";
+        match Self::load_internal() {
+            Ok(profiles) => {
+                info!(
+                    "Loaded {} launch profiles from app data",
+                    profiles.profiles.len()
+                );
+                profiles
+            }
+            Err(_) => {
+                info!("Loading default launch profiles");
+                let mut profiles = util::get_default_launch_profiles();
+                if let Some(current_cmd) = config.game.launch_command.as_ref() {
+                    profiles.push(LaunchProfile::new(CUSTOM_PROFILE_NAME, current_cmd));
+                    config.game.launch_profile = CUSTOM_PROFILE_NAME.to_string();
+                }
+                Self { profiles }
+            }
+        }
+    }
+
+    fn save(&self) -> Result<()> {
+        let commands_path = get_app_statics().app_data_dir.join("launch_profiles.json");
+        let commands_str = serde_json::to_string_pretty(self)?;
+        std::fs::write(commands_path, commands_str)?;
+        Ok(())
+    }
+
+    fn load_internal() -> Result<Self> {
+        let commands_path = get_app_statics().app_data_dir.join("launch_profiles.json");
+        let commands_str = std::fs::read_to_string(commands_path)?;
+        let commands: Self = serde_json::from_str(&commands_str)?;
+        if commands.profiles.is_empty() {
+            return Err("No launch profiles found".into());
+        }
+        Ok(commands)
     }
 }
 

@@ -26,6 +26,8 @@ use log::*;
 use tauri::Manager;
 use uuid::Uuid;
 
+use crate::state::LaunchProfiles;
+
 type Error = Box<dyn std::error::Error>;
 type Result<T> = std::result::Result<T, Error>;
 type CommandResult<T> = std::result::Result<T, String>;
@@ -589,9 +591,16 @@ async fn prep_launch(
         #[cfg(debug_assertions)]
         cmd.arg("-v"); // verbose logging
 
-        if let Some(launch_fmt) = &state.config.game.launch_command {
-            cmd = util::gen_launch_command(cmd, launch_fmt);
-        }
+        let selected_launch_profile = &state.config.game.launch_profile;
+        let profile = state
+            .launch_profiles
+            .get(selected_launch_profile)
+            .ok_or(format!(
+                "Launch profile '{}' not found",
+                selected_launch_profile
+            ))?;
+        let launch_fmt = profile.get_command();
+        cmd = util::gen_launch_command(cmd, launch_fmt);
 
         #[cfg(not(target_os = "windows"))]
         {
@@ -1172,6 +1181,14 @@ async fn get_versions(app_handle: tauri::AppHandle) -> Versions {
 }
 
 #[tauri::command]
+async fn get_launch_profiles(app_handle: tauri::AppHandle) -> LaunchProfiles {
+    debug!("get_launch_profiles");
+    let state = app_handle.state::<Mutex<AppState>>();
+    let state = state.lock().await;
+    state.launch_profiles.clone()
+}
+
+#[tauri::command]
 async fn get_config(app_handle: tauri::AppHandle) -> Config {
     debug!("get_config");
     let state = app_handle.state::<Mutex<AppState>>();
@@ -1291,6 +1308,7 @@ pub fn run() {
             check_for_update,
             get_versions,
             get_servers,
+            get_launch_profiles,
             get_config,
             update_config,
             reset_launcher_config,

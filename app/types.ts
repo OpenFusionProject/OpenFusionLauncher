@@ -58,8 +58,17 @@ export type FpsFix = "on" | FpsLimit | "off";
 export type GameSettings = {
   graphics_api: string;
   window_size?: WindowSize;
-  launch_command?: string;
+  launch_profile?: string;
   fps_fix: FpsFix;
+};
+
+export type LaunchProfile = {
+  name: string;
+  command: string;
+};
+
+export type LaunchProfiles = {
+  profiles: LaunchProfile[];
 };
 
 export type Config = {
@@ -151,7 +160,7 @@ export type UpdateInfo = {
 
 export type SettingsOption = {
   key: string;
-  label: string;
+  label?: string;
   description?: string;
   value?: any;
 };

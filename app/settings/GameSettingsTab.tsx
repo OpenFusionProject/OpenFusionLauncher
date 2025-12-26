@@ -1,9 +1,8 @@
-import { GameSettings, WindowSize } from "@/app/types";
+import { GameSettings, LaunchProfiles, WindowSize } from "@/app/types";
 import { useContext, useEffect, useState } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import SettingControlDropdown from "./SettingControlDropdown";
 import SettingControlWindowSize from "./SettingControlWindowSize";
-import SettingControlText from "./SettingControlText";
 import { deepEqual, getDebugMode } from "@/app/util";
 import SettingsHeader from "./SettingsHeader";
 import { SettingsCtx } from "@/app/contexts";
@@ -11,11 +10,13 @@ import SettingControlFpsFix from "./SettingControlFpsFix";
 
 export default function GameSettingsTab({
   active,
+  launchProfiles,
   currentSettings,
   updateSettings,
 }: {
   active: boolean;
   currentSettings: GameSettings;
+  launchProfiles: LaunchProfiles;
   updateSettings: (
     newSettings: GameSettings | undefined,
   ) => Promise<GameSettings>;
@@ -62,6 +63,10 @@ export default function GameSettingsTab({
     }
   };
 
+  const selectedLaunchProfile = launchProfiles.profiles.find(
+    (p) => p.name === settings.launch_profile,
+  );
+
   return (
     <Container fluid id="settings-container" className="bg-footer">
       <Row>
@@ -99,21 +104,25 @@ export default function GameSettingsTab({
                   setSettings({ ...settings!, graphics_api: value })
                 }
               />
-              <SettingControlText
-                id="launch_command"
-                name="Custom Launch Command"
-                oldValue={currentSettings.launch_command}
-                value={settings.launch_command}
-                placeholder="{}"
-                validator={(value) =>
-                  value === "" || value.indexOf("{}") !== -1
-                }
+              <SettingControlDropdown
+                id="launch_profile"
+                name="Launch Profile"
+                options={launchProfiles.profiles.map((profile) => ({ key: profile.name }))}
+                defaultKey={launchProfiles.profiles.length > 0 ? launchProfiles.profiles[0].name : ""}
+                oldValue={currentSettings.launch_profile}
+                value={settings.launch_profile}
                 onChange={(value) =>
                   setSettings({
                     ...settings!,
-                    launch_command: value === "" ? undefined : value,
+                    launch_profile: value,
                   })
                 }
+              />
+              <textarea
+                id="launch-profile-command"
+                className="w-100"
+                value={selectedLaunchProfile?.command ?? ""}
+                readOnly
               />
               <SettingControlWindowSize
                 id="window_size"
