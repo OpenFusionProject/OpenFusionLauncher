@@ -10,7 +10,7 @@ use regex::Regex;
 use rust_proxy::proxy::tcp::TcpProxy;
 use serde::{Deserialize, Serialize};
 use state::{
-    get_app_statics, AppState, Config, FlatServer, FlatServers, Server, ServerInfo, Versions,
+    AppState, Config, FlatServer, FlatServers, Server, ServerInfo, Versions, get_app_statics,
 };
 use tauri_plugin_shell::ShellExt;
 use util::AlertVariant;
@@ -19,7 +19,7 @@ use std::{
     collections::{HashMap, HashSet},
     env,
     process::Stdio,
-    sync::{mpsc, Arc, LazyLock, OnceLock},
+    sync::{Arc, LazyLock, OnceLock, mpsc},
     vec,
 };
 use tokio::{
@@ -30,6 +30,8 @@ use tokio::{
 use log::*;
 use tauri::Manager;
 use uuid::Uuid;
+
+use crate::state::{LaunchProfile, LaunchProfiles};
 
 type Error = Box<dyn std::error::Error>;
 type Result<T> = std::result::Result<T, Error>;
@@ -46,7 +48,6 @@ const DOWNLOAD_PAGE_URL: &str = "https://openfusion.dev/download/";
 #[derive(Debug, Deserialize)]
 struct UpdateCheckResponse {
     tag_name: String,
-    html_url: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -647,9 +648,21 @@ async fn prep_launch(
         #[cfg(debug_assertions)]
         cmd.arg("-v"); // verbose logging
 
-        if let Some(launch_fmt) = &state.config.game.launch_command {
-            cmd = util::gen_launch_command(cmd, launch_fmt);
+        if !state.launch_profiles.has_entries() {
+            return Err("No launch profiles found in game settings. Please create one.".into());
         }
+
+        let selected_launch_profile = state.config.game.launch_profile;
+        let profile = state
+            .launch_profiles
+            .get(selected_launch_profile)
+            .ok_or(format!(
+                "Launch profile '{}' not found",
+                selected_launch_profile
+            ))?;
+
+        let launch_fmt = profile.get_command();
+        cmd = util::gen_launch_command(cmd, launch_fmt);
 
         #[cfg(not(target_os = "windows"))]
         {
@@ -680,7 +693,7 @@ async fn prep_launch(
                 std::fs::create_dir_all(&compat_data_dir)?;
             }
 
-            if !util::is_device_steam_deck() {
+            if !protontools::is_device_steam_deck() {
                 // we want to let Proton set this itself on Deck
                 cmd.env("WINEPREFIX", compat_data_dir.to_string_lossy().to_string());
             }
@@ -1236,11 +1249,62 @@ async fn get_versions(app_handle: tauri::AppHandle) -> Versions {
 }
 
 #[tauri::command]
+async fn get_launch_profiles(app_handle: tauri::AppHandle) -> LaunchProfiles {
+    debug!("get_launch_profiles");
+    let state = app_handle.state::<Mutex<AppState>>();
+    let state = state.lock().await;
+    state.launch_profiles.clone()
+}
+
+#[tauri::command]
 async fn get_config(app_handle: tauri::AppHandle) -> Config {
     debug!("get_config");
     let state = app_handle.state::<Mutex<AppState>>();
     let state = state.lock().await;
     state.config.clone()
+}
+
+#[tauri::command]
+async fn add_launch_profile(
+    app_handle: tauri::AppHandle,
+    name: String,
+    command: String,
+) -> CommandResult<Uuid> {
+    debug!("add_launch_profile");
+    let state = app_handle.state::<Mutex<AppState>>();
+    let mut state = state.lock().await;
+    let profile_id = state.launch_profiles.add_entry(&name, &command);
+    state.save();
+    Ok(profile_id)
+}
+
+#[tauri::command]
+async fn update_launch_profile(
+    app_handle: tauri::AppHandle,
+    profile: LaunchProfile,
+) -> CommandResult<()> {
+    debug!("update_launch_profile");
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let mut state = state.lock().await;
+        state.launch_profiles.update_entry(profile)?;
+        state.save();
+        Ok(())
+    };
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
+async fn delete_launch_profile(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<()> {
+    debug!("delete_launch_profile");
+    let internal = async {
+        let state = app_handle.state::<Mutex<AppState>>();
+        let mut state = state.lock().await;
+        state.launch_profiles.remove_entry(uuid);
+        state.save();
+        Ok(())
+    };
+    internal.await.map_err(|e: Error| e.to_string())
 }
 
 #[tauri::command]
@@ -1355,7 +1419,11 @@ pub fn run() {
             check_for_update,
             get_versions,
             get_servers,
+            get_launch_profiles,
             get_config,
+            add_launch_profile,
+            update_launch_profile,
+            delete_launch_profile,
             update_config,
             reset_launcher_config,
             reset_game_config,

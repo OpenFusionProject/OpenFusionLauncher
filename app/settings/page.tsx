@@ -7,6 +7,7 @@ import {
   Config,
   GameSettings,
   LauncherSettings,
+  LaunchProfiles,
   LoadingTask,
   SettingsContext,
 } from "@/app/types";
@@ -35,6 +36,7 @@ export default function SettingsPage() {
 
   const [tab, setTab] = useState(DEFAULT_TAB);
 
+  const [launchProfiles, setLaunchProfiles] = useState<LaunchProfiles>({ profiles: [] });
   const [config, setConfig] = useState<Config | undefined>(undefined);
 
   // confirmation modal
@@ -104,10 +106,17 @@ export default function SettingsPage() {
     return config;
   };
 
+  const syncLaunchProfiles = async () => {
+    const profiles: LaunchProfiles = await invoke("get_launch_profiles");
+    setLaunchProfiles(profiles);
+    return profiles;
+  }
+
   const doInit = async () => {
     try {
       await invoke("reload_state");
       await syncConfig();
+      await syncLaunchProfiles();
       setInitialFetchDone(true);
     } catch (e) {
       alertError("Error during init: " + e);
@@ -210,6 +219,7 @@ export default function SettingsPage() {
             {config && (
               <GameSettingsTab
                 active={tab == TAB_GAME_SETTINGS}
+                currentProfiles={launchProfiles}
                 currentSettings={config.game}
                 updateSettings={updateGameSettings}
               />

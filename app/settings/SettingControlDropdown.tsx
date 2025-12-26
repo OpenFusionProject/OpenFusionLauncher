@@ -1,5 +1,5 @@
 import { SettingsOption } from "@/app/types";
-import { Form } from "react-bootstrap";
+import { Form, InputGroup } from "react-bootstrap";
 import SettingControlBase from "./SettingControlBase";
 import { useEffect, useState } from "react";
 
@@ -11,6 +11,7 @@ export default function SettingControlDropdown({
   value,
   defaultKey,
   onChange,
+  children,
 }: {
   id: string;
   name?: string;
@@ -19,6 +20,7 @@ export default function SettingControlDropdown({
   value?: any;
   defaultKey: string;
   onChange: (value: any) => void;
+  children?: React.ReactNode;
 }) {
   const getOptionValueFromKey = (key: string) => {
     const option = options.find((option) => option.key === key);
@@ -49,26 +51,37 @@ export default function SettingControlDropdown({
     setSelected(newKey);
   }, [oldValue, value, options]);
 
+  const select = (
+    <Form.Select
+      className={value !== oldValue ? "border-success" : ""}
+      value={selected}
+      onChange={(e) => {
+        const key = e.target.value;
+        setSelected(key);
+        const optionVal = getOptionValueFromKey(key);
+        onChange(optionVal);
+      }}
+    >
+      {options.map((option) => (
+        <option key={option.key} value={option.key}>
+          {(option.label ?? option.key) +
+            (option.key === defaultKey ? " (default)" : "")}
+          {option.description && <p>: {option.description}</p>}
+        </option>
+      ))}
+    </Form.Select>
+  );
+
   return (
     <SettingControlBase id={id} name={name}>
-      <Form.Select
-        className={value !== oldValue ? "border-success" : ""}
-        value={selected}
-        onChange={(e) => {
-          const key = e.target.value;
-          setSelected(key);
-          const optionVal = getOptionValueFromKey(key);
-          onChange(optionVal);
-        }}
-      >
-        {options.map((option) => (
-          <option key={option.key} value={option.key}>
-            {option.label +
-              (option.description ? " - " + option.description : "") +
-              (option.key === defaultKey ? " (default)" : "")}
-          </option>
-        ))}
-      </Form.Select>
+      {children ? (
+        <InputGroup>
+          {select}
+          {children}
+        </InputGroup>
+      ) : (
+        select
+      )}
     </SettingControlBase>
   );
 }

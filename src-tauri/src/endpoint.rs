@@ -5,9 +5,9 @@ use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
-use crate::util;
 use crate::Error;
 use crate::Result;
+use crate::util;
 
 #[allow(dead_code)]
 #[derive(Serialize, Deserialize, Clone, Debug)]

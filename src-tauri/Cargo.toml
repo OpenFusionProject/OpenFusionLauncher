@@ -5,8 +5,8 @@ description = "OpenFusionLauncher"
 authors = ["OpenFusion Contributors"]
 license = "MIT"
 repository = ""
-edition = "2021"
-rust-version = "1.81.0"
+edition = "2024"
+rust-version = "1.88.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -32,3 +32,5 @@ tauri-plugin-shell = "=2.3.1"
 tauri-plugin-dialog = "=2.4.0"
 regex = "1.11.1"
 rust-proxy = { git = "https://github.com/yungcomputerchair/rust-proxy.git", rev = "44a8f46090846c03ca5bb77081b13b3937bd7c9b", features = ["upgrade"] }
+which = "8.0.2"
+protontools = "1.1.0"

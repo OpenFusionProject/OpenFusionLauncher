@@ -5,7 +5,7 @@ use std::{
     env,
     path::{Path, PathBuf},
     process::Command,
-    sync::{mpsc, OnceLock},
+    sync::{OnceLock, mpsc},
     time::Duration,
 };
 
@@ -17,8 +17,8 @@ use tauri::Emitter as _;
 use uuid::Uuid;
 
 use crate::{
-    state::get_app_statics, CacheEvent, CacheProgress, CacheProgressItem, Result,
-    CACHE_PROGRESS_EVENT,
+    CACHE_PROGRESS_EVENT, CacheEvent, CacheProgress, CacheProgressItem, Result,
+    state::{LaunchProfile, get_app_statics},
 };
 
 static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
@@ -104,105 +104,97 @@ pub(crate) fn get_default_offline_cache_dir() -> String {
         .to_string()
 }
 
-pub(crate) fn is_device_steam_deck() -> bool {
-    if cfg!(target_os = "linux") {
-        if let Ok(content) = std::fs::read_to_string("/sys/devices/virtual/dmi/id/board_vendor") {
-            if content.trim() == "Valve" {
-                return true;
-            }
-        }
-    }
-    false
-}
-
-fn get_steam_client_path() -> Option<PathBuf> {
-    let home_path = PathBuf::from(env::var("HOME").ok()?);
-    let steam_path = home_path.join(".steam/steam");
-    if steam_path.exists() {
-        Some(steam_path)
-    } else {
-        None
-    }
-}
-
-fn get_steam_root_path() -> Option<PathBuf> {
-    let home_path = PathBuf::from(env::var("HOME").ok()?);
-    let steam_root_path = home_path.join(".steam/root");
-    if steam_root_path.exists() {
-        Some(steam_root_path)
-    } else {
-        None
-    }
-}
-
-fn find_proton() -> Option<PathBuf> {
-    let steam_root = get_steam_root_path()?;
-    let steamapps_common_path = steam_root.join("steamapps/common/");
-    if !steamapps_common_path.exists() {
-        return None;
-    }
-
-    // Find all installed Proton versions
-    let entries = std::fs::read_dir(steamapps_common_path).ok()?;
-    let mut candidates = Vec::new();
-    for entry in entries {
-        let entry = entry.ok()?;
-        let file_name = entry.file_name();
-        let file_name_str = file_name.to_string_lossy();
-        if file_name_str.starts_with("Proton ") {
-            let proton_path = entry.path().join("proton");
-            if proton_path.exists() {
-                let date = entry.metadata().ok()?.modified().ok()?;
-                candidates.push((proton_path, date));
-            }
-        }
-    }
-
-    // Sort by modification date, newest first
-    candidates.sort_by(|a, b| b.1.cmp(&a.1));
-    candidates.first().map(|(path, _)| path.clone())
-}
-
-fn find_macos_wine() -> Option<PathBuf> {
+#[cfg(target_os = "macos")]
+fn find_macos_wine() -> Option<(String, PathBuf)> {
     const CANDIDATES: [&str; 5] = [
         "/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/CrossOver-Hosted Application/wineloader",
         "/Applications/Wine Crossover.app/Contents/Resources/wine/bin/wine",
         "/Applications/Wine Stable.app/Contents/Resources/wine/bin/wine",
         "/Applications/Wine Devel.app/Contents/Resources/wine/bin/wine",
-        "/Applications/Wine Staging.app/Contents/Resources/wine/bin/wine"
+        "/Applications/Wine Staging.app/Contents/Resources/wine/bin/wine",
     ];
 
     for p in &CANDIDATES {
         let path = PathBuf::from(p);
         if path.exists() {
-            return Some(path);
+            let app_name = path
+                .to_string_lossy()
+                .split("/")
+                .nth(2)
+                .unwrap()
+                .trim_end_matches(".app")
+                .to_string();
+            return Some((app_name, path));
         }
     }
     None
 }
 
-pub(crate) fn get_default_launch_command() -> Option<String> {
-    if cfg!(target_os = "windows") {
-        None
-    } else if cfg!(target_os = "macos") {
-        if let Some(wine_path) = find_macos_wine() {
-            Some(format!("\"{}\" {{}}", wine_path.to_string_lossy()))
-        } else {
-            Some("wine {}".to_string())
-        }
-    } else if is_device_steam_deck() {
-        let steam_compat_data_path = get_app_statics().compat_data_dir.clone();
-        let steam_compat_client_install_path = get_steam_client_path()?;
-        let proton_path = find_proton()?;
-        Some(format!(
-            "STEAM_COMPAT_DATA_PATH=\"{}\" STEAM_COMPAT_CLIENT_INSTALL_PATH=\"{}\" \"{}\" run {{}}",
-            steam_compat_data_path.to_string_lossy(),
-            steam_compat_client_install_path.to_string_lossy(),
-            proton_path.to_string_lossy()
-        ))
-    } else {
-        Some("wine {}".to_string())
+pub(crate) fn get_default_launch_profile_id() -> Uuid {
+    get_default_launch_profile().get_id()
+}
+
+pub(crate) fn get_default_launch_profile() -> LaunchProfile {
+    get_default_launch_profiles().first().cloned().unwrap()
+}
+
+/// Returns a list of default launch profiles based on the OS and
+/// available compatibility layers, in order of preference.
+pub(crate) fn get_default_launch_profiles() -> Vec<LaunchProfile> {
+    let mut profiles = Vec::new();
+
+    #[cfg(target_os = "windows")]
+    {
+        // On Windows, we can just run the game directly with no compatibility layer
+        profiles.push(LaunchProfile::new("Native", "{}", true));
     }
+
+    #[cfg(target_os = "macos")]
+    {
+        // Find Wine installs
+        if let Some((app_name, app_path)) = find_macos_wine() {
+            let macos_wine_cmd = format!("\"{}\" {{}}", app_path.to_string_lossy());
+            profiles.push(LaunchProfile::new(&app_name, &macos_wine_cmd, true));
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        // Find Proton installs
+        let steam_compat_data_path = get_app_statics().compat_data_dir.clone();
+        if let Some(steam_compat_client_install_path) = protontools::get_steam_client_path() {
+            for proton_install in protontools::find_all_proton_installs() {
+                let proton_path = proton_install.get_exe_path();
+                let profile_name = proton_path
+                    .parent()
+                    .and_then(|p| p.file_name())
+                    .map(|n| n.to_string_lossy().to_string())
+                    .unwrap();
+
+                profiles.push(LaunchProfile::new(
+                    &profile_name,
+                    &format!(
+                        "STEAM_COMPAT_DATA_PATH=\"{}\" STEAM_COMPAT_CLIENT_INSTALL_PATH=\"{}\" \"{}\" run {{}}",
+                        steam_compat_data_path.to_string_lossy(),
+                        steam_compat_client_install_path.to_string_lossy(),
+                        proton_path.to_string_lossy()
+                ),
+                true));
+            }
+        }
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        // Look for Wine on PATH
+        if let Ok(wine) = which::which("wine") {
+            let name = format!("Wine ({})", wine.to_string_lossy());
+            let wine_cmd = format!("\"{}\" {{}}", wine.to_string_lossy());
+            profiles.push(LaunchProfile::new(&name, &wine_cmd, true));
+        }
+    }
+
+    profiles
 }
 
 pub(crate) fn get_cache_dir_for_version(base_cache_dir: &str, version: &Version) -> PathBuf {
