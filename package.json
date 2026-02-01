@@ -24,11 +24,11 @@
     "bootstrap": "^5.3.3",
     "dompurify": "^3.2.4",
     "magic-snowflakes": "^7.0.2",
-    "marked": "^16.4.0",
-    "next": "16.0.3",
-    "react": "19.2.0",
+    "marked": "^17.0.1",
+    "next": "^16.1.6",
+    "react": "^19.2.4",
     "react-bootstrap": "^2.10.5",
-    "react-dom": "19.2.0",
+    "react-dom": "^19.2.4",
     "sharp": "^0.33.5"
   },
   "devDependencies": {
@@ -37,7 +37,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.0.3",
+    "eslint-config-next": "^16.1.6",
     "sass": "^1.80.3",
     "typescript": "^5"
   }
