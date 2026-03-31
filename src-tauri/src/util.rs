@@ -80,6 +80,12 @@ fn resolve_host(host: &str) -> Result<String> {
 
 pub(crate) fn resolve_server_addr(addr: &str) -> Result<String> {
     let (host, port) = split_addr_port(addr)?;
+
+    // if we alredy have an IP, nothing to resolve
+    if host.parse::<std::net::IpAddr>().is_ok() {
+        return Ok(addr.to_string());
+    }
+
     let Ok(ip) = resolve_host(&host) else {
         return Err(format!("Failed to resolve game server address {}", addr).into());
     };
