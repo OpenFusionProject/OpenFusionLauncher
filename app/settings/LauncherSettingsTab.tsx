@@ -149,6 +149,23 @@ export default function LauncherSettingsTab({
                 }
               />
               <SettingControlDropdown
+                id="proxy_asset_downloads"
+                name="Proxy asset downloads over HTTPS"
+                options={[
+                  { key: "yes", value: true, label: "Yes" },
+                  { key: "no", value: false, label: "No" },
+                ]}
+                defaultKey="yes"
+                oldValue={currentSettings.proxy_asset_downloads}
+                value={settings.proxy_asset_downloads}
+                onChange={(value) =>
+                  setSettings((current) => ({
+                    ...current!,
+                    proxy_asset_downloads: value,
+                  }))
+                }
+              />
+              <SettingControlDropdown
                 id="use_offline_caches"
                 name="Use offline caches when downloaded"
                 options={[

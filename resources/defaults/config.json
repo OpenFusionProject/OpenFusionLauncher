@@ -3,7 +3,8 @@
     "check_for_updates": true,
     "use_offline_caches": true,
     "verify_offline_caches": false,
-    "launch_behavior": "hide"
+    "launch_behavior": "hide",
+    "proxy_asset_downloads": true
   },
   "game": {
     "graphics_api": "dx9",

@@ -43,6 +43,9 @@ pub struct LauncherSettings {
 
     #[serde(default = "util::get_default_offline_cache_dir")]
     pub offline_cache_path: String,
+
+    #[serde(default = "util::true_fn")]
+    pub proxy_asset_downloads: bool,
 }
 impl Default for LauncherSettings {
     fn default() -> Self {
@@ -55,6 +58,7 @@ impl Default for LauncherSettings {
             launch_behavior: LaunchBehavior::Hide,
             game_cache_path: util::get_default_cache_dir(),
             offline_cache_path: util::get_default_offline_cache_dir(),
+            proxy_asset_downloads: true,
         }
     }
 }

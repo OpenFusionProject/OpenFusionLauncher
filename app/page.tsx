@@ -291,7 +291,7 @@ export default function Home() {
       }
       stopLoading("launch");
       setCurrentSession(undefined);
-      if (config!.launcher.launch_behavior == "hide") {
+      if (config!.launcher.launch_behavior != "stay_open") {
         await getCurrentWindow().hide();
       }
       const exitCode: number = await invoke("do_launch");
