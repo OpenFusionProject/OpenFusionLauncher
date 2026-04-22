@@ -2,7 +2,6 @@ use std::{collections::HashMap, path::PathBuf, process::Command, sync::OnceLock}
 
 use ffbuildtool::Version;
 use log::*;
-use rust_proxy::proxy::tcp::TcpProxy;
 use serde::{Deserialize, Serialize};
 use tauri::{path::BaseDirectory, Manager};
 use tokio::task::JoinHandle;

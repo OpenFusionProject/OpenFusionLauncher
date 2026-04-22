@@ -7,7 +7,7 @@ use config::{LaunchBehavior, LauncherSettings};
 use endpoint::{AccountInfo, InfoResponse, RegisterResponse, Session};
 use ffbuildtool::{ItemProgress, Version};
 use regex::Regex;
-use rust_proxy::{common::auth::AuthManager, proxy::tcp::TcpProxy};
+use rust_proxy::proxy::tcp::TcpProxy;
 use serde::{Deserialize, Serialize};
 use state::{
     get_app_statics, AppState, Config, FlatServer, FlatServers, Server, ServerInfo, Versions,
