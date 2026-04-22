@@ -18,6 +18,7 @@ use util::AlertVariant;
 use std::{
     collections::{HashMap, HashSet},
     env,
+    process::Stdio,
     sync::{mpsc, Arc, LazyLock, OnceLock},
     vec,
 };
@@ -667,6 +668,12 @@ async fn prep_launch(
                 cmd.env("WINEPREFIX", compat_data_dir.to_string_lossy().to_string());
             }
         }
+
+        // Detach stdio so the child doesn't crash from broken pipes
+        // when the launcher exits (e.g. LaunchBehavior::Quit)
+        cmd.stdin(Stdio::null());
+        cmd.stdout(Stdio::null());
+        cmd.stderr(Stdio::null());
 
         util::log_command(&cmd);
         state.launch_cmd = Some(cmd);
