@@ -42,6 +42,7 @@ export type LauncherSettings = {
   launch_behavior: string;
   game_cache_path: string;
   offline_cache_path: string;
+  proxy_asset_downloads: boolean;
   theme?: string;
 };
 

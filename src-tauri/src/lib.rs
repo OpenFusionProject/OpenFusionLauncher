@@ -7,6 +7,7 @@ use config::{LaunchBehavior, LauncherSettings};
 use endpoint::{AccountInfo, InfoResponse, RegisterResponse, Session};
 use ffbuildtool::{ItemProgress, Version};
 use regex::Regex;
+use rust_proxy::proxy::tcp::TcpProxy;
 use serde::{Deserialize, Serialize};
 use state::{
     get_app_statics, AppState, Config, FlatServer, FlatServers, Server, ServerInfo, Versions,
@@ -17,10 +18,14 @@ use util::AlertVariant;
 use std::{
     collections::{HashMap, HashSet},
     env,
+    process::Stdio,
     sync::{mpsc, Arc, LazyLock, OnceLock},
     vec,
 };
-use tokio::sync::{Mutex, Semaphore};
+use tokio::{
+    net::TcpListener,
+    sync::{Mutex, Semaphore},
+};
 
 use log::*;
 use tauri::Manager;
@@ -101,6 +106,7 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
     debug!("do_launch");
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
+    let proxy_enabled = state.config.launcher.proxy_asset_downloads;
     let launch_behavior = state.config.launcher.launch_behavior;
     let mut cmd = state.launch_cmd.take().ok_or("No launch prepared")?;
     let cmd_str = util::get_launch_cmd_dbg_str(&cmd, false);
@@ -113,11 +119,29 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
             .to_string();
         format!("{} (launch command was: {})", e, censored_cmd_str)
     })?;
+
+    if launch_behavior == LaunchBehavior::Quit && !proxy_enabled {
+        // no need to keep the proxy alive; we can quit immediately
+        app_handle.exit(0);
+        return Ok(0);
+    }
+
+    let exit_result = proc.wait();
+
+    // shutdown the asset proxy
+    let state = app_handle.state::<Mutex<AppState>>();
+    let mut state = state.lock().await;
+    if let Some(proxy) = state.proxy.take() {
+        proxy.abort();
+    };
+
+    // no need to do any error handling. quit now so the user doesn't see us again.
     if launch_behavior == LaunchBehavior::Quit {
         app_handle.exit(0);
         return Ok(0);
     }
-    let exit_code = proc.wait().map_err(|e| e.to_string())?;
+
+    let exit_code = exit_result.map_err(|e| e.to_string())?;
     Ok(exit_code.code().unwrap_or(0))
 }
 
@@ -515,6 +539,23 @@ async fn prep_launch(
                 asset_url = offline_asset_url;
                 main_url = offline_main_url;
             }
+        } else if state.config.launcher.proxy_asset_downloads {
+            let mut proxy = TcpProxy::default();
+            proxy.set_base_path(asset_url.clone());
+            let listener = TcpListener::bind("127.0.0.1:0").await?;
+            let proxy_addr = listener.local_addr()?;
+            let new_asset_url = format!("http://{}", proxy_addr);
+
+            // NOTE: this assumes that the main file is under the asset URL somewhere,
+            // which is true for all known versions, but not technically guaranteed by
+            // the FFBuildTool manifest format (sorry guys)
+            main_url = main_url.replace(&asset_url, &new_asset_url);
+            asset_url = new_asset_url;
+
+            let handle = tokio::spawn(async move {
+                proxy.run(&listener).await;
+            });
+            state.proxy = Some(handle);
         }
 
         debug!("Asset URL: {}", asset_url);
@@ -627,6 +668,12 @@ async fn prep_launch(
                 cmd.env("WINEPREFIX", compat_data_dir.to_string_lossy().to_string());
             }
         }
+
+        // Detach stdio so the child doesn't crash from broken pipes
+        // when the launcher exits (e.g. LaunchBehavior::Quit)
+        cmd.stdin(Stdio::null());
+        cmd.stdout(Stdio::null());
+        cmd.stderr(Stdio::null());
 
         util::log_command(&cmd);
         state.launch_cmd = Some(cmd);
