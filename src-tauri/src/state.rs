@@ -477,6 +477,11 @@ impl From<FlatServer> for Server {
         }
     }
 }
+impl Server {
+    pub fn get_description(&self) -> Option<String> {
+        self.description.clone()
+    }
+}
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct Servers {

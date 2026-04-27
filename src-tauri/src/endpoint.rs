@@ -12,6 +12,7 @@ use crate::Result;
 #[allow(dead_code)]
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct InfoResponse {
+    pub server_name: String,
     pub api_version: String,
     pub secure_apis_enabled: bool,
     game_version: Option<String>,
@@ -123,6 +124,16 @@ pub async fn get_status(endpoint_host: &str) -> Result<StatusResponse> {
     let status_json = util::do_simple_get(&format!("https://{}/status", endpoint_host)).await?;
     let status: StatusResponse = serde_json::from_str(&status_json)?;
     Ok(status)
+}
+
+pub async fn get_custom_icon_url(endpoint_host: &str) -> Result<Option<String>> {
+    let url = format!("https://{}/launcher/icon.ico", endpoint_host);
+    let res = util::get_http_client().head(&url).send().await?;
+    if res.status() == StatusCode::OK {
+        Ok(Some(url))
+    } else {
+        Ok(None)
+    }
 }
 
 pub async fn register_user(

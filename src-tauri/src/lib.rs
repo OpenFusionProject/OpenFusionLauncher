@@ -407,9 +407,11 @@ async fn prep_launch(
             .ok_or(format!("Server {} not found", server_uuid))?
             .clone();
 
+        let mut server_name = server.get_description();
         let addr;
         let mut versions = Vec::new();
         let mut custom_loading_screen = false;
+        let mut custom_icon_url = None;
         match &server.info {
             ServerInfo::Simple { ip, version } => {
                 addr = ip.clone();
@@ -425,6 +427,11 @@ async fn prep_launch(
                     custom_loading_screen = true;
                 }
 
+                if let Ok(icon_url) = endpoint::get_custom_icon_url(endpoint).await {
+                    custom_icon_url = icon_url;
+                }
+
+                server_name = Some(format!("\"{}\"", api_info.server_name));
                 addr = api_info.login_address.clone();
                 versions = api_info.get_supported_versions();
             }
@@ -574,6 +581,16 @@ async fn prep_launch(
             .args(["-a", &ip])
             .args(["--asseturl", &format!("{}/", asset_url)])
             .args(["-l", &log_file_path]);
+
+        if let Some(server_name) = server_name {
+            // window title
+            cmd.args(["-n", &server_name]);
+        }
+
+        if let Some(icon_url) = custom_icon_url {
+            // window icon
+            cmd.args(["-i", &icon_url]);
+        }
 
         if let ServerInfo::Endpoint { endpoint, .. } = &server.info {
             match session_token {
