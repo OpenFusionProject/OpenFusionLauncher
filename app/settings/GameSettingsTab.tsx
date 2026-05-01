@@ -202,9 +202,9 @@ export default function GameSettingsTab({
                   })
                 }
               >
-                <Button className="ms-1" icon="trash" tooltip="Delete..." variant="danger" enabled={canModify} onClick={() => showDeleteProfileConfirmation()} />
+                <Button className="ms-1" icon="plus" tooltip="Add..." variant="success" onClick={() => setShowAddProfile(true)} />
                 <Button className="ms-1" icon="edit" tooltip="Edit..." enabled={selectedLaunchProfile !== undefined} onClick={() => setShowEditProfile(true)} />
-                <Button className="ms-1" icon="plus" tooltip="Add..." variant="success"  onClick={() => setShowAddProfile(true)} />
+                <Button className="ms-1" icon="trash" tooltip="Delete..." variant="danger" enabled={canModify} onClick={() => showDeleteProfileConfirmation()} />
               </SettingControlDropdown>
               <SettingControlWindowSize
                 id="window_size"
