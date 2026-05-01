@@ -58,7 +58,7 @@ export default function EditProfileModal({
       </Modal.Header>
       <Modal.Body>
         <Form>
-          <Form.Group className="mb-3" controlId="editProfileName">
+          <Form.Group controlId="editProfileName">
             <Form.Label>Profile Name</Form.Label>
             <Form.Control
               type="text"
@@ -69,7 +69,10 @@ export default function EditProfileModal({
               disabled={isPreset}
             />
           </Form.Group>
-          <Form.Group className="mb-3" controlId="editProfileCommand">
+          {!isAdd && (profile !== undefined) && <Form.Text className="text-muted">
+            {"ID: " + profile!.uuid}
+          </Form.Text>}
+          <Form.Group className="mt-3" controlId="editProfileCommand">
             <Form.Label>Launch Command</Form.Label>
             <Form.Control
               as="textarea"
