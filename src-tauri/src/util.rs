@@ -105,7 +105,7 @@ pub(crate) fn get_default_offline_cache_dir() -> String {
 }
 
 #[cfg(target_os = "macos")]
-fn find_macos_wine() -> Option<(String, PathBuf)> {
+fn find_macos_wine_installs() -> Vec<(String, PathBuf)> {
     const CANDIDATES: [&str; 5] = [
         "/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/CrossOver-Hosted Application/wineloader",
         "/Applications/Wine Crossover.app/Contents/Resources/wine/bin/wine",
@@ -114,6 +114,7 @@ fn find_macos_wine() -> Option<(String, PathBuf)> {
         "/Applications/Wine Staging.app/Contents/Resources/wine/bin/wine",
     ];
 
+    let mut installs = Vec::new();
     for p in &CANDIDATES {
         let path = PathBuf::from(p);
         if path.exists() {
@@ -124,10 +125,10 @@ fn find_macos_wine() -> Option<(String, PathBuf)> {
                 .unwrap()
                 .trim_end_matches(".app")
                 .to_string();
-            return Some((app_name, path));
+            installs.push((app_name, path));
         }
     }
-    None
+    installs
 }
 
 /// Returns a list of preset launch profiles based on the OS and
@@ -144,9 +145,9 @@ pub(crate) fn get_preset_launch_profiles() -> Vec<LaunchProfile> {
     #[cfg(target_os = "macos")]
     {
         // Find Wine installs
-        if let Some((app_name, app_path)) = find_macos_wine() {
-            let macos_wine_cmd = format!("\"{}\" {{}}", app_path.to_string_lossy());
-            profiles.push(LaunchProfile::new(&app_name, &macos_wine_cmd, true));
+        for (app_name, wine_path) in find_macos_wine_installs() {
+            let wine_cmd = format!("\"{}\" {{}}", wine_path.to_string_lossy());
+            profiles.push(LaunchProfile::new(&app_name, &wine_cmd, true));
         }
     }
 
