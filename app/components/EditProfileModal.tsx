@@ -47,7 +47,7 @@ export default function EditProfileModal({
     return true;
   };
 
-  const isPreset = !isAdd && profile!.preset;
+  const isPreset = !isAdd && (profile !== undefined) && profile!.preset;
 
   return (
     <Modal show={show} onHide={() => doHide()} centered={true} size="lg">

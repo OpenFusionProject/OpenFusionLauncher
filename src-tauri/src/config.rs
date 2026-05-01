@@ -103,7 +103,7 @@ pub struct GameSettings {
     #[serde(skip_serializing)]
     pub launch_command: Option<String>,
 
-    #[serde(default = "util::get_default_launch_profile_id")]
+    #[serde(default = "Uuid::nil")]
     pub launch_profile: Uuid,
 }
 impl Default for GameSettings {
@@ -114,7 +114,7 @@ impl Default for GameSettings {
             fps_fix: FpsFix::On,
             window_size: None,
             launch_command: None,
-            launch_profile: util::get_default_launch_profile_id(),
+            launch_profile: Uuid::nil(),
         }
     }
 }

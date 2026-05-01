@@ -656,6 +656,13 @@ impl LaunchProfiles {
         self.profiles.iter().find(|p| p.get_id() == id)
     }
 
+    pub fn get_default(&self) -> Option<&LaunchProfile> {
+        self.profiles
+            .iter()
+            .find(|p| p.is_preset())
+            .or_else(|| self.profiles.first())
+    }
+
     pub fn add_entry(&mut self, name: &str, command: &str) -> Uuid {
         let profile = LaunchProfile::new(name, command, false);
         let id = profile.get_id();
@@ -688,7 +695,7 @@ impl LaunchProfiles {
     #[allow(deprecated)]
     fn load(config: &mut Config) -> Self {
         const CUSTOM_PROFILE_NAME: &str = "Custom Profile";
-        match Self::load_internal() {
+        let profiles = match Self::load_internal() {
             Ok(profiles) => {
                 info!(
                     "Loaded {} launch profiles from app data",
@@ -697,8 +704,8 @@ impl LaunchProfiles {
                 profiles
             }
             Err(_) => {
-                info!("Loading default launch profiles");
-                let mut profiles = util::get_default_launch_profiles();
+                info!("Loading preset launch profiles");
+                let mut profiles = util::get_preset_launch_profiles();
                 if let Some(current_cmd) = config.game.launch_command.as_ref() {
                     let profile = LaunchProfile::new(CUSTOM_PROFILE_NAME, current_cmd, false);
                     let profile_id = profile.get_id();
@@ -707,7 +714,17 @@ impl LaunchProfiles {
                 }
                 Self { profiles }
             }
+        };
+
+        if profiles.get(config.game.launch_profile).is_none() {
+            // currently selected launch profile doesn't exist; select the first one if it exists
+            if let Some(default) = profiles.get_default() {
+                config.game.launch_profile = default.get_id();
+            } else {
+                config.game.launch_profile = Uuid::nil();
+            }
         }
+        profiles
     }
 
     fn save(&self) -> Result<()> {
@@ -722,6 +739,21 @@ impl LaunchProfiles {
         let commands_str = std::fs::read_to_string(commands_path)?;
         let commands: Self = serde_json::from_str(&commands_str)?;
         Ok(commands)
+    }
+}
+
+/// Frontend view of launch profiles, with the computed default profile ID
+#[derive(Debug, Serialize, Clone)]
+pub struct LaunchProfilesView {
+    profiles: Vec<LaunchProfile>,
+    default_profile: Option<Uuid>,
+}
+impl From<&LaunchProfiles> for LaunchProfilesView {
+    fn from(lp: &LaunchProfiles) -> Self {
+        Self {
+            profiles: lp.profiles.clone(),
+            default_profile: lp.get_default().map(|p| p.get_id()),
+        }
     }
 }
 

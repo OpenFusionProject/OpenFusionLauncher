@@ -192,7 +192,7 @@ export default function GameSettingsTab({
                 id="launch_profile"
                 name="Launch Profile"
                 options={launchProfiles.profiles.map((profile) => ({ key: profile.uuid, label: profile.preset ? profile.name + " (preset)" : profile.name }))}
-                defaultKey={launchProfiles.profiles.length > 0 ? launchProfiles.profiles[0].uuid : ""}
+                defaultKey={launchProfiles.default_profile ?? ""}
                 oldValue={currentSettings.launch_profile}
                 value={settings.launch_profile}
                 onChange={(value) =>

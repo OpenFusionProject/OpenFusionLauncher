@@ -72,6 +72,7 @@ export type LaunchProfile = {
 
 export type LaunchProfiles = {
   profiles: LaunchProfile[];
+  default_profile?: string;
 };
 
 export type Config = {

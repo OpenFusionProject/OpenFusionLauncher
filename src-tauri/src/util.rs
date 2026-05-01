@@ -130,17 +130,9 @@ fn find_macos_wine() -> Option<(String, PathBuf)> {
     None
 }
 
-pub(crate) fn get_default_launch_profile_id() -> Uuid {
-    get_default_launch_profile().get_id()
-}
-
-pub(crate) fn get_default_launch_profile() -> LaunchProfile {
-    get_default_launch_profiles().first().cloned().unwrap()
-}
-
-/// Returns a list of default launch profiles based on the OS and
+/// Returns a list of preset launch profiles based on the OS and
 /// available compatibility layers, in order of preference.
-pub(crate) fn get_default_launch_profiles() -> Vec<LaunchProfile> {
+pub(crate) fn get_preset_launch_profiles() -> Vec<LaunchProfile> {
     let mut profiles = Vec::new();
 
     #[cfg(target_os = "windows")]

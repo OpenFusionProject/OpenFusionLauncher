@@ -31,7 +31,7 @@ use log::*;
 use tauri::Manager;
 use uuid::Uuid;
 
-use crate::state::{LaunchProfile, LaunchProfiles};
+use crate::state::{LaunchProfile, LaunchProfilesView};
 
 type Error = Box<dyn std::error::Error>;
 type Result<T> = std::result::Result<T, Error>;
@@ -1252,11 +1252,11 @@ async fn get_versions(app_handle: tauri::AppHandle) -> Versions {
 }
 
 #[tauri::command]
-async fn get_launch_profiles(app_handle: tauri::AppHandle) -> LaunchProfiles {
+async fn get_launch_profiles(app_handle: tauri::AppHandle) -> LaunchProfilesView {
     debug!("get_launch_profiles");
     let state = app_handle.state::<Mutex<AppState>>();
     let state = state.lock().await;
-    state.launch_profiles.clone()
+    LaunchProfilesView::from(&state.launch_profiles)
 }
 
 #[tauri::command]
