@@ -666,39 +666,33 @@ async fn prep_launch(
 
         #[cfg(not(target_os = "windows"))]
         {
-            // The compat data dir is, in order of priority:
-            // 1. WINEPREFIX env var in the launch command, if set
-            // 2. WINEPREFIX env var in the current environment, if set
-            // 3. The default compat data dir in the app cache
-            let mut compat_data_dir = None;
-            for env_var in cmd.get_envs() {
-                if let (key, Some(value)) = env_var {
-                    if key == "WINEPREFIX" {
-                        compat_data_dir = Some(value.into());
-                    }
-                }
-            }
-
-            if compat_data_dir.is_none() && env::var("WINEPREFIX").is_ok_and(|val| !val.is_empty())
-            {
-                compat_data_dir = Some(env::var("WINEPREFIX").unwrap().into());
-            }
-
+            // Prefix setup
+            let mut compat_data_dir = util::get_compat_data_dir(&cmd);
             if compat_data_dir.is_none() {
-                compat_data_dir = Some(app_statics.compat_data_dir.clone());
+                // not specified; use launcher compat data dir
+                let mut launcher_compat_dir = app_statics.compat_data_dir.clone();
+                launcher_compat_dir.push(profile.get_id().to_string());
+
+                if cmd.get_program().to_string_lossy().ends_with("proton") {
+                    cmd.env(
+                        "STEAM_COMPAT_DATA_PATH",
+                        launcher_compat_dir.to_string_lossy().to_string(),
+                    );
+                    // proton sets WINEPREFIX internally
+                } else {
+                    // assume wine
+                    cmd.env(
+                        "WINEPREFIX",
+                        launcher_compat_dir.to_string_lossy().to_string(),
+                    );
+                }
+                compat_data_dir = Some(launcher_compat_dir);
             }
 
             let compat_data_dir = compat_data_dir.unwrap();
             if !compat_data_dir.exists() {
+                debug!("Creating prefix at {}", compat_data_dir.to_string_lossy());
                 std::fs::create_dir_all(&compat_data_dir)?;
-            }
-
-            #[cfg(target_os = "linux")]
-            {
-                if !protontools::is_device_steam_deck() {
-                    // we want to let Proton set this itself on Deck
-                    cmd.env("WINEPREFIX", compat_data_dir.to_string_lossy().to_string());
-                }
             }
         }
 

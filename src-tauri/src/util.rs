@@ -104,6 +104,43 @@ pub(crate) fn get_default_offline_cache_dir() -> String {
         .to_string()
 }
 
+fn get_env_var_value(cmd: &Command, var: &str) -> Option<String> {
+    // Check vars on command first
+    for env_var in cmd.get_envs() {
+        if let (key, Some(value)) = env_var {
+            let value = value.to_string_lossy().to_string();
+            if key == var && !value.is_empty() {
+                return Some(value);
+            }
+        }
+    }
+
+    // Check env
+    if let Ok(value) = env::var(var) {
+        if !value.is_empty() {
+            return Some(value);
+        }
+    }
+
+    None
+}
+
+pub(crate) fn get_compat_data_dir(cmd: &Command) -> Option<PathBuf> {
+    if cfg!(target_os = "windows") {
+        return None;
+    }
+
+    if let Some(path) = get_env_var_value(cmd, "STEAM_COMPAT_DATA_PATH") {
+        return Some(PathBuf::from(path));
+    }
+
+    if let Some(path) = get_env_var_value(cmd, "WINEPREFIX") {
+        return Some(PathBuf::from(path));
+    }
+
+    None
+}
+
 #[cfg(target_os = "macos")]
 fn find_macos_wine_installs() -> Vec<(String, PathBuf)> {
     const CANDIDATES: [&str; 5] = [
@@ -154,7 +191,6 @@ pub(crate) fn get_preset_launch_profiles() -> Vec<LaunchProfile> {
     #[cfg(target_os = "linux")]
     {
         // Find Proton installs
-        let steam_compat_data_path = get_app_statics().compat_data_dir.clone();
         if let Some(steam_compat_client_install_path) = protontools::get_steam_client_path() {
             for proton_install in protontools::find_all_proton_installs() {
                 let proton_path = proton_install.get_exe_path();
@@ -167,12 +203,12 @@ pub(crate) fn get_preset_launch_profiles() -> Vec<LaunchProfile> {
                 profiles.push(LaunchProfile::new(
                     &profile_name,
                     &format!(
-                        "STEAM_COMPAT_DATA_PATH=\"{}\" STEAM_COMPAT_CLIENT_INSTALL_PATH=\"{}\" \"{}\" run {{}}",
-                        steam_compat_data_path.to_string_lossy(),
+                        "STEAM_COMPAT_CLIENT_INSTALL_PATH=\"{}\" \"{}\" run {{}}",
                         steam_compat_client_install_path.to_string_lossy(),
                         proton_path.to_string_lossy()
-                ),
-                true));
+                    ),
+                    true,
+                ));
             }
         }
     }
