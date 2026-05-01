@@ -693,9 +693,12 @@ async fn prep_launch(
                 std::fs::create_dir_all(&compat_data_dir)?;
             }
 
-            if !protontools::is_device_steam_deck() {
-                // we want to let Proton set this itself on Deck
-                cmd.env("WINEPREFIX", compat_data_dir.to_string_lossy().to_string());
+            #[cfg(target_os = "linux")]
+            {
+                if !protontools::is_device_steam_deck() {
+                    // we want to let Proton set this itself on Deck
+                    cmd.env("WINEPREFIX", compat_data_dir.to_string_lossy().to_string());
+                }
             }
         }
 
