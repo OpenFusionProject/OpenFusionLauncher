@@ -1,28 +1,37 @@
+import { useMemo } from "react";
 import { Modal } from "react-bootstrap";
 import Button from "./Button";
+import { parse } from "marked";
+import DOMPurify from "dompurify";
 
 export default function ConfirmationModal({
   show,
   setShow,
+  title,
   message,
   confirmText,
   confirmVariant,
   onConfirm,
 }: {
   show: boolean;
-  setShow: (show: boolean) => void;
+    setShow: (show: boolean) => void;
+  title: string;
   message: string;
   confirmText: string;
   confirmVariant: string;
   onConfirm: () => void;
 }) {
+  const html = useMemo(() => {
+    return DOMPurify.sanitize(parse(message) as string);
+  }, [message]);
+
   return (
     <Modal show={show} onHide={() => setShow(false)} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Confirm</Modal.Title>
+        <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>{message}</p>
+        <div dangerouslySetInnerHTML={{ __html: html }} />
       </Modal.Body>
       <Modal.Footer>
         <Button

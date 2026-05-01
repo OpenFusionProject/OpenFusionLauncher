@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
@@ -7,6 +7,7 @@ import Tab from "react-bootstrap/Tab";
 
 import Button from "./Button";
 
+import { SettingsCtx } from "@/app/contexts";
 import { EndpointInfo, ServerEntry } from "@/app/types";
 import { validateUsername, validatePassword, validateEmail, getPrivacyPolicyUrlForServer } from "@/app/util";
 import { Overlay, Tooltip } from "react-bootstrap";
@@ -26,6 +27,9 @@ const CONTROL_ID_NEW_USERNAME = "newUsername";
 const CONTROL_ID_NEW_PASSWORD = "newPassword";
 const CONTROL_ID_CONFIRM_PASSWORD = "confirmPassword";
 const CONTROL_ID_EMAIL = "email";
+
+const EMAIL_DISCLAIMER = "A verification email will be sent to the address you provided. Please click on the enclosed link in order to complete the registration process as soon as possible.\n\nIf you do not click the verification link, the email will not be linked to your account. You will still be able to log in, but **you will not be able to recover your password.**";
+const NO_EMAIL_DISCLAIMER = "Continue without entering an email address? If there is no email linked to your account, **there will be no way to recover your password if you forget it**.\n\nIf you're logged in, you can always add an email address later by going to Settings -> Authentication -> Manage Account";
 
 const replaceLinksWithShellOpen = (html: string) => {
   return html.replace(/<a href="([^"]+)">([^<]+)<\/a>/g, (match, href, text) => {
@@ -154,6 +158,8 @@ export default function LoginModal({
 
   const [emailRequired, setEmailRequired] = useState<boolean>(false);
 
+  const ctx = useContext(SettingsCtx);
+
   const validateLogin = () => {
     return username.length > 0 && password.length > 0;
   };
@@ -196,12 +202,36 @@ export default function LoginModal({
     }
   };
 
+  const onSubmit = () => {
+    if (tab === TAB_REGISTER && ctx.showConfirmationModal) {
+      if (email.length > 0) {
+        ctx.showConfirmationModal(
+          EMAIL_DISCLAIMER,
+          "I understand",
+          "danger",
+          submitForm,
+          "Note!",
+        );
+      } else {
+        ctx.showConfirmationModal(
+          NO_EMAIL_DISCLAIMER,
+          "I understand",
+          "danger",
+          submitForm,
+          "Note!",
+        );
+      }
+    } else {
+      submitForm();
+    }
+  }
+
   return (
     <Modal show={show && !!server} onHide={onClose} centered={true} size="lg">
       <Form
         onSubmit={(e) => {
           e.preventDefault();
-          submitForm();
+          onSubmit();
         }}
       >
         <Modal.Header>
@@ -340,7 +370,7 @@ export default function LoginModal({
         <Modal.Footer>
           <Button onClick={onClose} variant="primary" text="Cancel" />
           <Button
-            onClick={submitForm}
+            onClick={onSubmit}
             variant="success"
             text={tab === TAB_LOGIN ? "Log In" : "Register"}
             enabled={canSubmit(tab)}

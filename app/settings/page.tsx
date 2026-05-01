@@ -41,6 +41,7 @@ export default function SettingsPage() {
 
   // confirmation modal
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [confirmationTitle, setConfirmationTitle] = useState("");
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [confirmationConfirmText, setConfirmationConfirmText] = useState("");
   const [confirmationConfirmVariant, setConfirmationConfirmVariant] =
@@ -90,7 +91,9 @@ export default function SettingsPage() {
     confirmText: string,
     confirmVariant: string,
     onConfirm: () => void,
+    title?: string
   ) => {
+    setConfirmationTitle(title || "Confirm");
     setConfirmationMessage(message);
     setConfirmationConfirmText(confirmText);
     setConfirmationConfirmVariant(confirmVariant);
@@ -250,6 +253,7 @@ export default function SettingsPage() {
       <ConfirmationModal
         show={showConfirmation}
         setShow={setShowConfirmation}
+        title={confirmationTitle}
         message={confirmationMessage}
         confirmText={confirmationConfirmText}
         confirmVariant={confirmationConfirmVariant}

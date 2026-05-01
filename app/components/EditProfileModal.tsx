@@ -86,7 +86,7 @@ export default function EditProfileModal({
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={() => doHide()} className="me-auto" variant="primary" text="Cancel" />
+        <Button onClick={() => doHide()} variant="primary" text="Cancel" />
         {!isAdd && <Button icon="copy" text="Duplicate" onClick={() => {
           const profileToDuplicate = profile!;
           saveProfile(profileToDuplicate.name + " (copy)", profileToDuplicate.command);

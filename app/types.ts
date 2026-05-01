@@ -128,6 +128,7 @@ export type SettingsContext = {
     confirmText: string,
     confirmVariant: string,
     onConfirm: () => void,
+    title?: string
   ) => void;
 };
 
