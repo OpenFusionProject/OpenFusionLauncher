@@ -1296,9 +1296,28 @@ async fn delete_launch_profile(app_handle: tauri::AppHandle, uuid: Uuid) -> Comm
     debug!("delete_launch_profile");
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
-        let mut state = state.lock().await;
-        state.launch_profiles.remove_entry(uuid);
-        state.save();
+        {
+            // Delete the profile and save to disk
+            let mut state = state.lock().await;
+            state.launch_profiles.remove_entry(uuid);
+            state.save();
+        }
+
+        // Delete compat dir if it exists
+        #[cfg(not(target_os = "windows"))]
+        {
+            let statics = get_app_statics();
+            let compat_dir = statics.compat_data_dir.join(uuid.to_string());
+            if compat_dir.exists() {
+                if let Err(e) = std::fs::remove_dir_all(&compat_dir) {
+                    warn!(
+                        "Failed to remove compat data directory for launch profile {}: {}",
+                        uuid, e
+                    );
+                }
+            }
+        }
+
         Ok(())
     };
     internal.await.map_err(|e: Error| e.to_string())
