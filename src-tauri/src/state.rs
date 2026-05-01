@@ -692,6 +692,15 @@ impl LaunchProfiles {
         !self.profiles.is_empty()
     }
 
+    pub fn reload_presets(&mut self) {
+        // remove all existing presets
+        self.profiles.retain(|p| !p.is_preset());
+        // add fresh presets in
+        let mut presets = Self::load_presets();
+        presets.profiles.extend(self.profiles.clone());
+        *self = presets;
+    }
+
     #[allow(deprecated)]
     fn load(config: &mut Config) -> Self {
         const CUSTOM_PROFILE_NAME: &str = "Custom Profile";
@@ -704,15 +713,12 @@ impl LaunchProfiles {
                 profiles
             }
             Err(_) => {
-                info!("Loading preset launch profiles");
-                let mut profiles = util::get_preset_launch_profiles();
+                let mut profiles = Self::load_presets();
                 if let Some(current_cmd) = config.game.launch_command.as_ref() {
-                    let profile = LaunchProfile::new(CUSTOM_PROFILE_NAME, current_cmd, false);
-                    let profile_id = profile.get_id();
-                    profiles.push(profile);
+                    let profile_id = profiles.add_entry(CUSTOM_PROFILE_NAME, current_cmd);
                     config.game.launch_profile = profile_id;
                 }
-                Self { profiles }
+                profiles
             }
         };
 
@@ -739,6 +745,12 @@ impl LaunchProfiles {
         let commands_str = std::fs::read_to_string(commands_path)?;
         let commands: Self = serde_json::from_str(&commands_str)?;
         Ok(commands)
+    }
+
+    fn load_presets() -> Self {
+        info!("Loading preset launch profiles");
+        let profiles = util::get_preset_launch_profiles();
+        Self { profiles }
     }
 }
 

@@ -118,8 +118,8 @@ export default function SettingsPage() {
   const doInit = async () => {
     try {
       await invoke("reload_state");
-      await syncConfig();
       await syncLaunchProfiles();
+      await syncConfig();
       setInitialFetchDone(true);
     } catch (e) {
       alertError("Error during init: " + e);
@@ -171,6 +171,7 @@ export default function SettingsPage() {
     } else {
       await resetGameSettings();
     }
+    await syncLaunchProfiles();
     const updatedConfig = await syncConfig();
     return updatedConfig.game;
   };

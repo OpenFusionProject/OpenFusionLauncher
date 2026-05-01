@@ -31,7 +31,7 @@ use log::*;
 use tauri::Manager;
 use uuid::Uuid;
 
-use crate::state::{LaunchProfile, LaunchProfilesView};
+use crate::state::{LaunchProfile, LaunchProfiles, LaunchProfilesView};
 
 type Error = Box<dyn std::error::Error>;
 type Result<T> = std::result::Result<T, Error>;
@@ -1349,9 +1349,15 @@ async fn reset_launcher_config(app_handle: tauri::AppHandle) -> CommandResult<()
 #[tauri::command]
 async fn reset_game_config(app_handle: tauri::AppHandle) -> CommandResult<()> {
     debug!("reset_game_config");
-    let default_game_config = config::GameSettings::default();
+    let mut default_game_config = config::GameSettings::default();
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
+
+    state.launch_profiles.reload_presets();
+    if let Some(new_default_profile) = state.launch_profiles.get_default() {
+        default_game_config.launch_profile = new_default_profile.get_id();
+    }
+
     state.config.game = default_game_config;
     state.write_config = true;
     state.save();

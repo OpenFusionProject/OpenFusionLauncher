@@ -37,6 +37,10 @@ export default function GameSettingsTab({
   const ctx = useContext(SettingsCtx);
 
   useEffect(() => {
+    setLaunchProfiles(currentProfiles);
+  }, [currentProfiles]);
+
+  useEffect(() => {
     getDebugMode().then(setDebug);
   }, [active]);
 
