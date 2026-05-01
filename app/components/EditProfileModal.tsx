@@ -65,6 +65,8 @@ export default function EditProfileModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={DEFAULT_NAME}
+              readOnly={isPreset}
+              disabled={isPreset}
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="editProfileCommand">
