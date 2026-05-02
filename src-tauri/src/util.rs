@@ -503,7 +503,7 @@ fn extract_env_vars_from_tokens(tokens: &mut Vec<String>) -> HashMap<String, Str
 pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Command {
     const REPLACEMENT_TOKEN: &str = "{}";
 
-    let mut base_command_str = base_cmd.get_program().to_string_lossy().to_string();
+    let mut base_command_str = format!("\"{}\"", base_cmd.get_program().to_string_lossy());
     for arg in base_cmd.get_args() {
         base_command_str.push(' ');
         base_command_str.push_str(arg.to_string_lossy().to_string().as_str());
