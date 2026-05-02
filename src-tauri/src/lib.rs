@@ -31,7 +31,7 @@ use log::*;
 use tauri::Manager;
 use uuid::Uuid;
 
-use crate::state::{LaunchProfile, LaunchProfiles, LaunchProfilesView};
+use crate::state::{LaunchProfile, LaunchProfilesView};
 
 type Error = Box<dyn std::error::Error>;
 type Result<T> = std::result::Result<T, Error>;
