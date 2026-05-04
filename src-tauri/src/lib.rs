@@ -553,17 +553,17 @@ async fn prep_launch(
             let listener = TcpListener::bind("127.0.0.1:0").await?;
             let proxy_addr = listener.local_addr()?;
             let new_asset_url = format!("http://{}", proxy_addr);
-
-            // NOTE: this assumes that the main file is under the asset URL somewhere,
-            // which is true for all known versions, but not technically guaranteed by
-            // the FFBuildTool manifest format (sorry guys)
-            main_url = main_url.replace(&asset_url, &new_asset_url);
             asset_url = new_asset_url;
 
             let handle = tokio::spawn(async move {
                 proxy.run(&listener).await;
             });
             state.proxy = Some(handle);
+        }
+
+        // Upgrade the main URL to HTTPS, since ffrunner supports it
+        if main_url.starts_with("http://") {
+            main_url = main_url.replacen("http://", "https://", 1);
         }
 
         debug!("Asset URL: {}", asset_url);
