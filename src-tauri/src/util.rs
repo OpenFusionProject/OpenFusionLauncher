@@ -554,3 +554,14 @@ pub(crate) fn log_command(command: &Command) {
     let command_str = get_launch_cmd_dbg_str(command, true);
     debug!("Launching game: {}", command_str);
 }
+
+pub(crate) async fn does_web_file_exist(url: &str) -> bool {
+    let client = get_http_client();
+    match client.head(url).send().await {
+        Ok(response) => response.status().is_success(),
+        Err(e) => {
+            debug!("Failed to check if web file exists: {}", e);
+            false
+        }
+    }
+}

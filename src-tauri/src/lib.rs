@@ -561,9 +561,14 @@ async fn prep_launch(
             state.proxy = Some(handle);
         }
 
-        // Upgrade the main URL to HTTPS, since ffrunner supports it
+        // Upgrade the main URL to HTTPS, if it's available, since ffrunner supports it
         if main_url.starts_with("http://") {
-            main_url = main_url.replacen("http://", "https://", 1);
+            let main_url_upgraded = main_url.replacen("http://", "https://", 1);
+            if util::does_web_file_exist(&main_url_upgraded).await {
+                main_url = main_url_upgraded;
+            } else if !util::does_web_file_exist(&main_url).await {
+                return Err(format!("Main file not found: {}", main_url).into());
+            }
         }
 
         debug!("Asset URL: {}", asset_url);
