@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
@@ -7,7 +7,6 @@ import Tab from "react-bootstrap/Tab";
 
 import Button from "./Button";
 
-import { SettingsCtx } from "@/app/contexts";
 import { EndpointInfo, ServerEntry } from "@/app/types";
 import { validateUsername, validatePassword, validateEmail, getPrivacyPolicyUrlForServer } from "@/app/util";
 import { Overlay, Tooltip } from "react-bootstrap";
@@ -136,6 +135,7 @@ export default function LoginModal({
   onSubmitLogin,
   onSubmitRegister,
   onForgotPassword,
+  showConfirmationModal,
 }: {
   server?: ServerEntry;
   show: boolean;
@@ -144,6 +144,13 @@ export default function LoginModal({
   onSubmitLogin: (username: string, password: string, remember: boolean) => void;
   onSubmitRegister: (username: string, password: string, email: string) => void;
   onForgotPassword: () => void;
+  showConfirmationModal?: (
+    message: string,
+    confirmText: string,
+    confirmVariant: string,
+    onConfirm: () => void,
+    title?: string,
+  ) => void;
 }) {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -157,8 +164,6 @@ export default function LoginModal({
   const [tab, setTab] = useState<string>(TAB_LOGIN);
 
   const [emailRequired, setEmailRequired] = useState<boolean>(false);
-
-  const ctx = useContext(SettingsCtx);
 
   const validateLogin = () => {
     return username.length > 0 && password.length > 0;
@@ -203,9 +208,9 @@ export default function LoginModal({
   };
 
   const onSubmit = () => {
-    if (tab === TAB_REGISTER && ctx.showConfirmationModal) {
+    if (tab === TAB_REGISTER && showConfirmationModal) {
       if (email.length > 0) {
-        ctx.showConfirmationModal(
+        showConfirmationModal(
           EMAIL_DISCLAIMER,
           "I understand",
           "danger",
@@ -213,7 +218,7 @@ export default function LoginModal({
           "Note!",
         );
       } else {
-        ctx.showConfirmationModal(
+        showConfirmationModal(
           NO_EMAIL_DISCLAIMER,
           "I understand",
           "danger",

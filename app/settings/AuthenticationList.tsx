@@ -264,6 +264,7 @@ function ListEntry({
         onSubmitLogin={doLogin}
         onSubmitRegister={doRegister}
         onForgotPassword={() => setShowForgotPasswordModal(true)}
+        showConfirmationModal={ctx.showConfirmationModal}
       />
       <ForgotPasswordModal
         show={showForgotPasswordModal}
