@@ -98,12 +98,18 @@ jobs:
     - name: Build
       run: cargo tauri build --bundles appimage
 
+    - name: Download GE Proton
+      run: |
+        wget https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton10-34/GE-Proton10-34.tar.gz -O /tmp/ge_proton.tar.gz
+        mkdir -p src-tauri/target/release/ge-proton
+        tar -xvf /tmp/ge_proton.tar.gz -C src-tauri/target/release/ge-proton --strip-components=1
+
     - name: Package
       run: |
         cd src-tauri/target/release
         mkdir linux-standalone
         mkdir linux-appimage
-        cp -r -t linux-standalone openfusionlauncher ffrunner.exe d3d9_vulkan.dll assets defaults loader player mono
+        cp -r -t linux-standalone openfusionlauncher ffrunner.exe d3d9_vulkan.dll assets defaults loader player mono ge-proton
         cp -r -t linux-appimage bundle/appimage/OpenFusionLauncher_*.AppImage
 
     - uses: actions/upload-artifact@v4.6.0
