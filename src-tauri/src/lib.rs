@@ -1457,6 +1457,12 @@ pub fn run() {
             }
 
             state::init_app_statics(app);
+            unsafe {
+                env::set_var(
+                    "OPENFUSIONLAUNCHER_RESOURCE_DIR",
+                    get_app_statics().resource_dir.clone(),
+                );
+            }
             info!("OpenFusion Launcher v{}", get_app_statics().get_version());
             // N.B. AppState::load depends on APP_STATICS
             let app_state = AppState::default();

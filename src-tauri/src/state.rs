@@ -711,8 +711,7 @@ impl LaunchProfiles {
     fn load(config: &mut Config) -> Self {
         const CUSTOM_PROFILE_NAME: &str = "Custom Profile";
         let mut profiles = match Self::load_internal() {
-            Ok(mut profiles) => {
-                profiles = Self::apply_migrations(profiles);
+            Ok(profiles) => {
                 info!(
                     "Loaded {} launch profiles from app data",
                     profiles.profiles.len()
@@ -729,6 +728,7 @@ impl LaunchProfiles {
             }
         };
 
+        profiles = Self::apply_migrations(profiles);
         profiles.sort();
 
         if profiles.get(config.game.launch_profile).is_none() {
@@ -757,25 +757,44 @@ impl LaunchProfiles {
     }
 
     fn apply_migrations(mut loaded: LaunchProfiles) -> LaunchProfiles {
-        // Strip `STEAM_COMPAT_CLIENT_INSTALL_PATH` env var from all presets;
-        // it's set at runtime now as part of compat setup.
-        static STEAM_COMPAT_REMOVAL_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-            Regex::new(r#"\s*STEAM_COMPAT_CLIENT_INSTALL_PATH="[^"]*"\s*"#).unwrap()
-        });
+        if cfg!(target_os = "linux") {
+            // Strip `STEAM_COMPAT_CLIENT_INSTALL_PATH` env var from all presets;
+            // it's set at runtime now as part of compat setup.
+            static STEAM_COMPAT_REMOVAL_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+                Regex::new(r#"\s*STEAM_COMPAT_CLIENT_INSTALL_PATH="[^"]*"\s*"#).unwrap()
+            });
 
-        for profile in &mut loaded.profiles {
-            if profile.is_preset() {
-                let new_command = STEAM_COMPAT_REMOVAL_REGEX
-                    .replace_all(&profile.command, " ")
-                    .trim()
-                    .to_string();
-                if new_command != profile.command {
-                    debug!(
-                        "Migrating launch profile {}: stripping STEAM_COMPAT_CLIENT_INSTALL_PATH",
-                        profile.get_id()
-                    );
-                    profile.command = new_command;
+            for profile in &mut loaded.profiles {
+                if profile.is_preset() {
+                    let new_command = STEAM_COMPAT_REMOVAL_REGEX
+                        .replace_all(&profile.command, " ")
+                        .trim()
+                        .to_string();
+                    if new_command != profile.command {
+                        debug!(
+                            "Migrating launch profile {}: stripping STEAM_COMPAT_CLIENT_INSTALL_PATH",
+                            profile.get_id()
+                        );
+                        profile.command = new_command;
+                    }
                 }
+            }
+
+            // If there's no launch profile for the embedded GE Proton, add one.
+            let ge_proton_embedded = get_app_statics().resource_dir.join("ge-proton").exists();
+            if ge_proton_embedded
+                && !loaded
+                    .profiles
+                    .iter()
+                    .any(|p| p.is_preset() && p.name.starts_with("GE Proton"))
+            {
+                debug!("Adding launch profile for embedded GE Proton");
+                let preset_profile = LaunchProfile::new(
+                    "GE Proton (embedded)",
+                    &format!("\"{{OPENFUSIONLAUNCHER_RESOURCE_DIR}}/ge-proton/proton\" run {{}}"),
+                    true,
+                );
+                loaded.profiles.push(preset_profile);
             }
         }
 
