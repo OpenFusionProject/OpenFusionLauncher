@@ -760,19 +760,40 @@ impl LaunchProfiles {
         if cfg!(target_os = "linux") {
             // Strip `STEAM_COMPAT_CLIENT_INSTALL_PATH` env var from all presets;
             // it's set at runtime now as part of compat setup.
-            static STEAM_COMPAT_REMOVAL_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+            static STEAM_COMPAT_CLIENT_REMOVAL_REGEX: LazyLock<Regex> = LazyLock::new(|| {
                 Regex::new(r#"\s*STEAM_COMPAT_CLIENT_INSTALL_PATH="[^"]*"\s*"#).unwrap()
             });
 
             for profile in &mut loaded.profiles {
                 if profile.is_preset() {
-                    let new_command = STEAM_COMPAT_REMOVAL_REGEX
+                    let new_command = STEAM_COMPAT_CLIENT_REMOVAL_REGEX
                         .replace_all(&profile.command, " ")
                         .trim()
                         .to_string();
                     if new_command != profile.command {
                         debug!(
                             "Migrating launch profile {}: stripping STEAM_COMPAT_CLIENT_INSTALL_PATH",
+                            profile.get_id()
+                        );
+                        profile.command = new_command;
+                    }
+                }
+            }
+
+            // Strip `STEAM_COMPAT_DATA_PATH` env var from all presets;
+            // it's set at runtime now as part of compat setup.
+            static STEAM_COMPAT_DATA_REMOVAL_REGEX: LazyLock<Regex> =
+                LazyLock::new(|| Regex::new(r#"\s*STEAM_COMPAT_DATA_PATH="[^"]*"\s*"#).unwrap());
+
+            for profile in &mut loaded.profiles {
+                if profile.is_preset() {
+                    let new_command = STEAM_COMPAT_DATA_REMOVAL_REGEX
+                        .replace_all(&profile.command, " ")
+                        .trim()
+                        .to_string();
+                    if new_command != profile.command {
+                        debug!(
+                            "Migrating launch profile {}: stripping STEAM_COMPAT_DATA_PATH",
                             profile.get_id()
                         );
                         profile.command = new_command;
