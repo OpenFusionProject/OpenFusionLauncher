@@ -126,7 +126,7 @@ pub(crate) fn get_env_var_value(cmd: &Command, var: &str) -> Option<String> {
 }
 
 #[cfg(target_os = "macos")]
-fn find_macos_wine_installs() -> Vec<(String, PathBuf)> {
+fn find_macos_wine_installs() -> Vec<(String, PathBuf, isize)> {
     const CANDIDATES: [&str; 5] = [
         "/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/CrossOver-Hosted Application/wineloader",
         "/Applications/Wine Crossover.app/Contents/Resources/wine/bin/wine",
@@ -136,7 +136,7 @@ fn find_macos_wine_installs() -> Vec<(String, PathBuf)> {
     ];
 
     let mut installs = Vec::new();
-    for p in &CANDIDATES {
+    for (i, p) in &CANDIDATES.iter().enumerate() {
         let path = PathBuf::from(p);
         if path.exists() {
             let app_name = path
@@ -146,7 +146,9 @@ fn find_macos_wine_installs() -> Vec<(String, PathBuf)> {
                 .unwrap()
                 .trim_end_matches(".app")
                 .to_string();
-            installs.push((app_name, path));
+
+            let weight = (CANDIDATES.len() as isize - i as isize) * 10;
+            installs.push((app_name, path, weight));
         }
     }
     installs
@@ -160,33 +162,46 @@ pub(crate) fn get_preset_launch_profiles() -> Vec<LaunchProfile> {
     #[cfg(target_os = "windows")]
     {
         // On Windows, we can just run the game directly with no compatibility layer
-        profiles.push(LaunchProfile::new("Native", "{}", true));
+        profiles.push(LaunchProfile::new_preset("Native", "{}", None));
     }
 
     #[cfg(target_os = "macos")]
     {
         // Find Wine installs
-        for (app_name, wine_path) in find_macos_wine_installs() {
+        for (app_name, wine_path, weight) in find_macos_wine_installs() {
             let wine_cmd = format!("\"{}\" {{}}", wine_path.to_string_lossy());
-            profiles.push(LaunchProfile::new(&app_name, &wine_cmd, true));
+            profiles.push(LaunchProfile::new_preset(
+                &app_name,
+                &wine_cmd,
+                Some(weight),
+            ));
         }
     }
 
     #[cfg(target_os = "linux")]
     {
+        use regex::Regex;
+        use std::sync::LazyLock;
+
+        static PROTON_NAME_REGEX: LazyLock<Regex> =
+            LazyLock::new(|| Regex::new(r#"^Proton ([+-]?\d+)(?:\.\d+)?$"#).unwrap());
+
         // Find Proton installs
         for proton_install in protontools::find_all_proton_installs() {
             let proton_path = proton_install.get_exe_path();
-            let profile_name = proton_path
-                .parent()
-                .and_then(|p| p.file_name())
-                .map(|n| n.to_string_lossy().to_string())
-                .unwrap();
+            let profile_name = proton_install.get_name();
+            let proton_version = PROTON_NAME_REGEX
+                .captures(profile_name)
+                .and_then(|caps| caps.get(1))
+                .map(|m| m.as_str().to_string());
 
-            profiles.push(LaunchProfile::new(
-                &profile_name,
+            // Weigh by Proton version (prefers higher versions)
+            let profile_weight = proton_version.and_then(|v| v.parse::<isize>().ok());
+
+            profiles.push(LaunchProfile::new_preset(
+                profile_name,
                 &format!("\"{}\" run {{}}", proton_path.to_string_lossy()),
-                true,
+                profile_weight,
             ));
         }
     }
@@ -197,7 +212,9 @@ pub(crate) fn get_preset_launch_profiles() -> Vec<LaunchProfile> {
         if let Ok(wine) = which::which("wine") {
             let name = format!("Wine ({})", wine.to_string_lossy());
             let wine_cmd = format!("\"{}\" {{}}", wine.to_string_lossy());
-            profiles.push(LaunchProfile::new(&name, &wine_cmd, true));
+
+            // Weigh negative to prefer Proton and specialized Wine installs
+            profiles.push(LaunchProfile::new_preset(&name, &wine_cmd, Some(-1)));
         }
     }
 

@@ -624,14 +624,26 @@ pub struct LaunchProfile {
     name: String,
     command: String,
     preset: bool,
+    weight: Option<isize>,
 }
 impl LaunchProfile {
-    pub fn new(name: &str, command: &str, preset: bool) -> Self {
+    pub fn new(name: &str, command: &str) -> Self {
         Self {
             uuid: Uuid::new_v4(),
             name: name.to_string(),
             command: command.to_string(),
-            preset,
+            preset: false,
+            weight: None,
+        }
+    }
+
+    pub fn new_preset(name: &str, command: &str, weight: Option<isize>) -> Self {
+        Self {
+            uuid: Uuid::new_v4(),
+            name: name.to_string(),
+            command: command.to_string(),
+            preset: true,
+            weight,
         }
     }
 
@@ -670,7 +682,7 @@ impl LaunchProfiles {
     }
 
     pub fn add_entry(&mut self, name: &str, command: &str) -> Uuid {
-        let profile = LaunchProfile::new(name, command, false);
+        let profile = LaunchProfile::new(name, command);
         let id = profile.get_id();
         self.profiles.push(profile);
         id
@@ -784,7 +796,7 @@ impl LaunchProfiles {
 
     fn sort(&mut self) {
         self.profiles
-            .sort_by_key(|p| (!p.is_preset(), p.name.clone()));
+            .sort_by_key(|p| (!p.is_preset(), -p.weight.unwrap_or(0), p.name.clone()));
     }
 
     fn load_presets() -> Self {
