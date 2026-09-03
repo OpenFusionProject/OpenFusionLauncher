@@ -724,7 +724,12 @@ impl LaunchProfiles {
         const CUSTOM_PROFILE_NAME: &str = "Custom Profile";
         let mut profiles = match Self::load_internal() {
             Ok(mut profiles) => {
-                profiles = Self::apply_migrations(profiles);
+                if Self::are_presets_old(&profiles) {
+                    info!("Old presets detected; discarding");
+                    profiles.reload_presets();
+                    info!("Regenerated presets");
+                }
+
                 info!(
                     "Loaded {} launch profiles from app data",
                     profiles.profiles.len()
@@ -768,30 +773,19 @@ impl LaunchProfiles {
         Ok(commands)
     }
 
-    fn apply_migrations(mut loaded: LaunchProfiles) -> LaunchProfiles {
-        // Strip `STEAM_COMPAT_CLIENT_INSTALL_PATH` env var from all presets;
-        // it's set at runtime now as part of compat setup.
-        static STEAM_COMPAT_REMOVAL_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    fn are_presets_old(loaded: &LaunchProfiles) -> bool {
+        static STEAM_COMPAT_PATH_REGEX: LazyLock<Regex> = LazyLock::new(|| {
             Regex::new(r#"\s*STEAM_COMPAT_CLIENT_INSTALL_PATH="[^"]*"\s*"#).unwrap()
         });
 
-        for profile in &mut loaded.profiles {
-            if profile.is_preset() {
-                let new_command = STEAM_COMPAT_REMOVAL_REGEX
-                    .replace_all(&profile.command, " ")
-                    .trim()
-                    .to_string();
-                if new_command != profile.command {
-                    debug!(
-                        "Migrating launch profile {}: stripping STEAM_COMPAT_CLIENT_INSTALL_PATH",
-                        profile.get_id()
-                    );
-                    profile.command = new_command;
-                }
+        // `STEAM_COMPAT_CLIENT_INSTALL_PATH` is only specified in older launch profiles
+        for profile in &loaded.profiles {
+            if profile.is_preset() && STEAM_COMPAT_PATH_REGEX.is_match(&profile.command) {
+                return true;
             }
         }
 
-        loaded
+        false
     }
 
     fn sort(&mut self) {

@@ -681,7 +681,7 @@ async fn prep_launch(
                 .and_then(|s| s.to_str())
                 .unwrap_or("");
 
-            if compat_program.contains("proton") {
+            if compat_program.contains("proton") || compat_program.contains("_v2-entry-point") {
                 #[cfg(target_os = "linux")]
                 {
                     if util::get_env_var_value(&cmd, "STEAM_COMPAT_CLIENT_INSTALL_PATH").is_none() {

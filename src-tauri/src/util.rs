@@ -188,6 +188,7 @@ pub(crate) fn get_preset_launch_profiles() -> Vec<LaunchProfile> {
 
         // Find Proton installs
         for proton_install in protontools::find_all_proton_installs() {
+            let steam_linux_runtime_path = proton_install.get_runtime_entry_point();
             let proton_path = proton_install.get_exe_path();
             let profile_name = proton_install.get_name();
             let proton_version = PROTON_NAME_REGEX
@@ -198,9 +199,15 @@ pub(crate) fn get_preset_launch_profiles() -> Vec<LaunchProfile> {
             // Weigh by Proton version (prefers higher versions)
             let profile_weight = proton_version.and_then(|v| v.parse::<isize>().ok());
 
+            let launch_command = format!(
+                "\"{}\" --verb=run -- \"{}\" run {{}}",
+                steam_linux_runtime_path.to_string_lossy(),
+                proton_path.to_string_lossy()
+            );
+
             profiles.push(LaunchProfile::new_preset(
                 profile_name,
-                &format!("\"{}\" run {{}}", proton_path.to_string_lossy()),
+                &launch_command,
                 profile_weight,
             ));
         }
@@ -477,7 +484,7 @@ fn extract_env_vars_from_tokens(tokens: &mut Vec<String>) -> HashMap<String, Str
     let mut env_vars = HashMap::new();
     let mut i = 0;
     while i < tokens.len() {
-        if tokens[i].contains('=') {
+        if !tokens[i].starts_with("-") && tokens[i].contains('=') {
             let mut parts = tokens[i].split('=');
             let key = parts.next().unwrap();
             if key.trim().is_empty() {
