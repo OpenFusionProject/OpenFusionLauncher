@@ -33,7 +33,7 @@ pub struct LauncherSettings {
     #[serde(default = "util::false_fn")]
     pub verify_offline_caches: bool,
 
-    #[serde(default = "util::false_fn")]
+    #[serde(default = "util::true_fn")]
     pub delete_old_game_caches: bool,
 
     #[serde(default)]
@@ -55,7 +55,7 @@ impl Default for LauncherSettings {
             theme: None,
             use_offline_caches: true,
             verify_offline_caches: false,
-            delete_old_game_caches: false,
+            delete_old_game_caches: true,
             launch_behavior: LaunchBehavior::Hide,
             game_cache_path: util::get_default_cache_dir(),
             offline_cache_path: util::get_default_offline_cache_dir(),

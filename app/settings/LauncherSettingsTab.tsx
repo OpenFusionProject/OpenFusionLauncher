@@ -206,7 +206,7 @@ export default function LauncherSettingsTab({
                   { key: "yes", value: true, label: "Yes" },
                   { key: "no", value: false, label: "No" },
                 ]}
-                defaultKey="no"
+                defaultKey="yes"
                 oldValue={currentSettings.delete_old_game_caches}
                 value={settings.delete_old_game_caches}
                 onChange={(value) =>
