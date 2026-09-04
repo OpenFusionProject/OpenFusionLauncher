@@ -136,7 +136,7 @@ fn find_macos_wine_installs() -> Vec<(String, PathBuf, isize)> {
     ];
 
     let mut installs = Vec::new();
-    for (i, p) in &CANDIDATES.iter().enumerate() {
+    for (i, p) in CANDIDATES.iter().enumerate() {
         let path = PathBuf::from(p);
         if path.exists() {
             let app_name = path
