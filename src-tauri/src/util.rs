@@ -188,7 +188,7 @@ pub(crate) fn get_preset_launch_profiles() -> Vec<LaunchProfile> {
 
         // Find Proton installs
         for proton_install in protontools::find_all_proton_installs() {
-            let steam_linux_runtime_path = proton_install.get_runtime_entry_point();
+            let steam_linux_runtime_path = proton_install.get_runtime().get_exe_path();
             let proton_path = proton_install.get_exe_path();
             let profile_name = proton_install.get_name();
             let proton_version = PROTON_NAME_REGEX

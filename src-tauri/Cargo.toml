@@ -33,4 +33,4 @@ tauri-plugin-dialog = "=2.4.0"
 regex = "1.12.3"
 rust-proxy = { git = "https://github.com/yungcomputerchair/rust-proxy.git", rev = "44a8f46090846c03ca5bb77081b13b3937bd7c9b", features = ["upgrade"] }
 which = "8.0.2"
-protontools = { git = "https://github.com/yungcomputerchair/protontools.git", branch = "test" }
+protontools = "1.2.0"
