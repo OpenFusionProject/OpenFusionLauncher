@@ -140,22 +140,22 @@ impl AppState {
     pub fn save(&self) {
         debug!("Saving app state");
         let app_data_dir = &get_app_statics().app_data_dir;
-        if !app_data_dir.exists() {
-            if let Err(e) = std::fs::create_dir_all(app_data_dir) {
-                warn!(
-                    "Failed to create app data dir: {}\nCan't save app state!",
-                    e
-                );
-                return;
-            }
+        if !app_data_dir.exists()
+            && let Err(e) = std::fs::create_dir_all(app_data_dir)
+        {
+            warn!(
+                "Failed to create app data dir: {}\nCan't save app state!",
+                e
+            );
+            return;
         }
 
         // we don't want to override the config file on disk
         // if it was invalid at load time
-        if self.write_config {
-            if let Err(e) = self.config.save() {
-                warn!("Failed to save config: {}", e);
-            }
+        if self.write_config
+            && let Err(e) = self.config.save()
+        {
+            warn!("Failed to save config: {}", e);
         }
 
         if let Err(e) = self.launch_profiles.save() {
@@ -181,10 +181,10 @@ impl AppState {
 
     pub fn fixup_server_versions(servers: &mut Servers, versions: &Versions) {
         for server in &mut servers.servers {
-            if let ServerInfo::Simple { version, .. } = &mut server.info {
-                if let Some(correct_version) = versions.get_entry_by_name(version) {
-                    *version = correct_version.get_uuid().to_string();
-                }
+            if let ServerInfo::Simple { version, .. } = &mut server.info
+                && let Some(correct_version) = versions.get_entry_by_name(version)
+            {
+                *version = correct_version.get_uuid().to_string();
             }
         }
     }

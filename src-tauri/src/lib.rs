@@ -453,33 +453,34 @@ async fn prep_launch(
         let cache_dir = util::get_cache_dir_for_version(base_cache_dir, version);
         if !cache_dir.exists() {
             // check for cache upgrade
-            if let Some(parent_uuid) = version.get_parent_uuid() {
-                if let Some(parent_version) = state.versions.get_entry(parent_uuid) {
-                    let parent_cache_dir =
-                        util::get_cache_dir_for_version(base_cache_dir, parent_version);
-                    if parent_cache_dir.exists() {
-                        if let Err(e) = util::copy_dir(&parent_cache_dir, &cache_dir) {
-                            warn!(
-                                "Failed to upgrade cache from parent version {} for {}: {}",
-                                parent_uuid, version_uuid, e
-                            );
-                        } else {
-                            info!(
-                                "Upgraded cache from parent version {} for {}",
-                                parent_uuid, version_uuid
-                            );
+            if let Some(parent_uuid) = version.get_parent_uuid()
+                && let Some(parent_version) = state.versions.get_entry(parent_uuid)
+            {
+                let parent_cache_dir =
+                    util::get_cache_dir_for_version(base_cache_dir, parent_version);
 
-                            if state.config.launcher.delete_old_game_caches
-                                && state.get_version_use_count(parent_uuid) == 0
-                            {
-                                if let Err(e) = util::delete_dir(&parent_cache_dir) {
-                                    warn!(
-                                        "Failed to delete cache for parent version {}: {}",
-                                        parent_uuid, e
-                                    );
-                                } else {
-                                    info!("Deleted cache for parent version {}", parent_uuid);
-                                }
+                if parent_cache_dir.exists() {
+                    if let Err(e) = util::copy_dir(&parent_cache_dir, &cache_dir) {
+                        warn!(
+                            "Failed to upgrade cache from parent version {} for {}: {}",
+                            parent_uuid, version_uuid, e
+                        );
+                    } else {
+                        info!(
+                            "Upgraded cache from parent version {} for {}",
+                            parent_uuid, version_uuid
+                        );
+
+                        if state.config.launcher.delete_old_game_caches
+                            && state.get_version_use_count(parent_uuid) == 0
+                        {
+                            if let Err(e) = util::delete_dir(&parent_cache_dir) {
+                                warn!(
+                                    "Failed to delete cache for parent version {}: {}",
+                                    parent_uuid, e
+                                );
+                            } else {
+                                info!("Deleted cache for parent version {}", parent_uuid);
                             }
                         }
                     }
@@ -711,7 +712,7 @@ async fn prep_launch(
                 if let Some(wine_prefix) = util::get_env_var_value(&cmd, "WINEPREFIX") {
                     compat_data_dir = wine_prefix.into();
                 } else {
-                    cmd.env("WINEPREFIX", &compat_data_dir.clone().into_os_string());
+                    cmd.env("WINEPREFIX", compat_data_dir.clone().into_os_string());
                 }
             } else {
                 // unknown compat layer
@@ -1338,13 +1339,13 @@ async fn delete_launch_profile(app_handle: tauri::AppHandle, uuid: Uuid) -> Comm
         {
             let statics = get_app_statics();
             let compat_dir = statics.compat_data_dir.join(uuid.to_string());
-            if compat_dir.exists() {
-                if let Err(e) = std::fs::remove_dir_all(&compat_dir) {
-                    warn!(
-                        "Failed to remove compat data directory for launch profile {}: {}",
-                        uuid, e
-                    );
-                }
+            if compat_dir.exists()
+                && let Err(e) = std::fs::remove_dir_all(&compat_dir)
+            {
+                warn!(
+                    "Failed to remove compat data directory for launch profile {}: {}",
+                    uuid, e
+                );
             }
         }
 

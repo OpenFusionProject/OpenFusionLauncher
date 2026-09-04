@@ -116,10 +116,10 @@ pub(crate) fn get_env_var_value(cmd: &Command, var: &str) -> Option<String> {
     }
 
     // Check env
-    if let Ok(value) = env::var(var) {
-        if !value.is_empty() {
-            return Some(value);
-        }
+    if let Ok(value) = env::var(var)
+        && !value.is_empty()
+    {
+        return Some(value);
     }
 
     None
