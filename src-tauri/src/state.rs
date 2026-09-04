@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     path::PathBuf,
     process::Command,
     sync::{LazyLock, OnceLock},
@@ -722,6 +722,7 @@ impl LaunchProfiles {
     #[allow(deprecated)]
     fn load(config: &mut Config) -> Self {
         const CUSTOM_PROFILE_NAME: &str = "Custom Profile";
+
         let mut profiles = match Self::load_internal() {
             Ok(mut profiles) => {
                 if Self::are_presets_old(&profiles) {
@@ -747,6 +748,36 @@ impl LaunchProfiles {
         };
 
         profiles.sort();
+
+        let app_statics = get_app_statics();
+        let profile_uuids: HashSet<String> = profiles
+            .profiles
+            .iter()
+            .map(|p| p.get_id().to_string())
+            .collect();
+
+        // Iterate compat_data_dir and remove any prefixes that don't match any profile UUID
+        if let Ok(entries) = std::fs::read_dir(&app_statics.compat_data_dir) {
+            for entry in entries.flatten() {
+                if let Ok(file_type) = entry.file_type()
+                    && file_type.is_dir()
+                {
+                    let dir_name = entry.file_name().to_string_lossy().to_string();
+                    if !profile_uuids.contains(&dir_name) {
+                        let dir_path = entry.path();
+                        if let Err(e) = std::fs::remove_dir_all(&dir_path) {
+                            warn!(
+                                "Failed to remove old compat data dir {}: {}",
+                                dir_path.display(),
+                                e
+                            );
+                        } else {
+                            info!("Removed old compat data dir {}", dir_path.display());
+                        }
+                    }
+                }
+            }
+        }
 
         if profiles.get(config.game.launch_profile).is_none() {
             // currently selected launch profile doesn't exist; select the first one if it exists
