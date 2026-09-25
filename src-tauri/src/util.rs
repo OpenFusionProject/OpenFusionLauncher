@@ -295,6 +295,119 @@ pub(crate) fn get_path_as_file_uri(path: &Path) -> String {
     uri.replace("\\", "/")
 }
 
+pub(crate) fn is_file_uri(uri: &str) -> bool {
+    uri.len() >= 5 && uri[..5].eq_ignore_ascii_case("file:")
+}
+
+/// Converts a `file:` URI into a filesystem path.
+pub(crate) fn file_uri_to_path(uri: &str) -> Result<PathBuf> {
+    if !is_file_uri(uri) {
+        return Err(format!("Not a file URI: {}", uri).into());
+    }
+
+    let normalized = uri.replace('\\', "/");
+    let after_scheme = normalized
+        .split_once(':')
+        .map(|(_, rest)| rest)
+        .unwrap_or("");
+
+    let path_part = if let Some(rest) = after_scheme.strip_prefix("//") {
+        if rest.starts_with('/') {
+            rest
+        } else {
+            // file://localhost/path or file://host/path - skip the host
+            rest.find('/').map(|i| &rest[i..]).unwrap_or("")
+        }
+    } else {
+        after_scheme
+    };
+
+    if path_part.is_empty() {
+        return Err(format!("Invalid file URI: {}", uri).into());
+    }
+
+    let decoded = percent_decode_uri_path(path_part);
+
+    #[cfg(windows)]
+    {
+        // file:///C:/foo -> /C:/foo -> C:/foo
+        let windows_path = decoded
+            .strip_prefix('/')
+            .filter(|s| s.chars().nth(1) == Some(':'))
+            .unwrap_or(&decoded);
+        Ok(PathBuf::from(windows_path))
+    }
+
+    #[cfg(not(windows))]
+    {
+        Ok(PathBuf::from(decoded))
+    }
+}
+
+fn percent_decode_uri_path(input: &str) -> String {
+    let bytes = input.as_bytes();
+    let mut out = Vec::with_capacity(bytes.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i] == b'%'
+            && i + 2 < bytes.len()
+            && let Ok(value) =
+                u8::from_str_radix(std::str::from_utf8(&bytes[i + 1..i + 3]).unwrap_or(""), 16)
+        {
+            out.push(value);
+            i += 3;
+            continue;
+        }
+        out.push(bytes[i]);
+        i += 1;
+    }
+    String::from_utf8_lossy(&out).into_owned()
+}
+
+#[cfg(test)]
+mod file_uri_tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    #[test]
+    fn detects_file_uri() {
+        assert!(is_file_uri("file:///tmp/assets"));
+        assert!(is_file_uri("FILE:///C:/builds"));
+        assert!(!is_file_uri("http://cdn.example.com/build"));
+    }
+
+    #[test]
+    fn parses_unix_file_uri() {
+        let path = file_uri_to_path("file:///tmp/assets").unwrap();
+        if cfg!(windows) {
+            assert!(path.ends_with("tmp\\assets") || path.ends_with("tmp/assets"));
+        } else {
+            assert_eq!(path, PathBuf::from("/tmp/assets"));
+        }
+    }
+
+    #[test]
+    fn parses_windows_file_uri() {
+        let path = file_uri_to_path("file:///C:/builds/assets").unwrap();
+        if cfg!(windows) {
+            assert_eq!(path, PathBuf::from("C:/builds/assets"));
+        } else {
+            assert_eq!(path, PathBuf::from("/C:/builds/assets"));
+        }
+    }
+
+    #[test]
+    fn roundtrips_local_path() {
+        let original = std::env::temp_dir();
+        let uri = get_path_as_file_uri(&original);
+        let parsed = file_uri_to_path(&uri).unwrap();
+        assert_eq!(
+            parsed.components().collect::<Vec<_>>(),
+            original.components().collect::<Vec<_>>()
+        );
+    }
+}
+
 pub(crate) fn get_version_name(version: &Version) -> String {
     if let Some(name) = version.get_name() {
         name.to_string()
