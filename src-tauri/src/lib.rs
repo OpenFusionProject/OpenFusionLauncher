@@ -1,3 +1,4 @@
+mod asset_server;
 mod config;
 mod endpoint;
 mod state;
@@ -549,17 +550,32 @@ async fn prep_launch(
                 main_url = offline_main_url;
             }
         } else if state.config.launcher.proxy_asset_downloads {
-            let mut proxy = TcpProxy::default();
-            proxy.set_base_path(asset_url.clone());
             let listener = TcpListener::bind("127.0.0.1:0").await?;
             let proxy_addr = listener.local_addr()?;
             let new_asset_url = format!("http://{}", proxy_addr);
-            asset_url = new_asset_url;
 
-            let handle = tokio::spawn(async move {
-                proxy.run(&listener).await;
-            });
-            state.proxy = Some(handle);
+            if util::is_file_uri(&asset_url) {
+                let local_dir = util::file_uri_to_path(&asset_url)?;
+                if !local_dir.is_dir() {
+                    return Err(
+                        format!("Asset directory not found: {}", local_dir.display()).into(),
+                    );
+                }
+                debug!("Proxying local file assets from {}", local_dir.display());
+                let handle = tokio::spawn(async move {
+                    asset_server::run(listener, local_dir).await;
+                });
+                state.proxy = Some(handle);
+            } else {
+                let mut proxy = TcpProxy::default();
+                proxy.set_base_path(asset_url.clone());
+                let handle = tokio::spawn(async move {
+                    proxy.run(&listener).await;
+                });
+                state.proxy = Some(handle);
+            }
+
+            asset_url = new_asset_url;
         }
 
         // Upgrade the main URL to HTTPS, if it's available, since ffrunner supports it
