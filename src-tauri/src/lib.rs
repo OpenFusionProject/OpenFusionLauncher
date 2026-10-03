@@ -548,13 +548,19 @@ async fn prep_launch(
                 asset_url = offline_asset_url;
                 main_url = offline_main_url;
             }
-        } else if state.config.launcher.proxy_asset_downloads {
+        } else if asset_url.starts_with("http://") && state.config.launcher.proxy_asset_downloads {
             let mut proxy = TcpProxy::default();
             proxy.set_base_path(asset_url.clone());
+
             let listener = TcpListener::bind("127.0.0.1:0").await?;
             let proxy_addr = listener.local_addr()?;
             let new_asset_url = format!("http://{}", proxy_addr);
             asset_url = new_asset_url;
+
+            // Shut down any existing proxy before starting a new one
+            if let Some(old_handle) = state.proxy.take() {
+                old_handle.abort();
+            }
 
             let handle = tokio::spawn(async move {
                 proxy.run(&listener).await;
