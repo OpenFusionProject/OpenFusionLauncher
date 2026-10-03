@@ -7,7 +7,6 @@ use config::{LaunchBehavior, LauncherSettings};
 use endpoint::{AccountInfo, InfoResponse, RegisterResponse, Session};
 use ffbuildtool::{ItemProgress, Version};
 use regex::Regex;
-use rust_proxy::proxy::tcp::TcpProxy;
 use serde::{Deserialize, Serialize};
 use state::{
     AppState, Config, FlatServer, FlatServers, Server, ServerInfo, Versions, get_app_statics,
@@ -22,10 +21,7 @@ use std::{
     sync::{Arc, LazyLock, OnceLock, mpsc},
     vec,
 };
-use tokio::{
-    net::TcpListener,
-    sync::{Mutex, Semaphore},
-};
+use tokio::sync::{Mutex, Semaphore};
 
 use log::*;
 use tauri::Manager;
@@ -107,11 +103,8 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
     debug!("do_launch");
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
-    let proxy_enabled = state.config.launcher.proxy_asset_downloads;
-    let launch_behavior = state.config.launcher.launch_behavior;
-    let mut cmd = state.launch_cmd.take().ok_or("No launch prepared")?;
+    let (mut cmd, asset_url) = state.launch_cmd.take().ok_or("No launch prepared")?;
     let cmd_str = util::get_launch_cmd_dbg_str(&cmd, false);
-    drop(state);
 
     let mut proc = cmd.spawn().map_err(|e| {
         // we want to censor the login cookie if present
@@ -121,23 +114,24 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
         format!("{} (launch command was: {})", e, censored_cmd_str)
     })?;
 
-    if launch_behavior == LaunchBehavior::Quit && !proxy_enabled {
-        // no need to keep the proxy alive; we can quit immediately
+    if state.config.launcher.launch_behavior == LaunchBehavior::Quit && state.proxies.is_empty() {
+        // no proxies alive; we can quit immediately
         app_handle.exit(0);
         return Ok(0);
     }
+
+    // don't hold the state across the game process
+    drop(state);
 
     let exit_result = proc.wait();
 
     // shutdown the asset proxy
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
-    if let Some(proxy) = state.proxy.take() {
-        proxy.abort();
-    };
+    state.release_proxy_for_version(&asset_url);
 
     // no need to do any error handling. quit now so the user doesn't see us again.
-    if launch_behavior == LaunchBehavior::Quit {
+    if state.config.launcher.launch_behavior == LaunchBehavior::Quit {
         app_handle.exit(0);
         return Ok(0);
     }
@@ -491,7 +485,8 @@ async fn prep_launch(
         let _ = std::fs::create_dir_all(&cache_dir);
         cmd.env("UNITY_FF_CACHE_DIR", cache_dir);
 
-        let mut asset_url = version.get_asset_url();
+        let original_asset_url = version.get_asset_url();
+        let mut asset_url = original_asset_url.clone();
         let mut main_url = version
             .get_main_file_url()
             .unwrap_or(format!("{}/main.unity3d", asset_url));
@@ -549,23 +544,8 @@ async fn prep_launch(
                 main_url = offline_main_url;
             }
         } else if asset_url.starts_with("http://") && state.config.launcher.proxy_asset_downloads {
-            let mut proxy = TcpProxy::default();
-            proxy.set_base_path(asset_url.clone());
-
-            let listener = TcpListener::bind("127.0.0.1:0").await?;
-            let proxy_addr = listener.local_addr()?;
-            let new_asset_url = format!("http://{}", proxy_addr);
+            let new_asset_url = state.acquire_proxy_for_version(&asset_url).await?;
             asset_url = new_asset_url;
-
-            // Shut down any existing proxy before starting a new one
-            if let Some(old_handle) = state.proxy.take() {
-                old_handle.abort();
-            }
-
-            let handle = tokio::spawn(async move {
-                proxy.run(&listener).await;
-            });
-            state.proxy = Some(handle);
         }
 
         // Upgrade the main URL to HTTPS, if it's available, since ffrunner supports it
@@ -738,7 +718,7 @@ async fn prep_launch(
         cmd.stderr(Stdio::null());
 
         util::log_command(&cmd);
-        state.launch_cmd = Some(cmd);
+        state.launch_cmd = Some((cmd, original_asset_url));
         Ok(timeout_sec)
     };
     debug!(

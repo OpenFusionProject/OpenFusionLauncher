@@ -8,9 +8,10 @@ use std::{
 use ffbuildtool::Version;
 use log::*;
 use regex::Regex;
+use rust_proxy::proxy::tcp::TcpProxy;
 use serde::{Deserialize, Serialize};
 use tauri::{Manager, path::BaseDirectory};
-use tokio::task::JoinHandle;
+use tokio::{net::TcpListener, task::JoinHandle};
 use uuid::Uuid;
 
 use crate::{
@@ -83,6 +84,12 @@ impl AppStatics {
     }
 }
 
+pub struct ProxyInstance {
+    proxy_url: String,
+    handle: JoinHandle<()>,
+    ref_count: usize,
+}
+
 #[derive(Default)]
 pub struct AppState {
     pub config: Config,
@@ -93,8 +100,8 @@ pub struct AppState {
     //
     pub temp_tokens: HashMap<Uuid, String>,
     pub write_config: bool,
-    pub launch_cmd: Option<Command>,
-    pub proxy: Option<JoinHandle<()>>,
+    pub launch_cmd: Option<(Command, String)>, // (launch command, original asset URL)
+    pub proxies: HashMap<String, ProxyInstance>,
 }
 impl AppState {
     pub fn load(app_handle: tauri::AppHandle) -> Self {
@@ -133,7 +140,7 @@ impl AppState {
             temp_tokens: HashMap::new(),
             write_config,
             launch_cmd: None,
-            proxy: None,
+            proxies: HashMap::new(),
         }
     }
 
@@ -214,6 +221,45 @@ impl AppState {
                 } => preferred_version.as_ref() == Some(&uuid.to_string()),
             })
             .count()
+    }
+
+    pub async fn acquire_proxy_for_version(&mut self, asset_url: &str) -> Result<String> {
+        if let Some(existing_proxy) = self.proxies.get_mut(asset_url) {
+            existing_proxy.ref_count += 1;
+            return Ok(existing_proxy.proxy_url.clone());
+        }
+
+        debug!("Starting new proxy for {}", asset_url);
+        let mut proxy = TcpProxy::default();
+        proxy.set_base_path(asset_url.to_string());
+
+        let listener = TcpListener::bind("127.0.0.1:0").await?;
+        let proxy_addr = listener.local_addr()?;
+        let new_asset_url = format!("http://{}", proxy_addr);
+
+        let handle = tokio::spawn(async move {
+            proxy.run(&listener).await;
+        });
+
+        let proxy_instance = ProxyInstance {
+            proxy_url: new_asset_url.clone(),
+            handle,
+            ref_count: 1,
+        };
+
+        self.proxies.insert(asset_url.to_string(), proxy_instance);
+        Ok(new_asset_url)
+    }
+
+    pub fn release_proxy_for_version(&mut self, asset_url: &str) {
+        if let Some(existing_proxy) = self.proxies.get_mut(asset_url) {
+            existing_proxy.ref_count -= 1;
+            if existing_proxy.ref_count == 0 {
+                debug!("Tearing down proxy for {}", asset_url);
+                existing_proxy.handle.abort();
+                self.proxies.remove(asset_url);
+            }
+        }
     }
 }
 
