@@ -150,7 +150,7 @@ export default function LauncherSettingsTab({
               />
               <SettingControlDropdown
                 id="proxy_asset_downloads"
-                name="Proxy asset downloads over HTTPS"
+                name="Proxy HTTP asset downloads over HTTPS"
                 options={[
                   { key: "yes", value: true, label: "Yes" },
                   { key: "no", value: false, label: "No" },

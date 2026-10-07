@@ -41,14 +41,23 @@
       "../resources/defaults/versions/*": "defaults/versions/",
       "../resources/assets/img/*": "assets/img/",
       "../resources/ffrunner/ffrunner.exe": "ffrunner.exe",
+      "../resources/ffrunner/ffrunner64.exe": "ffrunner64.exe",
       "../resources/ffrunner/d3d9_vulkan.dll": "d3d9_vulkan.dll",
+      "../resources/ffrunner/d3d9_vulkan64.dll": "d3d9_vulkan64.dll",
       "../resources/ffrunner/loader/*": "loader/",
+      "../resources/ffrunner/loader-x64/*": "loader-x64/",
       "../resources/ffrunner/player/fusion-2.x.x/*": "player/fusion-2.x.x/",
       "../resources/ffrunner/player/fusion-2.x.x/Data/*": "player/fusion-2.x.x/Data/",
       "../resources/ffrunner/player/fusion-2.x.x/Data/lib/*": "player/fusion-2.x.x/Data/lib/",
       "../resources/ffrunner/mono/fusion-2.x.x/*": "mono/fusion-2.x.x/",
       "../resources/ffrunner/mono/fusion-2.x.x/Data/lib/*": "mono/fusion-2.x.x/Data/lib/",
-      "../resources/ffrunner/mono/fusion-2.x.x/Data/etc/mono/2.0/*": "mono/fusion-2.x.x/Data/etc/mono/2.0/"
+      "../resources/ffrunner/mono/fusion-2.x.x/Data/etc/mono/2.0/*": "mono/fusion-2.x.x/Data/etc/mono/2.0/",
+      "../resources/ffrunner/player/fusion-4.x.x-x64/*": "player/fusion-4.x.x-x64/",
+      "../resources/ffrunner/player/fusion-4.x.x-x64/Data/*": "player/fusion-4.x.x-x64/Data/",
+      "../resources/ffrunner/player/fusion-4.x.x-x64/Data/lib/*": "player/fusion-4.x.x-x64/Data/lib/",
+      "../resources/ffrunner/mono/fusion-4.x.x-x64/*": "mono/fusion-4.x.x-x64/",
+      "../resources/ffrunner/mono/fusion-4.x.x-x64/Data/lib/*": "mono/fusion-4.x.x-x64/Data/lib/",
+      "../resources/ffrunner/mono/fusion-4.x.x-x64/Data/etc/mono/2.0/*": "mono/fusion-4.x.x-x64/Data/etc/mono/2.0/"
     },
     "linux": {
       "appimage": {
@@ -56,8 +65,11 @@
           "/bin/defaults": "../resources/defaults/",
           "/bin/assets/img": "../resources/assets/img/",
           "/bin/ffrunner.exe": "../resources/ffrunner/ffrunner.exe",
+          "/bin/ffrunner64.exe": "../resources/ffrunner/ffrunner64.exe",
           "/bin/d3d9_vulkan.dll": "../resources/ffrunner/d3d9_vulkan.dll",
+          "/bin/d3d9_vulkan64.dll": "../resources/ffrunner/d3d9_vulkan64.dll",
           "/bin/loader": "../resources/ffrunner/loader/",
+          "/bin/loader-x64": "../resources/ffrunner/loader-x64/",
           "/bin/player": "../resources/ffrunner/player/",
           "/bin/mono": "../resources/ffrunner/mono/"
         }
@@ -72,6 +84,6 @@
         "installMode": "currentUser"
       }
     },
-    "copyright": "2020 - 2025 OpenFusion Contributors"
+    "copyright": "2020 - 2026 OpenFusion Contributors"
   }
 }

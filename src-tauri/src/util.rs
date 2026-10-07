@@ -611,3 +611,16 @@ pub(crate) async fn does_web_file_exist(url: &str) -> bool {
         }
     }
 }
+
+pub(crate) async fn supports_https(url: &str) -> bool {
+    let Ok(mut url) = reqwest::Url::parse(url) else {
+        return false;
+    };
+
+    url.set_scheme("https").ok();
+    url.set_path("/");
+    url.set_query(None);
+    url.set_fragment(None);
+
+    get_http_client().head(url).send().await.is_ok()
+}

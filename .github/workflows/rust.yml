@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
     - name: Install dependencies
-      run: sudo apt update && sudo apt install -y gcc-mingw-w64-i686 wget
+      run: sudo apt update && sudo apt install -y gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 wget
 
     - uses: actions/checkout@v4
       with:
@@ -31,6 +31,7 @@ jobs:
         wget https://github.com/doitsujin/dxvk/releases/download/v1.10.3/dxvk-1.10.3.tar.gz
         tar -xvf dxvk-1.10.3.tar.gz
         mv dxvk-1.10.3/x32/d3d9.dll resources/ffrunner/d3d9_vulkan.dll
+        mv dxvk-1.10.3/x64/d3d9.dll resources/ffrunner/d3d9_vulkan64.dll
 
     - name: Upload ffrunner
       uses: actions/upload-artifact@v4.6.0
@@ -103,7 +104,7 @@ jobs:
         cd src-tauri/target/release
         mkdir linux-standalone
         mkdir linux-appimage
-        cp -r -t linux-standalone openfusionlauncher ffrunner.exe d3d9_vulkan.dll assets defaults loader player mono
+        cp -r -t linux-standalone openfusionlauncher ffrunner.exe ffrunner64.exe d3d9_vulkan.dll d3d9_vulkan64.dll assets defaults loader loader-x64 player mono
         cp -r -t linux-appimage bundle/appimage/OpenFusionLauncher_*.AppImage
 
     - uses: actions/upload-artifact@v4.6.0
@@ -211,7 +212,7 @@ jobs:
         run: |
           cd src-tauri/target/release
           mkdir windows-standalone
-          Move-Item -Destination windows-standalone -Path openfusionlauncher.exe,ffrunner.exe,d3d9_vulkan.dll,assets,defaults,loader,player,mono
+          Move-Item -Destination windows-standalone -Path openfusionlauncher.exe,ffrunner.exe,ffrunner64.exe,d3d9_vulkan.dll,d3d9_vulkan64.dll,assets,defaults,loader,loader-x64,player,mono
       
       - uses: actions/upload-artifact@v4.6.0
         with:

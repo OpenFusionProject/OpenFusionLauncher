@@ -88,6 +88,14 @@ pub struct WindowSize {
     pub height: u32,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, Default, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum WebPlayerArchitecture {
+    #[default]
+    X64,
+    X86,
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GameSettings {
     #[serde(default)]
@@ -105,6 +113,9 @@ pub struct GameSettings {
 
     #[serde(default = "Uuid::nil")]
     pub launch_profile: Uuid,
+
+    #[serde(default)]
+    pub web_player_architecture: WebPlayerArchitecture,
 }
 impl Default for GameSettings {
     #[allow(deprecated)]
@@ -115,6 +126,7 @@ impl Default for GameSettings {
             window_size: None,
             launch_command: None,
             launch_profile: Uuid::nil(),
+            web_player_architecture: WebPlayerArchitecture::X64,
         }
     }
 }

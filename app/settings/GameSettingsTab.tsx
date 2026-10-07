@@ -195,7 +195,12 @@ export default function GameSettingsTab({
               <SettingControlDropdown
                 id="launch_profile"
                 name="Launch Profile"
-                options={launchProfiles.profiles.map((profile) => ({ key: profile.uuid, label: profile.preset ? profile.name + " (preset)" : profile.name }))}
+                options={launchProfiles.profiles.map((profile) => ({
+                  key: profile.uuid,
+                  label: profile.preset
+                    ? profile.name + " (preset)"
+                    : profile.name,
+                }))}
                 defaultKey={launchProfiles.default_profile ?? ""}
                 oldValue={currentSettings.launch_profile}
                 value={settings.launch_profile}
@@ -206,9 +211,28 @@ export default function GameSettingsTab({
                   })
                 }
               >
-                <Button className="ms-1" icon="plus" tooltip="Add..." variant="success" onClick={() => setShowAddProfile(true)} />
-                <Button className="ms-1" icon="edit" tooltip="Edit..." enabled={selectedLaunchProfile !== undefined} onClick={() => setShowEditProfile(true)} />
-                <Button className="ms-1" icon="trash" tooltip="Delete..." variant="danger" enabled={canModify} onClick={() => showDeleteProfileConfirmation()} />
+                <Button
+                  className="ms-1"
+                  icon="plus"
+                  tooltip="Add..."
+                  variant="success"
+                  onClick={() => setShowAddProfile(true)}
+                />
+                <Button
+                  className="ms-1"
+                  icon="edit"
+                  tooltip="Edit..."
+                  enabled={selectedLaunchProfile !== undefined}
+                  onClick={() => setShowEditProfile(true)}
+                />
+                <Button
+                  className="ms-1"
+                  icon="trash"
+                  tooltip="Delete..."
+                  variant="danger"
+                  enabled={canModify}
+                  onClick={() => showDeleteProfileConfirmation()}
+                />
               </SettingControlDropdown>
               <SettingControlWindowSize
                 id="window_size"
@@ -222,6 +246,23 @@ export default function GameSettingsTab({
                 value={settings?.window_size}
                 onChange={(value: WindowSize | undefined) =>
                   setSettings({ ...settings!, window_size: value })
+                }
+              />
+              <SettingControlDropdown
+                id="web_player_architecture"
+                name="Web Player Architecture"
+                options={[
+                  { key: "x64", value: "x64", label: "64-bit (experimental)" },
+                  { key: "x86", value: "x86", label: "32-bit" },
+                ]}
+                defaultKey="x64"
+                oldValue={currentSettings.web_player_architecture}
+                value={settings.web_player_architecture}
+                onChange={(value) =>
+                  setSettings((current) => ({
+                    ...current!,
+                    web_player_architecture: value,
+                  }))
                 }
               />
               <SettingControlFpsFix

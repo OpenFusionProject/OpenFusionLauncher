@@ -27,7 +27,7 @@ use log::*;
 use tauri::Manager;
 use uuid::Uuid;
 
-use crate::state::{LaunchProfile, LaunchProfilesView};
+use crate::{config::WebPlayerArchitecture, state::{LaunchProfile, LaunchProfilesView}};
 
 type Error = Box<dyn std::error::Error>;
 type Result<T> = std::result::Result<T, Error>;
@@ -390,12 +390,18 @@ async fn prep_launch(
         let app_statics = get_app_statics();
         let working_dir = &app_statics.resource_dir;
         let mut ffrunner_path = working_dir.clone();
-        ffrunner_path.push("ffrunner.exe");
-        let mut cmd = std::process::Command::new(ffrunner_path.clone());
-        cmd.current_dir(working_dir);
 
         let state = app_handle.state::<Mutex<AppState>>();
         let mut state = state.lock().await;
+
+        ffrunner_path.push(match state.config.game.web_player_architecture {
+            WebPlayerArchitecture::X64 => "ffrunner64.exe",
+            WebPlayerArchitecture::X86 => "ffrunner.exe",
+        });
+        
+        let mut cmd = std::process::Command::new(ffrunner_path.clone());
+        cmd.current_dir(working_dir);
+
         let server = state
             .servers
             .get_entry(server_uuid)
@@ -543,9 +549,22 @@ async fn prep_launch(
                 asset_url = offline_asset_url;
                 main_url = offline_main_url;
             }
-        } else if asset_url.starts_with("http://") && state.config.launcher.proxy_asset_downloads {
-            let new_asset_url = state.acquire_proxy_for_version(&asset_url).await?;
-            asset_url = new_asset_url;
+        } else {
+            // Assets served over web.
+            // The 64-bit web player uses ffrunner for asset downloading, so try to
+            // upgrade the asset URL to HTTPS, if it's available, since ffrunner supports it
+            if asset_url.starts_with("http://") && state.config.game.web_player_architecture == WebPlayerArchitecture::X64 {
+                let new_asset_url = asset_url.replacen("http://", "https://", 1);
+                if util::supports_https(&new_asset_url).await {
+                    asset_url = new_asset_url;
+                }
+            }
+
+            // We are still fetching over plain HTTP. Spin up the proxy if configured.
+            if asset_url.starts_with("http://") && state.config.launcher.proxy_asset_downloads {
+                let new_asset_url = state.acquire_proxy_for_version(&asset_url).await?;
+                asset_url = new_asset_url;
+            }
         }
 
         // Upgrade the main URL to HTTPS, if it's available, since ffrunner supports it

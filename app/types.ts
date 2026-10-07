@@ -61,6 +61,7 @@ export type GameSettings = {
   window_size?: WindowSize;
   launch_profile?: string;
   fps_fix: FpsFix;
+  web_player_architecture: string;
 };
 
 export type LaunchProfile = {

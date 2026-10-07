@@ -92,7 +92,7 @@ export default function SettingControlFpsFix({
       <Form.Check
         type="radio"
         id={`${id}-on`}
-        label="On (experimental, default)"
+        label="On (default)"
         checked={selected === KEY_FIX_ON}
         className={selected === KEY_FIX_ON && keyModified ? "text-success" : ""}
         onChange={() => {
