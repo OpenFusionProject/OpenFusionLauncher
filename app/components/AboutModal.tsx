@@ -21,7 +21,7 @@ export default function AboutModal({
       <Modal.Body>
         <p className="font-monospace">Version {version}</p>
         <p>
-          ©2020-2025 OpenFusion Contributors
+          ©2020-2026 OpenFusion Contributors
           <br />
           OpenFusion is licensed under MIT.
           <br />
