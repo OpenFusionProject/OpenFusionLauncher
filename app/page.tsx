@@ -287,6 +287,9 @@ export default function Home() {
       setAppName(appName);
       const appVersion = await getVersion();
       setLauncherVersion(appVersion);
+      if (appVersion.includes("-")) {
+        alertWarning("This is a pre-release version (" + appVersion + ")");
+      }
       const firstRun: boolean = await invoke("reload_state");
       if (firstRun) {
         await importFromOpenFusionClient();

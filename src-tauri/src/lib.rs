@@ -27,7 +27,10 @@ use log::*;
 use tauri::Manager;
 use uuid::Uuid;
 
-use crate::{config::WebPlayerArchitecture, state::{LaunchProfile, LaunchProfilesView}};
+use crate::{
+    config::WebPlayerArchitecture,
+    state::{LaunchProfile, LaunchProfilesView},
+};
 
 type Error = Box<dyn std::error::Error>;
 type Result<T> = std::result::Result<T, Error>;
@@ -398,7 +401,7 @@ async fn prep_launch(
             WebPlayerArchitecture::X64 => "ffrunner64.exe",
             WebPlayerArchitecture::X86 => "ffrunner.exe",
         });
-        
+
         let mut cmd = std::process::Command::new(ffrunner_path.clone());
         cmd.current_dir(working_dir);
 
@@ -553,7 +556,9 @@ async fn prep_launch(
             // Assets served over web.
             // The 64-bit web player uses ffrunner for asset downloading, so try to
             // upgrade the asset URL to HTTPS, if it's available, since ffrunner supports it
-            if asset_url.starts_with("http://") && state.config.game.web_player_architecture == WebPlayerArchitecture::X64 {
+            if asset_url.starts_with("http://")
+                && state.config.game.web_player_architecture == WebPlayerArchitecture::X64
+            {
                 let new_asset_url = asset_url.replacen("http://", "https://", 1);
                 if util::supports_https(&new_asset_url).await {
                     asset_url = new_asset_url;
