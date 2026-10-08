@@ -44,7 +44,10 @@ pub(crate) fn false_fn() -> bool {
 }
 
 pub(crate) fn string_version_to_u32(version: &str) -> u32 {
-    let mut version_parts = version.split('.').map(|part| part.parse::<u32>().unwrap());
+    let whole_part = version.split('-').next().unwrap_or(version);
+    let mut version_parts = whole_part
+        .split('.')
+        .map(|part| part.parse::<u32>().unwrap());
     let major = version_parts.next().unwrap();
     let minor = version_parts.next().unwrap_or(0);
     let patch = version_parts.next().unwrap_or(0);
