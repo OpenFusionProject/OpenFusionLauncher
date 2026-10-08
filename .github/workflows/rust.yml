@@ -206,7 +206,7 @@ jobs:
       #     key: cargo-deps-Windows
 
       - name: Build
-        run: cargo tauri build
+        run: cargo tauri build --bundles nsis
 
       - name: Package
         run: |
