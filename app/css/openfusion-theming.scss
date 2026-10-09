@@ -7,6 +7,8 @@
 $body-bg: #d5edf4;
 $body-bg-dark: #000;
 $title-bar-bg-opacity: 0.5;
+$btn-glow-nohover: 10;
+$btn-glow-hover: $btn-glow-nohover * 2.5;
 
 @import "../../node_modules/bootstrap/scss/maps";
 @import "../../node_modules/bootstrap/scss/mixins";
@@ -103,10 +105,17 @@ $title-bar-bg-opacity: 0.5;
     box-shadow: 0 0 15px 0px #0097fc;
   }
 
-  .btn-primary {
+  .primary {
     background-image: url("../img/btn-primary-bg-dark.png");
     background-repeat: repeat;
-    box-shadow: inset 0 0 20px #2a9fd6;
+  }
+
+  .primary.glow {
+    box-shadow: inset 0 0 #{$btn-glow-nohover}px #2a9fd6;
+  }
+
+  .primary.btn:not(:disabled):hover {
+    box-shadow: inset 0 0 #{$btn-glow-hover}px #2a9fd6;
   }
 
   .table-active > td {
@@ -245,11 +254,18 @@ $title-bar-bg-opacity: 0.5;
       box-shadow: 0 0 15px 0px #00eefe;
   }
 
-  .btn-primary {
+  .primary {
     background-image: url("../img/btn-primary-bg-light.png");
     background-repeat: repeat;
-    box-shadow: inset 0 0 20px #7edeef;
     border-color: #82e2f2;
+  }
+
+  .primary.glow {
+    box-shadow: inset 0 0 #{$btn-glow-nohover}px #7edeef;
+  }
+
+  .primary.btn:not(:disabled):hover {
+    box-shadow: inset 0 0 #{$btn-glow-hover}px #7edeef;
   }
 
   .table {
@@ -337,22 +353,43 @@ $title-bar-bg-opacity: 0.5;
   font-size: 12pt;
 }
 
-.btn-success {
+.success {
   background-image: url("../img/btn-success-bg.png");
   background-repeat: repeat;
-  box-shadow: inset 0 0 20px #a2ec00;
 }
 
-.btn-danger {
+.success.glow {
+  box-shadow: inset 0 0 #{$btn-glow-nohover}px #a2ec00;
+}
+
+.success.btn:not(:disabled):hover {
+  box-shadow: inset 0 0 #{$btn-glow-hover}px #a2ec00;
+}
+
+.danger {
   background-image: url("../img/btn-danger-bg.png");
   background-repeat: repeat;
-  box-shadow: inset 0 0 20px red;
 }
 
-.btn-warning {
+.danger.glow {
+  box-shadow: inset 0 0 #{$btn-glow-nohover}px red;
+}
+
+.danger.btn:not(:disabled):hover {
+  box-shadow: inset 0 0 #{$btn-glow-hover}px red;
+}
+
+.warning {
   background-image: url("../img/btn-warning-bg.png");
   background-repeat: repeat;
-  box-shadow: inset 0 0 20px yellow;
+}
+
+.warning.glow {
+  box-shadow: inset 0 0 #{$btn-glow-nohover}px yellow;
+}
+
+.warning.btn:not(:disabled):hover {
+  box-shadow: inset 0 0 #{$btn-glow-hover}px yellow;
 }
 
 .text-success {

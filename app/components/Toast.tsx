@@ -20,7 +20,7 @@ export default function Toast({ alert }: { alert: Alert }) {
       <_Toast.Header>
         <strong className="me-auto">{variantToLabel(alert.variant)}</strong>
       </_Toast.Header>
-      <_Toast.Body className={"rounded-bottom btn-" + alert.variant}>
+      <_Toast.Body className={"rounded-bottom glow " + alert.variant}>
         {alert.text}
         {alert.link && (
           <Button

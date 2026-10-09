@@ -38,7 +38,9 @@ export default function Button({
       type="button"
       className={
         (className ? className + " " : "") +
-        "btn px-3 btn-" +
+        "btn px-3 glow btn-" +
+        actualVariant +
+        " " +
         actualVariant +
         (actuallyEnabled ? "" : " disabled")
       }
