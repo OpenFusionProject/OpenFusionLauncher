@@ -23,15 +23,9 @@ jobs:
     - name: Build 
       run: make -C resources/ffrunner
 
-    - name: Download webplayer DLLs
-      run: wget -r -l 7 -np -R "index.html*" -nH --cut-dirs=2 https://cdn.dexlabs.systems/webplayer/patched-latest/ -P resources/ffrunner/
-
-    - name: Download & extract Vulkan wrapper DLL
-      run: |
-        wget https://github.com/doitsujin/dxvk/releases/download/v1.10.3/dxvk-1.10.3.tar.gz
-        tar -xvf dxvk-1.10.3.tar.gz
-        mv dxvk-1.10.3/x32/d3d9.dll resources/ffrunner/d3d9_vulkan.dll
-        mv dxvk-1.10.3/x64/d3d9.dll resources/ffrunner/d3d9_vulkan64.dll
+    - name: Download webplayer and Vulkan DLLs
+      working-directory: resources/ffrunner
+      run: ./bootstrap-dlls.sh patched-20261007
 
     - name: Upload ffrunner
       uses: actions/upload-artifact@v4.6.0
