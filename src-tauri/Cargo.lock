@@ -3443,9 +3443,9 @@ dependencies = [
 
 [[package]]
 name = "protontools"
-version = "1.2.0"
+version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f513a5b9ddf534c4a2fae2b92d066481b46b3d50f7d4eeac8a59c0ebaf785f39"
+checksum = "25283f4112f661aeb5f9e1afe6af59f9b45a847871a04883dd1333d0c6bc0848"
 dependencies = [
  "dirs",
  "keyvalues-serde",
