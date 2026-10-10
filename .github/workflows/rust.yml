@@ -25,7 +25,7 @@ jobs:
 
     - name: Download webplayer and Vulkan DLLs
       working-directory: resources/ffrunner
-      run: ./bootstrap-dlls.sh patched-20261009
+      run: ./bootstrap-dlls.sh patched-20261010
 
     - name: Upload ffrunner
       uses: actions/upload-artifact@v4.6.0
