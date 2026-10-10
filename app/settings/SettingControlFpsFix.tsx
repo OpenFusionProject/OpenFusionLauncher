@@ -82,8 +82,9 @@ export default function SettingControlFpsFix({
 
   const EXPLANATION = [
     "FusionFall's framerate is normally capped around 64 FPS.",
-    "This setting activates a patch to remove this limit.",
+    "This setting activates a patch to increase this limit to 200 FPS.",
     "You can restore the original behavior by turning it off or tweak it to your own soft cap.",
+    "Beware: setting a value higher than 200 FPS may cause high CPU usage or instability.",
   ];
 
   return (
