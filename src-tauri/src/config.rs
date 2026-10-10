@@ -12,10 +12,12 @@ pub enum LauncherTheme {
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, Default, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum LaunchBehavior {
-    #[default]
-    Hide,
     Quit,
     StayOpen,
+
+    #[default]
+    #[serde(other)]
+    Hide,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -67,19 +69,23 @@ impl Default for LauncherSettings {
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum GraphicsApi {
-    #[default]
-    Dx9,
-    OpenGl,
+    // OpenGl,
     Vulkan,
+
+    #[default]
+    #[serde(other)]
+    Dx9,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum FpsFix {
-    #[default]
-    On,
     OnWithLimiter(u32),
     Off,
+
+    #[default]
+    #[serde(other)]
+    On,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy)]
@@ -91,9 +97,11 @@ pub struct WindowSize {
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, Default, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum WebPlayerArchitecture {
-    #[default]
-    X64,
     X86,
+
+    #[default]
+    #[serde(other)]
+    X64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

@@ -640,9 +640,9 @@ async fn prep_launch(
         // Graphics API overrides
         match state.config.game.graphics_api {
             config::GraphicsApi::Dx9 => {}
-            config::GraphicsApi::OpenGl => {
-                cmd.arg("--force-opengl");
-            }
+            // config::GraphicsApi::OpenGl => {
+            //     cmd.arg("--force-opengl");
+            // }
             config::GraphicsApi::Vulkan => {
                 cmd.arg("--force-vulkan");
                 #[cfg(debug_assertions)]
