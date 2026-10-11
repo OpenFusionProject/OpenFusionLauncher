@@ -540,8 +540,14 @@ export default function Home() {
   };
 
   const handleAlert = (alert: AlertEvent) => {
-    console.log("alert", alert);
-    pushAlert(alert.variant, alert.message);
+    const variants: Record<string, string> = {
+      info: "primary",
+      error: "danger",
+      warning: "warning",
+      success: "success",
+    };
+
+    pushAlert(variants[alert.variant] ?? alert.variant, alert.message);
   };
 
   useEffect(() => {

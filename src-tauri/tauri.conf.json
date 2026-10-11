@@ -27,6 +27,15 @@
       "csp": null
     }
   },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": [
+          "ofl"
+        ]
+      }
+    }
+  },
   "bundle": {
     "active": true,
     "targets": "all",

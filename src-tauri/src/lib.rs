@@ -1449,20 +1449,35 @@ fn is_debug_mode() -> bool {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .plugin(
-            tauri_plugin_log::Builder::default()
-                .level(log::LevelFilter::Debug)
-                .build(),
-        )
+        // Single instance plugin needs to be first
         .plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
             app.webview_windows().values().for_each(|w| {
                 let _ = w.show(); // show in case it's hidden for a launch
                 let _ = w.set_focus();
             });
+
+            #[cfg(debug_assertions)]
+            util::send_alert(
+                app.app_handle().clone(),
+                AlertVariant::Info,
+                &format!("Launched with args: {:?}, cwd: {:?}", args, cwd),
+            );
         }))
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(
+            tauri_plugin_log::Builder::default()
+                .level(log::LevelFilter::Debug)
+                .build(),
+        )
         .setup(|app| {
+            #[cfg(any(windows, target_os = "linux"))]
+            {
+                use tauri_plugin_deep_link::DeepLinkExt;
+                app.deep_link().register_all()?;
+            }
+
             // we have a custom title bar on Linux
             if should_use_custom_titlebar() {
                 app.webview_windows().values_mut().for_each(|w| {
