@@ -106,6 +106,31 @@ export default function EditServerModal({
   const [version, setVersion] = useState<string>("");
 
   const [endpoint, setEndpoint] = useState<string>("");
+  const [iconUrl, setIconUrl] = useState<string>();
+  const endpointTrimmed = endpoint.trim();
+  const endpointIconUrl = `https://${endpointTrimmed}/launcher/icon.ico`;
+
+  useEffect(() => {
+    setIconUrl(undefined);
+    if (!show || tab !== TAB_ENDPOINT || !validateEndpoint(endpointTrimmed)) {
+      return;
+    }
+
+    const image = new Image();
+    image.onload = () => setIconUrl(endpointIconUrl);
+    image.onerror = () => {
+      console.error("Failed to load API host icon: " + endpointIconUrl);
+    };
+    const timeout = setTimeout(() => {
+      image.src = endpointIconUrl;
+    }, 300);
+
+    return () => {
+      clearTimeout(timeout);
+      image.onload = null;
+      image.onerror = null;
+    };
+  }, [endpointTrimmed, endpointIconUrl, show, tab]);
 
   useEffect(() => {
     setDescription(server?.description || "");
@@ -190,7 +215,19 @@ export default function EditServerModal({
             </Tab>
             <Tab eventKey={TAB_ENDPOINT} title="Endpoint Server">
               <Form.Group className="mb-3 px-3" controlId="editServerEndpoint">
-                <Form.Label>API Host</Form.Label>
+                <Form.Label>
+                  API Host
+                  {iconUrl === endpointIconUrl && (
+                    <img
+                      src={iconUrl}
+                      alt=""
+                      width={16}
+                      height={16}
+                      className="ms-2 mb-1"
+                      style={{ objectFit: "contain" }}
+                    />
+                  )}
+                </Form.Label>
                 <Form.Control
                   type="text"
                   value={endpoint}
