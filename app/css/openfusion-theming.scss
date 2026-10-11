@@ -6,7 +6,7 @@
 
 $body-bg: #d5edf4;
 $body-bg-dark: #000;
-$title-bar-bg-opacity: 0.05;
+$title-bar-bg-opacity: 0.5;
 
 @import "../../node_modules/bootstrap/scss/maps";
 @import "../../node_modules/bootstrap/scss/mixins";
@@ -16,11 +16,12 @@ $title-bar-bg-opacity: 0.05;
 
 @include color-mode(dark) {
   .titlebar {
-    background-color: rgba($body-bg, $title-bar-bg-opacity)
+    background-color: rgba($body-bg-dark, $title-bar-bg-opacity);
+    backdrop-filter: blur(10px);
   }
 
   .titlebar-button:hover {
-    background-color: rgba($body-bg, $title-bar-bg-opacity * 2);
+    background-color: rgba($body-bg, $title-bar-bg-opacity / 2);
   }
 
   .table-striped thead th {
@@ -172,11 +173,12 @@ $title-bar-bg-opacity: 0.05;
   }
   
   .titlebar {
-    background-color: rgba($body-bg-dark, $title-bar-bg-opacity)
+    background-color: rgba($body-bg, $title-bar-bg-opacity);
+    backdrop-filter: blur(10px);
   }
 
   .titlebar-button:hover {
-    background-color: rgba($body-bg-dark, $title-bar-bg-opacity * 2);
+    background-color: rgba($body-bg-dark, $title-bar-bg-opacity / 2);
   }
 
   .table-striped thead th {

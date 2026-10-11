@@ -42,23 +42,16 @@ export default function TitleBar() {
     fetch();
   }, []);
 
-  return show && (
-    <div className="titlebar">
-      <span data-tauri-drag-region>{appName}</span>
-      <Stack direction="horizontal" className="flex-row-reverse" gap={1}>
-        <TitleBarButton
-          icon="x"
-          onClick={onClickClose}
-        />
-        <TitleBarButton
-          icon="window-maximize"
-          onClick={onClickMaximize}
-        />
-        <TitleBarButton
-          icon="window-minimize"
-          onClick={onClickMinimize}
-        />
-      </Stack>
-    </div>
+  return (
+    show && (
+      <div className="titlebar px-3">
+        <span data-tauri-drag-region>{appName}</span>
+        <Stack direction="horizontal" className="flex-row-reverse" gap={1}>
+          <TitleBarButton icon="x" onClick={onClickClose} />
+          <TitleBarButton icon="window-maximize" onClick={onClickMaximize} />
+          <TitleBarButton icon="window-minimize" onClick={onClickMinimize} />
+        </Stack>
+      </div>
+    )
   );
 }
