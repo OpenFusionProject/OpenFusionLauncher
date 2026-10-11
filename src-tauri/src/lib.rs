@@ -1434,6 +1434,12 @@ fn should_use_custom_titlebar() -> bool {
 }
 
 #[tauri::command]
+fn get_platform() -> &'static str {
+    debug!("get_platform");
+    std::env::consts::OS
+}
+
+#[tauri::command]
 fn is_debug_mode() -> bool {
     debug!("is_debug_mode");
     cfg!(debug_assertions)
@@ -1478,6 +1484,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             reload_state,
             should_use_custom_titlebar,
+            get_platform,
             is_debug_mode,
             check_for_update,
             get_versions,

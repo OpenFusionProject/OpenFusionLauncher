@@ -1,4 +1,6 @@
 import Button from "./Button";
+import { getPlatform } from "@/app/util";
+import { useState, useEffect } from "react";
 import { Stack, Modal } from "react-bootstrap";
 import { openUrl } from "@tauri-apps/plugin-opener";
 
@@ -13,13 +15,22 @@ export default function AboutModal({
   name: string;
   version: string;
 }) {
+
+  const [platform, setPlatform] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    getPlatform().then(setPlatform);
+  }, []);
+
   return (
     <Modal show={show} onHide={() => setShow(false)} centered={true}>
       <Modal.Header>
         <Modal.Title>About {name}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p className="font-monospace">Version {version}</p>
+        <p>
+          Version {version} {platform ? `(${platform})` : ""}
+        </p>
         <p>
           ©2020-2026 OpenFusion Contributors
           <br />

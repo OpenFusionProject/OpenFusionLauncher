@@ -127,6 +127,14 @@ export async function getUseCustomTitlebar() {
   return useCustomTitlebar;
 }
 
+let platform: string | undefined = undefined;
+export async function getPlatform() {
+  if (platform === undefined) {
+    platform = await invoke<string>("get_platform");
+  }
+  return platform;
+}
+
 export function deepEqual(a: any, b: any) {
   if (a === b) return true;
   if (typeof a !== "object" || typeof b !== "object") return false;

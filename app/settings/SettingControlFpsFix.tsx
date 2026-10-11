@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import SettingControlBase from "./SettingControlBase";
 import { FpsFix, FpsLimit } from "@/app/types";
+import { getPlatform } from "@/app/util";
 
 const KEY_FIX_ON = "on";
 const KEY_FIX_ON_WITH_LIMITER = "on_with_limiter";
@@ -49,6 +50,7 @@ export default function SettingControlFpsFix({
   const [fpsLimit, setFpsLimit] = useState<string>(
     getFpsLimitForValue(value)?.toString() ?? "",
   );
+  const [platform, setPlatform] = useState("windows");
 
   const updateOuter = (key: string, fpsLimit?: string) => {
     if (key === KEY_FIX_ON) {
@@ -75,13 +77,17 @@ export default function SettingControlFpsFix({
     }
   }, [value]);
 
+  useEffect(() => {
+    getPlatform().then(setPlatform);
+  }, []);
+
   const keyModified = getKeyForValue(value) !== getKeyForValue(oldValue);
   const fpsModified = keyModified
     ? selected === KEY_FIX_ON_WITH_LIMITER
     : getFpsLimitForValue(value) !== getFpsLimitForValue(oldValue);
 
   const EXPLANATION = [
-    "FusionFall's framerate is normally capped around 64 FPS.",
+    "On Windows, FusionFall's framerate is normally capped around 64 FPS.",
     "This setting activates a patch to increase this limit to 200 FPS.",
     "You can restore the original behavior by turning it off or tweak it to your own soft cap.",
     "Beware: setting a value higher than 200 FPS may cause high CPU usage or instability.",
@@ -105,7 +111,11 @@ export default function SettingControlFpsFix({
         <Form.Check
           type="radio"
           id={`${id}-on-with-limiter`}
-          label="On with limiter"
+          label={
+            platform === "windows"
+              ? "On with limiter"
+              : "On with limiter (64-bit only)"
+          }
           checked={selected === KEY_FIX_ON_WITH_LIMITER}
           className={
             selected === KEY_FIX_ON_WITH_LIMITER && keyModified
