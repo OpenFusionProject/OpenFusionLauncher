@@ -78,6 +78,7 @@ export default function Home() {
   const [loadingTasks, setLoadingTasks] = useState<LoadingTask[]>([]);
 
   const [showAddModal, setShowAddModal] = useState(false);
+  const [addServerDetails, setAddServerDetails] = useState<NewServerDetails>();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -99,6 +100,11 @@ export default function Home() {
   const [confirmationOnConfirm, setConfirmationOnConfirm] = useState<
     () => void
   >(() => {});
+
+  const openAddServer = (details?: NewServerDetails) => {
+    setAddServerDetails(details);
+    setShowAddModal(true);
+  };
 
   const getSelectedServer = () => {
     if (selectedIdx >= 0 && selectedIdx < servers.length) {
@@ -559,6 +565,11 @@ export default function Home() {
       listen<AlertEvent>("alert", (e) => {
         handleAlert(e.payload);
       });
+
+      listen<NewServerDetails>("add_server", (e) => {
+        openAddServer(e.payload);
+      });
+
       loadedRef.current = true;
     }
   }, []);
@@ -634,7 +645,7 @@ export default function Home() {
           <Col xs={4} className="side-col">
             <Stack gap={1} direction="horizontal">
               <Button
-                onClick={() => setShowAddModal(true)}
+                onClick={() => openAddServer()}
                 variant="success"
                 icon="plus"
                 tooltip="Add server"
@@ -690,6 +701,7 @@ export default function Home() {
       </div>
       <EditServerModal
         server={undefined}
+        initialDetails={addServerDetails}
         versions={versions}
         isAdd={true}
         show={showAddModal}

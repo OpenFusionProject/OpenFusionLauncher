@@ -75,6 +75,7 @@ const validateEndpoint = (endpoint: string) => {
 
 export default function EditServerModal({
   server,
+  initialDetails,
   versions,
   isAdd,
   show,
@@ -82,6 +83,7 @@ export default function EditServerModal({
   saveServer,
 }: {
   server?: ServerEntry;
+  initialDetails?: NewServerDetails;
   versions: VersionEntry[];
   isAdd: boolean;
   show: boolean;
@@ -133,12 +135,13 @@ export default function EditServerModal({
   }, [endpointTrimmed, endpointIconUrl, show, tab]);
 
   useEffect(() => {
-    setDescription(server?.description || "");
-    setTab(server?.endpoint ? TAB_ENDPOINT : TAB_SIMPLE);
-    setIp(server?.ip || "");
-    setVersion(server?.version ?? getDefaultVersion());
-    setEndpoint(server?.endpoint || "");
-  }, [server, versions]);
+    const details = isAdd ? initialDetails : server;
+    setDescription(details?.description || "");
+    setTab(details?.endpoint ? TAB_ENDPOINT : TAB_SIMPLE);
+    setIp(details?.ip || "");
+    setVersion(details?.version ?? getDefaultVersion());
+    setEndpoint(details?.endpoint || "");
+  }, [show, isAdd, server, versions, initialDetails]);
 
   const makeNewServerDetails = () => {
     const descTrimmed = description.trim();

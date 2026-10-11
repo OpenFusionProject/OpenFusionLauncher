@@ -17,7 +17,7 @@ use tauri::Emitter as _;
 use uuid::Uuid;
 
 use crate::{
-    CACHE_PROGRESS_EVENT, CacheEvent, CacheProgress, CacheProgressItem, Result,
+    CACHE_PROGRESS_EVENT, CacheEvent, CacheProgress, CacheProgressItem, NewServerDetails, Result,
     state::{LaunchProfile, get_app_statics},
 };
 
@@ -94,6 +94,12 @@ pub(crate) fn resolve_server_addr(addr: &str) -> Result<String> {
     };
     debug!("Resolved {} to {}", host, ip);
     Ok(format!("{}:{}", ip, port))
+}
+
+fn parse_protocol_query(query: &str) -> HashMap<String, String> {
+    url::form_urlencoded::parse(query.as_bytes())
+        .into_owned()
+        .collect()
 }
 
 pub(crate) fn get_default_cache_dir() -> String {
@@ -442,6 +448,47 @@ pub(crate) fn send_alert(app_handle: tauri::AppHandle, variant: AlertVariant, me
     };
     if let Err(e) = app_handle.emit("alert", payload) {
         error!("Failed to emit alert event: {}", e);
+    }
+}
+
+pub(crate) fn open_add_modal(app_handle: tauri::AppHandle, details: NewServerDetails) {
+    if let Err(e) = app_handle.emit("add_server", details) {
+        error!("Failed to emit open add modal event: {}", e);
+    }
+}
+
+pub(crate) fn handle_protocol_activation(app_handle: tauri::AppHandle, uri: &str) {
+    let Some(stripped_uri) = uri.strip_prefix("ofl://") else {
+        warn!("Invalid protocol activation URI: {}", uri);
+        return;
+    };
+
+    let parts: Vec<&str> = stripped_uri.splitn(2, '?').collect();
+    let command = parts[0];
+    let mut params = HashMap::new();
+    if parts.len() > 1 {
+        params = parse_protocol_query(parts[1]);
+    }
+
+    debug!("Protocol activation command: {}", command);
+    debug!("Protocol activation params: {:?}", params);
+
+    match command {
+        "add-server" => {
+            open_add_modal(
+                app_handle,
+                NewServerDetails {
+                    description: params.get("description").cloned().unwrap_or_default(),
+                    ip: params.get("ip").cloned(),
+                    version: params.get("version").cloned(),
+                    endpoint: params.get("endpoint").cloned(),
+                },
+            );
+        }
+        _ => {
+            warn!("Unknown protocol activation command: {}", command);
+            send_alert(app_handle, AlertVariant::Error, "Invalid link");
+        }
     }
 }
 

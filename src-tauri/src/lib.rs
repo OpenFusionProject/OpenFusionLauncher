@@ -93,7 +93,7 @@ struct ImportCounts {
     server_count: usize,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 struct NewServerDetails {
     description: String,
     ip: Option<String>,
@@ -1456,12 +1456,18 @@ pub fn run() {
                 let _ = w.set_focus();
             });
 
+            let app_handle = app.app_handle().clone();
+
             #[cfg(debug_assertions)]
             util::send_alert(
-                app.app_handle().clone(),
+                app_handle.clone(),
                 AlertVariant::Info,
                 &format!("Launched with args: {:?}, cwd: {:?}", args, cwd),
             );
+
+            if let Some(uri) = args.get(1).cloned() {
+                util::handle_protocol_activation(app_handle, &uri);
+            }
         }))
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_opener::init())
