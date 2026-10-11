@@ -25,6 +25,7 @@ import {
   AlertEvent,
   Config,
   UpdateInfo,
+  ProtocolActivation,
 } from "@/app/types";
 
 import ServerList from "@/components/ServerList";
@@ -566,12 +567,47 @@ export default function Home() {
         handleAlert(e.payload);
       });
 
-      listen<NewServerDetails>("add_server", (e) => {
-        openAddServer(e.payload);
-      });
-
       loadedRef.current = true;
     }
+  }, []);
+
+  // Protocol activations are queued by the backend until taken here.
+  // Listen before draining so nothing arrives unnoticed in between.
+  useEffect(() => {
+    let cancelled = false;
+    let unlisten: (() => void) | undefined;
+
+    const takePendingActivations = async () => {
+      try {
+        const pending: ProtocolActivation[] = await invoke(
+          "take_pending_activations"
+        );
+        for (const activation of pending) {
+          switch (activation.type) {
+            case "add_server":
+              openAddServer(activation.details);
+              break;
+          }
+        }
+      } catch (e: unknown) {
+        console.error("Failed to take pending activations: " + e);
+      }
+    };
+
+    (async () => {
+      const stop = await listen("activation_pending", takePendingActivations);
+      if (cancelled) {
+        stop();
+        return;
+      }
+      unlisten = stop;
+      await takePendingActivations();
+    })();
+
+    return () => {
+      cancelled = true;
+      unlisten?.();
+    };
   }, []);
 
   // Keyboard event listener needs to be separate since it depends on state

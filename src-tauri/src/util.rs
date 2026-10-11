@@ -13,12 +13,12 @@ use dns_lookup::lookup_host;
 use ffbuildtool::{FailReason, ItemProgress, Version};
 use log::*;
 use serde::Serialize;
-use tauri::Emitter as _;
+use tauri::{Emitter as _, Manager as _};
 use uuid::Uuid;
 
 use crate::{
     CACHE_PROGRESS_EVENT, CacheEvent, CacheProgress, CacheProgressItem, NewServerDetails, Result,
-    state::{LaunchProfile, get_app_statics},
+    state::{self, AppState, LaunchProfile, get_app_statics},
 };
 
 static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
@@ -451,10 +451,22 @@ pub(crate) fn send_alert(app_handle: tauri::AppHandle, variant: AlertVariant, me
     }
 }
 
-pub(crate) fn open_add_modal(app_handle: tauri::AppHandle, details: NewServerDetails) {
-    if let Err(e) = app_handle.emit("add_server", details) {
-        error!("Failed to emit open add modal event: {}", e);
-    }
+#[derive(Debug, Clone, Serialize)]
+#[serde(tag = "type", content = "details", rename_all = "snake_case")]
+pub(crate) enum ProtocolActivation {
+    AddServer(NewServerDetails),
+}
+
+pub(crate) fn queue_activation(app_handle: tauri::AppHandle, activation: ProtocolActivation) {
+    tauri::async_runtime::spawn(async move {
+        state::wait_for_app_state().await;
+        let state = app_handle.state::<tokio::sync::Mutex<AppState>>();
+        state.lock().await.pending_activations.push(activation);
+
+        if let Err(e) = app_handle.emit("activation_pending", ()) {
+            error!("Failed to emit activation pending event: {}", e);
+        }
+    });
 }
 
 pub(crate) fn handle_protocol_activation(app_handle: tauri::AppHandle, uri: &str) {
@@ -475,14 +487,14 @@ pub(crate) fn handle_protocol_activation(app_handle: tauri::AppHandle, uri: &str
 
     match command {
         "add-server" => {
-            open_add_modal(
+            queue_activation(
                 app_handle,
-                NewServerDetails {
+                ProtocolActivation::AddServer(NewServerDetails {
                     description: params.get("description").cloned().unwrap_or_default(),
                     ip: params.get("ip").cloned(),
                     version: params.get("version").cloned(),
                     endpoint: params.get("endpoint").cloned(),
-                },
+                }),
             );
         }
         _ => {

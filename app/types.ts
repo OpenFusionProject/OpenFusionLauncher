@@ -13,6 +13,11 @@ export type NewServerDetails = {
   endpoint?: string;
 };
 
+export type ProtocolActivation = {
+  type: string;
+  details: NewServerDetails;
+};
+
 export type Servers = {
   servers: ServerEntry[];
   favorites: string[];

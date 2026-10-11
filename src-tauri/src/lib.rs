@@ -12,7 +12,7 @@ use state::{
     AppState, Config, FlatServer, FlatServers, Server, ServerInfo, Versions, get_app_statics,
 };
 use tauri_plugin_opener::OpenerExt;
-use util::AlertVariant;
+use util::{AlertVariant, ProtocolActivation};
 
 use std::{
     collections::{HashMap, HashSet},
@@ -974,8 +974,11 @@ async fn reload_state(app_handle: tauri::AppHandle) -> bool {
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
     let first_run = !get_app_statics().app_data_dir.exists();
+    // Activations aren't persisted state; keep any the frontend hasn't taken yet.
+    let pending_activations = std::mem::take(&mut state.pending_activations);
     *state = AppState::load(app_handle.clone());
     state.save();
+    state.pending_activations = pending_activations;
     first_run
 }
 
@@ -1445,6 +1448,14 @@ fn is_debug_mode() -> bool {
     cfg!(debug_assertions)
 }
 
+#[tauri::command]
+async fn take_pending_activations(app_handle: tauri::AppHandle) -> Vec<ProtocolActivation> {
+    debug!("take_pending_activations");
+    let state = app_handle.state::<Mutex<AppState>>();
+    let mut state = state.lock().await;
+    std::mem::take(&mut state.pending_activations)
+}
+
 #[allow(clippy::single_match)]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -1497,6 +1508,11 @@ pub fn run() {
             // N.B. AppState::load depends on APP_STATICS
             let app_state = AppState::default();
             app.manage(Mutex::new(app_state));
+            state::mark_app_state_ready();
+
+            if let Some(uri) = env::args().nth(1) {
+                util::handle_protocol_activation(app.handle().clone(), &uri);
+            }
 
             Ok(())
         })
@@ -1505,6 +1521,7 @@ pub fn run() {
             should_use_custom_titlebar,
             get_platform,
             is_debug_mode,
+            take_pending_activations,
             check_for_update,
             get_versions,
             get_servers,

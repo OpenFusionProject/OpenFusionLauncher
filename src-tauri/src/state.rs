@@ -17,12 +17,23 @@ use uuid::Uuid;
 use crate::{
     NewServerDetails, Result,
     config::{GameSettings, LauncherSettings},
-    util::{self, AlertVariant},
+    util::{self, AlertVariant, ProtocolActivation},
 };
 
 const OPENFUSIONCLIENT_PATH: &str = "OpenFusionClient";
 
 static APP_STATICS: OnceLock<AppStatics> = OnceLock::new();
+
+// Plugins (e.g. single-instance) can run callbacks before setup manages AppState.
+static APP_STATE_READY: tokio::sync::SetOnce<()> = tokio::sync::SetOnce::const_new();
+
+pub fn mark_app_state_ready() {
+    let _ = APP_STATE_READY.set(());
+}
+
+pub async fn wait_for_app_state() {
+    APP_STATE_READY.wait().await;
+}
 
 pub fn init_app_statics(app: &mut tauri::App) {
     let statics = AppStatics::load(app);
@@ -102,6 +113,7 @@ pub struct AppState {
     pub write_config: bool,
     pub launch_cmd: Option<(Command, String)>, // (launch command, original asset URL)
     pub proxies: HashMap<String, ProxyInstance>,
+    pub pending_activations: Vec<ProtocolActivation>,
 }
 impl AppState {
     pub fn load(app_handle: tauri::AppHandle) -> Self {
@@ -141,6 +153,7 @@ impl AppState {
             write_config,
             launch_cmd: None,
             proxies: HashMap::new(),
+            pending_activations: Vec::new(),
         }
     }
 
