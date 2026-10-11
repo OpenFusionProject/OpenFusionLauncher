@@ -1449,6 +1449,11 @@ fn is_debug_mode() -> bool {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::default()
+                .level(log::LevelFilter::Debug)
+                .build(),
+        )
         .plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
             app.webview_windows().values().for_each(|w| {
                 let _ = w.show(); // show in case it's hidden for a launch
@@ -1458,19 +1463,6 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
-            if cfg!(debug_assertions) {
-                app.handle().plugin(
-                    #[cfg(debug_assertions)]
-                    tauri_plugin_log::Builder::default()
-                        .level(log::LevelFilter::Debug)
-                        .build(),
-                    #[cfg(not(debug_assertions))]
-                    tauri_plugin_log::Builder::default()
-                        .level(log::LevelFilter::Info)
-                        .build(),
-                )?;
-            }
-
             // we have a custom title bar on Linux
             if should_use_custom_titlebar() {
                 app.webview_windows().values_mut().for_each(|w| {
