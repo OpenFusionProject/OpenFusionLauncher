@@ -325,13 +325,14 @@ export default function Home() {
       }
       const exitCode: number = await invoke("do_launch");
       setTagline("Thanks for playing!");
-      await getCurrentWindow().show();
       if (exitCode != 0) {
         console.warn("Game exited with code " + exitCode);
       }
     } catch (e: unknown) {
-      await getCurrentWindow().show();
       alertError("Failed to launch (" + e + ")");
+    } finally {
+      await getCurrentWindow().show();
+      await getCurrentWindow().setFocus();
     }
     stopLoading("launch");
   };
