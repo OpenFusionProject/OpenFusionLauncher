@@ -979,6 +979,8 @@ async fn reload_state(app_handle: tauri::AppHandle) -> bool {
     *state = AppState::load(app_handle.clone());
     state.save();
     state.pending_activations = pending_activations;
+    drop(state);
+    state::mark_app_state_ready();
     first_run
 }
 
@@ -1508,7 +1510,6 @@ pub fn run() {
             // N.B. AppState::load depends on APP_STATICS
             let app_state = AppState::default();
             app.manage(Mutex::new(app_state));
-            state::mark_app_state_ready();
 
             if let Some(uri) = env::args().nth(1) {
                 util::handle_protocol_activation(app.handle().clone(), &uri);

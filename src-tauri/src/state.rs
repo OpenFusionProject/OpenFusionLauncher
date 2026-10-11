@@ -24,7 +24,7 @@ const OPENFUSIONCLIENT_PATH: &str = "OpenFusionClient";
 
 static APP_STATICS: OnceLock<AppStatics> = OnceLock::new();
 
-// Plugins (e.g. single-instance) can run callbacks before setup manages AppState.
+// Plugins (e.g. single-instance) can run callbacks before persisted AppState is loaded.
 static APP_STATE_READY: tokio::sync::SetOnce<()> = tokio::sync::SetOnce::const_new();
 
 pub fn mark_app_state_ready() {
