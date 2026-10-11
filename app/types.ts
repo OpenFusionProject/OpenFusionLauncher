@@ -13,10 +13,9 @@ export type NewServerDetails = {
   endpoint?: string;
 };
 
-export type ProtocolActivation = {
-  type: string;
-  details: NewServerDetails;
-};
+export type ProtocolActivation =
+  | { type: "add_server"; payload: NewServerDetails }
+  | { type: "show_existing_server"; payload: string };
 
 export type Servers = {
   servers: ServerEntry[];

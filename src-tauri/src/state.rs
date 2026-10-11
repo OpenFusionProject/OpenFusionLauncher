@@ -549,6 +549,10 @@ impl From<FlatServer> for Server {
     }
 }
 impl Server {
+    pub fn get_uuid(&self) -> Uuid {
+        self.uuid
+    }
+
     pub fn get_description(&self) -> Option<String> {
         self.description.clone()
     }
@@ -664,6 +668,26 @@ impl Servers {
             }
         }
         Err(format!("Server with UUID {} not found", entry.uuid).into())
+    }
+
+    pub fn find_simple_entry(&self, ip: &str, version: &str) -> Option<&Server> {
+        self.servers.iter().find(|s| match &s.info {
+            ServerInfo::Simple {
+                ip: server_ip,
+                version: server_version,
+            } => server_ip == ip && server_version == version,
+            ServerInfo::Endpoint { .. } => false,
+        })
+    }
+
+    pub fn find_endpoint_entry(&self, endpoint: &str) -> Option<&Server> {
+        self.servers.iter().find(|s| match &s.info {
+            ServerInfo::Endpoint {
+                endpoint: server_endpoint,
+                ..
+            } => server_endpoint == endpoint,
+            ServerInfo::Simple { .. } => false,
+        })
     }
 }
 

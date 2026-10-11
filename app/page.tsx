@@ -49,6 +49,7 @@ import {
 import ForgotPasswordModal from "./components/ForgotPasswordModal";
 import ConfirmationModal from "./components/ConfirmationModal";
 import { useRouter } from "next/navigation";
+import LaunchServerModal from "./components/LaunchServerModal";
 
 const DEFAULT_TAGLINE =
   "Welcome to OpenFusion.\nSelect a server from the list below to get started.";
@@ -70,7 +71,7 @@ export default function Home() {
   const [servers, setServers] = useState<ServerEntry[]>([]);
   const [versions, setVersions] = useState<VersionEntry[]>([]);
 
-  const [selectedIdx, setSelectedIdx] = useState<number>(-1);
+  const [selectedServerUuid, setSelectedServerUuid] = useState<string>();
   const [currentSession, setCurrentSession] = useState<
     LoginSession | undefined
   >(undefined);
@@ -82,6 +83,7 @@ export default function Home() {
   const [addServerDetails, setAddServerDetails] = useState<NewServerDetails>();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showLaunchModal, setShowLaunchModal] = useState(false);
 
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
@@ -107,22 +109,17 @@ export default function Home() {
     setShowAddModal(true);
   };
 
+  const openLaunchServer = (uuid: string) => {
+    setSelectedServer(uuid);
+    setShowLaunchModal(true);
+  };
+
   const getSelectedServer = () => {
-    if (selectedIdx >= 0 && selectedIdx < servers.length) {
-      return servers[selectedIdx];
-    }
-    return undefined;
+    return servers.find((server) => server.uuid == selectedServerUuid);
   };
 
   const setSelectedServer = (uuid?: string) => {
-    if (uuid) {
-      const idx = servers.findIndex((server) => server.uuid == uuid);
-      if (idx >= 0) {
-        setSelectedIdx(idx);
-      }
-    } else {
-      setSelectedIdx(-1);
-    }
+    setSelectedServerUuid(uuid);
     setCurrentSession(undefined);
   };
 
@@ -275,17 +272,6 @@ export default function Home() {
     if (e.key === "Escape") {
       setSelectedServer(undefined);
     }
-
-    // Server selector controls
-    // const modulo = servers.length;
-    // if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-    //   const newIdx = (selectedIdx <= 0 ? modulo - 1 : (selectedIdx - 1));
-    //   setSelectedIdx(newIdx);
-    // }
-    // if (e.key === "ArrowDown" || e.key === "ArrowRight") {
-    //   const newIdx = (selectedIdx + 1) % modulo;
-    //   setSelectedIdx(newIdx);
-    // }
   };
 
   const doInit = async () => {
@@ -533,6 +519,13 @@ export default function Home() {
     }
   };
 
+  const launchServer = async (serverUuid?: string) => {
+    if (serverUuid) {
+      setConnecting(true);
+      onConnect(serverUuid);
+    }
+  };
+
   const sendOneTimePassword = async (email: string) => {
     try {
       await invoke("send_otp", {
@@ -585,7 +578,10 @@ export default function Home() {
         for (const activation of pending) {
           switch (activation.type) {
             case "add_server":
-              openAddServer(activation.details);
+              openAddServer(activation.payload);
+              break;
+            case "show_existing_server":
+              openLaunchServer(activation.payload);
               break;
           }
         }
@@ -616,7 +612,7 @@ export default function Home() {
     return () => {
       window.removeEventListener("keydown", handleKeydown);
     };
-  }, [servers, selectedIdx]);
+  }, [servers, selectedServerUuid]);
 
   // Padding for custom titlebar
   useEffect(() => {
@@ -757,6 +753,12 @@ export default function Home() {
         show={showDeleteModal}
         setShow={setShowDeleteModal}
         deleteServer={deleteServer}
+      />
+      <LaunchServerModal
+        server={getSelectedServer()}
+        show={showLaunchModal}
+        setShow={setShowLaunchModal}
+        launchServer={launchServer}
       />
       <LoginModal
         server={getSelectedServer()}

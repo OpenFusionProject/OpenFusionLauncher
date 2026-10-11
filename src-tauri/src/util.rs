@@ -452,20 +452,54 @@ pub(crate) fn send_alert(app_handle: tauri::AppHandle, variant: AlertVariant, me
 }
 
 #[derive(Debug, Clone, Serialize)]
-#[serde(tag = "type", content = "details", rename_all = "snake_case")]
+#[serde(tag = "type", content = "payload", rename_all = "snake_case")]
 pub(crate) enum ProtocolActivation {
     AddServer(NewServerDetails),
+    ShowExistingServer(Uuid),
 }
 
-pub(crate) fn queue_activation(app_handle: tauri::AppHandle, activation: ProtocolActivation) {
+async fn queue_activation(app_handle: tauri::AppHandle, activation: ProtocolActivation) {
+    // since this might run on cold start, the app state might not be ready yet
+    state::wait_for_app_state().await;
+    let state = app_handle.state::<tokio::sync::Mutex<AppState>>();
+    state.lock().await.pending_activations.push(activation);
+
+    if let Err(e) = app_handle.emit("activation_pending", ()) {
+        error!("Failed to emit activation pending event: {}", e);
+    }
+}
+
+fn handle_server_activation(app_handle: tauri::AppHandle, details: NewServerDetails) {
     tauri::async_runtime::spawn(async move {
         state::wait_for_app_state().await;
         let state = app_handle.state::<tokio::sync::Mutex<AppState>>();
-        state.lock().await.pending_activations.push(activation);
+        let existing_server_uuid = {
+            let state = state.lock().await;
 
-        if let Err(e) = app_handle.emit("activation_pending", ()) {
-            error!("Failed to emit activation pending event: {}", e);
-        }
+            // Check if the server is already added.
+            if let Some(endpoint) = &details.endpoint {
+                state
+                    .servers
+                    .find_endpoint_entry(endpoint)
+                    .map(|s| s.get_uuid())
+            } else if let Some(ip) = &details.ip
+                && let Some(version) = &details.version
+            {
+                state
+                    .servers
+                    .find_simple_entry(ip, version)
+                    .map(|s| s.get_uuid())
+            } else {
+                None
+            }
+        };
+
+        let activation = match existing_server_uuid {
+            Some(uuid) => ProtocolActivation::ShowExistingServer(uuid),
+            None => ProtocolActivation::AddServer(details),
+        };
+
+        queue_activation(app_handle, activation).await;
     });
 }
 
@@ -486,15 +520,15 @@ pub(crate) fn handle_protocol_activation(app_handle: tauri::AppHandle, uri: &str
     debug!("Protocol activation params: {:?}", params);
 
     match command {
-        "add-server" => {
-            queue_activation(
+        "server" => {
+            handle_server_activation(
                 app_handle,
-                ProtocolActivation::AddServer(NewServerDetails {
+                NewServerDetails {
                     description: params.get("description").cloned().unwrap_or_default(),
                     ip: params.get("ip").cloned(),
                     version: params.get("version").cloned(),
                     endpoint: params.get("endpoint").cloned(),
-                }),
+                },
             );
         }
         _ => {
