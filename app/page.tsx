@@ -555,6 +555,19 @@ export default function Home() {
     pushAlert(variants[alert.variant] ?? alert.variant, alert.message);
   };
 
+  const collectLogs = async () => {
+    startLoading("collectLogs");
+    try {
+      await invoke("create_log_package");
+      stopLoading("collectLogs");
+      alertSuccess("Log package created");
+    } catch (e: unknown) {
+      alertError("Failed to create log package (" + e + ")");
+    } finally {
+      stopLoading("collectLogs");
+    }
+  };
+
   useEffect(() => {
     if (!loadedRef.current) {
       console.log("init");
@@ -734,6 +747,13 @@ export default function Home() {
           variant="primary"
           icon="cog"
           tooltip="Settings"
+        />
+        <Button
+          className="mx-1"
+          onClick={() => collectLogs()}
+          variant="warning"
+          icon="file-archive"
+          tooltip="Collect logs"
         />
       </div>
       <EditServerModal

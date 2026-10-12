@@ -13,10 +13,12 @@ use state::{
 };
 use tauri_plugin_opener::OpenerExt;
 use util::{AlertVariant, ProtocolActivation};
+use zip::{ZipWriter, write::SimpleFileOptions};
 
 use std::{
     collections::{HashMap, HashSet},
     env,
+    path::Path,
     process::Stdio,
     sync::{Arc, LazyLock, OnceLock, mpsc},
     vec,
@@ -1427,6 +1429,67 @@ async fn reset_game_config(app_handle: tauri::AppHandle) -> CommandResult<()> {
 }
 
 #[tauri::command]
+async fn create_log_package() -> CommandResult<()> {
+    debug!("create_log_package");
+    let internal = async {
+        let statics = get_app_statics();
+        let launcher_log_path = statics.app_data_dir.join("logs");
+
+        if !statics.log_packages_dir.exists() {
+            std::fs::create_dir_all(&statics.log_packages_dir)?;
+        }
+
+        let timestamp = util::get_timestamp();
+        let log_package_path = statics
+            .log_packages_dir
+            .join(format!("logs_{}.zip", timestamp));
+        let file = std::fs::File::create(&log_package_path)?;
+        let mut zip = ZipWriter::new(file);
+
+        // Copy anything in the launcher logs folder
+        for entry in std::fs::read_dir(&launcher_log_path)? {
+            let path = entry?.path();
+            if path.is_file() {
+                let name = path.file_name().unwrap();
+                zip.start_file_from_path(name, SimpleFileOptions::default())?;
+                std::io::copy(&mut std::fs::File::open(&path)?, &mut zip)?;
+            }
+        }
+
+        // Copy all retained game logs
+        for entry in std::fs::read_dir(&statics.unity_logs_dir)? {
+            let entry_path = entry?.path();
+            if entry_path.is_dir() {
+                let entry_name = entry_path.file_name().unwrap();
+                for file_entry in std::fs::read_dir(&entry_path)? {
+                    let file_path = file_entry?.path();
+                    if file_path.is_file() {
+                        let name = file_path.file_name().unwrap();
+                        zip.start_file_from_path(
+                            format!(
+                                "{}/{}",
+                                entry_name.to_string_lossy(),
+                                name.to_string_lossy()
+                            ),
+                            SimpleFileOptions::default(),
+                        )?;
+                        std::io::copy(&mut std::fs::File::open(&file_path)?, &mut zip)?;
+                    }
+                }
+            }
+        }
+
+        zip.finish()?;
+
+        // Reveal the log package in the file explorer
+        tauri_plugin_opener::reveal_item_in_dir(log_package_path)?;
+
+        Ok(())
+    };
+    internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
 async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
     debug!("check_for_update");
     let internal = async {
@@ -1551,6 +1614,7 @@ pub fn run() {
             is_debug_mode,
             take_pending_activations,
             check_for_update,
+            create_log_package,
             get_versions,
             get_servers,
             get_launch_profiles,
