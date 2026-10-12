@@ -803,3 +803,104 @@ pub(crate) fn copy_unity_logs(
     prune_copied_unity_logs(&copied_logs_dir);
     Ok(())
 }
+
+#[cfg(target_os = "linux")]
+pub(crate) fn install_appimage_desktop_entry(app: &tauri::AppHandle) -> Result<()> {
+    const GENERATED_MARKER: &str = "X-OpenFusionLauncher-Generated=true";
+
+    let Some(appimage) = app.env().appimage else {
+        return Ok(());
+    };
+
+    // GTK derives the app ID from the executable name
+    let exe = tauri::utils::platform::current_exe()?;
+    let app_id = exe
+        .file_name()
+        .ok_or("executable has no file name")?
+        .to_string_lossy()
+        .to_string();
+
+    let data_dir = app.path().data_dir()?;
+    let desktop_path = data_dir
+        .join("applications")
+        .join(format!("{}.desktop", app_id));
+
+    if let Ok(existing) = std::fs::read_to_string(&desktop_path)
+        && !existing.lines().any(|l| l == GENERATED_MARKER)
+    {
+        debug!("Not overwriting user-provided {}", desktop_path.display());
+        return Ok(());
+    }
+
+    // Referenced by absolute path; running processes like plasmashell cache icon theme
+    // lookups, so a freshly installed theme icon may not resolve until they restart.
+    let icon_path = data_dir
+        .join("icons/hicolor/256x256/apps")
+        .join(format!("{}.png", app_id));
+
+    write_if_changed(&icon_path, include_bytes!("../icons/128x128@2x.png"))?;
+
+    let name = app
+        .config()
+        .product_name
+        .clone()
+        .unwrap_or_else(|| app_id.clone());
+
+    // NoDisplay to avoid duplicating menu entries made by AppImage integration tools
+    let desktop_entry = format!(
+        "[Desktop Entry]\n\
+         Type=Application\n\
+         Name={name}\n\
+         Exec={exec}\n\
+         Icon={icon}\n\
+         StartupWMClass={app_id}\n\
+         Terminal=false\n\
+         NoDisplay=true\n\
+         {GENERATED_MARKER}\n",
+        name = escape_desktop_string(&name)?,
+        exec = escape_desktop_string(&quote_desktop_exec_arg(&appimage.to_string_lossy()))?,
+        icon = escape_desktop_string(&icon_path.to_string_lossy())?,
+    );
+
+    write_if_changed(&desktop_path, desktop_entry.as_bytes())
+}
+
+#[cfg(target_os = "linux")]
+fn escape_desktop_string(value: &str) -> Result<String> {
+    if value.chars().any(char::is_control) {
+        return Err(format!("{:?} cannot be stored in a desktop entry", value).into());
+    }
+    Ok(value.replace('\\', "\\\\"))
+}
+
+#[cfg(target_os = "linux")]
+fn quote_desktop_exec_arg(arg: &str) -> String {
+    let mut quoted = String::from('"');
+    for c in arg.chars() {
+        match c {
+            '"' | '`' | '$' | '\\' => {
+                quoted.push('\\');
+                quoted.push(c);
+            }
+            '%' => quoted.push_str("%%"),
+            _ => quoted.push(c),
+        }
+    }
+    quoted.push('"');
+    quoted
+}
+
+#[cfg(target_os = "linux")]
+fn write_if_changed(path: &Path, contents: &[u8]) -> Result<()> {
+    if std::fs::read(path).is_ok_and(|existing| existing == contents) {
+        return Ok(());
+    }
+
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+
+    std::fs::write(path, contents)?;
+    debug!("Wrote {:?}", path);
+    Ok(())
+}

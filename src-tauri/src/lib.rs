@@ -18,7 +18,6 @@ use zip::{ZipWriter, write::SimpleFileOptions};
 use std::{
     collections::{HashMap, HashSet},
     env,
-    path::Path,
     process::Stdio,
     sync::{Arc, LazyLock, OnceLock, mpsc},
     vec,
@@ -1607,6 +1606,11 @@ pub fn run() {
             {
                 use tauri_plugin_deep_link::DeepLinkExt;
                 app.deep_link().register_all()?;
+            }
+
+            #[cfg(target_os = "linux")]
+            if let Err(e) = util::install_appimage_desktop_entry(app.handle()) {
+                warn!("Failed to install AppImage desktop entry: {}", e);
             }
 
             // we have a custom title bar on Linux
