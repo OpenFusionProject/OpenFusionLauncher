@@ -36,6 +36,7 @@ which = "8.0.2"
 protontools = "1.2.1"
 tauri-plugin-deep-link = "2"
 url = "2.5.8"
+chrono = "0.4.45"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-single-instance = { version = "2", features = ["deep-link"] }

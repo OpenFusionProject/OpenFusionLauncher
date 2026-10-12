@@ -50,6 +50,7 @@ pub struct AppStatics {
     version: String,
     pub app_data_dir: PathBuf,
     pub resource_dir: PathBuf,
+    pub unity_logs_dir: PathBuf,
     pub ff_cache_dir: PathBuf,
     pub offline_cache_dir: PathBuf,
     pub compat_data_dir: PathBuf,
@@ -68,6 +69,9 @@ impl AppStatics {
             resource_dir = std::env::current_exe().unwrap().parent().unwrap().into();
         }
 
+        let unity_logs_dir = path_resolver
+            .resolve("unity_logs", BaseDirectory::AppCache)
+            .unwrap();
         let ff_cache_dir = path_resolver
             .resolve("ffcache", BaseDirectory::AppCache)
             .unwrap();
@@ -83,6 +87,7 @@ impl AppStatics {
             version,
             app_data_dir,
             resource_dir,
+            unity_logs_dir,
             ff_cache_dir,
             offline_cache_dir,
             compat_data_dir,
@@ -101,6 +106,13 @@ pub struct ProxyInstance {
     ref_count: usize,
 }
 
+#[derive(Debug)]
+pub struct LaunchCommand {
+    pub command: Command,
+    pub asset_url: String,
+    pub launch_profile_uuid: Uuid,
+}
+
 #[derive(Default)]
 pub struct AppState {
     pub config: Config,
@@ -111,7 +123,7 @@ pub struct AppState {
     //
     pub temp_tokens: HashMap<Uuid, String>,
     pub write_config: bool,
-    pub launch_cmd: Option<(Command, String)>, // (launch command, original asset URL)
+    pub launch_cmd: Option<LaunchCommand>,
     pub proxies: HashMap<String, ProxyInstance>,
     pub pending_activations: Vec<ProtocolActivation>,
 }

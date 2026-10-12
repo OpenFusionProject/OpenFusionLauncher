@@ -29,7 +29,7 @@ use uuid::Uuid;
 
 use crate::{
     config::WebPlayerArchitecture,
-    state::{LaunchProfile, LaunchProfilesView},
+    state::{LaunchCommand, LaunchProfile, LaunchProfilesView},
 };
 
 type Error = Box<dyn std::error::Error>;
@@ -106,22 +106,21 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
     debug!("do_launch");
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
-    let (mut cmd, asset_url) = state.launch_cmd.take().ok_or("No launch prepared")?;
-    let cmd_str = util::get_launch_cmd_dbg_str(&cmd, false);
+    let LaunchCommand {
+        mut command,
+        asset_url,
+        launch_profile_uuid,
+    } = state.launch_cmd.take().ok_or("No launch prepared")?;
+    let cmd_str = util::get_launch_cmd_dbg_str(&command, false);
+    let time_now = chrono::Local::now();
 
-    let mut proc = cmd.spawn().map_err(|e| {
+    let mut proc = command.spawn().map_err(|e| {
         // we want to censor the login cookie if present
         let censored_cmd_str = LOGIN_COOKIE_REGEX
             .replace_all(&cmd_str, "-t ***")
             .to_string();
         format!("{} (launch command was: {})", e, censored_cmd_str)
     })?;
-
-    if state.config.launcher.launch_behavior == LaunchBehavior::Quit && state.proxies.is_empty() {
-        // no proxies alive; we can quit immediately
-        app_handle.exit(0);
-        return Ok(0);
-    }
 
     // don't hold the state across the game process
     drop(state);
@@ -132,6 +131,16 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
     state.release_proxy_for_version(&asset_url);
+
+    let unity_logs_path = util::get_unity_log_path_for_profile(launch_profile_uuid);
+    debug!("Unity log path: {:?}", unity_logs_path);
+    if unity_logs_path.exists() {
+        if let Err(e) = util::copy_unity_logs(unity_logs_path, time_now) {
+            warn!("Failed to copy Unity logs: {}", e);
+        }
+    } else {
+        warn!("Unity log path does not exist!");
+    }
 
     // no need to do any error handling. quit now so the user doesn't see us again.
     if state.config.launcher.launch_behavior == LaunchBehavior::Quit {
@@ -742,13 +751,20 @@ async fn prep_launch(
         cmd.stderr(Stdio::null());
 
         util::log_command(&cmd);
-        state.launch_cmd = Some((cmd, original_asset_url));
+        state.launch_cmd = Some(LaunchCommand {
+            command: cmd,
+            asset_url: original_asset_url,
+            launch_profile_uuid: selected_launch_profile,
+        });
+
         Ok(timeout_sec)
     };
+
     debug!(
         "prep_launch server {} version {}",
         server_uuid, version_uuid
     );
+
     internal
         .await
         .map_err(|e: Box<dyn std::error::Error>| e.to_string())
