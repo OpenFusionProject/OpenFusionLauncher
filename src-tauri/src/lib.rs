@@ -1451,7 +1451,10 @@ async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
 #[tauri::command]
 fn should_use_custom_titlebar() -> bool {
     debug!("should_use_custom_titlebar");
-    cfg!(target_os = "linux")
+
+    // The window decorations on Linux seem correct now
+    //cfg!(target_os = "linux")
+    false
 }
 
 #[tauri::command]
