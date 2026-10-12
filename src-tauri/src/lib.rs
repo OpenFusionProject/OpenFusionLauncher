@@ -1443,37 +1443,59 @@ async fn create_log_package() -> CommandResult<()> {
         let log_package_path = statics
             .log_packages_dir
             .join(format!("logs_{}.zip", timestamp));
+
         let file = std::fs::File::create(&log_package_path)?;
         let mut zip = ZipWriter::new(file);
 
         // Copy anything in the launcher logs folder
-        for entry in std::fs::read_dir(&launcher_log_path)? {
-            let path = entry?.path();
-            if path.is_file() {
-                let name = path.file_name().unwrap();
-                zip.start_file_from_path(name, SimpleFileOptions::default())?;
-                std::io::copy(&mut std::fs::File::open(&path)?, &mut zip)?;
+        if let Ok(dir) = std::fs::read_dir(&launcher_log_path) {
+            for entry in dir.flatten() {
+                let path = entry.path();
+                if path.is_file() {
+                    let name = path.file_name().unwrap();
+                    zip.start_file_from_path(name, SimpleFileOptions::default())?;
+                    if let Err(e) = std::io::copy(&mut std::fs::File::open(&path)?, &mut zip) {
+                        warn!(
+                            "Failed to copy file {} to log package: {}",
+                            path.display(),
+                            e
+                        );
+                    }
+                }
             }
         }
 
         // Copy all retained game logs
-        for entry in std::fs::read_dir(&statics.unity_logs_dir)? {
-            let entry_path = entry?.path();
-            if entry_path.is_dir() {
-                let entry_name = entry_path.file_name().unwrap();
-                for file_entry in std::fs::read_dir(&entry_path)? {
-                    let file_path = file_entry?.path();
-                    if file_path.is_file() {
-                        let name = file_path.file_name().unwrap();
-                        zip.start_file_from_path(
-                            format!(
-                                "{}/{}",
-                                entry_name.to_string_lossy(),
-                                name.to_string_lossy()
-                            ),
-                            SimpleFileOptions::default(),
-                        )?;
-                        std::io::copy(&mut std::fs::File::open(&file_path)?, &mut zip)?;
+        if let Ok(dir) = std::fs::read_dir(&statics.unity_logs_dir) {
+            for entry in dir.flatten() {
+                let entry_path = entry.path();
+                if entry_path.is_dir() {
+                    let entry_name = entry_path.file_name().unwrap();
+                    if let Ok(files) = std::fs::read_dir(&entry_path) {
+                        for file_entry in files.flatten() {
+                            let file_path = file_entry.path();
+                            if file_path.is_file() {
+                                let name = file_path.file_name().unwrap();
+                                zip.start_file_from_path(
+                                    format!(
+                                        "{}/{}",
+                                        entry_name.to_string_lossy(),
+                                        name.to_string_lossy()
+                                    ),
+                                    SimpleFileOptions::default(),
+                                )?;
+
+                                if let Err(e) =
+                                    std::io::copy(&mut std::fs::File::open(&file_path)?, &mut zip)
+                                {
+                                    warn!(
+                                        "Failed to copy file {} to log package: {}",
+                                        file_path.display(),
+                                        e
+                                    );
+                                }
+                            }
+                        }
                     }
                 }
             }
