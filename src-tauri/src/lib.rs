@@ -1505,8 +1505,16 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(
-            tauri_plugin_log::Builder::default()
-                .level(log::LevelFilter::Debug)
+            tauri_plugin_log::Builder::new()
+                .timezone_strategy(tauri_plugin_log::TimezoneStrategy::UseLocal)
+                .rotation_strategy(tauri_plugin_log::RotationStrategy::KeepSome(5)) // 40 KB per file; just keep 5
+                .targets([
+                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout),
+                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::LogDir {
+                        file_name: None,
+                    })
+                    .filter(|meta| meta.level() != log::Level::Trace),
+                ])
                 .build(),
         )
         .setup(|app| {
