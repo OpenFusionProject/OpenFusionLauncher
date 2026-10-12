@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { warn, info, error } from "@tauri-apps/plugin-log";
 import {
   Alert,
   Config,
@@ -56,18 +57,22 @@ export default function SettingsPage() {
   };
 
   const alertWarning = (text: string) => {
+    warn(text);
     pushAlert("warning", text);
   };
 
   const alertError = (text: string) => {
+    error(text);
     pushAlert("danger", text);
   };
 
   const alertInfo = (text: string) => {
+    info(text);
     pushAlert("primary", text);
   };
 
   const alertSuccess = (text: string) => {
+    info(text);
     pushAlert("success", text);
   };
 

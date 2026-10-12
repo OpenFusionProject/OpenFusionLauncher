@@ -356,13 +356,13 @@ pub(crate) async fn do_live_check(url: &str) -> bool {
 }
 
 pub(crate) async fn do_simple_get(url: &str) -> Result<String> {
-    debug!("=> GET {}", url);
+    trace!("=> GET {}", url);
     let response = get_http_client().get(url).send().await?;
     if !response.status().is_success() {
         return Err(format!("Failed to GET {}: {}", url, response.status()).into());
     }
     let text = response.text().await?;
-    debug!("<= {}", text);
+    trace!("<= {}", text);
     Ok(text)
 }
 
@@ -702,7 +702,7 @@ pub(crate) async fn does_web_file_exist(url: &str) -> bool {
     match client.head(url).send().await {
         Ok(response) => response.status().is_success(),
         Err(e) => {
-            debug!("Failed to check if web file exists: {}", e);
+            warn!("Failed to check if web file exists: {}", e);
             false
         }
     }

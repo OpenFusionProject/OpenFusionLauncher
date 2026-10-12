@@ -20,6 +20,7 @@
     "opener:default",
     "opener:allow-open-path",
     "dialog:allow-open",
-    "deep-link:default"
+    "deep-link:default",
+    "log:allow-log"
   ]
 }

@@ -5,6 +5,7 @@ import { startEasterEggs } from "./easter-eggs";
 import { invoke } from "@tauri-apps/api/core";
 import { getName, getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { warn, info, error } from "@tauri-apps/plugin-log";
 import { useState, useEffect, useRef } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -129,18 +130,22 @@ export default function Home() {
   };
 
   const alertWarning = (text: string) => {
+    warn(text);
     pushAlert("warning", text);
   };
 
   const alertError = (text: string) => {
+    error(text);
     pushAlert("danger", text);
   };
 
   const alertInfo = (text: string, link?: string) => {
+    info(text);
     pushAlert("primary", text, link);
   };
 
   const alertSuccess = (text: string) => {
+    info(text);
     pushAlert("success", text);
   };
 
