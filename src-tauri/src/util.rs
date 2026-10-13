@@ -721,41 +721,11 @@ pub(crate) async fn supports_https(url: &str) -> bool {
     get_http_client().head(url).send().await.is_ok()
 }
 
-pub(crate) fn get_unity_log_path_for_profile(uuid: Uuid) -> PathBuf {
-    let compat_data_dir = get_app_statics().compat_data_dir.join(uuid.to_string());
-    if compat_data_dir.exists() {
-        let mut pfx_root = compat_data_dir.join("drive_c");
-        if !pfx_root.exists() {
-            pfx_root = compat_data_dir.join("pfx").join("drive_c");
-        }
-
-        let users_path = pfx_root.join("users");
-        // The Unity logs could be in any of the user directories. Search them all.
-        if let Ok(user_entries) = std::fs::read_dir(&users_path) {
-            for user_entry in user_entries.flatten() {
-                let log_path = user_entry
-                    .path()
-                    .join("AppData")
-                    .join("Local")
-                    .join("Temp")
-                    .join("UnityWebPlayer")
-                    .join("log");
-                if log_path.exists() {
-                    return log_path;
-                }
-            }
-        }
-    }
-
-    Path::new(&std::env::temp_dir())
-        .join("UnityWebPlayer")
-        .join("log")
-}
-
-fn prune_copied_unity_logs(copied_logs_dir: &Path) {
+pub(crate) fn prune_unity_logs() {
     const MAX_COPIED_UNITY_LOG_DIRS: usize = 10;
 
-    let Ok(entries) = std::fs::read_dir(copied_logs_dir) else {
+    let logs_dir = get_app_statics().unity_logs_dir.clone();
+    let Ok(entries) = std::fs::read_dir(&logs_dir) else {
         return;
     };
 
@@ -774,34 +744,6 @@ fn prune_copied_unity_logs(copied_logs_dir: &Path) {
             warn!("Failed to remove old Unity logs at {:?}: {}", old_dir, e);
         }
     }
-}
-
-pub(crate) fn copy_unity_logs(
-    src_log_path: PathBuf,
-    launch_time: chrono::DateTime<chrono::Local>,
-) -> Result<()> {
-    let launch_time_formatted = launch_time.format("%Y-%m-%d_%H-%M-%S").to_string();
-    let copied_logs_dir = get_app_statics().unity_logs_dir.clone();
-    if !copied_logs_dir.exists() {
-        std::fs::create_dir_all(&copied_logs_dir)?;
-    }
-
-    let copied_log_dir_name = format!("logs_{}", launch_time_formatted);
-    let copied_log_dir = copied_logs_dir.join(&copied_log_dir_name);
-
-    copy_dir(&src_log_path, &copied_log_dir)?;
-
-    // Also copy the ffrunner log
-    let ffrunner_log_path = get_app_statics().ffrunner_log_path.clone();
-    if ffrunner_log_path.exists() {
-        let copied_ffrunner_log_path = copied_log_dir.join("ffrunner.log");
-        std::fs::copy(&ffrunner_log_path, &copied_ffrunner_log_path)?;
-    } else {
-        warn!("ffrunner log not found at {:?}", ffrunner_log_path);
-    }
-
-    prune_copied_unity_logs(&copied_logs_dir);
-    Ok(())
 }
 
 #[cfg(target_os = "linux")]

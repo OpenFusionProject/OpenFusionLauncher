@@ -30,7 +30,7 @@ use uuid::Uuid;
 
 use crate::{
     config::WebPlayerArchitecture,
-    state::{LaunchCommand, LaunchProfile, LaunchProfilesView},
+    state::{LaunchInfo, LaunchProfile, LaunchProfilesView},
 };
 
 type Error = Box<dyn std::error::Error>;
@@ -107,14 +107,31 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
     debug!("do_launch");
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
-    let LaunchCommand {
+    let LaunchInfo {
         mut command,
         asset_url,
-        launch_profile_uuid,
     } = state.launch_cmd.take().ok_or("No launch prepared")?;
-    let cmd_str = util::get_launch_cmd_dbg_str(&command, false);
-    let time_now = chrono::Local::now();
 
+    // Create a folder for the Unity logs
+    let launch_time = chrono::Local::now();
+    let launch_time_formatted = launch_time.format("%Y-%m-%d_%H-%M-%S").to_string();
+    let unity_logs_dir = get_app_statics().unity_logs_dir.clone();
+
+    let _ = std::fs::create_dir_all(&unity_logs_dir);
+    if unity_logs_dir.exists() {
+        let log_dir_name = format!("logs_{}", launch_time_formatted);
+        let log_dir = unity_logs_dir.join(&log_dir_name);
+        command.env("UNITY_FF_LOG_DIR", &log_dir); // no need to create dir; the loader will do it
+        debug!("Unity log path: {}", log_dir.display());
+    } else {
+        warn!(
+            "Could not create Unity logs directory ({}) does not exist; logs will go to AppData",
+            unity_logs_dir.display()
+        );
+    }
+
+    util::log_command(&command);
+    let cmd_str = util::get_launch_cmd_dbg_str(&command, false);
     let mut proc = command.spawn().map_err(|e| {
         // we want to censor the login cookie if present
         let censored_cmd_str = LOGIN_COOKIE_REGEX
@@ -133,15 +150,7 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
     let mut state = state.lock().await;
     state.release_proxy_for_version(&asset_url);
 
-    let unity_logs_path = util::get_unity_log_path_for_profile(launch_profile_uuid);
-    debug!("Unity log path: {:?}", unity_logs_path);
-    if unity_logs_path.exists() {
-        if let Err(e) = util::copy_unity_logs(unity_logs_path, time_now) {
-            warn!("Failed to copy Unity logs: {}", e);
-        }
-    } else {
-        warn!("Unity log path does not exist!");
-    }
+    util::prune_unity_logs();
 
     // no need to do any error handling. quit now so the user doesn't see us again.
     if state.config.launcher.launch_behavior == LaunchBehavior::Quit {
@@ -751,11 +760,9 @@ async fn prep_launch(
         cmd.stdout(Stdio::null());
         cmd.stderr(Stdio::null());
 
-        util::log_command(&cmd);
-        state.launch_cmd = Some(LaunchCommand {
+        state.launch_cmd = Some(LaunchInfo {
             command: cmd,
             asset_url: original_asset_url,
-            launch_profile_uuid: selected_launch_profile,
         });
 
         Ok(timeout_sec)

@@ -115,10 +115,9 @@ pub struct ProxyInstance {
 }
 
 #[derive(Debug)]
-pub struct LaunchCommand {
+pub struct LaunchInfo {
     pub command: Command,
     pub asset_url: String,
-    pub launch_profile_uuid: Uuid,
 }
 
 #[derive(Default)]
@@ -131,7 +130,7 @@ pub struct AppState {
     //
     pub temp_tokens: HashMap<Uuid, String>,
     pub write_config: bool,
-    pub launch_cmd: Option<LaunchCommand>,
+    pub launch_cmd: Option<LaunchInfo>,
     pub proxies: HashMap<String, ProxyInstance>,
     pub pending_activations: Vec<ProtocolActivation>,
 }
