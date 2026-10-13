@@ -1432,7 +1432,7 @@ async fn create_log_package() -> CommandResult<()> {
     debug!("create_log_package");
     let internal = async {
         let statics = get_app_statics();
-        let launcher_log_path = statics.app_data_dir.join("logs");
+        let launcher_log_path = &statics.launcher_logs_dir;
 
         if !statics.log_packages_dir.exists() {
             std::fs::create_dir_all(&statics.log_packages_dir)?;

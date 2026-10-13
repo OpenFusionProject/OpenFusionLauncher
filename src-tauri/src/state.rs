@@ -50,6 +50,7 @@ pub struct AppStatics {
     version: String,
     pub app_data_dir: PathBuf,
     pub resource_dir: PathBuf,
+    pub launcher_logs_dir: PathBuf,
     pub log_packages_dir: PathBuf,
     pub unity_logs_dir: PathBuf,
     pub ff_cache_dir: PathBuf,
@@ -70,6 +71,7 @@ impl AppStatics {
             resource_dir = std::env::current_exe().unwrap().parent().unwrap().into();
         }
 
+        let launcher_logs_dir = path_resolver.app_log_dir().unwrap();
         let log_packages_dir = path_resolver
             .resolve("log_packages", BaseDirectory::AppCache)
             .unwrap();
@@ -91,6 +93,7 @@ impl AppStatics {
             version,
             app_data_dir,
             resource_dir,
+            launcher_logs_dir,
             log_packages_dir,
             unity_logs_dir,
             ff_cache_dir,
