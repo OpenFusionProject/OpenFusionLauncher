@@ -1453,11 +1453,11 @@ async fn create_log_package() -> CommandResult<()> {
         let file = std::fs::File::create(&log_package_path)?;
         let mut zip = ZipWriter::new(file);
 
-        // Copy anything in the launcher logs folder
-        if let Ok(dir) = std::fs::read_dir(&launcher_log_path) {
+        // Copy all .log files in the launcher logs folder
+        if let Ok(dir) = std::fs::read_dir(launcher_log_path) {
             for entry in dir.flatten() {
                 let path = entry.path();
-                if path.is_file() {
+                if path.is_file() && path.extension().map_or(false, |ext| ext == "log") {
                     let name = path.file_name().unwrap();
                     zip.start_file_from_path(name, SimpleFileOptions::default())?;
                     if let Err(e) = std::io::copy(&mut std::fs::File::open(&path)?, &mut zip) {
@@ -1504,6 +1504,28 @@ async fn create_log_package() -> CommandResult<()> {
                         }
                     }
                 }
+            }
+        }
+
+        // Copy config.json
+        let config_path = get_app_statics().app_data_dir.join("config.json");
+        if config_path.is_file() {
+            zip.start_file_from_path("config.json", SimpleFileOptions::default())?;
+
+            if let Err(e) = std::io::copy(&mut std::fs::File::open(&config_path)?, &mut zip) {
+                warn!("Failed to copy config.json to log package: {}", e);
+            }
+        }
+
+        // Copy launch_profiles.json
+        let launch_profiles_path = get_app_statics().app_data_dir.join("launch_profiles.json");
+        if launch_profiles_path.is_file() {
+            zip.start_file_from_path("launch_profiles.json", SimpleFileOptions::default())?;
+
+            if let Err(e) =
+                std::io::copy(&mut std::fs::File::open(&launch_profiles_path)?, &mut zip)
+            {
+                warn!("Failed to copy launch_profiles.json to log package: {}", e);
             }
         }
 
