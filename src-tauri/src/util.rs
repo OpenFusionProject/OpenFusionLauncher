@@ -96,12 +96,6 @@ pub(crate) fn resolve_server_addr(addr: &str) -> Result<String> {
     Ok(format!("{}:{}", ip, port))
 }
 
-fn parse_protocol_query(query: &str) -> HashMap<String, String> {
-    url::form_urlencoded::parse(query.as_bytes())
-        .into_owned()
-        .collect()
-}
-
 pub(crate) fn get_default_cache_dir() -> String {
     get_app_statics().ff_cache_dir.to_string_lossy().to_string()
 }
@@ -503,6 +497,12 @@ fn handle_server_activation(app_handle: tauri::AppHandle, details: NewServerDeta
     });
 }
 
+fn parse_protocol_query(query: &str) -> HashMap<String, String> {
+    url::form_urlencoded::parse(query.as_bytes())
+        .into_owned()
+        .collect()
+}
+
 pub(crate) fn handle_protocol_activation(app_handle: tauri::AppHandle, uri: &str) {
     let Some(stripped_uri) = uri.strip_prefix("ofl://") else {
         warn!("Invalid protocol activation URI: {}", uri);
@@ -510,7 +510,7 @@ pub(crate) fn handle_protocol_activation(app_handle: tauri::AppHandle, uri: &str
     };
 
     let parts: Vec<&str> = stripped_uri.splitn(2, '?').collect();
-    let command = parts[0];
+    let command = parts[0].trim_end_matches('/'); // some systems/browsers add a trailing slash
     let mut params = HashMap::new();
     if parts.len() > 1 {
         params = parse_protocol_query(parts[1]);
