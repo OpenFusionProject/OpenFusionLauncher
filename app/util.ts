@@ -135,6 +135,14 @@ export async function getPlatform() {
   return platform;
 }
 
+let webplayerDllVersion: string | undefined = undefined;
+export async function getWebplayerDllVersion() {
+  if (webplayerDllVersion === undefined) {
+    webplayerDllVersion = await invoke<string>("get_webplayer_dll_version");
+  }
+  return webplayerDllVersion;
+}
+
 export function deepEqual(a: any, b: any) {
   if (a === b) return true;
   if (typeof a !== "object" || typeof b !== "object") return false;

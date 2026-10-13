@@ -1,5 +1,5 @@
 import Button from "./Button";
-import { getPlatform } from "@/app/util";
+import { getPlatform, getWebplayerDllVersion } from "@/app/util";
 import { useState, useEffect } from "react";
 import { Stack, Modal } from "react-bootstrap";
 import { openUrl } from "@tauri-apps/plugin-opener";
@@ -17,9 +17,13 @@ export default function AboutModal({
 }) {
 
   const [platform, setPlatform] = useState<string | undefined>(undefined);
+  const [webplayerDllVersion, setWebplayerDllVersion] = useState<
+    string | undefined
+  >(undefined);
 
   useEffect(() => {
     getPlatform().then(setPlatform);
+    getWebplayerDllVersion().then(setWebplayerDllVersion);
   }, []);
 
   return (
@@ -30,6 +34,8 @@ export default function AboutModal({
       <Modal.Body>
         <p>
           Version {version} {platform ? `(${platform})` : ""}
+          <br />
+          Webplayer DLL Version: {webplayerDllVersion ?? "unknown"}
         </p>
         <p>
           ©2020-2026 OpenFusion Contributors

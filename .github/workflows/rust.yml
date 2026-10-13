@@ -8,6 +8,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  WEBPLAYER_DLL_VERSION: patched-20261013
 
 jobs:
   build-ffrunner:
@@ -25,7 +26,7 @@ jobs:
 
     - name: Download webplayer and Vulkan DLLs
       working-directory: resources/ffrunner
-      run: ./bootstrap-dlls.sh patched-20261013
+      run: ./bootstrap-dlls.sh ${{ env.WEBPLAYER_DLL_VERSION }}
 
     - name: Upload ffrunner
       uses: actions/upload-artifact@v4.6.0

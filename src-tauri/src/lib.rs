@@ -1457,7 +1457,7 @@ async fn create_log_package() -> CommandResult<()> {
         if let Ok(dir) = std::fs::read_dir(launcher_log_path) {
             for entry in dir.flatten() {
                 let path = entry.path();
-                if path.is_file() && path.extension().map_or(false, |ext| ext == "log") {
+                if path.is_file() && path.extension().is_some_and(|ext| ext == "log") {
                     let name = path.file_name().unwrap();
                     zip.start_file_from_path(name, SimpleFileOptions::default())?;
                     if let Err(e) = std::io::copy(&mut std::fs::File::open(&path)?, &mut zip) {
@@ -1577,6 +1577,13 @@ fn get_platform() -> &'static str {
 }
 
 #[tauri::command]
+fn get_webplayer_dll_version() -> &'static str {
+    debug!("get_webplayer_dll_version");
+    // This is stamped during the CI build
+    option_env!("WEBPLAYER_DLL_VERSION").unwrap_or("unknown")
+}
+
+#[tauri::command]
 fn is_debug_mode() -> bool {
     debug!("is_debug_mode");
     cfg!(debug_assertions)
@@ -1666,6 +1673,7 @@ pub fn run() {
             reload_state,
             should_use_custom_titlebar,
             get_platform,
+            get_webplayer_dll_version,
             is_debug_mode,
             take_pending_activations,
             check_for_update,
