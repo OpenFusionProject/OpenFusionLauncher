@@ -56,7 +56,7 @@ pub struct AppStatics {
     pub ff_cache_dir: PathBuf,
     pub offline_cache_dir: PathBuf,
     pub compat_data_dir: PathBuf,
-    pub ffrunner_log_path: PathBuf,
+    pub fallback_ffrunner_log_path: PathBuf,
 }
 impl AppStatics {
     fn load(app: &mut tauri::App) -> Self {
@@ -87,7 +87,7 @@ impl AppStatics {
         let compat_data_dir = path_resolver
             .resolve("compat_data", BaseDirectory::AppCache)
             .unwrap();
-        let ffrunner_log_path = app_data_dir.join("ffrunner.log");
+        let fallback_ffrunner_log_path = app_data_dir.join("ffrunner.log");
 
         Self {
             version,
@@ -99,7 +99,7 @@ impl AppStatics {
             ff_cache_dir,
             offline_cache_dir,
             compat_data_dir,
-            ffrunner_log_path,
+            fallback_ffrunner_log_path,
         }
     }
 

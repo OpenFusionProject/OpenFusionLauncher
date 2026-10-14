@@ -116,19 +116,23 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
     let launch_time = chrono::Local::now();
     let launch_time_formatted = launch_time.format("%Y-%m-%d_%H-%M-%S").to_string();
     let unity_logs_dir = get_app_statics().unity_logs_dir.clone();
+    let log_dir_name = format!("logs_{}", launch_time_formatted);
+    let log_dir = unity_logs_dir.join(&log_dir_name);
 
-    let _ = std::fs::create_dir_all(&unity_logs_dir);
-    if unity_logs_dir.exists() {
-        let log_dir_name = format!("logs_{}", launch_time_formatted);
-        let log_dir = unity_logs_dir.join(&log_dir_name);
-        command.env("UNITY_FF_LOG_DIR", &log_dir); // no need to create dir; the loader will do it
+    let _ = std::fs::create_dir_all(&log_dir);
+    let ffrunner_log_path = if log_dir.exists() {
+        command.env("UNITY_FF_LOG_DIR", &log_dir);
         debug!("Unity log path: {}", log_dir.display());
+        log_dir.join("ffrunner.log")
     } else {
         warn!(
-            "Could not create Unity logs directory ({}) does not exist; logs will go to AppData",
-            unity_logs_dir.display()
+            "Could not create Unity logs directory ({}); logs will go to AppData",
+            log_dir.display()
         );
-    }
+        get_app_statics().fallback_ffrunner_log_path.clone()
+    };
+
+    command.arg("-l").arg(&ffrunner_log_path);
 
     util::log_command(&command);
     let cmd_str = util::get_launch_cmd_dbg_str(&command, false);
@@ -604,19 +608,9 @@ async fn prep_launch(
         debug!("Asset URL: {}", asset_url);
         debug!("Main URL: {}", main_url);
 
-        let log_file_path = format!(
-            "\"{}\"",
-            app_statics
-                .ffrunner_log_path
-                .clone()
-                .to_str()
-                .ok_or("Invalid log file path")?
-        );
-
         cmd.args(["-m", &main_url])
             .args(["-a", &ip])
-            .args(["--asseturl", &format!("{}/", asset_url)])
-            .args(["-l", &log_file_path]);
+            .args(["--asseturl", &format!("{}/", asset_url)]);
 
         if let Some(server_name) = server_name {
             // window title
