@@ -1,5 +1,9 @@
 import Button from "./Button";
-import { getPlatform, getWebplayerDllVersion } from "@/app/util";
+import {
+  getPlatform,
+  getFFRunnerVersion,
+  getWebplayerDllVersion,
+} from "@/app/util";
 import { useState, useEffect } from "react";
 import { Stack, Modal } from "react-bootstrap";
 import { openUrl } from "@tauri-apps/plugin-opener";
@@ -20,9 +24,13 @@ export default function AboutModal({
   const [webplayerDllVersion, setWebplayerDllVersion] = useState<
     string | undefined
   >(undefined);
+  const [ffrunnerVersion, setFFRunnerVersion] = useState<string | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     getPlatform().then(setPlatform);
+    getFFRunnerVersion().then(setFFRunnerVersion);
     getWebplayerDllVersion().then(setWebplayerDllVersion);
   }, []);
 
@@ -34,6 +42,8 @@ export default function AboutModal({
       <Modal.Body>
         <p>
           Version {version} {platform ? `(${platform})` : ""}
+          <br />
+          ffrunner Version: {ffrunnerVersion ?? "unknown"}
           <br />
           Webplayer DLL Version: {webplayerDllVersion ?? "unknown"}
         </p>

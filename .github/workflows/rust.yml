@@ -13,6 +13,8 @@ env:
 jobs:
   build-ffrunner:
     runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.ffrunner-version.outputs.version }}
     steps:
     - name: Install dependencies
       run: sudo apt update && sudo apt install -y gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 wget
@@ -20,6 +22,14 @@ jobs:
     - uses: actions/checkout@v4
       with:
        submodules: 'recursive'
+
+    - name: Stamp ffrunner version
+      id: ffrunner-version
+      working-directory: resources/ffrunner
+      run: |
+        version=$(git rev-parse --short HEAD)
+        echo "FFRUNNER_VERSION=$version" >> "$GITHUB_ENV"
+        echo "version=$version" >> "$GITHUB_OUTPUT"
 
     - name: Build 
       run: make -C resources/ffrunner
@@ -40,6 +50,7 @@ jobs:
     # See https://v2.tauri.app/distribute/appimage/#limitations
     runs-on: ubuntu-22.04 
     env:
+      FFRUNNER_VERSION: ${{ needs.build-ffrunner.outputs.version }}
       TAURI_BUNDLER_NEW_APPIMAGE_FORMAT: true
     steps:
     - uses: actions/setup-node@v4
@@ -115,6 +126,8 @@ jobs:
   build-macos:
     needs: build-ffrunner
     runs-on: macos-latest
+    env:
+      FFRUNNER_VERSION: ${{ needs.build-ffrunner.outputs.version }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -163,6 +176,8 @@ jobs:
   build-windows:
     needs: build-ffrunner
     runs-on: windows-latest
+    env:
+      FFRUNNER_VERSION: ${{ needs.build-ffrunner.outputs.version }}
     steps:
       - uses: actions/setup-node@v4
         with:

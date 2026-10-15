@@ -143,6 +143,14 @@ export async function getWebplayerDllVersion() {
   return webplayerDllVersion;
 }
 
+let ffrunnerVersion: string | undefined = undefined;
+export async function getFFRunnerVersion() {
+  if (ffrunnerVersion === undefined) {
+    ffrunnerVersion = await invoke<string>("get_ffrunner_version");
+  }
+  return ffrunnerVersion;
+}
+
 export function deepEqual(a: any, b: any) {
   if (a === b) return true;
   if (typeof a !== "object" || typeof b !== "object") return false;

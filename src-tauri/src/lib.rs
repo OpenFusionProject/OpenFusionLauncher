@@ -1571,6 +1571,40 @@ fn get_platform() -> &'static str {
 }
 
 #[tauri::command]
+fn get_ffrunner_version() -> String {
+    fn get_from_git_tree() -> String {
+        let git_command = "git submodule status";
+        let output = std::process::Command::new("sh")
+            .arg("-c")
+            .arg(git_command)
+            .output();
+
+        if let Ok(output) = output
+            && output.status.success()
+            && let Ok(stdout) = String::from_utf8(output.stdout)
+        {
+            let mut rev = stdout.split_whitespace().next().unwrap_or("unknown");
+            if rev.len() > 7 {
+                // Trim to short revision hash
+                rev = &rev[..7];
+            }
+            return rev.to_string();
+        }
+
+        String::from("unknown")
+    }
+
+    debug!("get_ffrunner_version");
+    // This is stamped during the CI build
+    option_env!("FFRUNNER_VERSION")
+        .map(String::from)
+        .unwrap_or_else(
+            // Dev build running locally; grab it from the local Git tree.
+            get_from_git_tree,
+        )
+}
+
+#[tauri::command]
 fn get_webplayer_dll_version() -> &'static str {
     debug!("get_webplayer_dll_version");
     // This is stamped during the CI build
@@ -1667,6 +1701,7 @@ pub fn run() {
             reload_state,
             should_use_custom_titlebar,
             get_platform,
+            get_ffrunner_version,
             get_webplayer_dll_version,
             is_debug_mode,
             take_pending_activations,
