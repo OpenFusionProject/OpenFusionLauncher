@@ -162,8 +162,14 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
         return Ok(0);
     }
 
-    let exit_code = exit_result.map_err(|e| e.to_string())?;
-    Ok(exit_code.code().unwrap_or(0))
+    let exit_status = exit_result.map_err(|e| e.to_string())?;
+    let exit_code = exit_status.code();
+    debug!("Process exited with code: {:?}", exit_code);
+
+    // we use 3 to indicate missing exit code (e.g. on Unix when a signal terminated the process).
+    // This is probably fine; ffrunner returns 2 on a clean, reported player crash, and
+    // when Mono catches the crash instead it's usually something like 5 for access violation.
+    Ok(exit_code.unwrap_or(3))
 }
 
 #[tauri::command]

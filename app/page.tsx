@@ -324,7 +324,11 @@ export default function Home() {
       const exitCode: number = await invoke("do_launch");
       setTagline("Thanks for playing!");
       if (exitCode != 0) {
-        console.warn("Game exited with code " + exitCode);
+        alertError(
+          "Game crashed (exit code " +
+            exitCode +
+            "). See game logs for more details.",
+        );
       }
     } catch (e: unknown) {
       alertError("Failed to launch (" + e + ")");
