@@ -3,6 +3,7 @@
 use std::{
     collections::HashMap,
     env,
+    ffi::{OsStr, OsString},
     path::{Path, PathBuf},
     process::Command,
     sync::{OnceLock, mpsc},
@@ -580,15 +581,10 @@ fn extract_env_vars_from_tokens(tokens: &mut Vec<String>) -> HashMap<String, Str
     let mut env_vars = HashMap::new();
     let mut i = 0;
     while i < tokens.len() {
-        if !tokens[i].starts_with("-") && tokens[i].contains('=') {
-            let mut parts = tokens[i].split('=');
-            let key = parts.next().unwrap();
-            if key.trim().is_empty() {
-                i += 1;
-                continue;
-            }
-
-            let value = parts.next().unwrap();
+        if !tokens[i].starts_with("-")
+            && let Some((key, value)) = tokens[i].split_once('=')
+            && !key.trim().is_empty()
+        {
             env_vars.insert(key.to_string(), value.to_string());
             tokens.remove(i);
         } else {
@@ -598,60 +594,73 @@ fn extract_env_vars_from_tokens(tokens: &mut Vec<String>) -> HashMap<String, Str
     env_vars
 }
 
-pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Result<Command> {
-    const REPLACEMENT_TOKEN_LEFT: &str = "{";
-    const REPLACEMENT_TOKEN_RIGHT: &str = "}";
+const BASE_CMD_PLACEHOLDER: &str = "{}";
 
-    // Prepare the ffrunner portion of the command for tokenization.
-    let mut base_command_str = format!("\"{}\"", base_cmd.get_program().to_string_lossy());
-    for arg in base_cmd.get_args() {
-        base_command_str.push(' ');
-        base_command_str.push_str(arg.to_string_lossy().to_string().as_str());
-    }
-
-    let mut launch_command_str = launch_fmt.to_string();
-
-    // Replace newlines with spaces
-    launch_command_str = launch_command_str.replace("\r\n", " ");
-    launch_command_str = launch_command_str.replace("\n", " ");
-
-    // Substitute the base command + environment variables in the replacement tokens into the launch format string.
-    let mut base_replaced = false;
-    while let Some(start) = launch_command_str.find(REPLACEMENT_TOKEN_LEFT) {
-        if let Some(end) = launch_command_str[start..].find(REPLACEMENT_TOKEN_RIGHT) {
-            let replacement_identifier =
-                &launch_command_str[start + REPLACEMENT_TOKEN_LEFT.len()..start + end];
-            let replacement_value = if replacement_identifier.is_empty() {
-                base_replaced = true;
-                base_command_str.clone()
-            } else {
-                env::var(replacement_identifier).map_err(|_| {
-                    format!("Environment variable {} not set", replacement_identifier)
-                })?
-            };
-
-            launch_command_str.replace_range(
-                start..start + end + REPLACEMENT_TOKEN_RIGHT.len(),
-                &replacement_value,
-            );
-        } else {
+fn expand_env_placeholders(token: &str) -> Result<String> {
+    let mut out = String::new();
+    let mut rest = token;
+    while let Some(start) = rest.find('{') {
+        let Some(len) = rest[start..].find('}') else {
             break;
+        };
+        let name = &rest[start + 1..start + len];
+        if name.is_empty() {
+            return Err(format!(
+                "Invalid launch format string: {} must be a standalone argument",
+                BASE_CMD_PLACEHOLDER
+            )
+            .into());
+        }
+        let value = env::var(name).map_err(|_| format!("Environment variable {} not set", name))?;
+        out.push_str(&rest[..start]);
+        out.push_str(&value);
+        rest = &rest[start + len + 1..];
+    }
+    out.push_str(rest);
+    Ok(out)
+}
+
+pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Result<Command> {
+    // Only the user-provided format string is tokenized. The base command's program and
+    // args are spliced in afterwards as discrete args so they never get re-split.
+    let launch_fmt = launch_fmt.replace("\r\n", " ").replace('\n', " ");
+    let mut tokens = tokenize_launch_command(&launch_fmt)
+        .into_iter()
+        .map(|token| {
+            if token == BASE_CMD_PLACEHOLDER {
+                Ok(token)
+            } else {
+                expand_env_placeholders(&token)
+            }
+        })
+        .collect::<Result<Vec<_>>>()?;
+
+    let user_env_vars = extract_env_vars_from_tokens(&mut tokens);
+    let base_args: Vec<OsString> = std::iter::once(base_cmd.get_program())
+        .chain(base_cmd.get_args())
+        .map(OsStr::to_os_string)
+        .collect();
+
+    let mut base_replaced = false;
+    let mut args: Vec<OsString> = Vec::new();
+    for token in tokens {
+        if token == BASE_CMD_PLACEHOLDER {
+            args.extend(base_args.iter().cloned());
+            base_replaced = true;
+        } else {
+            args.push(token.into());
         }
     }
 
     if !base_replaced {
         return Err(format!(
-            "Invalid launch format string: missing {}{}",
-            REPLACEMENT_TOKEN_LEFT, REPLACEMENT_TOKEN_RIGHT
+            "Invalid launch format string: missing {}",
+            BASE_CMD_PLACEHOLDER
         )
         .into());
     }
 
-    // Tokenize and insert env vars into the env for the command
-    let mut launch_command_tokens = tokenize_launch_command(&launch_command_str);
-    let user_env_vars = extract_env_vars_from_tokens(&mut launch_command_tokens);
-
-    let mut launch_command = Command::new(&launch_command_tokens[0]);
+    let mut launch_command = Command::new(&args[0]);
     launch_command.current_dir(
         base_cmd
             .get_current_dir()
@@ -662,11 +671,10 @@ pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Result<
         launch_command.env(env.0, env.1.unwrap());
     }
     for (key, value) in user_env_vars {
-        assert!(!key.trim().is_empty());
         launch_command.env(key, value);
     }
 
-    launch_command.args(&launch_command_tokens[1..]);
+    launch_command.args(&args[1..]);
     Ok(launch_command)
 }
 
