@@ -324,9 +324,10 @@ export default function Home() {
       const exitCode: number = await invoke("do_launch");
       setTagline("Thanks for playing!");
       if (exitCode != 0) {
+        const formatted = exitCode.toString(16).toUpperCase();
         alertError(
-          "Game crashed (exit code " +
-            exitCode +
+          "Game crashed (exit code 0x" +
+            formatted +
             "). See game logs for more details.",
         );
       }
