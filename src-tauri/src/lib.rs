@@ -134,6 +134,43 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<i32> {
 
     command.arg("-l").arg(&ffrunner_log_path);
 
+    // We don't need stdin. Void it to avoid issues.
+    command.stdin(Stdio::null());
+
+    // For stdout and stderr, log to respective .log files in the log dir.
+    // If they can't be created, don't worry about piping them; just null them out.
+    //
+    // ffrunner should be *very* quiet on these pipes, as Unity tends to crash if you
+    // write to stdout/stderr (especially during startup), but other tooling like Wine
+    // debugging could benefit.
+    let stdout_file_path = log_dir.join("stdout.log");
+    match std::fs::File::create(&stdout_file_path) {
+        Ok(stdout_file) => {
+            command.stdout(Stdio::from(stdout_file));
+        }
+        Err(e) => {
+            warn!(
+                "Could not create stdout log file ({}); stdout will be null",
+                e
+            );
+            command.stdout(Stdio::null());
+        }
+    }
+
+    let stderr_file_path = log_dir.join("stderr.log");
+    match std::fs::File::create(&stderr_file_path) {
+        Ok(stderr_file) => {
+            command.stderr(Stdio::from(stderr_file));
+        }
+        Err(e) => {
+            warn!(
+                "Could not create stderr log file ({}); stderr will be null",
+                e
+            );
+            command.stderr(Stdio::null());
+        }
+    }
+
     util::log_command(&command);
     let cmd_str = util::get_launch_cmd_dbg_str(&command, false);
     let mut proc = command.spawn().map_err(|e| {
@@ -753,12 +790,6 @@ async fn prep_launch(
                 std::fs::create_dir_all(&compat_data_dir)?;
             }
         }
-
-        // Detach stdio so the child doesn't crash from broken pipes
-        // when the launcher exits (e.g. LaunchBehavior::Quit)
-        cmd.stdin(Stdio::null());
-        cmd.stdout(Stdio::null());
-        cmd.stderr(Stdio::null());
 
         state.launch_cmd = Some(LaunchInfo {
             command: cmd,
