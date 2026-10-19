@@ -204,7 +204,10 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
     debug!("Process exited with code: {:?}", exit_code);
 
     // we use DEADBEEF as a sentinel to indicate missing exit code
-    // (e.g. on Unix when a signal terminated the process).
+    // (on Unix, when a signal terminated the process we spawned directly).
+    // Note that when running through a compatibility layer like Wine or Proton,
+    // the spawned process is the wrapper, not ffrunner itself; if ffrunner gets
+    // killed by a signal, Wine reports it as a regular exit code (1) instead.
     Ok(exit_code.unwrap_or(0xDEAD_BEEF))
 }
 
