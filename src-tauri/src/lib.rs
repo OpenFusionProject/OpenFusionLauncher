@@ -733,7 +733,9 @@ async fn prep_launch(
                 "windows" => {
                     "Please ensure you have extracted OpenFusionLauncher, or download the installer instead."
                 }
-                _ => "Please create one that uses an appropriate compatibility layer for your system.",
+                _ => {
+                    "Please create one that uses an appropriate compatibility layer for your system."
+                }
             };
 
             return Err(format!(

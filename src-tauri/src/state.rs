@@ -2,12 +2,11 @@ use std::{
     collections::{HashMap, HashSet},
     path::PathBuf,
     process::Command,
-    sync::{LazyLock, OnceLock},
+    sync::OnceLock,
 };
 
 use ffbuildtool::Version;
 use log::*;
-use regex::Regex;
 use rust_proxy::proxy::tcp::TcpProxy;
 use serde::{Deserialize, Serialize};
 use tauri::{Manager, path::BaseDirectory};
@@ -825,12 +824,34 @@ impl LaunchProfiles {
     }
 
     pub fn reload_presets(&mut self) {
-        // remove all existing presets
-        self.profiles.retain(|p| !p.is_preset());
-        // add fresh presets in
-        let mut presets = Self::load_presets();
-        presets.profiles.extend(self.profiles.clone());
-        *self = presets;
+        self.merge(Self::load_presets());
+    }
+
+    fn merge(&mut self, mut other: Self) {
+        let existing_profiles = std::mem::take(&mut self.profiles);
+        for existing_profile in existing_profiles {
+            // Presets can be updated between launcher builds. Relate by name
+            // (stable on our side, and UUIDs change) and take the UUID of the existing profile.
+            if existing_profile.is_preset() {
+                if let Some(updated_idx) = other
+                    .profiles
+                    .iter()
+                    .position(|p| p.is_preset() && p.name == existing_profile.name)
+                {
+                    let mut updated_preset = other.profiles.remove(updated_idx);
+                    updated_preset.uuid = existing_profile.uuid;
+                    self.profiles.push(updated_preset);
+                }
+                // If there's no match, dump the preset; it's no longer valid.
+            } else {
+                // Re-insert
+                self.profiles.push(existing_profile);
+            }
+        }
+
+        for new_profile in other.profiles {
+            self.profiles.push(new_profile);
+        }
     }
 
     #[allow(deprecated)]
@@ -839,12 +860,7 @@ impl LaunchProfiles {
 
         let mut profiles = match Self::load_internal() {
             Ok(mut profiles) => {
-                if Self::are_presets_old(&profiles) {
-                    info!("Old presets detected; discarding");
-                    profiles.reload_presets();
-                    info!("Regenerated presets");
-                }
-
+                profiles.reload_presets(); // Preset updates are applied here
                 info!(
                     "Loaded {} launch profiles from app data",
                     profiles.profiles.len()
@@ -852,6 +868,7 @@ impl LaunchProfiles {
                 profiles
             }
             Err(_) => {
+                // Assume fresh launch; start with presets and migrate any old custom launch command
                 let mut profiles = Self::load_presets();
                 if let Some(current_cmd) = config.game.launch_command.as_ref() {
                     let profile_id = profiles.add_entry(CUSTOM_PROFILE_NAME, current_cmd);
@@ -916,21 +933,6 @@ impl LaunchProfiles {
         let commands_str = std::fs::read_to_string(commands_path)?;
         let commands: Self = serde_json::from_str(&commands_str)?;
         Ok(commands)
-    }
-
-    fn are_presets_old(loaded: &LaunchProfiles) -> bool {
-        static STEAM_COMPAT_PATH_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-            Regex::new(r#"\s*STEAM_COMPAT_CLIENT_INSTALL_PATH="[^"]*"\s*"#).unwrap()
-        });
-
-        // `STEAM_COMPAT_CLIENT_INSTALL_PATH` is only specified in older launch profiles
-        for profile in &loaded.profiles {
-            if profile.is_preset() && STEAM_COMPAT_PATH_REGEX.is_match(&profile.command) {
-                return true;
-            }
-        }
-
-        false
     }
 
     fn sort(&mut self) {
