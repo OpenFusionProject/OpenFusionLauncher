@@ -723,7 +723,24 @@ async fn prep_launch(
         cmd.arg("-v"); // verbose logging
 
         if !state.launch_profiles.has_entries() {
-            return Err("No launch profiles found in game settings. Please create one.".into());
+            let detailed_instructions = match std::env::consts::OS {
+                "linux" => {
+                    "Install a compatibility layer, such as Proton from Steam, or Wine from your distribution's package manager. Then restart OpenFusionLauncher."
+                }
+                "macos" => {
+                    "Download a compatibility layer, such as CrossOver or Wine, and install the .app into your Applications folder. Then restart OpenFusionLauncher."
+                }
+                "windows" => {
+                    "Please ensure you have extracted OpenFusionLauncher, or download the installer instead."
+                }
+                _ => "Please create one that uses an appropriate compatibility layer for your system.",
+            };
+
+            return Err(format!(
+                "No launch profiles found in game settings.\n\n{}",
+                detailed_instructions
+            )
+            .into());
         }
 
         let selected_launch_profile = state.config.game.launch_profile;
