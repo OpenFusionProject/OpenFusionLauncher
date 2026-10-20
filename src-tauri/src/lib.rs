@@ -11,13 +11,13 @@ use serde::{Deserialize, Serialize};
 use state::{
     AppState, Config, FlatServer, FlatServers, Server, ServerInfo, Versions, get_app_statics,
 };
+use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_opener::OpenerExt;
 use util::{AlertVariant, ProtocolActivation};
 use zip::{ZipWriter, write::SimpleFileOptions};
 
 use std::{
     collections::{HashMap, HashSet},
-    env,
     process::Stdio,
     sync::{Arc, LazyLock, OnceLock, mpsc},
     vec,
@@ -1664,29 +1664,37 @@ async fn take_pending_activations(app_handle: tauri::AppHandle) -> Vec<ProtocolA
     std::mem::take(&mut state.pending_activations)
 }
 
+fn show_windows(app_handle: &tauri::AppHandle) {
+    app_handle.webview_windows().values().for_each(|w| {
+        let _ = w.show(); // show in case it's hidden for a launch
+        let _ = w.set_focus();
+    });
+}
+
+fn handle_deep_links(app_handle: &tauri::AppHandle, urls: Vec<url::Url>) {
+    for url in urls {
+        let url_str = url.as_str();
+        debug!("Handling deep link: {}", url_str);
+
+        #[cfg(debug_assertions)]
+        util::send_alert(
+            app_handle.clone(),
+            AlertVariant::Info,
+            &format!("Handling deep link: {}", url_str),
+        );
+
+        util::handle_protocol_activation(app_handle.clone(), url_str);
+    }
+}
+
 #[allow(clippy::single_match)]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        // Single instance plugin needs to be first
-        .plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
-            app.webview_windows().values().for_each(|w| {
-                let _ = w.show(); // show in case it's hidden for a launch
-                let _ = w.set_focus();
-            });
-
-            let app_handle = app.app_handle().clone();
-
-            #[cfg(debug_assertions)]
-            util::send_alert(
-                app_handle.clone(),
-                AlertVariant::Info,
-                &format!("Launched with args: {:?}, cwd: {:?}", args, cwd),
-            );
-
-            if let Some(uri) = args.get(1).cloned() {
-                util::handle_protocol_activation(app_handle, &uri);
-            }
+        // Single instance plugin needs to be first.
+        // With the `deep-link`` feature, this forwards deep links in args to the deep-link plugin.
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            show_windows(app);
         }))
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_opener::init())
@@ -1706,10 +1714,7 @@ pub fn run() {
         )
         .setup(|app| {
             #[cfg(any(windows, target_os = "linux"))]
-            {
-                use tauri_plugin_deep_link::DeepLinkExt;
-                app.deep_link().register_all()?;
-            }
+            app.deep_link().register_all()?;
 
             #[cfg(target_os = "linux")]
             if let Err(e) = util::install_appimage_desktop_entry(app.handle()) {
@@ -1730,9 +1735,17 @@ pub fn run() {
             let app_state = AppState::default();
             app.manage(Mutex::new(app_state));
 
-            if let Some(uri) = env::args().nth(1) {
-                util::handle_protocol_activation(app.handle().clone(), &uri);
+            // The cold start deep link is captured before setup runs, so the listener below misses it
+            if let Ok(Some(urls)) = app.deep_link().get_current() {
+                handle_deep_links(app.handle(), urls);
             }
+
+            // Warm start callback
+            let app_handle = app.handle().clone();
+            app.deep_link().on_open_url(move |event| {
+                show_windows(&app_handle);
+                handle_deep_links(&app_handle, event.urls());
+            });
 
             Ok(())
         })
