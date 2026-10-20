@@ -1475,7 +1475,7 @@ async fn reset_game_config(app_handle: tauri::AppHandle) -> CommandResult<()> {
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
 
-    state.launch_profiles.reload_presets();
+    state.launch_profiles.reload_presets(true);
     if let Some(new_default_profile) = state.launch_profiles.get_default() {
         default_game_config.launch_profile = new_default_profile.get_id();
     }

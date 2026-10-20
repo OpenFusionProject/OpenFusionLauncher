@@ -823,8 +823,13 @@ impl LaunchProfiles {
         !self.profiles.is_empty()
     }
 
-    pub fn reload_presets(&mut self) {
+    pub fn reload_presets(&mut self, force: bool) {
+        if force {
+            // Wipe all prefixes
+            self.profiles.retain(|p| !p.is_preset());
+        }
         self.merge(Self::load_presets());
+        self.sort();
     }
 
     fn merge(&mut self, mut other: Self) {
@@ -860,7 +865,7 @@ impl LaunchProfiles {
 
         let mut profiles = match Self::load_internal() {
             Ok(mut profiles) => {
-                profiles.reload_presets(); // Preset updates are applied here
+                profiles.reload_presets(false); // Preset updates are applied here
                 info!(
                     "Loaded {} launch profiles from app data",
                     profiles.profiles.len()
