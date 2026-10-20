@@ -13,13 +13,14 @@ export default function AboutModal({
   setShow,
   name,
   version,
+  collectLogs,
 }: {
   show: boolean;
   setShow: (newShow: boolean) => void;
   name: string;
   version: string;
+  collectLogs: () => void;
 }) {
-
   const [platform, setPlatform] = useState<string | undefined>(undefined);
   const [webplayerDllVersion, setWebplayerDllVersion] = useState<
     string | undefined
@@ -53,6 +54,21 @@ export default function AboutModal({
           OpenFusion is licensed under MIT.
           <br />
         </p>
+        <hr />
+        <p>
+          Logs are useful for debugging issues, however note that they may
+          contain sensitive information.
+          <br />
+          Please only share the below logs with those you trust.
+        </p>
+        <Button
+          className="mx-1"
+          onClick={collectLogs}
+          variant="warning"
+          icon="file-archive"
+          text="Collect Logs"
+          iconLeft
+        />
       </Modal.Body>
       <Modal.Footer className="flex-row-reverse">
         <Stack direction="horizontal" gap={2} className="w-100">

@@ -60,7 +60,7 @@ export default function Home() {
   const router = useRouter();
 
   const [appName, setAppName] = useState("");
-  const [launcherVersion, setLauncherVersion] = useState("--");
+  const [launcherVersion, setLauncherVersion] = useState("unknown");
   const [updateAvailable, setUpdateAvailable] = useState<
     UpdateInfo | undefined
   >(undefined);
@@ -279,13 +279,15 @@ export default function Home() {
     }
   };
 
+  const isPreRelease = (version: string) => version.includes("-");
+
   const doInit = async () => {
     try {
       const appName = await getName();
       setAppName(appName);
       const appVersion = await getVersion();
       setLauncherVersion(appVersion);
-      if (appVersion.includes("-")) {
+      if (isPreRelease(appVersion)) {
         alertWarning("This is a pre-release version (" + appVersion + ")");
       }
       const firstRun: boolean = await invoke("reload_state");
@@ -788,13 +790,15 @@ export default function Home() {
           icon="cog"
           tooltip="Settings"
         />
-        <Button
-          className="mx-1"
-          onClick={() => collectLogs()}
-          variant="warning"
-          icon="file-archive"
-          tooltip="Collect logs"
-        />
+        {isPreRelease(launcherVersion) && (
+          <Button
+            className="mx-1"
+            onClick={() => collectLogs()}
+            variant="warning"
+            icon="file-archive"
+            tooltip="Collect logs"
+          />
+        )}
       </div>
       <EditServerModal
         server={undefined}
@@ -860,6 +864,7 @@ export default function Home() {
         setShow={setShowAboutModal}
         name={appName}
         version={launcherVersion}
+        collectLogs={collectLogs}
       />
       <ConfirmationModal
         show={showConfirmation}
