@@ -173,7 +173,7 @@ pub(crate) fn get_preset_launch_profiles() -> Vec<LaunchProfile> {
     {
         // Find Wine installs
         for (app_name, wine_path, weight) in find_macos_wine_installs() {
-            let wine_cmd = format!("\"{}\" {{}}", wine_path.to_string_lossy());
+            let wine_cmd = format!("{} {{}}", quote_launch_arg(&wine_path.to_string_lossy()));
             profiles.push(LaunchProfile::new_preset(
                 &app_name,
                 &wine_cmd,
@@ -204,9 +204,9 @@ pub(crate) fn get_preset_launch_profiles() -> Vec<LaunchProfile> {
             let profile_weight = proton_version.and_then(|v| v.parse::<isize>().ok());
 
             let launch_command = format!(
-                "\"{}\" --verb=run -- \"{}\" run {{}}",
-                steam_linux_runtime_path.to_string_lossy(),
-                proton_path.to_string_lossy()
+                "{} --verb=run -- {} run {{}}",
+                quote_launch_arg(&steam_linux_runtime_path.to_string_lossy()),
+                quote_launch_arg(&proton_path.to_string_lossy())
             );
 
             profiles.push(LaunchProfile::new_preset(
@@ -222,7 +222,7 @@ pub(crate) fn get_preset_launch_profiles() -> Vec<LaunchProfile> {
         // Look for Wine on PATH
         if let Ok(wine) = which::which("wine") {
             let name = format!("Wine ({})", wine.to_string_lossy());
-            let wine_cmd = format!("\"{}\" {{}}", wine.to_string_lossy());
+            let wine_cmd = format!("{} {{}}", quote_launch_arg(&wine.to_string_lossy()));
 
             // Weigh negative to prefer Proton and specialized Wine installs
             profiles.push(LaunchProfile::new_preset(&name, &wine_cmd, Some(-1)));
@@ -542,42 +542,72 @@ pub(crate) fn handle_protocol_activation(app_handle: tauri::AppHandle, uri: &str
     }
 }
 
-fn tokenize_launch_command(launch_cmd: &str) -> Vec<String> {
+/// Splits a launch format string into arguments. Single and double quotes group text,
+/// and `\"` outside single quotes is a literal double quote. Other backslashes are
+/// literal so Windows paths work unquoted.
+fn tokenize_launch_command(launch_cmd: &str) -> Result<Vec<String>> {
     let mut tokens = Vec::new();
     let mut current_token = String::new();
+    // Distinguishes an empty quoted argument ("") from no argument at all
+    let mut has_token = false;
     let mut in_single_quotes = false;
     let mut in_double_quotes = false;
     let mut chars = launch_cmd.chars().peekable();
 
-    while let Some(&c) = chars.peek() {
+    while let Some(c) = chars.next() {
         match c {
+            '\\' if !in_single_quotes && chars.peek() == Some(&'"') => {
+                chars.next();
+                current_token.push('"');
+                has_token = true;
+            }
             '\'' if !in_double_quotes => {
                 in_single_quotes = !in_single_quotes;
-                chars.next();
+                has_token = true;
             }
             '"' if !in_single_quotes => {
                 in_double_quotes = !in_double_quotes;
-                chars.next();
+                has_token = true;
             }
             ' ' if !in_single_quotes && !in_double_quotes => {
-                if !current_token.is_empty() {
-                    tokens.push(current_token.clone());
-                    current_token.clear();
+                if has_token {
+                    tokens.push(std::mem::take(&mut current_token));
+                    has_token = false;
                 }
-                chars.next();
             }
             _ => {
                 current_token.push(c);
-                chars.next();
+                has_token = true;
             }
         }
     }
 
-    if !current_token.is_empty() {
+    if in_single_quotes || in_double_quotes {
+        return Err("Invalid launch format string: unclosed quote".into());
+    }
+
+    if has_token {
         tokens.push(current_token);
     }
 
-    tokens
+    Ok(tokens)
+}
+
+/// Double-quotes an argument so that `tokenize_launch_command` reads it back verbatim.
+fn quote_launch_arg(arg: &str) -> String {
+    // A backslash right before the closing quote would escape it, so trailing
+    // backslashes go after the closing quote, where they are literal.
+    let body = arg.trim_end_matches('\\');
+    let trailing = &arg[body.len()..];
+    format!("\"{}\"{}", body.replace('"', "\\\""), trailing)
+}
+
+fn quote_launch_arg_if_needed(arg: &str) -> String {
+    if arg.is_empty() || arg.contains([' ', '"', '\'']) {
+        quote_launch_arg(arg)
+    } else {
+        arg.to_string()
+    }
 }
 
 fn extract_env_vars_from_tokens(tokens: &mut Vec<String>) -> HashMap<String, String> {
@@ -627,7 +657,7 @@ pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Result<
     // Only the user-provided format string is tokenized. The base command's program and
     // args are spliced in afterwards as discrete args so they never get re-split.
     let launch_fmt = launch_fmt.replace("\r\n", " ").replace('\n', " ");
-    let mut tokens = tokenize_launch_command(&launch_fmt)
+    let mut tokens = tokenize_launch_command(&launch_fmt)?
         .into_iter()
         .map(|token| {
             if token == BASE_CMD_PLACEHOLDER {
@@ -682,10 +712,10 @@ pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Result<
 }
 
 pub(crate) fn get_launch_cmd_dbg_str(command: &Command, with_env: bool) -> String {
-    let mut command_str = format!("\"{}\"", command.get_program().to_string_lossy());
+    let mut command_str = quote_launch_arg(&command.get_program().to_string_lossy());
     for arg in command.get_args() {
         command_str.push(' ');
-        command_str.push_str(arg.to_string_lossy().to_string().as_str());
+        command_str.push_str(&quote_launch_arg_if_needed(&arg.to_string_lossy()));
     }
 
     if with_env {

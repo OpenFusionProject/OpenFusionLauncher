@@ -503,7 +503,7 @@ async fn prep_launch(
                     custom_icon_url = icon_url;
                 }
 
-                server_name = Some(format!("\"{}\"", api_info.server_name));
+                server_name = Some(api_info.server_name.clone());
                 addr = api_info.login_address.clone();
                 versions = api_info.get_supported_versions();
             }
