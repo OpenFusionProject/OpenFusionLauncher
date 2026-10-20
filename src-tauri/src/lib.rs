@@ -1483,6 +1483,26 @@ async fn reset_game_config(app_handle: tauri::AppHandle) -> CommandResult<()> {
     state.config.game = default_game_config;
     state.write_config = true;
     state.save();
+
+    // Also wipe prefixes
+    let compat_data_dir = get_app_statics().compat_data_dir.clone();
+    if compat_data_dir.exists()
+        && let Ok(entries) = std::fs::read_dir(&compat_data_dir)
+    {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_dir()
+                && let Err(e) = std::fs::remove_dir_all(&path)
+            {
+                warn!(
+                    "Failed to remove compat data subdirectory {}: {}",
+                    path.display(),
+                    e
+                );
+            }
+        }
+    }
+
     Ok(())
 }
 
