@@ -465,7 +465,7 @@ export default function Home() {
     try {
       const uuid: string = await invoke("add_server", { details: details });
       setServers((servers) => {
-        const newServer: ServerEntry = { ...details, uuid };
+        const newServer: ServerEntry = { ...details, uuid, trusted: false };
         return [...servers, newServer];
       });
       setSelectedServer(uuid);
@@ -479,10 +479,15 @@ export default function Home() {
   const updateServer = async (
     details: NewServerDetails,
     uuid: string,
-    showSucc?: boolean
+    showSucc?: boolean,
+    trusted?: boolean,
   ) => {
     try {
-      const entry: ServerEntry = { ...details, uuid };
+      const entry: ServerEntry = {
+        ...details,
+        uuid,
+        trusted: trusted ?? false,
+      };
       await invoke("update_server", { serverEntry: entry });
       setServers((servers) => {
         const newServers = servers.map((server) => {
@@ -510,6 +515,16 @@ export default function Home() {
     }
   };
 
+  const trustServer = async (serverUuid?: string) => {
+    if (serverUuid) {
+      const server = servers.find((s) => s.uuid == serverUuid);
+      if (server) {
+        const details: NewServerDetails = { ...server };
+        await updateServer(details, serverUuid, false, true);
+      }
+    }
+  };
+
   const deleteServer = async (serverUuid?: string) => {
     if (serverUuid) {
       try {
@@ -531,6 +546,7 @@ export default function Home() {
 
   const launchServer = async (serverUuid?: string) => {
     if (serverUuid) {
+      setSelectedServer(serverUuid);
       setConnecting(true);
       onConnect(serverUuid);
     }
@@ -587,9 +603,35 @@ export default function Home() {
     }
   }, []);
 
-  // Protocol activations are queued by the backend until taken here.
-  // Listen before draining so nothing arrives unnoticed in between.
+  // The listener below is registered once, so route through a ref to always
+  // use handlers from the latest render (with current servers, config, etc.).
+  const handleActivationRef = useRef<(activation: ProtocolActivation) => void>(
+    () => {}
+  );
   useEffect(() => {
+    handleActivationRef.current = (activation: ProtocolActivation) => {
+      switch (activation.type) {
+        case "add_server":
+          openAddServer(activation.payload);
+          break;
+        case "show_existing_server":
+          openLaunchServer(activation.payload);
+          break;
+        case "launch_server":
+          launchServer(activation.payload);
+          break;
+      }
+    };
+  });
+
+  // Protocol activations are queued by the backend until taken here.
+  // Wait for the initial fetch so servers and config are loaded, and
+  // listen before draining so nothing arrives unnoticed in between.
+  useEffect(() => {
+    if (!initialFetchDone) {
+      return;
+    }
+
     let cancelled = false;
     let unlisten: (() => void) | undefined;
 
@@ -599,14 +641,7 @@ export default function Home() {
           "take_pending_activations"
         );
         for (const activation of pending) {
-          switch (activation.type) {
-            case "add_server":
-              openAddServer(activation.payload);
-              break;
-            case "show_existing_server":
-              openLaunchServer(activation.payload);
-              break;
-          }
+          handleActivationRef.current(activation);
         }
       } catch (e: unknown) {
         console.error("Failed to take pending activations: " + e);
@@ -627,7 +662,7 @@ export default function Home() {
       cancelled = true;
       unlisten?.();
     };
-  }, []);
+  }, [initialFetchDone]);
 
   // Keyboard event listener needs to be separate since it depends on state
   useEffect(() => {
@@ -788,6 +823,7 @@ export default function Home() {
         server={getSelectedServer()}
         show={showLaunchModal}
         setShow={setShowLaunchModal}
+        trustServer={trustServer}
         launchServer={launchServer}
       />
       <LoginModal

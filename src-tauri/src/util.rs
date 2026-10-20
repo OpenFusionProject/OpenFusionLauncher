@@ -446,11 +446,13 @@ pub(crate) fn send_alert(app_handle: tauri::AppHandle, variant: AlertVariant, me
     }
 }
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Debug, Clone, Serialize)]
 #[serde(tag = "type", content = "payload", rename_all = "snake_case")]
 pub(crate) enum ProtocolActivation {
     AddServer(NewServerDetails),
     ShowExistingServer(Uuid),
+    LaunchServer(Uuid),
 }
 
 async fn queue_activation(app_handle: tauri::AppHandle, activation: ProtocolActivation) {
@@ -468,29 +470,30 @@ fn handle_server_activation(app_handle: tauri::AppHandle, details: NewServerDeta
     tauri::async_runtime::spawn(async move {
         state::wait_for_app_state().await;
         let state = app_handle.state::<tokio::sync::Mutex<AppState>>();
-        let existing_server_uuid = {
+        let existing_server = {
             let state = state.lock().await;
 
             // Check if the server is already added.
             if let Some(endpoint) = &details.endpoint {
-                state
-                    .servers
-                    .find_endpoint_entry(endpoint)
-                    .map(|s| s.get_uuid())
+                state.servers.find_endpoint_entry(endpoint).cloned()
             } else if let Some(ip) = &details.ip
                 && let Some(version) = &details.version
             {
-                state
-                    .servers
-                    .find_simple_entry(ip, version)
-                    .map(|s| s.get_uuid())
+                state.servers.find_simple_entry(ip, version).cloned()
             } else {
                 None
             }
         };
 
-        let activation = match existing_server_uuid {
-            Some(uuid) => ProtocolActivation::ShowExistingServer(uuid),
+        let activation = match existing_server {
+            Some(server) => {
+                let existing_server_uuid = server.get_uuid();
+                if server.is_trusted() {
+                    ProtocolActivation::LaunchServer(existing_server_uuid)
+                } else {
+                    ProtocolActivation::ShowExistingServer(existing_server_uuid)
+                }
+            }
             None => ProtocolActivation::AddServer(details),
         };
 

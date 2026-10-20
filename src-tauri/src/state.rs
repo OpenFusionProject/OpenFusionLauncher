@@ -501,6 +501,9 @@ pub struct FlatServer {
     ip: Option<String>,
     version: Option<String>,
     endpoint: Option<String>,
+
+    #[serde(default = "util::false_fn")]
+    trusted: bool,
 }
 impl From<Server> for FlatServer {
     fn from(server: Server) -> Self {
@@ -512,6 +515,7 @@ impl From<Server> for FlatServer {
                 ip: Some(ip),
                 version: Some(version),
                 endpoint: None,
+                trusted: server.trusted,
             },
             ServerInfo::Endpoint {
                 endpoint,
@@ -522,6 +526,7 @@ impl From<Server> for FlatServer {
                 ip: None,
                 version: preferred_version,
                 endpoint: Some(endpoint),
+                trusted: server.trusted,
             },
         }
     }
@@ -546,6 +551,7 @@ pub struct Server {
     uuid: Uuid,
     description: Option<String>,
     pub info: ServerInfo,
+    trusted: bool,
 }
 impl From<FlatServer> for Server {
     fn from(flat: FlatServer) -> Self {
@@ -564,6 +570,7 @@ impl From<FlatServer> for Server {
             uuid: flat.uuid,
             description: flat.description,
             info,
+            trusted: flat.trusted,
         }
     }
 }
@@ -574,6 +581,10 @@ impl Server {
 
     pub fn get_description(&self) -> Option<String> {
         self.description.clone()
+    }
+
+    pub fn is_trusted(&self) -> bool {
+        self.trusted
     }
 }
 
@@ -675,6 +686,7 @@ impl Servers {
             uuid,
             description: Some(description),
             info,
+            trusted: false,
         });
         uuid
     }

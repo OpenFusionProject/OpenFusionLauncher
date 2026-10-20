@@ -8,11 +8,13 @@ export default function LaunchServerModal({
   server,
   show,
   setShow,
+  trustServer,
   launchServer,
 }: {
   server?: ServerEntry;
   show: boolean;
   setShow: (newShow: boolean) => void;
+  trustServer: (uuid: string | undefined) => void;
   launchServer: (uuid: string | undefined) => void;
 }) {
   return (
@@ -26,6 +28,15 @@ export default function LaunchServerModal({
           onClick={() => setShow(false)}
           variant="primary"
           text="Cancel"
+        />
+        <Button
+          onClick={() => {
+            setShow(false);
+            trustServer(server?.uuid);
+            launchServer(server?.uuid);
+          }}
+          variant="warning"
+          text="Always Launch"
         />
         <Button
           onClick={() => {

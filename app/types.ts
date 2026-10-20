@@ -4,6 +4,7 @@ export type ServerEntry = {
   ip?: string;
   version?: string;
   endpoint?: string;
+  trusted: boolean;
 };
 
 export type NewServerDetails = {
@@ -15,7 +16,8 @@ export type NewServerDetails = {
 
 export type ProtocolActivation =
   | { type: "add_server"; payload: NewServerDetails }
-  | { type: "show_existing_server"; payload: string };
+  | { type: "show_existing_server"; payload: string }
+  | { type: "launch_server"; payload: string };
 
 export type Servers = {
   servers: ServerEntry[];
