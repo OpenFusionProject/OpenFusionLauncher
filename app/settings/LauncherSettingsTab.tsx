@@ -229,7 +229,8 @@ export default function LauncherSettingsTab({
                   {
                     key: "quit",
                     label: "Quit",
-                    description: "quit the launcher when the game is launched",
+                    description:
+                      "hide the launcher when the game is launched, quit after game exits",
                   },
                   {
                     key: "stay_open",

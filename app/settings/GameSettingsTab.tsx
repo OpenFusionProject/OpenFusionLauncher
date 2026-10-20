@@ -251,8 +251,12 @@ export default function GameSettingsTab({
                 id="web_player_architecture"
                 name="Web Player Architecture"
                 options={[
-                  { key: "x64", value: "x64", label: "64-bit (experimental)" },
-                  { key: "x86", value: "x86", label: "32-bit" },
+                  {
+                    key: "x64",
+                    value: "x64",
+                    label: "High-performance 64-bit (experimental)",
+                  },
+                  { key: "x86", value: "x86", label: "Original 32-bit" },
                 ]}
                 defaultKey="x64"
                 oldValue={currentSettings.web_player_architecture}
