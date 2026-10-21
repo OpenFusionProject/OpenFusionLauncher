@@ -122,6 +122,23 @@ export default function LauncherSettingsTab({
                   }))
                 }
               />
+              <SettingControlDropdown
+                id="discord_integration"
+                name="Enable Discord integration"
+                options={[
+                  { key: "yes", value: true, label: "Yes" },
+                  { key: "no", value: false, label: "No" },
+                ]}
+                defaultKey="yes"
+                oldValue={currentSettings.discord_integration}
+                value={settings.discord_integration}
+                onChange={(value) =>
+                  setSettings((current) => ({
+                    ...current!,
+                    discord_integration: value,
+                  }))
+                }
+              />
               <SettingControlBrowse
                 id="game_cache_path"
                 name="Game Cache Path"

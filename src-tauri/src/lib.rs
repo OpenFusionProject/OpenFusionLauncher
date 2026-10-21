@@ -185,13 +185,15 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
         format!("{} (launch command was: {})", e, censored_cmd_str)
     })?;
 
+    let do_discord_activity = state.config.launcher.discord_integration;
+
     // don't hold the state across the game process
     drop(state);
 
     // Discord activity
     let discord_client = util::get_discord_client().await.map_err(|e| e.to_string());
     let mut activity_set = false;
-    if let Ok(discord_client) = &discord_client {
+    if do_discord_activity && let Ok(discord_client) = &discord_client {
         let mut activity =
             ActivityBuilder::default().start_timestamp(SystemTime::from(launch_time));
 

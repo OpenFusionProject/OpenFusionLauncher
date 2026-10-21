@@ -25,6 +25,9 @@ pub struct LauncherSettings {
     #[serde(default = "util::true_fn")]
     pub check_for_updates: bool,
 
+    #[serde(default = "util::true_fn")]
+    pub discord_integration: bool,
+
     // none = system default
     #[serde(skip_serializing_if = "Option::is_none")]
     pub theme: Option<LauncherTheme>,
@@ -54,6 +57,7 @@ impl Default for LauncherSettings {
     fn default() -> Self {
         Self {
             check_for_updates: true,
+            discord_integration: true,
             theme: None,
             use_offline_caches: true,
             verify_offline_caches: false,
