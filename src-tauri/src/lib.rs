@@ -4,7 +4,7 @@ mod state;
 mod util;
 
 use config::{LaunchBehavior, LauncherSettings};
-use discord_sdk::activity::{ActivityBuilder, Button};
+use discord_sdk::activity::{ActivityBuilder, Assets, Button};
 use endpoint::{AccountInfo, InfoResponse, RegisterResponse, Session};
 use ffbuildtool::{ItemProgress, Version};
 use regex::Regex;
@@ -198,9 +198,16 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
             ActivityBuilder::default().start_timestamp(SystemTime::from(launch_time));
 
         if let Some(endpoint_url) = &endpoint_url {
+            let server_name = server_name.unwrap();
             let endpoint_magnet_url = format!("http://{}/ofl", endpoint_url);
-            debug!("Endpoint magnet URL: {}", endpoint_magnet_url);
-            activity = activity.details(server_name.unwrap()).button(Button {
+
+            let discord_icon_url = format!("http://{}/launcher/discord.png", endpoint_url);
+            let mut assets = Assets::default();
+            if util::does_web_file_exist(&discord_icon_url).await {
+                assets.small_image = Some(discord_icon_url);
+            }
+
+            activity = activity.details(server_name).assets(assets).button(Button {
                 label: "Launch in OpenFusionLauncher".to_owned(),
                 url: endpoint_magnet_url,
             });
