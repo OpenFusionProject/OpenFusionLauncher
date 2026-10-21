@@ -196,16 +196,19 @@ function ListEntry({
         <td colSpan={2} className="bg-blend p-3" style={rowStyle}>
           <div className="d-flex justify-content-between align-items-center">
             <div className="font-monospace ps-3">
-              {logo ? (
-                <img
-                  src={logo}
-                  height={60}
-                  className="d-block tt"
-                  title={server.description}
-                />
-              ) : (
-                <h3 className="mb-0">{server.description}</h3>
-              )}
+              <div className="d-flex align-items-center gap-3">
+                {logo && (
+                  <img
+                    src={logo}
+                    height={60}
+                    className="d-block tt"
+                    title={server.description}
+                  />
+                )}
+                <h3 className={logo ? "mb-0 pt-3" : "mb-0"}>
+                  {server.description}
+                </h3>
+              </div>
               <small className="text-muted">{server.endpoint}</small>
               {offline !== undefined && (
                 <small className={"text-" + (offline! ? "danger" : "success")}>
