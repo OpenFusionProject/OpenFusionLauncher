@@ -4,6 +4,7 @@ mod state;
 mod util;
 
 use config::{LaunchBehavior, LauncherSettings};
+use discord_sdk::activity::{ActivityBuilder, Button};
 use endpoint::{AccountInfo, InfoResponse, RegisterResponse, Session};
 use ffbuildtool::{ItemProgress, Version};
 use regex::Regex;
@@ -20,6 +21,7 @@ use std::{
     collections::{HashMap, HashSet},
     process::Stdio,
     sync::{Arc, LazyLock, OnceLock, mpsc},
+    time::SystemTime,
     vec,
 };
 use tokio::sync::{Mutex, Semaphore};
@@ -110,6 +112,8 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
     let LaunchInfo {
         mut command,
         asset_url,
+        server_name,
+        endpoint_url,
     } = state.launch_cmd.take().ok_or("No launch prepared")?;
 
     // Create a folder for the Unity logs
@@ -184,7 +188,37 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
     // don't hold the state across the game process
     drop(state);
 
+    // Discord activity
+    let discord_client = util::get_discord_client().await.map_err(|e| e.to_string());
+    let mut activity_set = false;
+    if let Ok(discord_client) = &discord_client {
+        let mut activity =
+            ActivityBuilder::default().start_timestamp(SystemTime::from(launch_time));
+
+        if let Some(endpoint_url) = &endpoint_url {
+            let endpoint_magnet_url = format!("http://{}/ofl", endpoint_url);
+            debug!("Endpoint magnet URL: {}", endpoint_magnet_url);
+            activity = activity.details(server_name.unwrap()).button(Button {
+                label: "Launch in OpenFusionLauncher".to_owned(),
+                url: endpoint_magnet_url,
+            });
+        }
+
+        let activity_debug = format!("{:?}", activity);
+        if let Err(e) = discord_client.discord.update_activity(activity).await {
+            warn!("Failed to set Discord activity: {}", e);
+        } else {
+            activity_set = true;
+            debug!("Set Discord activity successfully: {}", activity_debug);
+        }
+    }
+
     let exit_result = proc.wait();
+
+    // End Discord activity
+    if activity_set && let Err(e) = discord_client.unwrap().discord.clear_activity().await {
+        warn!("Failed to clear Discord activity: {}", e);
+    }
 
     // shutdown the asset proxy
     let state = app_handle.state::<Mutex<AppState>>();
@@ -657,9 +691,9 @@ async fn prep_launch(
             .args(["-a", &ip])
             .args(["--asseturl", &format!("{}/", asset_url)]);
 
-        if let Some(server_name) = server_name {
+        if let Some(server_name) = &server_name {
             // window title
-            cmd.args(["-n", &server_name]);
+            cmd.args(["-n", server_name]);
         }
 
         if let Some(icon_url) = custom_icon_url {
@@ -667,6 +701,7 @@ async fn prep_launch(
             cmd.args(["-i", &icon_url]);
         }
 
+        let mut endpoint_url = None;
         if let ServerInfo::Endpoint { endpoint, .. } = &server.info {
             match session_token {
                 None => {
@@ -679,6 +714,7 @@ async fn prep_launch(
             };
 
             cmd.args(["-e", endpoint]);
+            endpoint_url = Some(endpoint.to_string());
 
             if custom_loading_screen {
                 cmd.arg("--loader-images");
@@ -815,6 +851,8 @@ async fn prep_launch(
         state.launch_cmd = Some(LaunchInfo {
             command: cmd,
             asset_url: original_asset_url,
+            server_name,
+            endpoint_url,
         });
 
         Ok(timeout_sec)

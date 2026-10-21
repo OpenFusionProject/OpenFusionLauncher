@@ -10,6 +10,11 @@ use std::{
     time::Duration,
 };
 
+use discord_sdk::{
+    Discord, DiscordApp, Subscriptions,
+    user::User,
+    wheel::{UserState, Wheel},
+};
 use dns_lookup::lookup_host;
 use ffbuildtool::{FailReason, ItemProgress, Version};
 use log::*;
@@ -31,6 +36,51 @@ pub(crate) fn get_http_client() -> &'static reqwest::Client {
             .timeout(Duration::from_secs(10))
             .build()
             .unwrap()
+    })
+}
+
+pub(crate) struct DiscordClient {
+    pub discord: Discord,
+    pub user: User,
+    pub wheel: Wheel,
+}
+
+static DISCORD_CLIENT: tokio::sync::OnceCell<DiscordClient> = tokio::sync::OnceCell::const_new();
+pub(crate) async fn get_discord_client() -> Result<&'static DiscordClient> {
+    DISCORD_CLIENT.get_or_try_init(make_discord_client).await
+}
+
+async fn make_discord_client() -> Result<DiscordClient> {
+    const DISCORD_APP_ID: i64 = 745676299997020302;
+    const DISCORD_SUBSCRIPTIONS: Subscriptions = Subscriptions::ACTIVITY;
+
+    let (wheel, handler) = Wheel::new(Box::new(|err| {
+        warn!("Discord error: {:?}", err);
+    }));
+
+    let mut user = wheel.user();
+
+    let discord = Discord::new(
+        DiscordApp::PlainId(DISCORD_APP_ID),
+        DISCORD_SUBSCRIPTIONS,
+        Box::new(handler),
+    )?;
+
+    debug!("Waiting for Discord handshake...");
+    user.0.changed().await.unwrap();
+
+    let user = match &*user.0.borrow() {
+        UserState::Connected(user) => user.clone(),
+        UserState::Disconnected(err) => {
+            return Err(format!("Failed to connect to Discord: {}", err).into());
+        }
+    };
+
+    debug!("Connected to Discord, local user is {:#?}", user);
+    Ok(DiscordClient {
+        discord,
+        user,
+        wheel,
     })
 }
 

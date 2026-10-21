@@ -117,6 +117,8 @@ pub struct ProxyInstance {
 pub struct LaunchInfo {
     pub command: Command,
     pub asset_url: String,
+    pub server_name: Option<String>,
+    pub endpoint_url: Option<String>,
 }
 
 #[derive(Default)]
