@@ -11,7 +11,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-bs-theme="dark">
+    <html lang="en" data-bs-theme="dark" data-of-theme="dark">
       <body>
         <TitleBar />
         {children}

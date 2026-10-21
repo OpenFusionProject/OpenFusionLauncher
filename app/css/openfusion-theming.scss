@@ -1,3 +1,5 @@
+@use "sass:color";
+
 @import "../../node_modules/bootstrap/scss/functions";
 @import "../../node_modules/bootstrap/scss/variables";
 @import "../../node_modules/bootstrap/scss/variables-dark";
@@ -9,17 +11,74 @@ $body-bg-dark: #000;
 $title-bar-bg-opacity: 0.5;
 $btn-glow-nohover: 10;
 $btn-glow-hover: $btn-glow-nohover * 2.5;
+$modal-border: #90d1e4;
+$modal-glow: #0097fc;
+$nav-tab-active-bottom: #091a23;
 
 @import "../../node_modules/bootstrap/scss/maps";
 @import "../../node_modules/bootstrap/scss/mixins";
 @import "../../node_modules/bootstrap/scss/root";
 
-/* Dark mode only */
+/* Theming helpers */
 
-@include color-mode(dark) {
+$current-theme: null;
+
+// Scopes rules to a launcher theme (`data-of-theme` on <html>, see
+// `applyTheme()` in util.ts) and makes `theme-img()` resolve from
+// `app/img/<theme>/`.
+@mixin theme($name) {
+  $previous-theme: $current-theme;
+  $current-theme: $name !global;
+  [data-of-theme="#{$name}"] {
+    // Elements tagged with `data-theme` only show up under their own theme
+    .themed-image:not([data-theme="#{$name}"]) {
+      display: none;
+    }
+    @content;
+  }
+  $current-theme: $previous-theme !global;
+}
+
+@function theme-img($name) {
+  @if not $current-theme {
+    @error "theme-img() must be used inside a `theme` block";
+  }
+  @return url("../img/#{$current-theme}/#{$name}.png");
+}
+
+@mixin themed-backgrounds {
+  .launcher-page-header,
+  .nav,
+  .nav button,
+  .modal-content {
+    background-image: theme-img("modal-bg");
+    background-repeat: repeat;
+  }
+
+  #launcher-page-settings,
+  #game-builds-buttonstack,
+  .nav button.active,
+  .modal-body {
+    background-image: theme-img("modal-footer-bg");
+    background-repeat: repeat;
+  }
+
+  .primary {
+    background-image: theme-img("btn-primary-bg");
+    background-repeat: repeat;
+  }
+
+  #settings-column {
+    background-image: theme-img("modal-bg");
+    background-repeat: repeat;
+  }
+}
+
+/* Dark */
+
+@mixin dark-theme {
   .titlebar {
     background-color: rgba($body-bg-dark, $title-bar-bg-opacity);
-    backdrop-filter: blur(10px);
   }
 
   .titlebar-button:hover {
@@ -39,30 +98,13 @@ $btn-glow-hover: $btn-glow-nohover * 2.5;
     background-color: #24314d;
   }
 
-  #of-logo-light {
-    display: none;
-  }
-
   #of-intro-text {
     text-shadow: 1px 1px 8px #4349c4;
     color: #4a76b7;
-    font-size: 18px;
   }
 
   .launcher-page-header {
     color: $body-bg;
-    background-image: url("../img/modal-bg-dark.png");
-    background-repeat: repeat;
-  }
-
-  #launcher-page-settings {
-    background-image: url("../img/modal-footer-bg-dark.png");
-    background-repeat: repeat;
-  }
-
-  #game-builds-buttonstack {
-    background-image: url("../img/modal-footer-bg-dark.png");
-    background-repeat: repeat;
   }
 
   .form-control,
@@ -82,32 +124,12 @@ $btn-glow-hover: $btn-glow-nohover * 2.5;
     color: #fff;
   }
 
-  .nav {
-    --bs-nav-tabs-link-active-border-color: #90d1e4 #90d1e4 #091a23;
-    --bs-nav-tabs-link-hover-border-color: #90d1e4 #90d1e4 #90d1e4;
-    background-image: url("../img/modal-bg-dark.png");
-    background-repeat: repeat;
-  }
-
   .nav button {
     border-bottom: 1px solid #90d1e4;
-    background-image: url("../img/modal-bg-dark.png");
-    background-repeat: repeat;
-  }
-
-  .nav button.active {
-    background-image: url("../img/modal-footer-bg-dark.png");
-    color: $body-bg !important;
-    background-repeat: repeat;
   }
 
   .border-primary {
     box-shadow: 0 0 15px 0px #0097fc;
-  }
-
-  .primary {
-    background-image: url("../img/btn-primary-bg-dark.png");
-    background-repeat: repeat;
   }
 
   .primary.glow {
@@ -120,24 +142,6 @@ $btn-glow-hover: $btn-glow-nohover * 2.5;
 
   .table-active > td {
     background-color: var(--bs-primary) !important;
-  }
-
-  .modal-content {
-    background-image: url("../img/modal-bg-dark.png");
-    background-repeat: repeat;
-    border-color: #90d1e4;
-    box-shadow: 0 0 15px 0px #0097fc;
-    --bs-modal-header-border-color: #90d1e4;
-    --bs-modal-footer-border-color: #90d1e4;
-  }
-
-  .modal-body {
-    background-image: url("../img/modal-footer-bg-dark.png");
-    background-repeat: repeat;
-  }
-
-  .modal {
-    color: $body-bg;
   }
 
   .contrast-border-hover:hover {
@@ -167,23 +171,117 @@ $btn-glow-hover: $btn-glow-nohover * 2.5;
   .server-landing img {
     border-right: 1px solid #90d1e4;
   }
+}
 
-  #settings-column {
-    background-image: url("../img/modal-bg-dark.png");
-    background-repeat: repeat;
+@include theme(dark) {
+  @include themed-backgrounds;
+  @include dark-theme;
+}
+
+/* Halloween (based on dark) */
+
+@include theme(halloween) {
+  @include themed-backgrounds;
+  @include dark-theme;
+
+  $hue-shift: 55deg;
+  $halloween-primary: color.adjust($primary, $hue: $hue-shift);
+  $halloween-border: color.adjust($modal-border, $hue: $hue-shift);
+  $halloween-nav-tab-active-bottom: color.adjust($nav-tab-active-bottom, $hue: $hue-shift);
+
+  & {
+    --bs-primary: #{$halloween-primary};
+    --bs-primary-rgb: #{to-rgb($halloween-primary)};
+  }
+
+  .btn-primary {
+    @include button-variant($halloween-primary, $halloween-primary);
+  }
+
+  #of-intro-text {
+    text-shadow: 1px 1px 8px #be6c00;
+    color: #b7884a;
+  }
+
+  .table-striped thead th {
+    background-color: #56346e;
+  }
+
+  .table-striped tbody tr:nth-of-type(even) > td {
+    background-color: #56346e;
+  }
+
+  .table-striped tbody tr:nth-of-type(odd) > td,
+  th {
+    background-color: #3d244d;
+  }
+
+  .form-control,
+  .form-control:focus {
+    border-color: #5100ff;
+    background-color: #000;
+    color: #fff;
+  }
+
+  select {
+    border-color: #5100ff;
+    background-color: #000;
+    color: #fff;
+  }
+
+  .nav button {
+    border-bottom: 1px solid #9c90e4;
+  }
+
+  .border-primary {
+    box-shadow: 0 0 15px 0px #5000fc;
+  }
+
+  .primary.glow {
+    box-shadow: inset 0 0 #{$btn-glow-nohover}px #532ad6;
+  }
+
+  .primary.btn:not(:disabled):hover {
+    box-shadow: inset 0 0 #{$btn-glow-hover}px #532ad6;
+  }
+
+  .progress {
+    background-color: #000;
+    border: 1px solid #5000fc;
+  }
+
+  .server-landing {
+    color: #fff;
+    background-color: #000;
+    border-bottom: 1px solid #9c90e4;
+  }
+
+  .server-landing img {
+    border-right: 1px solid #9c90e4;
+  }
+
+  .modal-content {
+    border-color: $halloween-border;
+    box-shadow: 0 0 15px 0px color.adjust($modal-glow, $hue: $hue-shift);
+    --bs-modal-header-border-color: #{$halloween-border};
+    --bs-modal-footer-border-color: #{$halloween-border};
+  }
+
+  .nav {
+    --bs-nav-tabs-link-active-border-color: #{$halloween-border} #{$halloween-border} #{$halloween-nav-tab-active-bottom};
+    --bs-nav-tabs-link-hover-border-color: #{$halloween-border} #{$halloween-border} #{$halloween-border};
   }
 }
 
 /* Light mode only */
 
-@include color-mode(light) {
+@mixin light-theme {
   td, th {
     color: #fff;
   }
-  
+
   .titlebar {
     background-color: rgba($body-bg, $title-bar-bg-opacity);
-    backdrop-filter: blur(10px);
   }
 
   .titlebar-button:hover {
@@ -203,50 +301,21 @@ $btn-glow-hover: $btn-glow-nohover * 2.5;
     background-color: #0078b9;
   }
 
-  #of-logo-dark {
-    display: none;
-  }
-
   #of-intro-text {
     color: #486f9a;
     text-shadow: 1px 1px 8px #bfe7f5;
-    font-size: 18px;
-  }
-
-  .nav {
-    --bs-nav-tabs-link-active-border-color: #90d1e4 #90d1e4 #091a23;
-    --bs-nav-tabs-link-hover-border-color: #90d1e4 #90d1e4 #90d1e4;
-    background-image: url("../img/modal-bg-light.png");
-    background-repeat: repeat;
   }
 
   .nav button {
     border-bottom: 1px solid #4f6da7;
-    background-image: url("../img/modal-bg-light.png");
-    background-repeat: repeat;
   }
 
   .nav button.active {
-    background-image: url("../img/modal-footer-bg-light.png");
-    color: $body-bg !important;
-    background-repeat: repeat;
     border-bottom: 1px solid #4f6da7;
   }
 
   .launcher-page-header {
     color: #fff;
-    background-image: url("../img/modal-bg-light.png");
-    background-repeat: repeat;
-  }
-
-  #launcher-page-settings {
-    background-image: url("../img/modal-footer-bg-light.png");
-    background-repeat: repeat;
-  }
-
-  #game-builds-buttonstack {
-    background-image: url("../img/modal-footer-bg-light.png");
-    background-repeat: repeat;
   }
 
   .border-primary {
@@ -255,8 +324,6 @@ $btn-glow-hover: $btn-glow-nohover * 2.5;
   }
 
   .primary {
-    background-image: url("../img/btn-primary-bg-light.png");
-    background-repeat: repeat;
     border-color: #82e2f2;
   }
 
@@ -274,24 +341,6 @@ $btn-glow-hover: $btn-glow-nohover * 2.5;
 
   .table-active>td {
     background-color: #00eefe !important;
-  }
-
-  .modal-content {
-    background-image: url("../img/modal-bg-light.png");
-    background-repeat: repeat;
-    border-color: #90d1e4;
-    box-shadow: 0 0 15px 0px #0097fc;
-    --bs-modal-header-border-color: #90d1e4;
-    --bs-modal-footer-border-color: #90d1e4;
-  }
-
-  .modal-body {
-    background-image: url("../img/modal-footer-bg-light.png");
-    background-repeat: repeat;
-  }
-
-  .modal {
-    color: $body-bg;
   }
 
   .contrast-border-hover:hover {
@@ -323,7 +372,36 @@ $btn-glow-hover: $btn-glow-nohover * 2.5;
   }
 }
 
+@include theme(light) {
+  @include themed-backgrounds;
+  @include light-theme;
+}
+
 /* Global */
+
+.titlebar {
+  backdrop-filter: blur(10px);
+}
+
+#of-intro-text {
+  font-size: 18px;
+}
+
+.nav {
+  --bs-nav-tabs-link-active-border-color: #{$modal-border} #{$modal-border} #{$nav-tab-active-bottom};
+  --bs-nav-tabs-link-hover-border-color: #{$modal-border} #{$modal-border} #{$modal-border};
+}
+
+.nav button.active {
+  color: $body-bg !important;
+}
+
+.modal-content {
+  border-color: $modal-border;
+  box-shadow: 0 0 15px 0px $modal-glow;
+  --bs-modal-header-border-color: #{$modal-border};
+  --bs-modal-footer-border-color: #{$modal-border};
+}
 
 #server-table {
   font-size: 14pt;
@@ -405,6 +483,7 @@ $btn-glow-hover: $btn-glow-nohover * 2.5;
 }
 
 .modal {
+  color: $body-bg;
   overflow-y: auto;
 }
 

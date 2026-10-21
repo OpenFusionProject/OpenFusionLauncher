@@ -19,10 +19,15 @@ const SPIDERWEB_ATTR = "data-spiderweb";
 
 class Spiderwebs {
   private zIndex: number;
+  private opacity: number;
   private elements: HTMLImageElement[] = [];
 
-  constructor({ zIndex = -1 }: { zIndex?: number } = {}) {
+  constructor({
+    zIndex = -1,
+    opacity = 0.5,
+  }: { zIndex?: number; opacity?: number } = {}) {
     this.zIndex = zIndex;
+    this.opacity = opacity;
   }
 
   start() {
@@ -67,6 +72,7 @@ class Spiderwebs {
       width: "100vw",
       height: "auto",
       zIndex: String(this.zIndex),
+      opacity: String(this.opacity),
       pointerEvents: "none",
       userSelect: "none",
     });
@@ -77,21 +83,29 @@ class Spiderwebs {
 let spiderwebs: Spiderwebs;
 let snowflakes: Snowflakes;
 
-export function startEasterEggs() {
-  const today = new Date();
+const today = new Date();
 
-  const halloweenBegin = new Date(today.getFullYear(), 9, 27);
-  const halloweenEnd = new Date(today.getFullYear(), 10, 1);
-  if (today >= halloweenBegin && today <= halloweenEnd) {
+export function isHalloween() {
+  const begin = new Date(today.getFullYear(), 9, 27); // October 27th
+  const end = new Date(today.getFullYear(), 10, 1); // November 1st
+  return today >= begin && today <= end;
+}
+
+export function isChristmas() {
+  const begin = new Date(today.getFullYear(), 11, 21); // December 21st
+  const end = new Date(today.getFullYear(), 11, 31); // December 31st
+  return today >= begin && today <= end;
+}
+
+export function startEasterEggs() {
+  if (isHalloween()) {
     spiderwebs?.stop();
     spiderwebs = new Spiderwebs({ zIndex: -100 });
     console.log("Halloween Activated.");
     spiderwebs.start();
   }
 
-  const christmasBegin = new Date(today.getFullYear(), 11, 21);
-  const christmasEnd = new Date(today.getFullYear(), 11, 31);
-  if (today >= christmasBegin && today <= christmasEnd) {
+  if (isChristmas()) {
     snowflakes?.stop();
     snowflakes = new Snowflakes({ zIndex: -100 });
     console.log("Christmas Activated.");

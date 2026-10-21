@@ -42,6 +42,7 @@ import SelectVersionModal from "@/components/SelectVersionModal";
 import Toasts from "@/components/Toasts";
 import { listen } from "@tauri-apps/api/event";
 import {
+  applyTheme,
   getDebugMode,
   getTheme,
   getUseCustomTitlebar,
@@ -187,8 +188,7 @@ export default function Home() {
 
   const syncConfig = async () => {
     const config: Config = await invoke("get_config");
-    const theme = getTheme(config);
-    document.documentElement.setAttribute("data-bs-theme", theme);
+    applyTheme(getTheme(config));
     setConfig(config);
     return config;
   };

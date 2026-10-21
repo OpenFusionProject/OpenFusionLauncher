@@ -1,10 +1,18 @@
-import ofLogoLight from "@/app/img/of-light.png";
-import ofLogoDark from "@/app/img/of-dark.png";
+import ofLogoDark from "@/app/img/dark/of.png";
+import ofLogoHalloween from "@/app/img/halloween/of.png";
+import ofLogoLight from "@/app/img/light/of.png";
 
 import { useEffect, useState } from "react";
 import { ServerEntry } from "@/app/types";
 import { getLogoImageUrlForServer } from "@/app/util";
-import NextImage from "next/image";
+import NextImage, { StaticImageData } from "next/image";
+
+// Visibility is handled by the `theme` mixin in openfusion-theming.scss
+const OF_LOGOS: Record<string, StaticImageData> = {
+  dark: ofLogoDark,
+  light: ofLogoLight,
+  halloween: ofLogoHalloween,
+};
 
 export default function BackgroundImages({
   servers,
@@ -49,18 +57,16 @@ export default function BackgroundImages({
 
   return (
     <>
-      <NextImage
-        id="of-logo-light"
-        src={ofLogoLight}
-        alt="OpenFusion Logo"
-        width={256}
-      />
-      <NextImage
-        id="of-logo-dark"
-        src={ofLogoDark}
-        alt="OpenFusion Logo"
-        width={256}
-      />
+      {Object.entries(OF_LOGOS).map(([theme, logo]) => (
+        <NextImage
+          key={theme}
+          className="themed-image"
+          data-theme={theme}
+          src={logo}
+          alt="OpenFusion Logo"
+          width={256}
+        />
+      ))}
     </>
   );
 }

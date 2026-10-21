@@ -19,7 +19,7 @@ import GameBuildsTab from "@/app/settings/GameBuildsTab";
 import { Tab, Tabs } from "react-bootstrap";
 import LauncherPage from "@/components/LauncherPage";
 import ConfirmationModal from "@/components/ConfirmationModal";
-import { getTheme } from "@/app/util";
+import { applyTheme, getTheme } from "@/app/util";
 import AuthenticationTab from "./AuthenticationTab";
 import LauncherSettingsTab from "./LauncherSettingsTab";
 import GameSettingsTab from "./GameSettingsTab";
@@ -108,8 +108,7 @@ export default function SettingsPage() {
 
   const syncConfig = async () => {
     const config: Config = await invoke("get_config");
-    const theme = getTheme(config);
-    document.documentElement.setAttribute("data-bs-theme", theme);
+    applyTheme(getTheme(config));
     setConfig(config);
     return config;
   };

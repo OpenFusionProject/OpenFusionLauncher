@@ -1,6 +1,7 @@
 import { Config, ServerEntry } from "@/app/types";
 import get_seed from "@/app/seed";
 import { invoke } from "@tauri-apps/api/core";
+import { isHalloween } from "./easter-eggs";
 
 export function validateUsername(username: string) {
   // From OpenFusion:
@@ -37,7 +38,17 @@ function getSystemTheme() {
   return "dark";
 }
 
+// Launcher themes and the Bootstrap color mode each one builds on
+const THEME_BOOTSTRAP_MODES: Record<string, "dark" | "light"> = {
+  dark: "dark",
+  light: "light",
+  halloween: "dark",
+};
+
 export function getTheme(config: Config) {
+  if (isHalloween()) {
+    return "halloween";
+  }
   // const themeName = config.launcher.theme;
   // if (themeName) {
   //   switch (themeName) {
@@ -50,6 +61,12 @@ export function getTheme(config: Config) {
   // return getSystemTheme();
   // TODO: uncomment when light theme is ready
   return "dark";
+}
+
+export function applyTheme(theme: string) {
+  const root = document.documentElement;
+  root.setAttribute("data-of-theme", theme);
+  root.setAttribute("data-bs-theme", THEME_BOOTSTRAP_MODES[theme] ?? "dark");
 }
 
 export function variantToLabel(variant: string) {
