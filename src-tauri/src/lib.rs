@@ -768,26 +768,34 @@ async fn prep_launch(
         cmd.arg("-v"); // verbose logging
 
         if !state.launch_profiles.has_entries() {
-            let detailed_instructions = match std::env::consts::OS {
-                "linux" => {
-                    "Install a compatibility layer, such as Proton from Steam, or Wine from your distribution's package manager. Then restart OpenFusionLauncher."
-                }
-                "macos" => {
-                    "Download a compatibility layer, such as CrossOver or Wine, and install the .app into your Applications folder. Then restart OpenFusionLauncher."
-                }
-                "windows" => {
-                    "Please ensure you have extracted OpenFusionLauncher, or download the installer instead."
-                }
-                _ => {
-                    "Please create one that uses an appropriate compatibility layer for your system."
-                }
-            };
+            // First check if there are any presets that may have become available since startup.
+            state.launch_profiles.reload_presets(true);
+            if let Some(new_default_profile) = state.launch_profiles.get_default() {
+                state.config.game.launch_profile = new_default_profile.get_id();
+                state.write_config = true;
+                state.save();
+            } else {
+                let detailed_instructions = match std::env::consts::OS {
+                    "linux" => {
+                        "Install a compatibility layer, such as Proton from Steam, or Wine from your distribution's package manager. Then restart OpenFusionLauncher."
+                    }
+                    "macos" => {
+                        "Download a compatibility layer, such as CrossOver or Wine, and install the .app into your Applications folder. Then restart OpenFusionLauncher."
+                    }
+                    "windows" => {
+                        "Please ensure you have extracted OpenFusionLauncher, or download the installer instead."
+                    }
+                    _ => {
+                        "Please create one that uses an appropriate compatibility layer for your system."
+                    }
+                };
 
-            return Err(format!(
-                "No launch profiles found in game settings.\n\n{}",
-                detailed_instructions
-            )
-            .into());
+                return Err(format!(
+                    "No launch profiles found in game settings.\n\n{}",
+                    detailed_instructions
+                )
+                .into());
+            }
         }
 
         let selected_launch_profile = state.config.game.launch_profile;
