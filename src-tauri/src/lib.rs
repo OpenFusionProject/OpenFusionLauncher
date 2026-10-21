@@ -201,7 +201,13 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
             let server_name = server_name.unwrap();
             let endpoint_magnet_url = format!("http://{}/ofl", endpoint_url);
 
-            let discord_icon_url = format!("http://{}/launcher/discord.png", endpoint_url);
+            // we include the timestamp in the URL to cache-bust
+            let discord_icon_url = format!(
+                "http://{}/launcher/discord.png?t={}",
+                endpoint_url,
+                launch_time.timestamp()
+            );
+
             let mut assets = Assets::default();
             if util::does_web_file_exist(&discord_icon_url).await {
                 assets.small_image = Some(discord_icon_url);
