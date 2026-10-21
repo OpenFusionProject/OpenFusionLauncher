@@ -581,9 +581,13 @@ export default function Home() {
   const collectLogs = async () => {
     startLoading("collectLogs");
     try {
-      await invoke("create_log_package");
+      const logPackagePath = await invoke("create_log_package");
       stopLoading("collectLogs");
-      alertSuccess("Log package created");
+      if (logPackagePath) {
+        alertSuccess("Log package created: " + logPackagePath);
+      } else {
+        alertSuccess("Log package created");
+      }
     } catch (e: unknown) {
       alertError("Failed to create log package (" + e + ")");
     } finally {

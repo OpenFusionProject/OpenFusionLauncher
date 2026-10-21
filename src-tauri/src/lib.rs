@@ -1554,7 +1554,7 @@ async fn reset_game_config(app_handle: tauri::AppHandle) -> CommandResult<()> {
 }
 
 #[tauri::command]
-async fn create_log_package() -> CommandResult<()> {
+async fn create_log_package() -> CommandResult<Option<String>> {
     debug!("create_log_package");
     let internal = async {
         let statics = get_app_statics();
@@ -1650,10 +1650,10 @@ async fn create_log_package() -> CommandResult<()> {
 
         zip.finish()?;
 
-        // Reveal the log package in the file explorer
-        tauri_plugin_opener::reveal_item_in_dir(log_package_path)?;
-
-        Ok(())
+        match tauri_plugin_opener::reveal_item_in_dir(&log_package_path) {
+            Ok(()) => Ok(None), // Revealed in file explorer; don't need the path in the toast
+            Err(_) => Ok(Some(log_package_path.display().to_string())),
+        }
     };
     internal.await.map_err(|e: Error| e.to_string())
 }
