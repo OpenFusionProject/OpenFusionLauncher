@@ -86,7 +86,7 @@ let snowflakes: Snowflakes;
 const today = new Date();
 
 export function isHalloween() {
-  const begin = new Date(today.getFullYear(), 9, 27); // October 27th
+  const begin = new Date(today.getFullYear(), 9, 20); // October 20th
   const end = new Date(today.getFullYear(), 10, 1); // November 1st
   return today >= begin && today <= end;
 }
