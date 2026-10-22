@@ -46,7 +46,7 @@ const THEME_BOOTSTRAP_MODES: Record<string, "dark" | "light"> = {
 };
 
 export function getTheme(config: Config) {
-  if (isHalloween()) {
+  if (isHalloween() && config.launcher.enable_easter_eggs) {
     return "halloween";
   }
   // const themeName = config.launcher.theme;

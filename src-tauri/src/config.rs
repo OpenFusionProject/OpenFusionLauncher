@@ -52,6 +52,9 @@ pub struct LauncherSettings {
 
     #[serde(default = "util::true_fn")]
     pub proxy_asset_downloads: bool,
+
+    #[serde(default = "util::true_fn")]
+    pub enable_easter_eggs: bool,
 }
 impl Default for LauncherSettings {
     fn default() -> Self {
@@ -66,6 +69,7 @@ impl Default for LauncherSettings {
             game_cache_path: util::get_default_cache_dir(),
             offline_cache_path: util::get_default_offline_cache_dir(),
             proxy_asset_downloads: true,
+            enable_easter_eggs: true,
         }
     }
 }

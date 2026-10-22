@@ -266,6 +266,23 @@ export default function LauncherSettingsTab({
                   }))
                 }
               />
+              <SettingControlDropdown
+                id="enable_easter_eggs"
+                name="Easter Eggs"
+                options={[
+                  { key: "on", value: true, label: "On" },
+                  { key: "off", value: false, label: "Off" },
+                ]}
+                defaultKey="on"
+                oldValue={currentSettings.enable_easter_eggs}
+                value={settings.enable_easter_eggs}
+                onChange={(value) =>
+                  setSettings((current) => ({
+                    ...current!,
+                    enable_easter_eggs: value,
+                  }))
+                }
+              />
             </Form>
           )}
           {debug && (

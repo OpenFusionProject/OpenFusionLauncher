@@ -1,6 +1,6 @@
 "use client";
 
-import { startEasterEggs } from "./easter-eggs";
+import { startEasterEggs, stopEasterEggs } from "./easter-eggs";
 
 import { invoke } from "@tauri-apps/api/core";
 import { getName, getVersion } from "@tauri-apps/api/app";
@@ -212,7 +212,7 @@ export default function Home() {
     }
   };
 
-  const initialFetch = async () => {
+  const initialFetch: () => Promise<Config> = async () => {
     const config: Config = await syncConfig();
     await syncServersAndVersions();
     if (config.launcher.check_for_updates) {
@@ -224,6 +224,7 @@ export default function Home() {
       }
     });
     setInitialFetchDone(true);
+    return config;
   };
 
   const importFromOpenFusionClient = async () => {
@@ -281,7 +282,7 @@ export default function Home() {
 
   const isPreRelease = (version: string) => version.includes("-");
 
-  const doInit = async () => {
+  const doInit: () => Promise<Config | null> = async () => {
     try {
       const appName = await getName();
       setAppName(appName);
@@ -294,13 +295,15 @@ export default function Home() {
       if (firstRun) {
         await importFromOpenFusionClient();
       }
-      await initialFetch();
+      const initialConfig: Config = await initialFetch();
       await getCurrentWindow().show();
       await getCurrentWindow().setFocus();
+      return initialConfig;
     } catch (e: unknown) {
       await getCurrentWindow().show();
       alertError("Error during init (" + e + ")");
     }
+    return null;
   };
 
   const connectToServer = async (
@@ -598,8 +601,12 @@ export default function Home() {
   useEffect(() => {
     if (!loadedRef.current) {
       console.log("init");
-      doInit();
-      startEasterEggs();
+      stopEasterEggs();
+      doInit().then((initialConfig) => {
+        if (initialConfig?.launcher.enable_easter_eggs ?? false) {
+          startEasterEggs();
+        }
+      });
 
       listen<AlertEvent>("alert", (e) => {
         handleAlert(e.payload);

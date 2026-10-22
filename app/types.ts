@@ -50,6 +50,7 @@ export type LauncherSettings = {
   game_cache_path: string;
   offline_cache_path: string;
   proxy_asset_downloads: boolean;
+  enable_easter_eggs: boolean;
   theme?: string;
 };
 
