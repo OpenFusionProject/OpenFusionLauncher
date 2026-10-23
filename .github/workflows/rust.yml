@@ -17,7 +17,9 @@ jobs:
       version: ${{ steps.ffrunner-version.outputs.version }}
     steps:
     - name: Install dependencies
-      run: sudo apt update && sudo apt install -y gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 wget
+      run: |
+        sudo sed -i '/azure\.archive\.ubuntu\.com/d' /etc/apt/apt-mirrors.txt
+        sudo apt update && sudo apt install -y gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 wget
 
     - uses: actions/checkout@v4
       with:
@@ -59,6 +61,7 @@ jobs:
 
     - name: Install dependencies
       run: |
+        sudo sed -i '/azure\.archive\.ubuntu\.com/d' /etc/apt/apt-mirrors.txt
         sudo apt update && sudo apt install -y \
           libwebkit2gtk-4.1-dev \
           build-essential \
