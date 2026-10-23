@@ -5,6 +5,11 @@
   "engines": {
     "node": ">=20"
   },
+  "devEngines": {
+    "packageManager": {
+      "name": "npm"
+    }
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
