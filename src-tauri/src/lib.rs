@@ -191,9 +191,20 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
     drop(state);
 
     // Discord activity
-    let discord_client = util::get_discord_client().await.map_err(|e| e.to_string());
+    let discord_client = if do_discord_activity {
+        match util::get_discord_client().await {
+            Ok(client) => Some(client),
+            Err(e) => {
+                debug!("Discord unavailable: {}", e);
+                None
+            }
+        }
+    } else {
+        None
+    };
+
     let mut activity_set = false;
-    if do_discord_activity && let Ok(discord_client) = &discord_client {
+    if let Some(discord_client) = discord_client {
         let mut activity =
             ActivityBuilder::default().start_timestamp(SystemTime::from(launch_time));
 
@@ -231,7 +242,10 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
     let exit_result = proc.wait();
 
     // End Discord activity
-    if activity_set && let Err(e) = discord_client.unwrap().discord.clear_activity().await {
+    if activity_set
+        && let Some(discord_client) = discord_client
+        && let Err(e) = discord_client.discord.clear_activity().await
+    {
         warn!("Failed to clear Discord activity: {}", e);
     }
 
