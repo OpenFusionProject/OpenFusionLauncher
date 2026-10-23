@@ -2,7 +2,7 @@ name: Rust
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main, release ]
   pull_request:
     branches: [ main ]
 
@@ -232,4 +232,66 @@ jobs:
       - uses: actions/upload-artifact@v4.6.0
         with:
           name: openfusionlauncher-windows-installer
+          path: src-tauri/target/release/bundle/nsis/
+
+  sign-windows:
+    needs: build-windows
+    runs-on: windows-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/release'
+    environment: Production
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download Windows Standalone Artifact
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: openfusionlauncher-windows-standalone
+          path: src-tauri/target/release/windows-standalone
+
+      - name: Download Windows Installer Artifact
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: openfusionlauncher-windows-installer
+          path: src-tauri/target/release/bundle/nsis
+
+      - name: Azure login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.SIGNING_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.SIGNING_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.SIGNING_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sign Standalone Executables
+        uses: azure/artifact-signing-action@v2
+        with:
+          endpoint: https://eus.codesigning.azure.net/
+          signing-account-name: openfusion-codesigning
+          certificate-profile-name: openfusion-signing
+          files-folder: src-tauri/target/release/windows-standalone
+          files-folder-filter: exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+
+      - name: Sign Installer Executables
+        uses: azure/artifact-signing-action@v2
+        with:
+          endpoint: https://eus.codesigning.azure.net/
+          signing-account-name: openfusion-codesigning
+          certificate-profile-name: openfusion-signing
+          files-folder: src-tauri/target/release/bundle/nsis
+          files-folder-filter: exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+
+      - uses: actions/upload-artifact@v4.6.0
+        with:
+          name: openfusionlauncher-windows-standalone-signed
+          path: src-tauri/target/release/windows-standalone/
+
+      - uses: actions/upload-artifact@v4.6.0
+        with:
+          name: openfusionlauncher-windows-installer-signed
           path: src-tauri/target/release/bundle/nsis/
