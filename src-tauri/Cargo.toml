@@ -1,6 +1,6 @@
 [package]
 name = "openfusionlauncher"
-version = "2.3.1"
+version = "2.3.2"
 description = "OpenFusionLauncher"
 authors = ["OpenFusion Contributors"]
 license = "MIT"
