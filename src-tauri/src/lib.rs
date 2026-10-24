@@ -14,13 +14,18 @@ use state::{
 };
 use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_opener::OpenerExt;
+use tauri_plugin_updater::UpdaterExt;
 use util::{AlertVariant, ProtocolActivation};
 use zip::{ZipWriter, write::SimpleFileOptions};
 
 use std::{
     collections::{HashMap, HashSet},
     process::Stdio,
-    sync::{Arc, LazyLock, OnceLock, mpsc},
+    sync::{
+        Arc, LazyLock, OnceLock,
+        atomic::{AtomicUsize, Ordering},
+        mpsc,
+    },
     time::SystemTime,
     vec,
 };
@@ -56,7 +61,12 @@ struct UpdateCheckResponse {
 struct UpdateInfo {
     version: String,
     url: String,
+    installable: bool, // can be downloaded and installed inside the launcher
 }
+
+static PENDING_UPDATE: Mutex<Option<tauri_plugin_updater::Update>> = Mutex::const_new(None);
+
+static RUNNING_GAMES: AtomicUsize = AtomicUsize::new(0);
 
 const MAX_CONCURRENT_VALIDATION_OPS: usize = 2; // compromise. 1 is a lot for an HDD, but SSDs can handle 3-5
 static VALIDATION_SEMAPHORE: Semaphore = Semaphore::const_new(MAX_CONCURRENT_VALIDATION_OPS);
@@ -184,6 +194,7 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
             .to_string();
         format!("{} (launch command was: {})", e, censored_cmd_str)
     })?;
+    RUNNING_GAMES.fetch_add(1, Ordering::SeqCst);
 
     let do_discord_activity = state.config.launcher.discord_integration;
 
@@ -240,6 +251,7 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
     }
 
     let exit_result = proc.wait();
+    RUNNING_GAMES.fetch_sub(1, Ordering::SeqCst);
 
     // End Discord activity
     if activity_set
@@ -1687,8 +1699,32 @@ async fn create_log_package() -> CommandResult<Option<String>> {
 }
 
 #[tauri::command]
-async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
+async fn check_for_update(app_handle: tauri::AppHandle) -> CommandResult<Option<UpdateInfo>> {
     debug!("check_for_update");
+
+    async fn check_for_installable_update(
+        app_handle: &tauri::AppHandle,
+    ) -> Result<Option<UpdateInfo>> {
+        let update = app_handle.updater()?.check().await?;
+        let update_info = update.as_ref().map(|update| UpdateInfo {
+            version: update.version.clone(),
+            url: String::from(DOWNLOAD_PAGE_URL),
+            installable: true,
+        });
+        *PENDING_UPDATE.lock().await = update;
+        Ok(update_info)
+    }
+
+    if util::is_auto_update_supported(&app_handle) {
+        match check_for_installable_update(&app_handle).await {
+            Ok(update_info) => return Ok(update_info),
+            Err(e) => warn!(
+                "Auto-update check failed; falling back to manual check: {}",
+                e
+            ),
+        }
+    }
+
     let internal = async {
         let resp_raw = util::do_simple_get(UPDATE_CHECK_URL).await?;
         let resp: UpdateCheckResponse = serde_json::from_str(&resp_raw)?;
@@ -1703,9 +1739,37 @@ async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
         Ok(Some(UpdateInfo {
             version: resp.tag_name,
             url: String::from(DOWNLOAD_PAGE_URL),
+            installable: false,
         }))
     };
     internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
+async fn install_update(app_handle: tauri::AppHandle) -> CommandResult<()> {
+    debug!("install_update");
+    if RUNNING_GAMES.load(Ordering::SeqCst) > 0 {
+        return Err("Close the game before updating the launcher".into());
+    }
+
+    // Held for the whole download so that concurrent requests don't download twice
+    let pending = PENDING_UPDATE.lock().await;
+    let update = pending
+        .as_ref()
+        .ok_or("No update is available to install")?;
+
+    info!(
+        "Downloading and installing launcher update {}",
+        update.version
+    );
+    // On Windows, this launches the installer and exits the launcher
+    update
+        .download_and_install(|_, _| {}, || debug!("Launcher update downloaded"))
+        .await
+        .map_err(|e| e.to_string())?;
+
+    app_handle.request_restart();
+    Ok(())
 }
 
 #[tauri::command]
@@ -1813,6 +1877,7 @@ pub fn run() {
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(
             tauri_plugin_log::Builder::new()
                 .timezone_strategy(tauri_plugin_log::TimezoneStrategy::UseLocal)
@@ -1872,6 +1937,7 @@ pub fn run() {
             is_debug_mode,
             take_pending_activations,
             check_for_update,
+            install_update,
             create_log_package,
             get_versions,
             get_servers,

@@ -32,6 +32,15 @@ export default function Toast({ alert }: { alert: Alert }) {
             tooltip={alert.link}
           />
         )}
+        {alert.action && (
+          <Button
+            className="d-block w-100 mt-2"
+            onClick={alert.action.onClick}
+            variant="success"
+            icon={alert.action.icon}
+            text={alert.action.text}
+          />
+        )}
       </_Toast.Body>
     </_Toast>
   );

@@ -89,10 +89,17 @@ export type Config = {
   game: GameSettings;
 };
 
+export type AlertAction = {
+  text: string;
+  icon: string;
+  onClick: () => void;
+};
+
 export type Alert = {
   variant: string;
   text: string;
   link?: string;
+  action?: AlertAction;
   id: number;
 };
 
@@ -170,6 +177,7 @@ export type AlertEvent = {
 export type UpdateInfo = {
   version: string;
   url: string;
+  installable: boolean;
 };
 
 export type SettingsOption = {

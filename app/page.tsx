@@ -17,6 +17,7 @@ import {
   NewServerDetails,
   Servers,
   Alert,
+  AlertAction,
   LoadingTask,
   ImportCounts,
   VersionEntry,
@@ -62,9 +63,6 @@ export default function Home() {
 
   const [appName, setAppName] = useState("");
   const [launcherVersion, setLauncherVersion] = useState("unknown");
-  const [updateAvailable, setUpdateAvailable] = useState<
-    UpdateInfo | undefined
-  >(undefined);
   const [tagline, setTagline] = useState(DEFAULT_TAGLINE);
   const [topOffset, setTopOffset] = useState<string>("0");
 
@@ -125,9 +123,14 @@ export default function Home() {
     setCurrentSession(undefined);
   };
 
-  const pushAlert = (variant: string, text: string, link?: string) => {
+  const pushAlert = (
+    variant: string,
+    text: string,
+    link?: string,
+    action?: AlertAction,
+  ) => {
     const id = Math.floor(Math.random() * 1000000);
-    setAlerts((alerts) => [{ variant, text, id, link }, ...alerts]);
+    setAlerts((alerts) => [{ variant, text, id, link, action }, ...alerts]);
   };
 
   const alertWarning = (text: string) => {
@@ -198,14 +201,50 @@ export default function Home() {
     await syncServers();
   };
 
+  const installUpdate = async () => {
+    startLoading("install_update", "Downloading update");
+    try {
+      // The launcher restarts (or exits, on Windows) once this succeeds
+      await invoke("install_update");
+    } catch (e: unknown) {
+      alertError("Failed to install update (" + e + ")");
+      stopLoading("install_update");
+    }
+  };
+
+  const confirmInstallUpdate = (version: string) => {
+    showConfirmationModal(
+      "The launcher will download version **" +
+        version +
+        "** and restart to install it.",
+      "Update",
+      "success",
+      installUpdate,
+      "Update Launcher",
+    );
+  };
+
   const checkForUpdate = async () => {
     try {
       const updateInfo: UpdateInfo | undefined = await invoke(
         "check_for_update"
       );
       if (updateInfo) {
-        setUpdateAvailable(updateInfo);
-        alertInfo("Update available: " + updateInfo.version, updateInfo.url);
+        if (updateInfo.installable) {
+          info("Update available: " + updateInfo.version);
+          pushAlert(
+            "primary",
+            "Update available: " + updateInfo.version,
+            undefined,
+            {
+              text: "Update now",
+              icon: "download",
+              onClick: () => confirmInstallUpdate(updateInfo.version),
+            },
+          );
+        } else {
+          alertInfo("Update available: " + updateInfo.version, updateInfo.url);
+        }
       }
     } catch (e: unknown) {
       console.warn("Failed to check for updates (" + e + ")");

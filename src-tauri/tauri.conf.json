@@ -34,6 +34,16 @@
           "ofl"
         ]
       }
+    },
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEYyNDk3NTgzODVFQjFFN0UKUldSK0h1dUZnM1ZKOHRBb1Bqdys1WUZtbExxOHJWdnNFdmdkb0xjUnB5SjF4S1M0NE9SRWhOaFAK",
+      "endpoints": [
+        "https://github.com/OpenFusionProject/OpenFusionLauncher/releases/latest/download/latest.json"
+      ],
+      "requireSignedVersion": true,
+      "windows": {
+        "installMode": "passive"
+      }
     }
   },
   "bundle": {

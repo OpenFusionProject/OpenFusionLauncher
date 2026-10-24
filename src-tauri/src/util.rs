@@ -501,6 +501,37 @@ pub(crate) fn send_alert(app_handle: tauri::AppHandle, variant: AlertVariant, me
     }
 }
 
+/// Whether this copy of the launcher was installed in a way the updater plugin can replace.
+/// Portable/standalone builds have to be updated manually.
+pub(crate) fn is_auto_update_supported(app_handle: &tauri::AppHandle) -> bool {
+    if cfg!(debug_assertions) {
+        return false;
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        app_handle.env().appimage.is_some()
+    }
+
+    #[cfg(not(target_os = "linux"))]
+    {
+        let _ = app_handle;
+        let Ok(exe) = env::current_exe() else {
+            return false;
+        };
+
+        if cfg!(target_os = "windows") {
+            // The NSIS installer drops an uninstaller next to the executable
+            exe.parent()
+                .is_some_and(|dir| dir.join("uninstall.exe").is_file())
+        } else if cfg!(target_os = "macos") {
+            exe.to_string_lossy().contains(".app/Contents/MacOS/")
+        } else {
+            false
+        }
+    }
+}
+
 #[allow(clippy::enum_variant_names)]
 #[derive(Debug, Clone, Serialize)]
 #[serde(tag = "type", content = "payload", rename_all = "snake_case")]
