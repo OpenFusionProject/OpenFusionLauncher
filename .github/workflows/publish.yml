@@ -1,0 +1,255 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      version: ${{ steps.info.outputs.version }}
+      title: ${{ steps.info.outputs.title }}
+      prerelease: ${{ steps.info.outputs.prerelease }}
+      previous-tag: ${{ steps.info.outputs.previous-tag }}
+      run-id: ${{ steps.build.outputs.run-id }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Validate ref is a tag
+        run: |
+          if [[ "$GITHUB_REF_TYPE" != "tag" ]]; then
+            echo "::error::This workflow must be run on a tag, but was run on $GITHUB_REF."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Gather release info
+        id: info
+        run: |
+          version="$GITHUB_REF_NAME"
+
+          cargo_version=$(sed -n 's/^version = "\(.*\)"$/\1/p' src-tauri/Cargo.toml | head -n1)
+          if [[ "$cargo_version" != "$version" ]]; then
+            echo "::error::Tag $version does not match the version in src-tauri/Cargo.toml ($cargo_version)."
+            exit 1
+          fi
+
+          if gh release view "$version" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "::error::A release for $version already exists."
+            exit 1
+          fi
+
+          title="OpenFusionLauncher v$version"
+
+          if [[ "$version" == *-* ]]; then
+            prerelease=true
+          else
+            prerelease=false
+          fi
+
+          # Stable releases compare against the previous stable release; prereleases against the previous tag of any kind.
+          previous_tag=$(git -c versionsort.suffix=- tag --list --sort=-v:refname \
+            | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$' \
+            | awk -v v="$version" -v pre="$prerelease" \
+                'found && (pre == "true" || index($0, "-") == 0) { print; exit } $0 == v { found = 1 }')
+
+          {
+            echo "version=$version"
+            echo "title=$title"
+            echo "prerelease=$prerelease"
+            echo "previous-tag=$previous_tag"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Version: $version"
+          echo "Title: $title"
+          echo "Prerelease: $prerelease"
+          echo "Previous tag: ${previous_tag:-<none>}"
+
+      - name: Find build run on main
+        id: build
+        run: |
+          sha=$(git rev-parse HEAD)
+          run_id=$(gh api -X GET "repos/$GITHUB_REPOSITORY/actions/workflows/rust.yml/runs" \
+            -f branch=main -f event=push -f head_sha="$sha" -f status=success \
+            --jq '.workflow_runs | sort_by(.run_number) | last | .id // empty')
+          if [[ -z "$run_id" ]]; then
+            echo "::error::No successful build on main found for $sha ($GITHUB_REF_NAME)."
+            exit 1
+          fi
+          echo "Using build run $run_id: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$run_id"
+          echo "run-id=$run_id" >> "$GITHUB_OUTPUT"
+
+  sign-windows:
+    needs: prepare
+    runs-on: windows-latest
+    environment: Production
+    permissions:
+      actions: read
+      id-token: write
+    steps:
+      - name: Download Windows Standalone Artifact
+        uses: actions/download-artifact@v8.0.2
+        with:
+          name: openfusionlauncher-windows-standalone
+          path: windows-standalone
+          run-id: ${{ needs.prepare.outputs.run-id }}
+          github-token: ${{ github.token }}
+
+      - name: Download Windows Installer Artifact
+        uses: actions/download-artifact@v8.0.2
+        with:
+          name: openfusionlauncher-windows-installer
+          path: windows-installer
+          run-id: ${{ needs.prepare.outputs.run-id }}
+          github-token: ${{ github.token }}
+
+      - name: Azure login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.SIGNING_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.SIGNING_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.SIGNING_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sign Standalone Executables
+        uses: azure/artifact-signing-action@v2
+        with:
+          endpoint: https://eus.codesigning.azure.net/
+          signing-account-name: openfusion-codesigning
+          certificate-profile-name: openfusion-signing
+          files-folder: windows-standalone
+          files-folder-filter: exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+
+      - name: Sign Installer Executables
+        uses: azure/artifact-signing-action@v2
+        with:
+          endpoint: https://eus.codesigning.azure.net/
+          signing-account-name: openfusion-codesigning
+          certificate-profile-name: openfusion-signing
+          files-folder: windows-installer
+          files-folder-filter: exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: openfusionlauncher-windows-standalone-signed
+          path: windows-standalone/
+
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: openfusionlauncher-windows-installer-signed
+          path: windows-installer/
+
+  release:
+    needs: [prepare, sign-windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      VERSION: ${{ needs.prepare.outputs.version }}
+      TITLE: ${{ needs.prepare.outputs.title }}
+      PRERELEASE: ${{ needs.prepare.outputs.prerelease }}
+      PREVIOUS_TAG: ${{ needs.prepare.outputs.previous-tag }}
+    steps:
+      - name: Download Linux Standalone Artifact
+        uses: actions/download-artifact@v8.0.2
+        with:
+          name: openfusionlauncher-linux-standalone
+          path: artifacts/linux-standalone
+          run-id: ${{ needs.prepare.outputs.run-id }}
+          github-token: ${{ github.token }}
+
+      - name: Download Linux AppImage Artifact
+        uses: actions/download-artifact@v8.0.2
+        with:
+          name: openfusionlauncher-linux-appimage
+          path: artifacts/linux-appimage
+          run-id: ${{ needs.prepare.outputs.run-id }}
+          github-token: ${{ github.token }}
+
+      - name: Download macOS Universal Artifact
+        uses: actions/download-artifact@v8.0.2
+        with:
+          name: openfusionlauncher-macos-universal
+          path: artifacts/macos-universal
+          run-id: ${{ needs.prepare.outputs.run-id }}
+          github-token: ${{ github.token }}
+
+      - name: Download Signed Windows Standalone Artifact
+        uses: actions/download-artifact@v8.0.2
+        with:
+          name: openfusionlauncher-windows-standalone-signed
+          path: artifacts/windows-standalone
+
+      - name: Download Signed Windows Installer Artifact
+        uses: actions/download-artifact@v8.0.2
+        with:
+          name: openfusionlauncher-windows-installer-signed
+          path: artifacts/windows-installer
+
+      - name: Package
+        run: |
+          single() {
+            local matches=("$@")
+            if [[ ${#matches[@]} -ne 1 || ! -f "${matches[0]}" ]]; then
+              echo "::error::Expected exactly one file matching the pattern, found: ${matches[*]}" >&2
+              exit 1
+            fi
+            echo "${matches[0]}"
+          }
+
+          appimage=$(single artifacts/linux-appimage/*.AppImage)
+          dmg=$(single artifacts/macos-universal/*.dmg)
+          installer=$(single artifacts/windows-installer/*-setup.exe)
+
+          mkdir release
+
+          chmod +x artifacts/linux-standalone/openfusionlauncher
+          (cd artifacts/linux-standalone && zip -r -X -D ../../release/OpenFusionLauncher-Linux.zip .)
+          install -m 755 "$appimage" release/OpenFusionLauncher.AppImage
+
+          cp "$dmg" release/OpenFusionLauncher-MacOS-Universal.dmg
+
+          (cd artifacts/windows-standalone && zip -r -X -D ../../release/OpenFusionLauncher-Windows-Portable.zip .)
+          cp "$installer" release/OpenFusionLauncher-Windows-Installer.exe
+
+          ls -l release
+
+      - name: Create draft release
+        run: |
+          {
+            echo "We're announcing the release of OpenFusionLauncher v$VERSION."
+            echo
+            echo "This update brings the following changes:"
+            echo
+            echo "- TODO"
+            if [[ -n "$PREVIOUS_TAG" ]]; then
+              echo
+              echo "**Full Changelog**: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/compare/$PREVIOUS_TAG...$VERSION"
+            fi
+          } > notes.md
+
+          args=()
+          if [[ "$PRERELEASE" == "true" ]]; then
+            args+=(--prerelease)
+          fi
+
+          gh release create "$VERSION" release/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --draft \
+            --verify-tag \
+            --title "$TITLE" \
+            --notes-file notes.md \
+            "${args[@]}"
