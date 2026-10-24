@@ -8,7 +8,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  WEBPLAYER_DLL_VERSION: patched-20261023
+  WEBPLAYER_DLL_VERSION: patched-20261024
 
 jobs:
   build-ffrunner:
