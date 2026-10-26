@@ -2,6 +2,10 @@ name: Publish
 
 on:
   workflow_dispatch:
+    inputs:
+      skip-release:
+        type: boolean
+        default: false
 
 jobs:
   prepare:
@@ -19,6 +23,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Validate ref is a tag
+        if: ${{ !inputs.skip-release }}
         run: |
           if [[ "$GITHUB_REF_TYPE" != "tag" ]]; then
             echo "::error::This workflow must be run on a tag, but was run on $GITHUB_REF."
@@ -35,12 +40,15 @@ jobs:
           version="$GITHUB_REF_NAME"
 
           cargo_version=$(sed -n 's/^version = "\(.*\)"$/\1/p' src-tauri/Cargo.toml | head -n1)
+          if [[ "${{ inputs.skip-release }}" == "true" ]]; then
+            version="$cargo_version"
+          fi
           if [[ "$cargo_version" != "$version" ]]; then
             echo "::error::Tag $version does not match the version in src-tauri/Cargo.toml ($cargo_version)."
             exit 1
           fi
 
-          if gh release view "$version" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+          if [[ "${{ inputs.skip-release }}" != "true" ]] && gh release view "$version" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
             echo "::error::A release for $version already exists."
             exit 1
           fi
@@ -321,7 +329,14 @@ jobs:
 
           ls -l release
 
+      - uses: actions/upload-artifact@v7.0.2
+        if: ${{ inputs.skip-release }}
+        with:
+          name: release-test
+          path: release/
+
       - name: Create draft release
+        if: ${{ !inputs.skip-release }}
         run: |
           {
             echo "We're announcing the release of OpenFusionLauncher v$VERSION."
