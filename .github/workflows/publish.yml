@@ -217,7 +217,7 @@ jobs:
           auth=(--key "$key_path" --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER")
 
           ditto -c -k --keepParent "$APP_PATH" "$RUNNER_TEMP/app.zip"
-          result=$(xcrun notarytool submit "$RUNNER_TEMP/app.zip" "${auth[@]}" --wait --timeout 30m --output-format json) || true
+          result=$(xcrun notarytool submit "$RUNNER_TEMP/app.zip" "${auth[@]}" --wait --output-format json) || true
           echo "$result"
           if [[ "$(jq -r '.status // empty' <<< "$result")" != "Accepted" ]]; then
             id=$(jq -r '.id // empty' <<< "$result")
