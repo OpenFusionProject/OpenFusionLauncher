@@ -161,15 +161,15 @@ jobs:
       - name: Ensure targets for Universal binary are present
         run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
 
+      # .app only; the DMG is created after signing, in publish.yml.
       - name: Build
-        run: cargo tauri build --bundles app dmg --target universal-apple-darwin
+        run: cargo tauri build --bundles app --target universal-apple-darwin
 
       - name: Package
         run: |
           cd src-tauri/target/universal-apple-darwin/release/
           mkdir macos-universal
           mv bundle/macos/OpenFusionLauncher.app/ macos-universal
-          mv bundle/dmg/OpenFusionLauncher_*.dmg macos-universal
 
       - uses: actions/upload-artifact@v7.0.2
         with:

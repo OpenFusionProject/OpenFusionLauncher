@@ -150,8 +150,104 @@ jobs:
           name: openfusionlauncher-windows-installer-signed
           path: windows-installer/
 
+  sign-macos:
+    needs: prepare
+    runs-on: macos-latest
+    environment: Production
+    permissions:
+      actions: read
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Download macOS Universal Artifact
+        uses: actions/download-artifact@v8.0.2
+        with:
+          name: openfusionlauncher-macos-universal
+          path: macos-universal
+          run-id: ${{ needs.prepare.outputs.run-id }}
+          github-token: ${{ github.token }}
+
+      - name: Import signing certificate
+        id: certs
+        uses: apple-actions/import-codesign-certs@v7
+        with:
+          p12-file-base64: ${{ secrets.SIGNING_APPLE_CERTIFICATE }}
+          p12-password: ${{ secrets.SIGNING_APPLE_CERTIFICATE_PASSWORD }}
+
+      - name: Select signing identity
+        env:
+          IDENTITIES: ${{ steps.certs.outputs.identities }}
+        run: |
+          identity=$(jq -r 'first(.[] | select(.name | startswith("Developer ID Application:")) | .hash) // empty' <<< "$IDENTITIES")
+          if [[ -z "$identity" ]]; then
+            echo "::error::No Developer ID Application identity found in the imported certificate."
+            exit 1
+          fi
+          echo "SIGNING_IDENTITY=$identity" >> "$GITHUB_ENV"
+
+      # Artifacts don't preserve file permissions, so restore the executable bit.
+      - name: Prepare app
+        run: |
+          chmod +x macos-universal/OpenFusionLauncher.app/Contents/MacOS/*
+          echo "APP_PATH=macos-universal/OpenFusionLauncher.app" >> "$GITHUB_ENV"
+
+      - name: Sign app
+        run: |
+          codesign --force --options runtime --timestamp --sign "$SIGNING_IDENTITY" "$APP_PATH"
+          codesign --verify --deep --strict --verbose=2 "$APP_PATH"
+
+      - name: Notarize and staple app
+        env:
+          NOTARY_KEY: ${{ secrets.SIGNING_APPLE_API_KEY }}
+          NOTARY_KEY_ID: ${{ secrets.SIGNING_APPLE_API_KEY_ID }}
+          NOTARY_ISSUER: ${{ secrets.SIGNING_APPLE_API_ISSUER }}
+        run: |
+          key_path="$RUNNER_TEMP/notary-key.p8"
+          printf '%s' "$NOTARY_KEY" > "$key_path"
+          trap 'rm -f "$key_path"' EXIT
+          auth=(--key "$key_path" --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER")
+
+          ditto -c -k --keepParent "$APP_PATH" "$RUNNER_TEMP/app.zip"
+          result=$(xcrun notarytool submit "$RUNNER_TEMP/app.zip" "${auth[@]}" --wait --timeout 30m --output-format json) || true
+          echo "$result"
+          if [[ "$(jq -r '.status // empty' <<< "$result")" != "Accepted" ]]; then
+            id=$(jq -r '.id // empty' <<< "$result")
+            [[ -n "$id" ]] && xcrun notarytool log "$id" "${auth[@]}"
+            echo "::error::Notarization failed."
+            exit 1
+          fi
+
+          xcrun stapler staple "$APP_PATH"
+          spctl --assess --type execute --verbose=2 "$APP_PATH"
+
+      # Mirrors what `cargo tauri build --bundles dmg` produces on CI.
+      - name: Create DMG
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: 1
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          brew install create-dmg
+          mkdir dmg-src signed
+          mv "$APP_PATH" dmg-src/
+          create-dmg \
+            --volname OpenFusionLauncher \
+            --volicon dmg-src/OpenFusionLauncher.app/Contents/Resources/icon.icns \
+            --window-size 660 400 \
+            --icon OpenFusionLauncher.app 180 170 \
+            --hide-extension OpenFusionLauncher.app \
+            --app-drop-link 480 170 \
+            --skip-jenkins \
+            "signed/OpenFusionLauncher_${VERSION}_universal.dmg" \
+            dmg-src/
+
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: openfusionlauncher-macos-universal-signed
+          path: signed/
+
   release:
-    needs: [prepare, sign-windows]
+    needs: [prepare, sign-windows, sign-macos]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -179,13 +275,11 @@ jobs:
           run-id: ${{ needs.prepare.outputs.run-id }}
           github-token: ${{ github.token }}
 
-      - name: Download macOS Universal Artifact
+      - name: Download Signed macOS Universal Artifact
         uses: actions/download-artifact@v8.0.2
         with:
-          name: openfusionlauncher-macos-universal
+          name: openfusionlauncher-macos-universal-signed
           path: artifacts/macos-universal
-          run-id: ${{ needs.prepare.outputs.run-id }}
-          github-token: ${{ github.token }}
 
       - name: Download Signed Windows Standalone Artifact
         uses: actions/download-artifact@v8.0.2
