@@ -855,6 +855,44 @@ pub(crate) fn prune_unity_logs() {
     }
 }
 
+pub(crate) fn get_appdata_file_path(relative_file_path: &str, pfx: Option<PathBuf>) -> PathBuf {
+    // If there's no prefix or we can't find an appdata in the prefix,
+    // fall back to the launcher's app data directory in the root filesystem.
+    let mut path = get_app_statics()
+        .app_data_dir
+        .parent()
+        .unwrap()
+        .to_path_buf()
+        .join(relative_file_path);
+
+    if let Some(pfx) = pfx {
+        let mut pfx_root = pfx.join("pfx");
+        if !pfx_root.exists() {
+            pfx_root = pfx;
+        }
+
+        // Prefixes could have multiple users. Search through each user's AppData/Roaming for the file.
+        let users_dir = pfx_root.join("drive_c/users");
+        if let Ok(user_dirs) = std::fs::read_dir(&users_dir) {
+            for user_dir in user_dirs.flatten() {
+                if user_dir.file_type().is_ok_and(|t| t.is_dir()) {
+                    let candidate = user_dir
+                        .path()
+                        .join("AppData/Roaming/")
+                        .join(relative_file_path);
+
+                    if candidate.exists() {
+                        path = candidate;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    path
+}
+
 #[cfg(target_os = "linux")]
 pub(crate) fn install_appimage_desktop_entry(app: &tauri::AppHandle) -> Result<()> {
     const GENERATED_MARKER: &str = "X-OpenFusionLauncher-Generated=true";

@@ -784,6 +784,10 @@ async fn prep_launch(
             }
         }
 
+        // PlayerPrefs
+        let player_prefs_path = &app_statics.player_prefs_path;
+        cmd.env("UNITY_FF_PREFS_FILE", player_prefs_path);
+
         #[cfg(debug_assertions)]
         cmd.arg("-v"); // verbose logging
 
@@ -830,8 +834,7 @@ async fn prep_launch(
         let launch_fmt = profile.get_command();
         cmd = util::gen_launch_command(cmd, launch_fmt)?;
 
-        #[cfg(not(target_os = "windows"))]
-        {
+        let prefix = if cfg!(not(target_os = "windows")) {
             // Compat setup
             let mut ensure_compat_dir = true;
             let mut compat_data_dir = app_statics.compat_data_dir.clone();
@@ -882,6 +885,26 @@ async fn prep_launch(
             if ensure_compat_dir && !compat_data_dir.exists() {
                 debug!("Creating prefix at {}", compat_data_dir.to_string_lossy());
                 std::fs::create_dir_all(&compat_data_dir)?;
+            }
+
+            Some(compat_data_dir)
+        } else {
+            None
+        };
+
+        if !player_prefs_path.exists() {
+            // Best effort migration from AppData (inside the active prefix, if applicable)
+            // (%APPDATA%\Unity\WebPlayerPrefs\www_2efusionfall_2ecom\prefmain_2ehtml.upp)
+            let old_player_prefs_path = util::get_appdata_file_path(
+                "Unity/WebPlayerPrefs/www_2efusionfall_2ecom/prefmain_2ehtml.upp",
+                prefix,
+            );
+            if old_player_prefs_path.exists() {
+                debug!(
+                    "Migrating old player prefs from {}",
+                    old_player_prefs_path.display()
+                );
+                let _ = std::fs::copy(&old_player_prefs_path, player_prefs_path);
             }
         }
 
