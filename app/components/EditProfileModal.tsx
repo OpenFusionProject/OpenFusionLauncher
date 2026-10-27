@@ -80,6 +80,9 @@ export default function EditProfileModal({
               value={command}
               onChange={(e) => setCommand(e.target.value)}
               placeholder={DEFAULT_COMMAND}
+              spellCheck={false}
+              autoCorrect="off"
+              autoCapitalize="off"
               isInvalid={command.trim() !== "" && !command.includes("{}")}
               readOnly={isPreset}
               disabled={isPreset}

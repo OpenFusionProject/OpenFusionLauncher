@@ -708,10 +708,23 @@ fn expand_env_placeholders(token: &str) -> Result<String> {
     Ok(out)
 }
 
+fn normalize_launch_fmt(launch_fmt: &str) -> String {
+    launch_fmt
+        .replace("\r\n", " ")
+        .chars()
+        .map(|c| match c {
+            '\n' => ' ',
+            '\u{201C}' | '\u{201D}' | '\u{201E}' | '\u{201F}' => '"',
+            '\u{2018}' | '\u{2019}' | '\u{201A}' | '\u{201B}' => '\'',
+            _ => c,
+        })
+        .collect()
+}
+
 pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Result<Command> {
     // Only the user-provided format string is tokenized. The base command's program and
     // args are spliced in afterwards as discrete args so they never get re-split.
-    let launch_fmt = launch_fmt.replace("\r\n", " ").replace('\n', " ");
+    let launch_fmt = normalize_launch_fmt(launch_fmt);
     let mut tokens = tokenize_launch_command(&launch_fmt)?
         .into_iter()
         .map(|token| {
