@@ -1,5 +1,6 @@
 mod config;
 mod endpoint;
+mod player_prefs;
 mod state;
 mod util;
 
@@ -32,6 +33,7 @@ use uuid::Uuid;
 
 use crate::{
     config::WebPlayerArchitecture,
+    player_prefs::PlayerPrefs,
     state::{LaunchInfo, LaunchProfile, LaunchProfilesView},
 };
 
@@ -899,12 +901,30 @@ async fn prep_launch(
                 "Unity/WebPlayerPrefs/www_2efusionfall_2ecom/prefmain_2ehtml.upp",
                 prefix,
             );
+
             if old_player_prefs_path.exists() {
-                debug!(
+                info!(
                     "Migrating old player prefs from {}",
                     old_player_prefs_path.display()
                 );
-                let _ = std::fs::copy(&old_player_prefs_path, player_prefs_path);
+
+                match PlayerPrefs::load(&old_player_prefs_path) {
+                    Ok(mut player_prefs) => {
+                        if let Some(graphics_quality) =
+                            player_prefs.values.remove("UnityGraphicsQuality")
+                        {
+                            debug!("Removing UnityGraphicsQuality pref: {:?}", graphics_quality);
+                        }
+
+                        if let Err(e) = player_prefs.save(player_prefs_path) {
+                            warn!("Failed to save migrated player prefs: {}", e);
+                        }
+                    }
+                    Err(e) => {
+                        warn!("Failed to load old player prefs: {}. Doing blind copy.", e);
+                        let _ = std::fs::copy(&old_player_prefs_path, player_prefs_path);
+                    }
+                }
             }
         }
 
