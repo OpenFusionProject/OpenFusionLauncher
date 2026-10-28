@@ -22,11 +22,20 @@ export default function Toast({ alert }: { alert: Alert }) {
       </_Toast.Header>
       <_Toast.Body className={"rounded-bottom glow " + alert.variant}>
         <span style={{ whiteSpace: "pre-line" }}>{alert.text}</span>
+        {alert.action && (
+          <Button
+            className="d-block w-100 mt-2"
+            onClick={alert.action!.func}
+            text={alert.action!.text}
+            variant={alert.action!.variant ?? "primary"}
+            icon={alert.action!.icon}
+          />
+        )}
         {alert.link && (
           <Button
             className="d-block w-100 mt-2"
             onClick={() => openUrl(alert.link!)}
-            variant="success"
+            variant={alert.linkVariant ?? "primary"}
             icon="arrow-up-right-from-square"
             text={getHostnameFromLink(alert.link)}
             tooltip={alert.link}

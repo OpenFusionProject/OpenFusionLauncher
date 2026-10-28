@@ -66,7 +66,7 @@ export default function AboutModal({
           onClick={collectLogs}
           variant="warning"
           icon="file-archive"
-          text="Collect Logs"
+          text="Collect Diagnostic Logs"
           iconLeft
         />
       </Modal.Body>

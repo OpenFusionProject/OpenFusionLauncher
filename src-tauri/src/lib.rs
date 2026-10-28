@@ -268,6 +268,10 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
     let exit_code = exit_status.code().map(|c| c as u32);
     debug!("Process exited with code: {:?}", exit_code);
 
+    #[cfg(debug_assertions)]
+    // Always show the error toast in debug mode
+    let exit_code = exit_code.map(|c| if c == 0 { 0xCAFE_BABE } else { c });
+
     // we use DEADBEEF as a sentinel to indicate missing exit code
     // (on Unix, when a signal terminated the process we spawned directly).
     // Note that when running through a compatibility layer like Wine or Proton,
@@ -1870,10 +1874,16 @@ pub fn run() {
                 .build(),
         )
         .setup(|app| {
-            if std::env::var("OFL_NO_REGISTRATION").ok().is_none_or(|v| v.eq_ignore_ascii_case("0")) {
+            if std::env::var("OFL_NO_REGISTRATION")
+                .ok()
+                .is_none_or(|v| v.eq_ignore_ascii_case("0"))
+            {
                 #[cfg(any(windows, target_os = "linux"))]
                 if let Err(e) = app.deep_link().register_all() {
-                    warn!("Failed to register deep links: {}. Protocol activation may not work.", e);
+                    warn!(
+                        "Failed to register deep links: {}. Protocol activation may not work.",
+                        e
+                    );
                 }
 
                 // This desktop entry serves a different purpose from the one Tauri installs above:

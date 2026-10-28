@@ -27,6 +27,7 @@ import {
   Config,
   UpdateInfo,
   ProtocolActivation,
+  AlertAction,
 } from "@/app/types";
 
 import ServerList from "@/components/ServerList";
@@ -125,9 +126,18 @@ export default function Home() {
     setCurrentSession(undefined);
   };
 
-  const pushAlert = (variant: string, text: string, link?: string) => {
+  const pushAlert = (
+    variant: string,
+    text: string,
+    link?: string,
+    linkVariant?: string,
+    action?: AlertAction,
+  ) => {
     const id = Math.floor(Math.random() * 1000000);
-    setAlerts((alerts) => [{ variant, text, id, link }, ...alerts]);
+    setAlerts((alerts) => [
+      { variant, text, id, link, linkVariant, action },
+      ...alerts,
+    ]);
   };
 
   const alertWarning = (text: string) => {
@@ -330,10 +340,20 @@ export default function Home() {
       setTagline("Thanks for playing!");
       if (exitCode != 0) {
         const formatted = exitCode.toString(16).toUpperCase();
-        alertError(
+        error("Game crashed with exit code 0x" + formatted);
+        pushAlert(
+          "danger",
           "Game crashed (exit code 0x" +
             formatted +
             "). See game logs for more details.",
+          undefined,
+          undefined,
+          {
+            func: () => collectLogs(),
+            text: "Collect Diagnostic Logs",
+            variant: "warning",
+            icon: "file-archive",
+          },
         );
       }
     } catch (e: unknown) {
