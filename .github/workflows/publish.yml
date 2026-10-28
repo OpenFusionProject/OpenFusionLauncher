@@ -2,6 +2,10 @@ name: Publish
 
 on:
   workflow_dispatch:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-*'
 
 jobs:
   prepare:
@@ -71,17 +75,30 @@ jobs:
           echo "Prerelease: $prerelease"
           echo "Previous tag: ${previous_tag:-<none>}"
 
+      # The tag may be pushed alongside the commit, so wait for its build on main to finish.
       - name: Find build run on main
         id: build
+        timeout-minutes: 120
         run: |
           sha=$(git rev-parse HEAD)
-          run_id=$(gh api -X GET "repos/$GITHUB_REPOSITORY/actions/workflows/rust.yml/runs" \
-            -f branch=main -f event=push -f head_sha="$sha" -f status=success \
-            --jq '.workflow_runs | sort_by(.run_number) | last | .id // empty')
-          if [[ -z "$run_id" ]]; then
-            echo "::error::No successful build on main found for $sha ($GITHUB_REF_NAME)."
-            exit 1
-          fi
+          start=$SECONDS
+          while true; do
+            runs=$(gh api -X GET "repos/$GITHUB_REPOSITORY/actions/workflows/rust.yml/runs" \
+              -f branch=main -f event=push -f head_sha="$sha" --jq '.workflow_runs')
+            run_id=$(jq -r 'map(select(.conclusion == "success")) | sort_by(.run_number) | last | .id // empty' <<< "$runs")
+            [[ -n "$run_id" ]] && break
+
+            pending=$(jq 'map(select(.status != "completed")) | length' <<< "$runs")
+            total=$(jq 'length' <<< "$runs")
+            # Allow a grace period for the build run to be created when the commit was pushed at the same time.
+            if [[ "$pending" -eq 0 && ( "$total" -gt 0 || $((SECONDS - start)) -ge 300 ) ]]; then
+              echo "::error::No successful build on main found for $sha ($GITHUB_REF_NAME)."
+              exit 1
+            fi
+
+            echo "Waiting for build on main for $sha ($pending pending, $total total)..."
+            sleep 60
+          done
           echo "Using build run $run_id: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$run_id"
           echo "run-id=$run_id" >> "$GITHUB_OUTPUT"
 
