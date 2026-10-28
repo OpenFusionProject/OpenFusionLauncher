@@ -179,7 +179,7 @@ export type AlertEvent = {
 export type UpdateInfo = {
   version: string;
   url: string;
-  canApply: boolean;
+  can_apply: boolean;
 };
 
 export type SettingsOption = {
