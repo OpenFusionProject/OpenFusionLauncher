@@ -63,9 +63,6 @@ export default function Home() {
 
   const [appName, setAppName] = useState("");
   const [launcherVersion, setLauncherVersion] = useState("unknown");
-  const [updateAvailable, setUpdateAvailable] = useState<
-    UpdateInfo | undefined
-  >(undefined);
   const [tagline, setTagline] = useState(DEFAULT_TAGLINE);
   const [topOffset, setTopOffset] = useState<string>("0");
 
@@ -150,9 +147,9 @@ export default function Home() {
     pushAlert("danger", text);
   };
 
-  const alertInfo = (text: string, link?: string) => {
+  const alertInfo = (text: string) => {
     info(text);
-    pushAlert("primary", text, link);
+    pushAlert("primary", text);
   };
 
   const alertSuccess = (text: string) => {
@@ -214,8 +211,33 @@ export default function Home() {
         "check_for_update"
       );
       if (updateInfo) {
-        setUpdateAvailable(updateInfo);
-        alertInfo("Update available: " + updateInfo.version, updateInfo.url);
+        info("Update available: " + updateInfo.version);
+        pushAlert(
+          "primary",
+          "Update available: " + updateInfo.version,
+          updateInfo.url,
+          "primary",
+          updateInfo.can_apply
+            ? {
+                text: "Update Now",
+                variant: "success",
+                icon: "download",
+                func: () =>
+                  showConfirmationModal(
+                    "A launcher update to version " +
+                      updateInfo.version +
+                      " is available. Would you like to update now?",
+                    "Update",
+                    "success",
+                    () => {
+                      // TODO
+                      alertWarning("Update action not implemented yet");
+                    },
+                    "Update to v" + updateInfo.version,
+                  ),
+              }
+            : undefined,
+        );
       }
     } catch (e: unknown) {
       console.warn("Failed to check for updates (" + e + ")");

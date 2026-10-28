@@ -58,6 +58,7 @@ struct UpdateCheckResponse {
 struct UpdateInfo {
     version: String,
     url: String,
+    can_apply: bool,
 }
 
 const MAX_CONCURRENT_VALIDATION_OPS: usize = 2; // compromise. 1 is a lot for an HDD, but SSDs can handle 3-5
@@ -1708,19 +1709,30 @@ async fn create_log_package() -> CommandResult<Option<String>> {
 async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
     debug!("check_for_update");
     let internal = async {
+        if cfg!(debug_assertions) {
+            return Ok(Some(UpdateInfo {
+                version: String::from("9.9.9"),
+                url: String::from(DOWNLOAD_PAGE_URL),
+                can_apply: true,
+            }));
+        }
+
         let resp_raw = util::do_simple_get(UPDATE_CHECK_URL).await?;
         let resp: UpdateCheckResponse = serde_json::from_str(&resp_raw)?;
         if !VERSION_NUMBER_REGEX.is_match(&resp.tag_name) {
             return Err(format!("Invalid version number: {}", resp.tag_name).into());
         }
+
         let current_version = util::string_version_to_u32(get_app_statics().get_version());
         let latest_version = util::string_version_to_u32(resp.tag_name.trim_start_matches("v"));
         if latest_version <= current_version {
             return Ok(None);
         }
+
         Ok(Some(UpdateInfo {
             version: resp.tag_name,
             url: String::from(DOWNLOAD_PAGE_URL),
+            can_apply: false,
         }))
     };
     internal.await.map_err(|e: Error| e.to_string())
