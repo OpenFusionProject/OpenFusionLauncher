@@ -1827,15 +1827,22 @@ pub fn run() {
                 .build(),
         )
         .setup(|app| {
-            #[cfg(any(windows, target_os = "linux"))]
-            app.deep_link().register_all()?;
+            if std::env::var("OFL_NO_REGISTRATION").ok().is_none_or(|v| v.eq_ignore_ascii_case("0")) {
+                #[cfg(any(windows, target_os = "linux"))]
+                if let Err(e) = app.deep_link().register_all() {
+                    warn!("Failed to register deep links: {}. Protocol activation may not work.", e);
+                }
 
-            #[cfg(target_os = "linux")]
-            if let Err(e) = util::install_appimage_desktop_entry(app.handle()) {
-                warn!("Failed to install AppImage desktop entry: {}", e);
+                // This desktop entry serves a different purpose from the one Tauri installs above:
+                // it's visual metadata only, for the shell. We keep them separate so that dev
+                // scenarios can test protocol activation without affecting the visual metadata.
+                #[cfg(all(not(debug_assertions), target_os = "linux"))]
+                if let Err(e) = util::install_appimage_desktop_entry(app.handle()) {
+                    warn!("Failed to install AppImage desktop entry: {}", e);
+                }
             }
 
-            // we have a custom title bar on Linux
+            // we used to have a custom title bar on Linux
             if should_use_custom_titlebar() {
                 app.webview_windows().values_mut().for_each(|w| {
                     debug!("dec off");
