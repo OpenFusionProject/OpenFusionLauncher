@@ -1610,6 +1610,9 @@ async fn reset_game_config(app_handle: tauri::AppHandle) -> CommandResult<()> {
 
 #[tauri::command]
 async fn create_log_package() -> CommandResult<Option<String>> {
+    const INCLUDED_APPDATA_FILES: &[&str] =
+        &["config.json", "launch_profiles.json", "player_prefs.upp"];
+
     debug!("create_log_package");
     let internal = async {
         let statics = get_app_statics();
@@ -1681,25 +1684,15 @@ async fn create_log_package() -> CommandResult<Option<String>> {
             }
         }
 
-        // Copy config.json
-        let config_path = get_app_statics().app_data_dir.join("config.json");
-        if config_path.is_file() {
-            zip.start_file_from_path("config.json", SimpleFileOptions::default())?;
+        // Copy relevant appdata files
+        for appdata_file in INCLUDED_APPDATA_FILES {
+            let file_path = get_app_statics().app_data_dir.join(appdata_file);
+            if file_path.is_file() {
+                zip.start_file_from_path(appdata_file, SimpleFileOptions::default())?;
 
-            if let Err(e) = std::io::copy(&mut std::fs::File::open(&config_path)?, &mut zip) {
-                warn!("Failed to copy config.json to log package: {}", e);
-            }
-        }
-
-        // Copy launch_profiles.json
-        let launch_profiles_path = get_app_statics().app_data_dir.join("launch_profiles.json");
-        if launch_profiles_path.is_file() {
-            zip.start_file_from_path("launch_profiles.json", SimpleFileOptions::default())?;
-
-            if let Err(e) =
-                std::io::copy(&mut std::fs::File::open(&launch_profiles_path)?, &mut zip)
-            {
-                warn!("Failed to copy launch_profiles.json to log package: {}", e);
+                if let Err(e) = std::io::copy(&mut std::fs::File::open(&file_path)?, &mut zip) {
+                    warn!("Failed to copy {} to log package: {}", appdata_file, e);
+                }
             }
         }
 
