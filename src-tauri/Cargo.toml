@@ -27,7 +27,7 @@ uuid = { version = "1.23.2", features = ["serde", "v4"] }
 dns-lookup = "2.1.1"
 tokio = { version =  "1.52.3", features = ["sync", "time"] }
 reqwest = { version = "0.12.28", features = ["json"] }
-ffbuildtool = { git = "https://github.com/OpenFusionProject/ffbuildtool.git", tag = "v5.1.0", default-features = false }
+ffbuildtool = { git = "https://github.com/OpenFusionProject/ffbuildtool.git", tag = "v5.1.1", default-features = false }
 tauri-plugin-opener = "=2.5.4"
 tauri-plugin-dialog = "=2.4.0"
 regex = "1.12.3"
