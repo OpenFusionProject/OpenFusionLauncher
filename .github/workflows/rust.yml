@@ -46,14 +46,13 @@ jobs:
         name: ffrunner-mingw
         path: resources/ffrunner/
 
-  build-linux:
+  build-linux-standalone:
     needs: build-ffrunner
-    # This runner image should stay the same, otherwise there is potential to break compatibility.
-    # See https://v2.tauri.app/distribute/appimage/#limitations
-    runs-on: ubuntu-22.04 
+    # The standalone binary links against the build host's glibc, so this runner image should
+    # stay old to keep it compatible with older distros.
+    runs-on: ubuntu-22.04
     env:
       FFRUNNER_VERSION: ${{ needs.build-ffrunner.outputs.version }}
-      TAURI_BUNDLER_NEW_APPIMAGE_FORMAT: true
     steps:
     - uses: actions/setup-node@v7
       with:
@@ -78,11 +77,11 @@ jobs:
       uses: actions/cache@v6
       with:
         path: /home/runner/.cargo
-        key: tauri-cli-experimental-Linux
+        key: tauri-cli-Linux
 
     - name: Install Tauri CLI
       if: steps.cache-tauri.outputs.cache-hit != 'true'
-      run: cargo install tauri-cli --git https://github.com/tauri-apps/tauri --rev f0511be705661dba2e505d7a86f513f5b4dbe240
+      run: cargo install tauri-cli --version "^2.0.0" --locked
 
     - uses: actions/checkout@v7
 
@@ -106,20 +105,82 @@ jobs:
     #     key: cargo-deps-Linux
 
     - name: Build
-      run: cargo tauri build --bundles appimage
+      run: cargo tauri build --no-bundle
 
     - name: Package
       run: |
         cd src-tauri/target/release
         mkdir linux-standalone
-        mkdir linux-appimage
         cp -r -t linux-standalone openfusionlauncher ffrunner.exe ffrunner64.exe d3d9_vulkan.dll d3d9_vulkan64.dll assets defaults loader loader-x64 player mono
-        cp -r -t linux-appimage bundle/appimage/OpenFusionLauncher_*.AppImage
 
     - uses: actions/upload-artifact@v7.0.2
       with:
         name: openfusionlauncher-linux-standalone
         path: src-tauri/target/release/linux-standalone/
+
+  build-linux-appimage:
+    needs: build-ffrunner
+    # The new AppImage format bundles the build host's libraries (including glibc and Mesa), so it
+    # needs a host with a recent Mesa; Ubuntu's is too old for hardware acceleration on NVIDIA + Wayland.
+    # See https://github.com/tauri-apps/tauri/pull/12491#issuecomment-2863900055
+    runs-on: ubuntu-24.04
+    container: archlinux:base-devel
+    env:
+      FFRUNNER_VERSION: ${{ needs.build-ffrunner.outputs.version }}
+      TAURI_BUNDLER_NEW_APPIMAGE_FORMAT: true
+      # Head of https://github.com/tauri-apps/tauri/pull/12491 (truly portable AppImage)
+      TAURI_CLI_REV: 3b69f584e3a32a8607e0c2aa6543a88511085bfb
+    steps:
+    - name: Install dependencies
+      run: |
+        pacman -Syu --noconfirm --needed \
+          git \
+          rustup \
+          nodejs \
+          npm \
+          curl \
+          wget \
+          file \
+          patchelf \
+          webkit2gtk-4.1 \
+          libayatana-appindicator \
+          librsvg \
+          xdotool \
+          openssl \
+          xorg-server-xvfb
+        rustup default stable
+        echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
+    - name: Restore Tauri CLI
+      id: cache-tauri
+      uses: actions/cache@v6
+      with:
+        path: ~/.cargo
+        key: tauri-cli-experimental-${{ env.TAURI_CLI_REV }}-Linux
+
+    - name: Install Tauri CLI
+      if: steps.cache-tauri.outputs.cache-hit != 'true'
+      run: cargo install tauri-cli --git https://github.com/tauri-apps/tauri --rev ${{ env.TAURI_CLI_REV }} --locked
+
+    - uses: actions/checkout@v7
+
+    - name: Download ffrunner
+      uses: actions/download-artifact@v8.0.2
+      with:
+        name: ffrunner-mingw
+        path: resources/ffrunner
+
+    - name: Install NPM packages
+      run: npm install
+
+    - name: Build
+      run: cargo tauri build --bundles appimage
+
+    - name: Package
+      run: |
+        cd src-tauri/target/release
+        mkdir linux-appimage
+        cp -r -t linux-appimage bundle/appimage/OpenFusionLauncher_*.AppImage
 
     - uses: actions/upload-artifact@v7.0.2
       with:
