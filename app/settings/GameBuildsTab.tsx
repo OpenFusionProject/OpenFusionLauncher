@@ -204,9 +204,13 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
     }
   };
 
-  const addBuildManual = async (name: string, assetUrl: string) => {
+  const addBuildManual = async (
+    name: string,
+    assetUrl: string,
+    mainUrl?: string,
+  ) => {
     try {
-      await invoke("add_version_manual", { name, assetUrl });
+      await invoke("add_version_manual", { name, assetUrl, mainUrl });
       await fetchVersions();
       if (ctx.alertSuccess) {
         ctx.alertSuccess("Added build " + name);

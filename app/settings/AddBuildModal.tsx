@@ -16,7 +16,7 @@ export default function AddBuildModal({
   show: boolean;
   setShow: (show: boolean) => void;
   onImport: (manifestPath: string) => Promise<boolean>;
-  onManualAdd: (name: string, assetUrl: string) => void;
+  onManualAdd: (name: string, assetUrl: string, mainUrl?: string) => void;
 }) {
   const [tab, setTab] = useState(TAB_IMPORT);
 
@@ -29,8 +29,32 @@ export default function AddBuildModal({
   // Manual tab
   const [name, setName] = useState<string>("");
   const [assetUrl, setAssetUrl] = useState<string>("");
+  const [mainUrl, setMainUrl] = useState<string>("");
+
+  const validateUri = (uri: string) => {
+    // Must be valid URI with either http, https, or file protocol.
+    try {
+      const parsed = new URL(uri);
+      return ["http:", "https:", "file:"].includes(parsed.protocol);
+    } catch {
+      return false;
+    }
+  };
+
+  const validateName = () => {
+    return name.trim() != "";
+  };
+
+  const validateAssetUrl = () => {
+    return validateUri(assetUrl);
+  };
+
+  const validateMainUrl = () => {
+    return mainUrl.length == 0 || validateUri(mainUrl);
+  };
+
   const validateManual = () => {
-    return assetUrl.trim() != "";
+    return validateName() && validateAssetUrl() && validateMainUrl();
   };
 
   useEffect(() => {
@@ -60,7 +84,11 @@ export default function AddBuildModal({
 
   const onSubmit = async () => {
     if (tab == TAB_MANUAL) {
-      onManualAdd(name, assetUrl);
+      if (mainUrl.length > 0) {
+        onManualAdd(name, assetUrl, mainUrl);
+      } else {
+        onManualAdd(name, assetUrl);
+      }
       setShow(false);
     } else {
       const succeeded = await onImport(manifestPath!);
@@ -105,6 +133,7 @@ export default function AddBuildModal({
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  isInvalid={name.length > 0 && !validateName()}
                   placeholder="My Build"
                 />
               </Form.Group>
@@ -114,7 +143,22 @@ export default function AddBuildModal({
                   type="text"
                   value={assetUrl}
                   onChange={(e) => setAssetUrl(e.target.value)}
+                  isInvalid={assetUrl.length > 0 && !validateAssetUrl()}
                   placeholder="https://cdn.example.com/build"
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="editMainUrl">
+                <Form.Label>Main URL (optional)</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={mainUrl}
+                  onChange={(e) => setMainUrl(e.target.value)}
+                  isInvalid={!validateMainUrl()}
+                  placeholder={
+                    assetUrl.length > 0
+                      ? assetUrl + "/main.unity3d"
+                      : "https://cdn.example.com/build/main.unity3d"
+                  }
                 />
               </Form.Group>
             </Form>

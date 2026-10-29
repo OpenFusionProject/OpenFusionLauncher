@@ -1329,16 +1329,22 @@ async fn add_version_manual(
     app_handle: tauri::AppHandle,
     name: String,
     asset_url: String,
+    main_url: Option<String>,
 ) -> CommandResult<()> {
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
         let mut state = state.lock().await;
-        let version = Version::build_barebones(&asset_url, Some(&name));
+
+        let mut version = Version::build_barebones(&asset_url, Some(&name));
+        if let Some(main_url) = main_url {
+            version.set_main_file_url(&main_url);
+        }
+
         util::import_versions(vec![version.clone()])?;
         state.versions.add_entry(version);
         Ok(())
     };
-    debug!("add_build_manual");
+    debug!("add_version_manual");
     internal.await.map_err(|e: Error| e.to_string())
 }
 
