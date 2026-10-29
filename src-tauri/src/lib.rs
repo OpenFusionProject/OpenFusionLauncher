@@ -516,6 +516,12 @@ async fn get_session(app_handle: tauri::AppHandle, server_uuid: Uuid) -> Command
 }
 
 #[tauri::command]
+async fn get_launch_profile_instructions() -> String {
+    debug!("get_launch_profile_instructions");
+    util::get_detailed_launch_profile_instructions()
+}
+
+#[tauri::command]
 async fn prep_launch(
     app_handle: tauri::AppHandle,
     server_uuid: Uuid,
@@ -805,21 +811,7 @@ async fn prep_launch(
                 state.write_config = true;
                 state.save();
             } else {
-                let detailed_instructions = match std::env::consts::OS {
-                    "linux" => {
-                        "Install a compatibility layer, such as Proton from Steam, or Wine from your distribution's package manager. Then restart OpenFusionLauncher."
-                    }
-                    "macos" => {
-                        "Download a compatibility layer, such as CrossOver or Wine, and install the .app into your Applications folder. Then restart OpenFusionLauncher."
-                    }
-                    "windows" => {
-                        "Please ensure you have extracted OpenFusionLauncher, or download the installer instead."
-                    }
-                    _ => {
-                        "Please create one that uses an appropriate compatibility layer for your system."
-                    }
-                };
-
+                let detailed_instructions = util::get_detailed_launch_profile_instructions();
                 return Err(format!(
                     "No launch profiles found in game settings.\n\n{}",
                     detailed_instructions
@@ -1913,6 +1905,7 @@ pub fn run() {
             add_launch_profile,
             update_launch_profile,
             delete_launch_profile,
+            get_launch_profile_instructions,
             update_config,
             reset_launcher_config,
             reset_game_config,

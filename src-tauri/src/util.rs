@@ -287,6 +287,23 @@ pub(crate) fn get_preset_launch_profiles() -> Vec<LaunchProfile> {
     profiles
 }
 
+pub(crate) fn get_detailed_launch_profile_instructions() -> String {
+    match std::env::consts::OS {
+        "linux" => {
+            "Install a compatibility layer, such as Proton from Steam, or Wine from your distribution's package manager. Then restart OpenFusionLauncher."
+        }
+        "macos" => {
+            "Download a compatibility layer, such as CrossOver or Wine, and install the .app into your Applications folder. Then restart OpenFusionLauncher."
+        }
+        "windows" => {
+            "Please ensure you have extracted OpenFusionLauncher, or download the installer instead."
+        }
+        _ => {
+            "Please create one that uses an appropriate compatibility layer for your system."
+        }
+    }.to_string()
+}
+
 pub(crate) fn get_cache_dir_for_version(base_cache_dir: &str, version: &Version) -> PathBuf {
     let cache_dir = PathBuf::from(base_cache_dir);
     cache_dir.join(version.get_uuid().to_string())

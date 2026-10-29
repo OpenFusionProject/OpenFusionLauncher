@@ -4,6 +4,7 @@ import {
   getFFRunnerVersion,
   getWebplayerDllVersion,
 } from "@/app/util";
+import { OPENFUSION_DISCORD_URL } from "@/app/constants";
 import { useState, useEffect } from "react";
 import { Stack, Modal } from "react-bootstrap";
 import { openUrl } from "@tauri-apps/plugin-opener";
@@ -79,7 +80,7 @@ export default function AboutModal({
             tooltip="Github Page"
           />
           <Button
-            onClick={() => openUrl("https://discord.gg/DYavckB")}
+            onClick={() => openUrl(OPENFUSION_DISCORD_URL)}
             variant="primary"
             icon="discord fa-brands fa-lg"
             tooltip="Discord Chat"
