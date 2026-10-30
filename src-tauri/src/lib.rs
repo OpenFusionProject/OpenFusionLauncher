@@ -1760,7 +1760,8 @@ async fn check_for_update(webview: tauri::Webview) -> CommandResult<Option<Updat
         let latest_tag = latest_release.tag_name.clone();
         debug!("Latest published version is {}", latest_tag);
 
-        if latest_version <= current_version {
+        let downgrade_allowed = std::env::var("OFL_DISABLE_STRICT_UPGRADE").is_ok_and(|v| v != "0");
+        if latest_version <= current_version && !downgrade_allowed {
             return Ok(None);
         }
 
