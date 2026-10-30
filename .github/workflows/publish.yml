@@ -301,9 +301,11 @@ jobs:
           "$appimage" --appimage-addsign "$RUNNER_TEMP/appimage.sig"
 
           # The runtime has no option for embedding the key, so write it into the section directly.
-          key_offset=$(readelf -SW "$appimage" | awk '$2 == ".sig_key" { print $5 }')
+          # The key is also published with the release.
           gpg --batch --armor --export --export-options export-minimal "$SIGNING_KEY_FINGERPRINT" \
-            | dd of="$appimage" bs=1 seek=$((16#$key_offset)) conv=notrunc status=none
+            > linux-appimage/linux-public-key.asc
+          key_offset=$(readelf -SW "$appimage" | awk '$2 == ".sig_key" { print $5 }')
+          dd if=linux-appimage/linux-public-key.asc of="$appimage" bs=1 seek=$((16#$key_offset)) conv=notrunc status=none
 
       - uses: actions/upload-artifact@v7.0.2
         with:
@@ -376,6 +378,7 @@ jobs:
           chmod +x artifacts/linux-standalone/openfusionlauncher
           (cd artifacts/linux-standalone && zip -r -X -D ../../release/OpenFusionLauncher-Linux.zip .)
           install -m 755 "$appimage" release/OpenFusionLauncher.AppImage
+          cp artifacts/linux-appimage/linux-public-key.asc release/
 
           cp "$dmg" release/OpenFusionLauncher-MacOS-Universal.dmg
           cp "$app_archive" release/OpenFusionLauncher-MacOS-Universal.app.tar.gz
