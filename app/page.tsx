@@ -263,10 +263,10 @@ export default function Home() {
         "check_for_update"
       );
       if (updateInfo) {
-        info("Update available: " + updateInfo.version);
+        info("Update available: v" + updateInfo.version);
         pushAlert(
           "primary",
-          "Update available: " + updateInfo.version,
+          "Update available: v" + updateInfo.version,
           updateInfo.url,
           "primary",
           updateInfo.self_update
