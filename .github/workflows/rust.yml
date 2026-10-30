@@ -279,19 +279,23 @@ jobs:
       #       src-tauri/target/release/incremental
       #     key: cargo-deps-Windows
 
+      # Bundler puts an NSIS mark on the EXE; package standalone first.
       - name: Build
-        run: cargo tauri build --bundles nsis
+        run: cargo tauri build --no-bundle
 
-      - name: Package
+      - name: Package standalone
         run: |
           cd src-tauri/target/release
           mkdir windows-standalone
-          Move-Item -Destination windows-standalone -Path openfusionlauncher.exe,ffrunner.exe,ffrunner64.exe,d3d9_vulkan.dll,d3d9_vulkan64.dll,assets,defaults,loader,loader-x64,player,mono
+          Copy-Item -Destination windows-standalone -Recurse -Path openfusionlauncher.exe,ffrunner.exe,ffrunner64.exe,d3d9_vulkan.dll,d3d9_vulkan64.dll,assets,defaults,loader,loader-x64,player,mono
       
       - uses: actions/upload-artifact@v7.0.2
         with:
           name: openfusionlauncher-windows-standalone
           path: src-tauri/target/release/windows-standalone/
+
+      - name: Create installer
+        run: cargo tauri bundle --bundles nsis
 
       - uses: actions/upload-artifact@v7.0.2
         with:
