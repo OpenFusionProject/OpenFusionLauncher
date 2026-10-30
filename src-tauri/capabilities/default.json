@@ -21,6 +21,7 @@
     "opener:allow-open-path",
     "dialog:allow-open",
     "deep-link:default",
-    "log:allow-log"
+    "log:allow-log",
+    "updater:allow-download-and-install"
   ]
 }

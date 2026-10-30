@@ -45,6 +45,8 @@ static LOGIN_COOKIE_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"-t (
 
 const UPDATE_CHECK_URL: &str =
     "https://api.github.com/repos/OpenFusionProject/OpenFusionLauncher/releases";
+const RELEASE_DOWNLOAD_URL: &str =
+    "https://github.com/OpenFusionProject/OpenFusionLauncher/releases/download";
 const DOWNLOAD_PAGE_URL: &str = "https://openfusion.dev/download/";
 
 #[derive(Debug, Deserialize)]
@@ -55,10 +57,22 @@ struct ReleaseEntry {
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct UpdateMetadata {
+    rid: tauri::ResourceId,
+    current_version: String,
+    version: String,
+    date: Option<String>,
+    body: Option<String>,
+    raw_json: serde_json::Value,
+}
+
+#[derive(Debug, Serialize)]
 struct UpdateInfo {
     version: String,
     url: String,
-    can_apply: bool,
+    self_update: bool,
+    metadata: Option<UpdateMetadata>,
 }
 
 const MAX_CONCURRENT_VALIDATION_OPS: usize = 2; // compromise. 1 is a lot for an HDD, but SSDs can handle 3-5
@@ -1706,14 +1720,15 @@ async fn create_log_package() -> CommandResult<Option<String>> {
 }
 
 #[tauri::command]
-async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
+async fn check_for_update(webview: tauri::Webview) -> CommandResult<Option<UpdateInfo>> {
     debug!("check_for_update");
     let internal = async {
         if cfg!(debug_assertions) {
             return Ok(Some(UpdateInfo {
                 version: String::from("9.9.9"),
                 url: String::from(DOWNLOAD_PAGE_URL),
-                can_apply: true,
+                self_update: true,
+                metadata: None,
             }));
         }
 
@@ -1749,13 +1764,27 @@ async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
             return Ok(None);
         }
 
+        let metadata = util::get_self_update(&webview, &latest_tag)
+            .await
+            .unwrap_or_else(|e| {
+                warn!("Can't self-update to {}: {}", latest_tag, e);
+                None
+            });
+
         Ok(Some(UpdateInfo {
             version: latest_tag,
             url: String::from(DOWNLOAD_PAGE_URL),
-            can_apply: false,
+            self_update: metadata.is_some(),
+            metadata,
         }))
     };
     internal.await.map_err(|e: Error| e.to_string())
+}
+
+#[tauri::command]
+fn restart_app(app_handle: tauri::AppHandle) {
+    debug!("restart_app");
+    app_handle.request_restart();
 }
 
 #[tauri::command]
@@ -1851,8 +1880,6 @@ fn handle_deep_links(app_handle: &tauri::AppHandle, urls: Vec<url::Url>) {
     }
 }
 
-#[allow(clippy::single_match)]
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         // Single instance plugin needs to be first.
@@ -1863,6 +1890,7 @@ pub fn run() {
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(
             tauri_plugin_log::Builder::new()
                 .timezone_strategy(tauri_plugin_log::TimezoneStrategy::UseLocal)
@@ -1935,6 +1963,7 @@ pub fn run() {
             is_debug_mode,
             take_pending_activations,
             check_for_update,
+            restart_app,
             create_log_package,
             get_versions,
             get_servers,

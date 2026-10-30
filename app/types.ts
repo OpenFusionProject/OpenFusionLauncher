@@ -1,3 +1,7 @@
+import { Update } from "@tauri-apps/plugin-updater";
+
+export type UpdateMetadata = ConstructorParameters<typeof Update>[0];
+
 export type ServerEntry = {
   uuid: string;
   description: string;
@@ -146,7 +150,7 @@ export type SettingsContext = {
     confirmText: string,
     confirmVariant: string,
     onConfirm: () => void,
-    title?: string
+    title?: string,
   ) => void;
 };
 
@@ -180,7 +184,8 @@ export type AlertEvent = {
 export type UpdateInfo = {
   version: string;
   url: string;
-  can_apply: boolean;
+  self_update: boolean;
+  metadata?: UpdateMetadata;
 };
 
 export type SettingsOption = {

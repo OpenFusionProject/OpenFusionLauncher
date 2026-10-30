@@ -18,11 +18,13 @@ use dns_lookup::lookup_host;
 use ffbuildtool::{FailReason, ItemProgress, Version};
 use log::*;
 use serde::Serialize;
-use tauri::{Emitter as _, Manager as _};
+use tauri::{Emitter as _, Manager as _, utils::config::BundleType};
+use tauri_plugin_updater::UpdaterExt as _;
 use uuid::Uuid;
 
 use crate::{
-    CACHE_PROGRESS_EVENT, CacheEvent, CacheProgress, CacheProgressItem, NewServerDetails, Result,
+    CACHE_PROGRESS_EVENT, CacheEvent, CacheProgress, CacheProgressItem, NewServerDetails,
+    RELEASE_DOWNLOAD_URL, Result, UpdateMetadata,
     state::{self, AppState, LaunchProfile, get_app_statics},
 };
 
@@ -139,6 +141,43 @@ pub(crate) fn resolve_server_addr(addr: &str) -> Result<String> {
     };
     debug!("Resolved {} to {}", host, ip);
     Ok(format!("{}:{}", ip, port))
+}
+
+pub(crate) async fn get_self_update(
+    webview: &tauri::Webview,
+    tag: &str,
+) -> Result<Option<UpdateMetadata>> {
+    let can_self_update = match tauri::utils::platform::bundle_type() {
+        Some(BundleType::Nsis) | Some(BundleType::App) => true,
+        #[cfg(target_os = "linux")]
+        Some(BundleType::AppImage) => webview.env().appimage.is_some(),
+        _ => false,
+    };
+
+    if !can_self_update {
+        return Ok(None);
+    }
+
+    // We use just the URL for the requested version in the endpoints.
+    // This lets us keep our own update check logic, but also enables self-update
+    let manifest_url = format!("{}/{}/latest.json", RELEASE_DOWNLOAD_URL, tag).parse()?;
+    let updater = webview
+        .updater_builder()
+        .endpoints(vec![manifest_url])?
+        .build()?;
+
+    let Some(update) = updater.check().await? else {
+        return Ok(None);
+    };
+
+    Ok(Some(UpdateMetadata {
+        current_version: update.current_version.clone(),
+        version: update.version.clone(),
+        date: update.raw_json["pub_date"].as_str().map(String::from),
+        body: update.body.clone(),
+        raw_json: update.raw_json.clone(),
+        rid: webview.resources_table().add(update),
+    }))
 }
 
 pub(crate) fn get_default_cache_dir() -> String {

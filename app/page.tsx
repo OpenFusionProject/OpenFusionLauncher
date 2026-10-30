@@ -6,6 +6,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { getName, getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { warn, info, error } from "@tauri-apps/plugin-log";
+import { Update } from "@tauri-apps/plugin-updater";
 import { useState, useEffect, useRef } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -28,6 +29,7 @@ import {
   UpdateInfo,
   ProtocolActivation,
   AlertAction,
+  UpdateMetadata,
 } from "@/app/types";
 
 import ServerList from "@/components/ServerList";
@@ -205,6 +207,56 @@ export default function Home() {
     await syncServers();
   };
 
+  const applyUpdate = async (metadata?: UpdateMetadata) => {
+    if (!metadata) {
+      alertError("Update data missing");
+      return;
+    }
+
+    const update = new Update(metadata);
+
+    startLoading("update", "Downloading update...");
+
+    let downloaded = 0;
+    let contentLength = 0;
+
+    try {
+      await update.downloadAndInstall((event) => {
+        switch (event.event) {
+          case "Started":
+            if (event.data.contentLength) {
+              contentLength = event.data.contentLength;
+              startLoading("update", "Downloading update: 0%");
+            }
+            break;
+          case "Progress":
+            downloaded += event.data.chunkLength;
+            if (contentLength > 0) {
+              const percent = (downloaded / contentLength) * 100;
+              startLoading(
+                "update",
+                "Downloading update: " + percent.toFixed(0) + "%",
+              );
+            }
+            break;
+          case "Finished":
+            console.log("Update complete");
+            startLoading("update", "Finishing up...");
+            break;
+        }
+      });
+
+      // N.B. This is never reached on Windows; NSIS is invoked after the finish event.
+      startLoading("update", "Update complete; restarting...");
+      await invoke("restart_app");
+    } catch (e: unknown) {
+      stopLoading("update");
+      alertError(
+        "Update failed (" + e + "). Try updating manually from the site.",
+      );
+    }
+  };
+
   const checkForUpdate = async () => {
     try {
       const updateInfo: UpdateInfo | undefined = await invoke(
@@ -217,7 +269,7 @@ export default function Home() {
           "Update available: " + updateInfo.version,
           updateInfo.url,
           "primary",
-          updateInfo.can_apply
+          updateInfo.self_update
             ? {
                 text: "Update Now",
                 variant: "success",
@@ -229,10 +281,7 @@ export default function Home() {
                       " is available. Would you like to update now?",
                     "Update",
                     "success",
-                    () => {
-                      // TODO
-                      alertWarning("Update action not implemented yet");
-                    },
+                    () => applyUpdate(updateInfo.metadata),
                     "Update to v" + updateInfo.version,
                   ),
               }
