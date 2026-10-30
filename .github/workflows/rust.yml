@@ -105,7 +105,7 @@ jobs:
     #     key: cargo-deps-Linux
 
     - name: Build
-      run: cargo tauri build --no-bundle
+      run: cargo tauri build
 
     - name: Package
       run: |
@@ -281,7 +281,7 @@ jobs:
 
       # Bundler puts an NSIS mark on the EXE; package standalone first.
       - name: Build
-        run: cargo tauri build --no-bundle
+        run: cargo tauri build
 
       - name: Package standalone
         run: |
