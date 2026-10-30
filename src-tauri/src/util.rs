@@ -158,11 +158,13 @@ pub(crate) async fn get_self_update(
         return Ok(None);
     }
 
-    // We use just the URL for the requested version in the endpoints.
+    // We use just the URL for the requested version in the endpoints
+    // and allow updating regardless of the target version (checks happen earlier).
     // This lets us keep our own update check logic, but also enables self-update
     let manifest_url = format!("{}/{}/latest.json", RELEASE_DOWNLOAD_URL, tag).parse()?;
     let updater = webview
         .updater_builder()
+        .version_comparator(|_, _| true)
         .endpoints(vec![manifest_url])?
         .build()?;
 
