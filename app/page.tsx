@@ -241,13 +241,12 @@ export default function Home() {
             break;
           case "Finished":
             console.log("Update complete");
-            startLoading("update", "Finishing up...");
+            startLoading("update", "Update complete; restarting...");
             break;
         }
       });
 
       // N.B. This is never reached on Windows; NSIS is invoked after the finish event.
-      startLoading("update", "Update complete; restarting...");
       await invoke("restart_app");
     } catch (e: unknown) {
       stopLoading("update");
