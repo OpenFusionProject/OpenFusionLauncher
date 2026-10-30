@@ -43,15 +43,15 @@ type CommandResult<T> = std::result::Result<T, String>;
 
 static LOGIN_COOKIE_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"-t (\S+)"#).unwrap());
 
-static VERSION_NUMBER_REGEX: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^v?\d+(?:\.\d)*$").unwrap());
 const UPDATE_CHECK_URL: &str =
-    "https://api.github.com/repos/OpenFusionProject/OpenFusionLauncher/releases/latest";
+    "https://api.github.com/repos/OpenFusionProject/OpenFusionLauncher/releases";
 const DOWNLOAD_PAGE_URL: &str = "https://openfusion.dev/download/";
 
 #[derive(Debug, Deserialize)]
-struct UpdateCheckResponse {
+struct ReleaseEntry {
     tag_name: String,
+    prerelease: bool,
+    draft: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -1717,20 +1717,40 @@ async fn check_for_update() -> CommandResult<Option<UpdateInfo>> {
             }));
         }
 
+        let current_version_str = get_app_statics().get_version();
+        let current_version = semver::Version::parse(current_version_str)?;
+        let is_current_version_prerelease = !current_version.pre.is_empty();
+
         let resp_raw = util::do_simple_get(UPDATE_CHECK_URL).await?;
-        let resp: UpdateCheckResponse = serde_json::from_str(&resp_raw)?;
-        if !VERSION_NUMBER_REGEX.is_match(&resp.tag_name) {
-            return Err(format!("Invalid version number: {}", resp.tag_name).into());
+        let mut resp: Vec<ReleaseEntry> = serde_json::from_str(&resp_raw)?;
+        resp.retain(|release| !release.draft); // filter out drafts
+        if !is_current_version_prerelease {
+            // filter out prerelease versions
+            resp.retain(|release| !release.prerelease);
         }
 
-        let current_version = util::string_version_to_u32(get_app_statics().get_version());
-        let latest_version = util::string_version_to_u32(resp.tag_name.trim_start_matches("v"));
+        // Tags that aren't valid versions (e.g. the old "betaN" tags) are skipped.
+        let Some((latest_version, latest_release)) = resp
+            .iter()
+            .filter_map(|release| {
+                semver::Version::parse(release.tag_name.trim_start_matches('v'))
+                    .ok()
+                    .map(|version| (version, release))
+            })
+            .max_by(|(a, _), (b, _)| a.cmp(b))
+        else {
+            return Err("No releases found".into());
+        };
+
+        let latest_tag = latest_release.tag_name.clone();
+        debug!("Latest published version is {}", latest_tag);
+
         if latest_version <= current_version {
             return Ok(None);
         }
 
         Ok(Some(UpdateInfo {
-            version: resp.tag_name,
+            version: latest_tag,
             url: String::from(DOWNLOAD_PAGE_URL),
             can_apply: false,
         }))

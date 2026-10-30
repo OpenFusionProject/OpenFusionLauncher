@@ -240,7 +240,7 @@ export default function Home() {
         );
       }
     } catch (e: unknown) {
-      console.warn("Failed to check for updates (" + e + ")");
+      alertWarning("Failed to check for updates (" + e + ")");
     }
   };
 

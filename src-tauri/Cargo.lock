@@ -3226,6 +3226,7 @@ dependencies = [
  "regex",
  "reqwest 0.12.28",
  "rust-proxy",
+ "semver",
  "serde",
  "serde_json",
  "tauri",

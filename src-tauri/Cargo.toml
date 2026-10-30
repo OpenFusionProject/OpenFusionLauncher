@@ -39,6 +39,7 @@ url = "2.5.8"
 chrono = "0.4.45"
 zip = "9.0.2"
 discord-sdk = "0.4.0"
+semver = "1.0.28"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-single-instance = { version = "2", features = ["deep-link"] }
