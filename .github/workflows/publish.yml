@@ -170,7 +170,6 @@ jobs:
   sign-macos:
     needs: prepare
     runs-on: macos-latest
-    environment: Production
     permissions:
       actions: read
     defaults:
@@ -238,6 +237,11 @@ jobs:
           xcrun stapler staple "$APP_PATH"
           spctl --assess --type execute --verbose=2 "$APP_PATH"
 
+      - name: Create updater archive
+        run: |
+          mkdir signed
+          COPYFILE_DISABLE=1 tar -czf signed/OpenFusionLauncher.app.tar.gz -C "$(dirname "$APP_PATH")" OpenFusionLauncher.app
+
       # Mirrors what `cargo tauri build --bundles dmg` produces on CI.
       - name: Create DMG
         env:
@@ -245,7 +249,7 @@ jobs:
           VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           brew install create-dmg
-          mkdir dmg-src signed
+          mkdir dmg-src
           mv "$APP_PATH" dmg-src/
           create-dmg \
             --volname OpenFusionLauncher \
@@ -266,7 +270,6 @@ jobs:
   sign-linux:
     needs: prepare
     runs-on: ubuntu-latest
-    environment: Production
     permissions:
       actions: read
     env:
@@ -365,6 +368,7 @@ jobs:
 
           appimage=$(single artifacts/linux-appimage/*.AppImage)
           dmg=$(single artifacts/macos-universal/*.dmg)
+          app_archive=$(single artifacts/macos-universal/*.app.tar.gz)
           installer=$(single artifacts/windows-installer/*-setup.exe)
 
           mkdir release
@@ -374,11 +378,49 @@ jobs:
           install -m 755 "$appimage" release/OpenFusionLauncher.AppImage
 
           cp "$dmg" release/OpenFusionLauncher-MacOS-Universal.dmg
+          cp "$app_archive" release/OpenFusionLauncher-MacOS-Universal.app.tar.gz
 
           (cd artifacts/windows-standalone && zip -r -X -D ../../release/OpenFusionLauncher-Windows-Portable.zip .)
           cp "$installer" release/OpenFusionLauncher-Windows-Installer.exe
 
           ls -l release
+
+      - name: Sign updater artifacts
+        env:
+          SIGNING_TAURI_PRIVATE_KEY: ${{ secrets.SIGNING_TAURI_PRIVATE_KEY }}
+          SIGNING_TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.SIGNING_TAURI_PRIVATE_KEY_PASSWORD }}
+        run: |
+          mkdir updater-sigs
+          for file in OpenFusionLauncher.AppImage OpenFusionLauncher-Windows-Installer.exe OpenFusionLauncher-MacOS-Universal.app.tar.gz; do
+            npx --yes @tauri-apps/cli@2 signer sign "release/$file"
+            mv "release/$file.sig" updater-sigs/
+          done
+
+      - name: Create updater manifest
+        run: |
+          url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/$VERSION"
+          platform() {
+            jq -n --rawfile signature "updater-sigs/$1.sig" --arg url "$url/$1" '{signature: $signature, url: $url}'
+          }
+
+          jq -n \
+            --arg version "$VERSION" \
+            --arg pub_date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --argjson linux "$(platform OpenFusionLauncher.AppImage)" \
+            --argjson windows "$(platform OpenFusionLauncher-Windows-Installer.exe)" \
+            --argjson macos "$(platform OpenFusionLauncher-MacOS-Universal.app.tar.gz)" \
+            '{
+              version: $version,
+              pub_date: $pub_date,
+              platforms: {
+                "linux-x86_64": $linux,
+                "windows-x86_64": $windows,
+                "darwin-x86_64": $macos,
+                "darwin-aarch64": $macos
+              }
+            }' > release/latest.json
+
+          cat release/latest.json
 
       - name: Create draft release
         run: |
