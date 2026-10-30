@@ -263,8 +263,52 @@ jobs:
           name: openfusionlauncher-macos-universal-signed
           path: signed/
 
+  sign-linux:
+    needs: prepare
+    runs-on: ubuntu-latest
+    environment: Production
+    permissions:
+      actions: read
+    env:
+      SIGNING_KEY_FINGERPRINT: F3B67263686214EFB01C9578AA4F216D87E7E919
+    steps:
+      - name: Download Linux AppImage Artifact
+        uses: actions/download-artifact@v8.0.2
+        with:
+          name: openfusionlauncher-linux-appimage
+          path: linux-appimage
+          run-id: ${{ needs.prepare.outputs.run-id }}
+          github-token: ${{ github.token }}
+
+      - name: Import signing key
+        env:
+          SIGNING_LINUX_PRIVATE_KEY: ${{ secrets.SIGNING_LINUX_PRIVATE_KEY }}
+        run: base64 -d <<< "$SIGNING_LINUX_PRIVATE_KEY" | gpg --batch --import
+
+      # Per the AppImage spec, .sha256_sig holds a detached signature of the hex SHA-256 digest of the
+      # unsigned AppImage, and .sig_key holds the public key.
+      - name: Sign AppImage
+        run: |
+          appimage=$(realpath linux-appimage/*.AppImage)
+          chmod +x "$appimage"
+
+          sha256sum "$appimage" | cut -d' ' -f1 | tr -d '\n' > "$RUNNER_TEMP/digest"
+          gpg --batch --local-user "$SIGNING_KEY_FINGERPRINT" --armor --textmode --detach-sign \
+            --output "$RUNNER_TEMP/appimage.sig" "$RUNNER_TEMP/digest"
+          "$appimage" --appimage-addsign "$RUNNER_TEMP/appimage.sig"
+
+          # The runtime has no option for embedding the key, so write it into the section directly.
+          key_offset=$(readelf -SW "$appimage" | awk '$2 == ".sig_key" { print $5 }')
+          gpg --batch --armor --export --export-options export-minimal "$SIGNING_KEY_FINGERPRINT" \
+            | dd of="$appimage" bs=1 seek=$((16#$key_offset)) conv=notrunc status=none
+
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: openfusionlauncher-linux-appimage-signed
+          path: linux-appimage/
+
   release:
-    needs: [prepare, sign-windows, sign-macos]
+    needs: [prepare, sign-windows, sign-macos, sign-linux]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -284,13 +328,11 @@ jobs:
           run-id: ${{ needs.prepare.outputs.run-id }}
           github-token: ${{ github.token }}
 
-      - name: Download Linux AppImage Artifact
+      - name: Download Signed Linux AppImage Artifact
         uses: actions/download-artifact@v8.0.2
         with:
-          name: openfusionlauncher-linux-appimage
+          name: openfusionlauncher-linux-appimage-signed
           path: artifacts/linux-appimage
-          run-id: ${{ needs.prepare.outputs.run-id }}
-          github-token: ${{ github.token }}
 
       - name: Download Signed macOS Universal Artifact
         uses: actions/download-artifact@v8.0.2
