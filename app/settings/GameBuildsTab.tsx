@@ -18,7 +18,7 @@ const findVersion = (versions: VersionEntry[], uuid: string) => {
   return versions.find((version) => version.uuid == uuid);
 };
 
-export default function GameBuildsTab({ active }: { active: boolean }) {
+export default function GameBuildsTab() {
   const [versions, setVersions] = useState<VersionEntry[] | undefined>(
     undefined,
   );
@@ -138,6 +138,7 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
       const ppv = prev.find((pv) => pv.versionUuid == progress.uuid);
       const pv: VersionCacheData = ppv ?? {
         versionUuid: progress.uuid,
+        validating: true,
         gameDone: false,
         gameItems: {},
         offlineDone: false,
@@ -155,6 +156,10 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
             gameItems: progress.items,
             gameDone: isDone,
           };
+
+      if (nv.gameDone && nv.offlineDone) {
+        nv.validating = false;
+      }
 
       if (ppv) {
         return prev.map((n) => (n.versionUuid == progress.uuid ? nv : n));
@@ -238,36 +243,49 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (active && versions) {
-      let vd: VersionCacheData[] = [...versionData];
-      for (const version of versions) {
-        if (vd.find((v) => v.versionUuid == version.uuid)) {
-          continue;
-        }
-        console.log("Validating cache for " + (version.name ?? version.uuid));
-        invoke("validate_cache", {
-          uuid: version.uuid,
-          offline: false,
-        });
-        invoke("validate_cache", {
-          uuid: version.uuid,
-          offline: true,
-        });
-        vd = [
-          ...vd,
-          {
-            versionUuid: version.uuid,
-            gameDone: false,
-            gameItems: {},
-            offlineDone: false,
-            offlineItems: {},
-          },
-        ];
+  const validate = (versions: VersionEntry[]) => {
+    let vd: VersionCacheData[] = [...versionData];
+    for (const version of versions) {
+      if (vd.find((v) => v.versionUuid == version.uuid && v.validating)) {
+        continue;
       }
-      setVersionData(vd);
+      vd = vd.filter((v) => !(v.versionUuid == version.uuid));
+      console.log("Validating cache for " + (version.name ?? version.uuid));
+      invoke("validate_cache", {
+        uuid: version.uuid,
+        offline: false,
+      });
+      invoke("validate_cache", {
+        uuid: version.uuid,
+        offline: true,
+      });
+      vd = [
+        ...vd,
+        {
+          versionUuid: version.uuid,
+          validating: true,
+          gameDone: false,
+          gameItems: {},
+          offlineDone: false,
+          offlineItems: {},
+        },
+      ];
     }
-  }, [active, versions]);
+    setVersionData(vd);
+  };
+
+  const validateAll = () => {
+    if (versions) {
+      validate(versions);
+    }
+  };
+
+  const validateOne = (uuid: string) => {
+    const version = versions?.find((v) => v.uuid == uuid);
+    if (version) {
+      validate([version]);
+    }
+  };
 
   return (
     <>
@@ -285,6 +303,21 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
           onClick={() => setShowAddBuildModal(true)}
         />
         <div className="p-2 ms-auto"></div>
+        <Button
+          icon="list-check"
+          text="Validate All"
+          tooltip="Validate all caches"
+          variant="warning"
+          onClick={() =>
+            ctx.showConfirmationModal &&
+            ctx.showConfirmationModal(
+              "Are you sure you want to validate all caches? This will spike your CPU and cannot be stopped once started.",
+              "Validate All",
+              "warning",
+              validateAll,
+            )
+          }
+        />
         <Button
           icon="trash"
           text="Delete All Offline"
@@ -351,6 +384,7 @@ export default function GameBuildsTab({ active }: { active: boolean }) {
             );
           }
         }}
+        validateVersion={validateOne}
         removeVersion={onRemoveButton}
       />
       <AddBuildModal

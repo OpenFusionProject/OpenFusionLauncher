@@ -129,6 +129,7 @@ export default function GameBuildsList({
   downloadOfflineCache,
   repairOfflineCache,
   deleteOfflineCache,
+  validateVersion,
   removeVersion,
 }: {
   versions?: VersionEntry[];
@@ -137,6 +138,7 @@ export default function GameBuildsList({
   downloadOfflineCache: (uuid: string) => void;
   repairOfflineCache: (uuid: string) => void;
   deleteOfflineCache: (uuid: string) => void;
+  validateVersion: (uuid: string) => void;
   removeVersion: (uuid: string) => void;
 }) {
   return (
@@ -171,6 +173,7 @@ export default function GameBuildsList({
                 (vd) => vd.versionUuid == version.uuid,
               ) ?? {
                 versionUuid: version.uuid,
+                validating: false,
                 gameDone: false,
                 gameItems: {},
                 offlineDone: false,
@@ -194,12 +197,14 @@ export default function GameBuildsList({
                           </>
                         )}
                       </h3>
-                      {version.name && <h6 className="mb-0 text-muted">{version.uuid}</h6>}
+                      {version.name && (
+                        <h6 className="mb-0 text-muted">{version.uuid}</h6>
+                      )}
                     </td>
                     <td className="text-center cache-col px-5">
                       <p>
                         {formatBytesToGB(getDisplaySize(versionData, false)) ??
-                          "--"}
+                          (versionData.gameDone ? "--" : "?.??")}
                         {" / "}
                         {formatBytesToGB(version.total_uncompressed_size) ??
                           "?.??"}
@@ -234,11 +239,18 @@ export default function GameBuildsList({
                       <Button
                         enabled={Object.keys(versionData.gameItems).length > 0}
                         icon="folder"
-                        onClick={() => invoke("open_folder_for_version", { uuid: version.uuid, offline: false })}
+                        onClick={() =>
+                          invoke("open_folder_for_version", {
+                            uuid: version.uuid,
+                            offline: false,
+                          })
+                        }
                         tooltip="Open game cache folder"
                       />{" "}
                       <Button
-                        loading={!versionData.gameDone}
+                        loading={
+                          versionData.validating && !versionData.gameDone
+                        }
                         enabled={!!getValidatedSize(versionData.gameItems)}
                         icon="trash"
                         onClick={() => clearGameCache(version.uuid)}
@@ -249,7 +261,7 @@ export default function GameBuildsList({
                     <td className="text-center cache-col">
                       <p>
                         {formatBytesToGB(getDisplaySize(versionData, true)) ??
-                          "--"}
+                          (versionData.offlineDone ? "--" : "?.??")}
                         {" / "}
                         {formatBytesToGB(getTotalOfflineSize(version)) ??
                           "?.??"}
@@ -277,14 +289,24 @@ export default function GameBuildsList({
                       </ProgressBar>
                       <br />
                       <Button
-                        enabled={Object.keys(versionData.offlineItems).length > 0}
+                        enabled={
+                          Object.keys(versionData.offlineItems).length > 0
+                        }
                         icon="folder"
-                        onClick={() => invoke("open_folder_for_version", { uuid: version.uuid, offline: true })}
+                        onClick={() =>
+                          invoke("open_folder_for_version", {
+                            uuid: version.uuid,
+                            offline: true,
+                          })
+                        }
                         tooltip="Open offline cache folder"
                       />{" "}
                       <Button
-                        loading={!versionData.offlineDone}
+                        loading={
+                          versionData.validating && !versionData.offlineDone
+                        }
                         enabled={
+                          versionData.offlineDone &&
                           !getValidatedSize(versionData.offlineItems) &&
                           !!version.main_file_info &&
                           !!version.total_compressed_size
@@ -295,7 +317,9 @@ export default function GameBuildsList({
                         tooltip="Download offline cache"
                       />{" "}
                       <Button
-                        loading={!versionData.offlineDone}
+                        loading={
+                          versionData.validating && !versionData.offlineDone
+                        }
                         enabled={isCorrupt(versionData.offlineItems, true)}
                         icon="screwdriver-wrench"
                         onClick={() => repairOfflineCache(version.uuid)}
@@ -303,7 +327,9 @@ export default function GameBuildsList({
                         tooltip="Repair offline cache"
                       />{" "}
                       <Button
-                        loading={!versionData.offlineDone}
+                        loading={
+                          versionData.validating && !versionData.offlineDone
+                        }
                         enabled={!!getValidatedSize(versionData.offlineItems)}
                         icon="trash"
                         onClick={() => deleteOfflineCache(version.uuid)}
@@ -312,15 +338,34 @@ export default function GameBuildsList({
                       />
                     </td>
                     <td className="text-end p-1">
-                      <Button
-                        loading={!versionData.gameDone || !versionData.offlineDone}
-                        enabled={!DEFAULT_VERSION_UUIDS.includes(version.uuid)}
-                        className="d-block w-50 h-100"
-                        icon="x"
-                        onClick={() => removeVersion(version.uuid)}
-                        variant="danger"
-                        tooltip={DEFAULT_VERSION_UUIDS.includes(version.uuid) ? "Cannot remove default build" : "Remove build"}
-                      />
+                      <div className="build-actions">
+                        <Button
+                          loading={versionData.validating}
+                          className="w-50"
+                          icon="clipboard-check"
+                          onClick={() => validateVersion(version.uuid)}
+                          variant="warning"
+                          tooltip="Validate build"
+                        />
+                        <Button
+                          loading={
+                            versionData.validating &&
+                            (!versionData.gameDone || !versionData.offlineDone)
+                          }
+                          enabled={
+                            !DEFAULT_VERSION_UUIDS.includes(version.uuid)
+                          }
+                          className="w-50"
+                          icon="x"
+                          onClick={() => removeVersion(version.uuid)}
+                          variant="danger"
+                          tooltip={
+                            DEFAULT_VERSION_UUIDS.includes(version.uuid)
+                              ? "Cannot remove default build"
+                              : "Remove build"
+                          }
+                        />
+                      </div>
                     </td>
                   </tr>
                 )

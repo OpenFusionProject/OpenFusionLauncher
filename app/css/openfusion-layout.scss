@@ -230,11 +230,20 @@ body {
 }
 
 #builds-table table td:last-of-type {
+  position: relative;
   width: 66px;
 }
 
-#builds-table table td:last-of-type > button {
-  margin-left: auto;
+#builds-table .build-actions {
+  position: absolute;
+  inset: 0.25rem;
+  display: grid;
+  grid-auto-rows: 1fr;
+  justify-items: end;
+  gap: 0.25rem;
+}
+
+#builds-table .build-actions > button {
   padding-inline: 0px !important;
 }
 

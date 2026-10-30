@@ -152,6 +152,7 @@ export type SettingsContext = {
 
 export type VersionCacheData = {
   versionUuid: string;
+  validating: boolean;
   gameDone: boolean;
   gameItems: Record<string, VersionCacheProgressItem>;
   offlineDone: boolean;

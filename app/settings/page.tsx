@@ -241,7 +241,7 @@ export default function SettingsPage() {
               </>
             }
           >
-            <GameBuildsTab active={tab == TAB_GAME_BUILDS} />
+            <GameBuildsTab />
           </Tab>
           <Tab
             eventKey={TAB_AUTHENTICATION}
