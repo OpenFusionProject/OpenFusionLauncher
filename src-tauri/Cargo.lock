@@ -3273,7 +3273,7 @@ dependencies = [
 
 [[package]]
 name = "openfusionlauncher"
-version = "2.3.2"
+version = "2.4.0-beta.1"
 dependencies = [
  "chrono",
  "discord-sdk",
