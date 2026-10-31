@@ -22,7 +22,7 @@ use std::{
     collections::{HashMap, HashSet},
     process::Stdio,
     sync::{Arc, LazyLock, OnceLock, mpsc},
-    time::SystemTime,
+    time::{Duration, SystemTime},
     vec,
 };
 use tokio::sync::{Mutex, Semaphore};
@@ -123,6 +123,8 @@ struct NewServerDetails {
 
 #[tauri::command]
 async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
+    const DISCORD_TIMEOUT: Duration = Duration::from_secs(5);
+
     debug!("do_launch");
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
@@ -248,23 +250,40 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
             });
         }
 
-        let activity_debug = format!("{:?}", activity);
-        if let Err(e) = discord_client.discord.update_activity(activity).await {
-            warn!("Failed to set Discord activity: {}", e);
-        } else {
-            activity_set = true;
-            debug!("Set Discord activity successfully: {}", activity_debug);
+        match tokio::time::timeout(
+            DISCORD_TIMEOUT,
+            discord_client.discord.update_activity(activity),
+        )
+        .await
+        {
+            Ok(Ok(activity)) => {
+                activity_set = true;
+                debug!("Set Discord activity successfully: {:?}", activity);
+            }
+            Ok(Err(e)) => {
+                warn!("Failed to set Discord activity: {}", e);
+            }
+            Err(_) => {
+                warn!("Timed out while setting Discord activity");
+            }
         }
     }
 
     let exit_result = proc.wait();
 
     // End Discord activity
-    if activity_set
-        && let Some(discord_client) = discord_client
-        && let Err(e) = discord_client.discord.clear_activity().await
-    {
-        warn!("Failed to clear Discord activity: {}", e);
+    if activity_set && let Some(discord_client) = discord_client {
+        match tokio::time::timeout(DISCORD_TIMEOUT, discord_client.discord.clear_activity()).await {
+            Ok(Ok(_)) => {
+                debug!("Cleared Discord activity successfully");
+            }
+            Ok(Err(e)) => {
+                warn!("Failed to clear Discord activity: {}", e);
+            }
+            Err(_) => {
+                warn!("Timed out while clearing Discord activity");
+            }
+        }
     }
 
     // shutdown the asset proxy
