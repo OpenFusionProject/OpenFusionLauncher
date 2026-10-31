@@ -208,6 +208,14 @@ export default function Home() {
   };
 
   const applyUpdate = async (metadata?: UpdateMetadata) => {
+    const runningGames: number = await invoke("get_running_games");
+    if (runningGames > 0) {
+      alertError(
+        "There are currently games running. Please close them before updating.",
+      );
+      return;
+    }
+
     if (!metadata) {
       alertError("Update data missing");
       return;

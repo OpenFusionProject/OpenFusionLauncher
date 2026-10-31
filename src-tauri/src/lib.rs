@@ -1743,6 +1743,15 @@ async fn create_log_package() -> CommandResult<Option<String>> {
 }
 
 #[tauri::command]
+async fn get_running_games(app_handle: tauri::AppHandle) -> usize {
+    debug!("get_running_games");
+    let state = app_handle.state::<Mutex<AppState>>();
+    let state = state.lock().await;
+    // subtract one to account for the copy in state
+    Arc::strong_count(&state.game_sessions) - 1
+}
+
+#[tauri::command]
 async fn check_for_update(app_handle: tauri::AppHandle) -> CommandResult<Option<UpdateInfo>> {
     debug!("check_for_update");
     let internal = async {
@@ -1996,6 +2005,7 @@ pub fn run() {
             get_platform,
             get_ffrunner_version,
             get_webplayer_dll_version,
+            get_running_games,
             is_debug_mode,
             take_pending_activations,
             check_for_update,
