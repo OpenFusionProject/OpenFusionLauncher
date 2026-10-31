@@ -418,12 +418,14 @@ export default function Home() {
             "). See game logs for more details.",
           undefined,
           undefined,
-          {
-            func: () => collectLogs(),
-            text: "Collect Diagnostic Logs",
-            variant: "warning",
-            icon: "file-archive",
-          },
+          isPreRelease(launcherVersion)
+            ? {
+                func: () => collectLogs(),
+                text: "Collect Diagnostic Logs",
+                variant: "warning",
+                icon: "file-archive",
+              }
+            : undefined,
         );
       }
     } catch (e: unknown) {
