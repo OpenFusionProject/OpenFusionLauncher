@@ -2,7 +2,7 @@ use std::{
     collections::{HashMap, HashSet},
     path::PathBuf,
     process::Command,
-    sync::OnceLock,
+    sync::{Arc, OnceLock},
 };
 
 use ffbuildtool::Version;
@@ -137,6 +137,8 @@ pub struct AppState {
     pub launch_cmd: Option<LaunchInfo>,
     pub proxies: HashMap<String, ProxyInstance>,
     pub pending_activations: Vec<ProtocolActivation>,
+    pub game_sessions: Arc<()>,
+    pub exit_pending: bool,
 }
 impl AppState {
     pub fn load(app_handle: tauri::AppHandle) -> Self {
@@ -177,6 +179,8 @@ impl AppState {
             launch_cmd: None,
             proxies: HashMap::new(),
             pending_activations: Vec::new(),
+            game_sessions: Arc::new(()),
+            exit_pending: false,
         }
     }
 

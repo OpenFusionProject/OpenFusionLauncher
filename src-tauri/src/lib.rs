@@ -28,7 +28,7 @@ use std::{
 use tokio::sync::{Mutex, Semaphore};
 
 use log::*;
-use tauri::Manager;
+use tauri::{Manager, RunEvent, WindowEvent};
 use uuid::Uuid;
 
 use crate::{
@@ -202,6 +202,7 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
         format!("{} (launch command was: {})", e, censored_cmd_str)
     })?;
 
+    let game_session = state.game_sessions.clone();
     let do_discord_activity = state.config.launcher.discord_integration;
 
     // don't hold the state across the game process
@@ -273,8 +274,11 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
 
     util::prune_unity_logs();
 
-    // no need to do any error handling. quit now so the user doesn't see us again.
-    if state.config.launcher.launch_behavior == LaunchBehavior::Quit {
+    drop(game_session);
+
+    // no need to do any error handling. try to quit now so the user doesn't see us again.
+    // If the refcount on game_sessions isn't one, this will be ignored.
+    if state.exit_pending || state.config.launcher.launch_behavior == LaunchBehavior::Quit {
         app_handle.exit(0);
         return Ok(0);
     }
@@ -1868,6 +1872,12 @@ fn show_windows(app_handle: &tauri::AppHandle) {
     });
 }
 
+fn hide_windows(app_handle: &tauri::AppHandle) {
+    app_handle.webview_windows().values().for_each(|w| {
+        let _ = w.hide();
+    });
+}
+
 fn handle_deep_links(app_handle: &tauri::AppHandle, urls: Vec<url::Url>) {
     for url in urls {
         let url_str = url.as_str();
@@ -1890,6 +1900,9 @@ pub fn run() {
         // With the `deep-link`` feature, this forwards deep links in args to the deep-link plugin.
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             show_windows(app);
+            let state = app.state::<Mutex<AppState>>();
+            let mut state = state.blocking_lock();
+            state.exit_pending = false;
         }))
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_opener::init())
@@ -2009,5 +2022,40 @@ pub fn run() {
         ])
         .build(tauri::generate_context![])
         .unwrap()
-        .run(|_, _| ());
+        .run(|app_handle, event| {
+            match event {
+                RunEvent::WindowEvent {
+                    event: WindowEvent::CloseRequested { api, .. },
+                    ..
+                } => {
+                    let state = app_handle.state::<Mutex<AppState>>();
+                    let mut state = state.blocking_lock();
+
+                    // the ref count will always be at least 1 because of the copy in state
+                    let running_games = Arc::strong_count(&state.game_sessions) - 1;
+                    if running_games > 0 {
+                        debug!(
+                            "{} running games detected, preventing close and hiding instead.",
+                            running_games
+                        );
+                        api.prevent_close();
+                        hide_windows(app_handle);
+                        state.exit_pending = true;
+                    }
+                }
+                RunEvent::ExitRequested { api, .. } => {
+                    let state = app_handle.state::<Mutex<AppState>>();
+                    let mut state = state.blocking_lock();
+
+                    // the ref count will always be at least 1 because of the copy in state
+                    let running_games = Arc::strong_count(&state.game_sessions) - 1;
+                    if running_games > 0 {
+                        debug!("{} running games detected, preventing exit.", running_games);
+                        api.prevent_exit();
+                        state.exit_pending = true;
+                    }
+                }
+                _ => {}
+            }
+        });
 }
