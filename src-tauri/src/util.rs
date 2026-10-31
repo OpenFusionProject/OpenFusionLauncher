@@ -144,13 +144,13 @@ pub(crate) fn resolve_server_addr(addr: &str) -> Result<String> {
 }
 
 pub(crate) async fn get_self_update(
-    webview: &tauri::Webview,
+    app_handle: &tauri::AppHandle,
     tag: &str,
 ) -> Result<Option<UpdateMetadata>> {
     let can_self_update = match tauri::utils::platform::bundle_type() {
         Some(BundleType::Nsis) | Some(BundleType::App) => true,
         #[cfg(target_os = "linux")]
-        Some(BundleType::AppImage) => webview.env().appimage.is_some(),
+        Some(BundleType::AppImage) => app_handle.env().appimage.is_some(),
         _ => false,
     };
 
@@ -162,7 +162,7 @@ pub(crate) async fn get_self_update(
     // and allow updating regardless of the target version (checks happen earlier).
     // This lets us keep our own update check logic, but also enables self-update
     let manifest_url = format!("{}/{}/latest.json", RELEASE_DOWNLOAD_URL, tag).parse()?;
-    let updater = webview
+    let updater = app_handle
         .updater_builder()
         .version_comparator(|_, _| true)
         .endpoints(vec![manifest_url])?
@@ -178,7 +178,7 @@ pub(crate) async fn get_self_update(
         date: update.raw_json["pub_date"].as_str().map(String::from),
         body: update.body.clone(),
         raw_json: update.raw_json.clone(),
-        rid: webview.resources_table().add(update),
+        rid: app_handle.resources_table().add(update),
     }))
 }
 

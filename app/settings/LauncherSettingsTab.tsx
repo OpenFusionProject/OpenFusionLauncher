@@ -122,6 +122,36 @@ export default function LauncherSettingsTab({
                   }))
                 }
               />
+              {settings.check_for_updates && (
+                <SettingControlDropdown
+                  id="release_channel"
+                  name="Release Channel"
+                  options={[
+                    { key: "release", value: "release", label: "Release" },
+                    {
+                      key: "prerelease",
+                      value: "prerelease",
+                      label: "Pre-release*",
+                    },
+                  ]}
+                  defaultKey="release"
+                  oldValue={currentSettings.release_channel}
+                  value={settings.release_channel}
+                  onChange={(value) =>
+                    setSettings((current) => ({
+                      ...current!,
+                      release_channel: value,
+                    }))
+                  }
+                />
+              )}
+              {settings.check_for_updates &&
+                settings.release_channel === "prerelease" && (
+                  <p className="text-warning">
+                    * Pre-release versions may be unstable and are not
+                    recommended for general use.
+                  </p>
+                )}
               <SettingControlDropdown
                 id="discord_integration"
                 name="Enable Discord integration"

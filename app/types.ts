@@ -46,6 +46,7 @@ export type Versions = {
 
 export type LauncherSettings = {
   check_for_updates: boolean;
+  release_channel: string;
   discord_integration: boolean;
   use_offline_caches: boolean;
   verify_offline_caches: boolean;

@@ -32,7 +32,7 @@ use tauri::Manager;
 use uuid::Uuid;
 
 use crate::{
-    config::WebPlayerArchitecture,
+    config::{ReleaseChannel, WebPlayerArchitecture},
     player_prefs::PlayerPrefs,
     state::{LaunchInfo, LaunchProfile, LaunchProfilesView},
 };
@@ -1720,7 +1720,7 @@ async fn create_log_package() -> CommandResult<Option<String>> {
 }
 
 #[tauri::command]
-async fn check_for_update(webview: tauri::Webview) -> CommandResult<Option<UpdateInfo>> {
+async fn check_for_update(app_handle: tauri::AppHandle) -> CommandResult<Option<UpdateInfo>> {
     debug!("check_for_update");
     let internal = async {
         if cfg!(debug_assertions) {
@@ -1734,12 +1734,15 @@ async fn check_for_update(webview: tauri::Webview) -> CommandResult<Option<Updat
 
         let current_version_str = get_app_statics().get_version();
         let current_version = semver::Version::parse(current_version_str)?;
-        let is_current_version_prerelease = !current_version.pre.is_empty();
+
+        let state = app_handle.state::<Mutex<AppState>>();
+        let is_prerelease_channel =
+            state.lock().await.config.launcher.release_channel == ReleaseChannel::Prerelease;
 
         let resp_raw = util::do_simple_get(UPDATE_CHECK_URL).await?;
         let mut resp: Vec<ReleaseEntry> = serde_json::from_str(&resp_raw)?;
         resp.retain(|release| !release.draft); // filter out drafts
-        if !is_current_version_prerelease {
+        if !is_prerelease_channel {
             // filter out prerelease versions
             resp.retain(|release| !release.prerelease);
         }
@@ -1765,7 +1768,7 @@ async fn check_for_update(webview: tauri::Webview) -> CommandResult<Option<Updat
             return Ok(None);
         }
 
-        let metadata = util::get_self_update(&webview, &latest_tag)
+        let metadata = util::get_self_update(&app_handle, &latest_tag)
             .await
             .unwrap_or_else(|e| {
                 warn!("Can't self-update to {}: {}", latest_tag, e);

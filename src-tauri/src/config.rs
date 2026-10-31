@@ -2,6 +2,27 @@ use crate::util;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum ReleaseChannel {
+    #[serde(alias = "pre_release")]
+    Prerelease,
+
+    #[serde(other)]
+    Release,
+}
+
+impl Default for ReleaseChannel {
+    fn default() -> Self {
+        let version = env!("CARGO_PKG_VERSION");
+        if version.contains("-") {
+            ReleaseChannel::Prerelease
+        } else {
+            ReleaseChannel::Release
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone, Copy)]
 #[serde(rename_all = "snake_case")]
 pub enum LauncherTheme {
@@ -24,6 +45,9 @@ pub enum LaunchBehavior {
 pub struct LauncherSettings {
     #[serde(default = "util::true_fn")]
     pub check_for_updates: bool,
+
+    #[serde(default)]
+    pub release_channel: ReleaseChannel,
 
     #[serde(default = "util::true_fn")]
     pub discord_integration: bool,
@@ -60,12 +84,13 @@ impl Default for LauncherSettings {
     fn default() -> Self {
         Self {
             check_for_updates: true,
+            release_channel: ReleaseChannel::default(),
             discord_integration: true,
             theme: None,
             use_offline_caches: true,
             verify_offline_caches: false,
             delete_old_game_caches: true,
-            launch_behavior: LaunchBehavior::Hide,
+            launch_behavior: LaunchBehavior::default(),
             game_cache_path: util::get_default_cache_dir(),
             offline_cache_path: util::get_default_offline_cache_dir(),
             proxy_asset_downloads: true,
@@ -137,12 +162,12 @@ impl Default for GameSettings {
     #[allow(deprecated)]
     fn default() -> Self {
         Self {
-            graphics_api: GraphicsApi::Dx9,
-            fps_fix: FpsFix::On,
+            graphics_api: GraphicsApi::default(),
+            fps_fix: FpsFix::default(),
             window_size: None,
             launch_command: None,
             launch_profile: Uuid::nil(),
-            web_player_architecture: WebPlayerArchitecture::X64,
+            web_player_architecture: WebPlayerArchitecture::default(),
         }
     }
 }
