@@ -145,6 +145,7 @@ pub(crate) fn resolve_server_addr(addr: &str) -> Result<String> {
 
 pub(crate) async fn get_self_update(
     app_handle: &tauri::AppHandle,
+    webview: &tauri::Webview,
     tag: &str,
 ) -> Result<Option<UpdateMetadata>> {
     let can_self_update = match tauri::utils::platform::bundle_type() {
@@ -178,7 +179,8 @@ pub(crate) async fn get_self_update(
         date: update.raw_json["pub_date"].as_str().map(String::from),
         body: update.body.clone(),
         raw_json: update.raw_json.clone(),
-        rid: app_handle.resources_table().add(update),
+        // The updater plugin's JS commands look up the rid in the calling webview's table
+        rid: webview.resources_table().add(update),
     }))
 }
 

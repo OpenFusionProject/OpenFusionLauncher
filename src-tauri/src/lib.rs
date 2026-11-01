@@ -1752,7 +1752,10 @@ async fn get_running_games(app_handle: tauri::AppHandle) -> usize {
 }
 
 #[tauri::command]
-async fn check_for_update(app_handle: tauri::AppHandle) -> CommandResult<Option<UpdateInfo>> {
+async fn check_for_update(
+    app_handle: tauri::AppHandle,
+    webview: tauri::Webview,
+) -> CommandResult<Option<UpdateInfo>> {
     debug!("check_for_update");
     let internal = async {
         if cfg!(debug_assertions) {
@@ -1800,7 +1803,7 @@ async fn check_for_update(app_handle: tauri::AppHandle) -> CommandResult<Option<
             return Ok(None);
         }
 
-        let metadata = util::get_self_update(&app_handle, &latest_tag)
+        let metadata = util::get_self_update(&app_handle, &webview, &latest_tag)
             .await
             .unwrap_or_else(|e| {
                 warn!("Can't self-update to {}: {}", latest_tag, e);
