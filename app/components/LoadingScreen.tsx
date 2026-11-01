@@ -10,7 +10,13 @@ export default function LoadingScreen({ tasks }: { tasks: LoadingTask[] }) {
         <Stack className="loading-screen-component d-flex align-items-center justify-content-center">
           <Spinner animation="border" role="status" />
           {tasks.map((task) => (
-            <span key={task.id}>{task.text}</span>
+            <span
+              key={task.id}
+              className="text-center"
+              style={{ whiteSpace: "pre-line" }}
+            >
+              {task.text}
+            </span>
           ))}
         </Stack>
       </div>
