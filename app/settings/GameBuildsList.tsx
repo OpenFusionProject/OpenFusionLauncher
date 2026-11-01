@@ -7,6 +7,7 @@ import {
   VersionEntry,
 } from "@/app/types";
 import { invoke } from "@tauri-apps/api/core";
+import { formatBytes } from "../util";
 
 const BYTES_PER_GB = 1024 * 1024 * 1024;
 
@@ -38,13 +39,6 @@ const DEFAULT_VERSION_UUIDS = [
   "bc988161-b425-4b50-88c6-4c9947cb73ea", // beta-20110912
   "6543a2bb-d154-4087-b9ee-3c8aa778580a", // beta-20111013
 ];
-
-const formatBytesToGB = (bytes?: number) => {
-  if (bytes == undefined) {
-    return undefined;
-  }
-  return (bytes / BYTES_PER_GB).toFixed(2);
-};
 
 const isCorrupt = (
   items: Record<string, VersionCacheProgressItem>,
@@ -203,12 +197,10 @@ export default function GameBuildsList({
                     </td>
                     <td className="text-center cache-col px-5">
                       <p>
-                        {formatBytesToGB(getDisplaySize(versionData, false)) ??
+                        {formatBytes(getDisplaySize(versionData, false)) ??
                           (versionData.gameDone ? "--" : "?.??")}
                         {" / "}
-                        {formatBytesToGB(version.total_uncompressed_size) ??
-                          "?.??"}
-                        {" GB"}
+                        {formatBytes(version.total_uncompressed_size) ?? "?.??"}
                       </p>
                       <ProgressBar
                         data-bs-toggle="tooltip"
@@ -260,12 +252,10 @@ export default function GameBuildsList({
                     </td>
                     <td className="text-center cache-col">
                       <p>
-                        {formatBytesToGB(getDisplaySize(versionData, true)) ??
+                        {formatBytes(getDisplaySize(versionData, true)) ??
                           (versionData.offlineDone ? "--" : "?.??")}
                         {" / "}
-                        {formatBytesToGB(getTotalOfflineSize(version)) ??
-                          "?.??"}
-                        {" GB"}
+                        {formatBytes(getTotalOfflineSize(version)) ?? "?.??"}
                       </p>
                       <ProgressBar>
                         {Object.entries(versionData.offlineItems).map(

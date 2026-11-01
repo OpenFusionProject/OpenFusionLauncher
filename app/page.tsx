@@ -46,6 +46,7 @@ import Toasts from "@/components/Toasts";
 import { listen } from "@tauri-apps/api/event";
 import {
   applyTheme,
+  formatBytes,
   getDebugMode,
   getTheme,
   getUseCustomTitlebar,
@@ -234,7 +235,14 @@ export default function Home() {
           case "Started":
             if (event.data.contentLength) {
               contentLength = event.data.contentLength;
-              startLoading("update", "Downloading update: 0%");
+              startLoading(
+                "update",
+                "Downloading update: 0% (" +
+                  formatBytes(0) +
+                  " / " +
+                  formatBytes(contentLength) +
+                  ")",
+              );
             }
             break;
           case "Progress":
@@ -243,7 +251,13 @@ export default function Home() {
               const percent = (downloaded / contentLength) * 100;
               startLoading(
                 "update",
-                "Downloading update: " + percent.toFixed(0) + "%",
+                "Downloading update: " +
+                  percent.toFixed(0) +
+                  "% (" +
+                  formatBytes(downloaded) +
+                  " / " +
+                  formatBytes(contentLength) +
+                  ")",
               );
             }
             break;
