@@ -148,12 +148,13 @@ pub(crate) async fn get_self_update(
     webview: &tauri::Webview,
     tag: &str,
 ) -> Result<Option<UpdateMetadata>> {
-    let can_self_update = match tauri::utils::platform::bundle_type() {
-        Some(BundleType::Nsis) | Some(BundleType::App) => true,
-        #[cfg(target_os = "linux")]
-        Some(BundleType::AppImage) => app_handle.env().appimage.is_some(),
-        _ => false,
-    };
+    let can_self_update = cfg!(debug_assertions)
+        || match tauri::utils::platform::bundle_type() {
+            Some(BundleType::Nsis) | Some(BundleType::App) => true,
+            #[cfg(target_os = "linux")]
+            Some(BundleType::AppImage) => app_handle.env().appimage.is_some(),
+            _ => false,
+        };
 
     if !can_self_update {
         return Ok(None);

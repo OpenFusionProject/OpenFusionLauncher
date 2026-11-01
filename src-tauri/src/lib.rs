@@ -1758,15 +1758,6 @@ async fn check_for_update(
 ) -> CommandResult<Option<UpdateInfo>> {
     debug!("check_for_update");
     let internal = async {
-        if cfg!(debug_assertions) {
-            return Ok(Some(UpdateInfo {
-                version: String::from("9.9.9"),
-                url: String::from(DOWNLOAD_PAGE_URL),
-                self_update: true,
-                metadata: None,
-            }));
-        }
-
         let current_version_str = get_app_statics().get_version();
         let current_version = semver::Version::parse(current_version_str)?;
 

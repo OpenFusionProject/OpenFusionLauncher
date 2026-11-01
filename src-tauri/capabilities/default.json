@@ -22,6 +22,7 @@
     "dialog:allow-open",
     "deep-link:default",
     "log:allow-log",
+    "updater:allow-download",
     "updater:allow-download-and-install"
   ]
 }

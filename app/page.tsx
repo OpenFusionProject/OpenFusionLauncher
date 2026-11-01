@@ -6,7 +6,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { getName, getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { warn, info, error } from "@tauri-apps/plugin-log";
-import { Update } from "@tauri-apps/plugin-updater";
+import { DownloadEvent, Update } from "@tauri-apps/plugin-updater";
 import { useState, useEffect, useRef } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -223,50 +223,62 @@ export default function Home() {
     }
 
     const update = new Update(metadata);
+    const dryRun = await getDebugMode();
 
     startLoading("update", "Downloading update...");
 
     let downloaded = 0;
     let contentLength = 0;
 
-    try {
-      await update.downloadAndInstall((event) => {
-        switch (event.event) {
-          case "Started":
-            if (event.data.contentLength) {
-              contentLength = event.data.contentLength;
-              startLoading(
-                "update",
-                "Downloading update: 0% (" +
-                  formatBytes(0) +
-                  " / " +
-                  formatBytes(contentLength) +
-                  ")",
-              );
-            }
-            break;
-          case "Progress":
-            downloaded += event.data.chunkLength;
-            if (contentLength > 0) {
-              const percent = (downloaded / contentLength) * 100;
-              startLoading(
-                "update",
-                "Downloading update: " +
-                  percent.toFixed(0) +
-                  "% (" +
-                  formatBytes(downloaded) +
-                  " / " +
-                  formatBytes(contentLength) +
-                  ")",
-              );
-            }
-            break;
-          case "Finished":
-            console.log("Update complete");
+    const onEvent = (event: DownloadEvent) => {
+      switch (event.event) {
+        case "Started":
+          if (event.data.contentLength) {
+            contentLength = event.data.contentLength;
+            startLoading(
+              "update",
+              "Downloading update: 0%\n(" +
+                formatBytes(0) +
+                " / " +
+                formatBytes(contentLength) +
+                ")",
+            );
+          }
+          break;
+        case "Progress":
+          downloaded += event.data.chunkLength;
+          if (contentLength > 0) {
+            const percent = (downloaded / contentLength) * 100;
+            startLoading(
+              "update",
+              "Downloading update: " +
+                percent.toFixed(0) +
+                "%\n(" +
+                formatBytes(downloaded) +
+                " / " +
+                formatBytes(contentLength) +
+                ")",
+            );
+          }
+          break;
+        case "Finished":
+          console.log("Update complete");
+          if (!dryRun) {
             startLoading("update", "Update complete; restarting...");
-            break;
-        }
-      });
+          }
+          break;
+      }
+    };
+
+    try {
+      if (dryRun) {
+        await update.download(onEvent);
+        stopLoading("update");
+        alertSuccess("Update downloaded (dry run)");
+        return;
+      }
+
+      await update.downloadAndInstall(onEvent);
 
       // N.B. This is never reached on Windows; NSIS is invoked after the finish event.
       await invoke("restart_app");
