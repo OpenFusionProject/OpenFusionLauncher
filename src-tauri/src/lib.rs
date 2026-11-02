@@ -269,7 +269,7 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
         }
     }
 
-    let exit_result = proc.wait();
+    let exit_result = proc.wait().await;
 
     // End Discord activity
     if activity_set && let Some(discord_client) = discord_client {
@@ -583,7 +583,7 @@ async fn prep_launch(
             WebPlayerArchitecture::X86 => "ffrunner.exe",
         });
 
-        let mut cmd = std::process::Command::new(ffrunner_path.clone());
+        let mut cmd = tokio::process::Command::new(ffrunner_path.clone());
         cmd.current_dir(working_dir);
 
         let server = state
@@ -876,7 +876,7 @@ async fn prep_launch(
             let mut compat_data_dir = app_statics.compat_data_dir.clone();
             compat_data_dir.push(profile.get_id().to_string());
 
-            let compat_program = std::path::Path::new(cmd.get_program())
+            let compat_program = std::path::Path::new(cmd.as_std().get_program())
                 .file_name()
                 .and_then(|s| s.to_str())
                 .unwrap_or("");

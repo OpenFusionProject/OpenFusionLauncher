@@ -1,7 +1,6 @@
 use std::{
     collections::{HashMap, HashSet},
     path::PathBuf,
-    process::Command,
     sync::{Arc, OnceLock},
 };
 
@@ -10,7 +9,7 @@ use log::*;
 use rust_proxy::proxy::tcp::TcpProxy;
 use serde::{Deserialize, Serialize};
 use tauri::{Manager, path::BaseDirectory};
-use tokio::{net::TcpListener, task::JoinHandle};
+use tokio::{net::TcpListener, process::Command, task::JoinHandle};
 use uuid::Uuid;
 
 use crate::{

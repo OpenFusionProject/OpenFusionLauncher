@@ -5,7 +5,6 @@ use std::{
     env,
     ffi::{OsStr, OsString},
     path::{Path, PathBuf},
-    process::Command,
     sync::{OnceLock, mpsc},
     time::Duration,
 };
@@ -20,6 +19,7 @@ use log::*;
 use serde::Serialize;
 use tauri::{Emitter as _, Manager as _, utils::config::BundleType};
 use tauri_plugin_updater::UpdaterExt as _;
+use tokio::process::Command;
 use uuid::Uuid;
 
 use crate::{
@@ -198,7 +198,7 @@ pub(crate) fn get_default_offline_cache_dir() -> String {
 
 pub(crate) fn get_env_var_value(cmd: &Command, var: &str) -> Option<String> {
     // Check vars on command first
-    for env_var in cmd.get_envs() {
+    for env_var in cmd.as_std().get_envs() {
         if let (key, Some(value)) = env_var {
             let value = value.to_string_lossy().to_string();
             if key == var && !value.is_empty() {
@@ -772,6 +772,8 @@ fn normalize_launch_fmt(launch_fmt: &str) -> String {
 }
 
 pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Result<Command> {
+    let base_cmd = base_cmd.as_std();
+
     // Only the user-provided format string is tokenized. The base command's program and
     // args are spliced in afterwards as discrete args so they never get re-split.
     let launch_fmt = normalize_launch_fmt(launch_fmt);
@@ -830,6 +832,8 @@ pub(crate) fn gen_launch_command(base_cmd: Command, launch_fmt: &str) -> Result<
 }
 
 pub(crate) fn get_launch_cmd_dbg_str(command: &Command, with_env: bool) -> String {
+    let command = command.as_std();
+
     let mut command_str = quote_launch_arg(&command.get_program().to_string_lossy());
     for arg in command.get_args() {
         command_str.push(' ');
