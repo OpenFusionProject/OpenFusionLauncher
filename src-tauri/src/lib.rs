@@ -6,8 +6,10 @@ mod util;
 
 use config::{LaunchBehavior, LauncherSettings};
 use discord_sdk::activity::{ActivityBuilder, Assets, Button};
-use endpoint::{AccountInfo, InfoResponse, RegisterResponse, Session};
+use endpoint::{AccountInfo, RegisterResponse};
 use ffbuildtool::{ItemProgress, Version};
+use ofapi::InfoResponse;
+use ofapi::auth::RefreshResponse;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use state::{
@@ -520,7 +522,10 @@ async fn update_password(
 }
 
 #[tauri::command]
-async fn get_session(app_handle: tauri::AppHandle, server_uuid: Uuid) -> CommandResult<Session> {
+async fn get_session(
+    app_handle: tauri::AppHandle,
+    server_uuid: Uuid,
+) -> CommandResult<RefreshResponse> {
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
         let mut state = state.lock().await;
@@ -608,17 +613,15 @@ async fn prep_launch(
                     return Err("Failed to contact API server".into());
                 };
 
-                if api_info.custom_loading_screen.is_some_and(|b| b) {
-                    custom_loading_screen = true;
-                }
+                custom_loading_screen = api_info.custom_loading_screen;
 
                 if let Ok(icon_url) = endpoint::get_custom_icon_url(endpoint).await {
                     custom_icon_url = icon_url;
                 }
 
-                server_name = Some(api_info.server_name.clone());
-                addr = api_info.login_address.clone();
-                versions = api_info.get_supported_versions();
+                server_name = Some(api_info.server_name);
+                addr = api_info.login_address;
+                versions = api_info.game_versions;
             }
         }
 
@@ -1234,7 +1237,7 @@ async fn get_info_for_server(
         drop(state);
 
         let info = endpoint::get_info(&endpoint).await?;
-        Ok(info.clone())
+        Ok(info)
     };
     internal.await.map_err(|e: Error| e.to_string())
 }
@@ -1471,7 +1474,7 @@ async fn get_versions_for_server(
         drop(state);
 
         let info = endpoint::get_info(&endpoint).await?;
-        let supported_versions = info.get_supported_versions();
+        let supported_versions = info.game_versions;
         let mut new_versions = Vec::new();
         let mut supported_version_uuids = Vec::new();
         for version_uuid in supported_versions {

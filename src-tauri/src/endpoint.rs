@@ -1,5 +1,13 @@
 use ffbuildtool::Version;
 use log::*;
+use ofapi::InfoResponse;
+use ofapi::account::{
+    AccountInfoResponse, RegisterRequest, TemporaryPasswordRequest, UpdateEmailRequest,
+    UpdatePasswordRequest,
+};
+use ofapi::auth::{AuthRequest, RefreshResponse};
+use ofapi::cookie::CookieResponse;
+use ofapi::monitor::Status;
 use reqwest::StatusCode;
 use serde::Deserialize;
 use serde::Serialize;
@@ -9,71 +17,10 @@ use crate::Error;
 use crate::Result;
 use crate::util;
 
-#[allow(dead_code)]
-#[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct InfoResponse {
-    pub server_name: String,
-    pub api_version: String,
-    pub secure_apis_enabled: bool,
-    game_version: Option<String>,
-    game_versions: Option<Vec<String>>,
-    pub login_address: String,
-    email_required: Option<bool>,
-    pub custom_loading_screen: Option<bool>,
-}
-impl InfoResponse {
-    pub fn get_supported_versions(&self) -> Vec<String> {
-        if let Some(versions) = &self.game_versions {
-            versions.clone()
-        } else if let Some(version) = &self.game_version {
-            vec![version.clone()]
-        } else {
-            vec![]
-        }
-    }
-}
-
-#[derive(Deserialize)]
-pub struct StatusResponse {
-    pub player_count: usize,
-}
-
-#[derive(Serialize)]
-pub struct AuthRequest {
-    username: String,
-    password: String,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct Session {
-    username: String,
-    session_token: String,
-}
-
-#[derive(Serialize)]
-pub struct RegisterRequest {
-    username: String,
-    password: String,
-    email: Option<String>,
-}
-
 #[derive(Serialize)]
 pub struct RegisterResponse {
     resp: String,
     can_login: bool,
-}
-
-#[derive(Deserialize)]
-pub struct CookieResponse {
-    username: String,
-    cookie: String,
-    expires: u64,
-}
-
-#[derive(Deserialize)]
-struct AccountInfoResponse {
-    username: String,
-    email: String,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -94,16 +41,6 @@ impl From<AccountInfoResponse> for AccountInfo {
     }
 }
 
-#[derive(Serialize)]
-pub struct EmailUpdateRequest {
-    new_email: String,
-}
-
-#[derive(Serialize)]
-pub struct PasswordUpdateRequest {
-    new_password: String,
-}
-
 fn make_api_error(url: &str, status: StatusCode, body: &str) -> Error {
     format!("API error {}: {} [{}]", status, body, url).into()
 }
@@ -120,9 +57,9 @@ pub async fn get_announcements(endpoint_host: &str) -> Result<String> {
     Ok(announcements)
 }
 
-pub async fn get_status(endpoint_host: &str) -> Result<StatusResponse> {
+pub async fn get_status(endpoint_host: &str) -> Result<Status> {
     let status_json = util::do_simple_get(&format!("https://{}/status", endpoint_host)).await?;
-    let status: StatusResponse = serde_json::from_str(&status_json)?;
+    let status: Status = serde_json::from_str(&status_json)?;
     Ok(status)
 }
 
@@ -193,7 +130,7 @@ pub async fn get_refresh_token(
     }
 }
 
-pub async fn get_session(refresh_token: &str, endpoint_host: &str) -> Result<Session> {
+pub async fn get_session(refresh_token: &str, endpoint_host: &str) -> Result<RefreshResponse> {
     debug!("Getting session");
     let url = format!("https://{}/auth/session", endpoint_host);
     let client = util::get_http_client();
@@ -206,7 +143,7 @@ pub async fn get_session(refresh_token: &str, endpoint_host: &str) -> Result<Ses
     let status = res.status();
     let body = res.text().await?;
     if status.is_success() {
-        let session: Session = serde_json::from_str(&body)?;
+        let session: RefreshResponse = serde_json::from_str(&body)?;
         Ok(session)
     } else {
         Err(make_api_error(&url, status, &body))
@@ -301,7 +238,9 @@ pub async fn send_otp(endpoint_host: &str, email: &str) -> Result<()> {
     let client = util::get_http_client();
     let res = client
         .post(&url)
-        .json(&serde_json::json!({ "email": email }))
+        .json(&TemporaryPasswordRequest {
+            email: email.to_string(),
+        })
         .send()
         .await?;
 
@@ -316,7 +255,7 @@ pub async fn send_otp(endpoint_host: &str, email: &str) -> Result<()> {
 
 pub async fn update_email(endpoint_host: &str, token: &str, new_email: &str) -> Result<()> {
     debug!("Updating email to {}", new_email);
-    let req = EmailUpdateRequest {
+    let req = UpdateEmailRequest {
         new_email: new_email.to_string(),
     };
     let url = format!("https://{}/account/update/email", endpoint_host);
@@ -339,7 +278,7 @@ pub async fn update_email(endpoint_host: &str, token: &str, new_email: &str) -> 
 
 pub async fn update_password(endpoint_host: &str, token: &str, new_password: &str) -> Result<()> {
     debug!("Updating password");
-    let req = PasswordUpdateRequest {
+    let req = UpdatePasswordRequest {
         new_password: new_password.to_string(),
     };
     let url = format!("https://{}/account/update/password", endpoint_host);

@@ -136,7 +136,7 @@ export type RegistrationResult = {
 };
 
 export type EndpointInfo = {
-  email_required?: boolean;
+  email_required: boolean;
 };
 
 export type SettingsContext = {

@@ -51,7 +51,7 @@ const checkEmailRequired = async (server: ServerEntry) => {
   const info: EndpointInfo = await invoke("get_info_for_server", {
     uuid: server.uuid,
   });
-  return info.email_required ?? false;
+  return info.email_required;
 };
 
 function AnnouncementsPanel({ server }: { server?: ServerEntry }) {

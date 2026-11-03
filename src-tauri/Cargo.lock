@@ -3249,6 +3249,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "ofapi"
+version = "2.0.0"
+source = "git+https://github.com/OpenFusionProject/ofapi.git?tag=v2.0.0#b393942e8b1890af198db1061d53bfdd9980a614"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "once_cell"
 version = "1.21.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3280,6 +3288,7 @@ dependencies = [
  "dns-lookup",
  "ffbuildtool",
  "log",
+ "ofapi",
  "protontools",
  "regex",
  "reqwest 0.12.28",
