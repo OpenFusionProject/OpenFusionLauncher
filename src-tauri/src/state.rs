@@ -698,6 +698,15 @@ impl Servers {
         uuid
     }
 
+    pub fn reorder_entries(&mut self, order: &[Uuid]) {
+        self.servers.sort_by_key(|s| {
+            order
+                .iter()
+                .position(|uuid| *uuid == s.uuid)
+                .unwrap_or(usize::MAX)
+        });
+    }
+
     pub fn update_entry(&mut self, entry: Server) -> Result<()> {
         for server in &mut self.servers {
             if server.uuid == entry.uuid {

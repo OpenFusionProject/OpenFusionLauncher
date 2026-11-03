@@ -27,6 +27,27 @@ fieldset:disabled .btn {
   cursor: pointer;
 }
 
+#server-table .drag-handle {
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+  touch-action: none;
+}
+
+#server-table .server-listing-entry:hover .drag-handle {
+  opacity: 0.5;
+}
+
+#server-table .server-listing-entry .drag-handle:hover,
+#server-table .server-listing-entry.dragging .drag-handle {
+  opacity: 1;
+}
+
+#server-table .reordering,
+#server-table .reordering * {
+  cursor: grabbing !important;
+}
+
 img {
   pointer-events: none;
 }

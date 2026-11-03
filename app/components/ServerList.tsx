@@ -1,5 +1,5 @@
 import { ServerEntry, VersionEntry } from "@/app/types";
-import { useEffect, useState } from "react";
+import { PointerEvent, useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 
 const findVersion = (versions: VersionEntry[], uuid: string) => {
@@ -174,6 +174,7 @@ export default function ServerList({
   selectedServer,
   setSelectedServer,
   onConnect,
+  onReorder,
   reloadVersions,
 }: {
   servers?: ServerEntry[];
@@ -181,10 +182,65 @@ export default function ServerList({
   selectedServer?: string;
   setSelectedServer: (server: string) => void;
   onConnect: (server: string) => void;
+  onReorder: (order: string[]) => void;
   reloadVersions: () => Promise<void>;
 }) {
   const [statusRefreshes, setStatusRefreshes] = useState(0);
   const [supportedVersionRefreshes, setSupportedVersionRefreshes] = useState(0);
+
+  const [draggingUuid, setDraggingUuid] = useState<string | undefined>(undefined);
+  const [dragOrder, setDragOrder] = useState<string[] | undefined>(undefined);
+  const rowRefs = useRef<Map<string, HTMLTableRowElement>>(new Map());
+
+  const displayedServers =
+    servers && dragOrder
+      ? dragOrder
+          .map((uuid) => servers.find((s) => s.uuid == uuid))
+          .filter((s): s is ServerEntry => !!s)
+      : servers;
+
+  // Pointer capture goes on the tbody since it's the one element that
+  // doesn't get moved around in the DOM as rows are reordered.
+  const startDrag = (e: PointerEvent<HTMLElement>, uuid: string) => {
+    if (!servers || e.button != 0) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.closest("tbody")?.setPointerCapture(e.pointerId);
+    setDraggingUuid(uuid);
+    setDragOrder(servers.map((s) => s.uuid!));
+  };
+
+  const moveDrag = (e: PointerEvent<HTMLElement>) => {
+    if (!draggingUuid || !dragOrder) {
+      return;
+    }
+    // New index = number of other rows whose midpoint is above the pointer
+    const others = dragOrder.filter((uuid) => uuid != draggingUuid);
+    let newIndex = 0;
+    for (const uuid of others) {
+      const rect = rowRefs.current.get(uuid)?.getBoundingClientRect();
+      if (rect && e.clientY > rect.top + rect.height / 2) {
+        newIndex++;
+      }
+    }
+    if (dragOrder.indexOf(draggingUuid) != newIndex) {
+      others.splice(newIndex, 0, draggingUuid);
+      setDragOrder(others);
+    }
+  };
+
+  const endDrag = (commit: boolean) => {
+    if (commit && servers && dragOrder) {
+      const changed = dragOrder.some((uuid, i) => servers[i]?.uuid != uuid);
+      if (changed) {
+        onReorder(dragOrder);
+      }
+    }
+    setDraggingUuid(undefined);
+    setDragOrder(undefined);
+  };
 
   return (
     <div
@@ -205,7 +261,13 @@ export default function ServerList({
             </th>
           </tr>
         </thead>
-        <tbody id="server-tablebody">
+        <tbody
+          id="server-tablebody"
+          className={draggingUuid ? "reordering" : ""}
+          onPointerMove={moveDrag}
+          onPointerUp={() => endDrag(true)}
+          onPointerCancel={() => endDrag(false)}
+        >
           {!servers ? (
             <tr>
               <td colSpan={3}>
@@ -221,12 +283,20 @@ export default function ServerList({
               <td colSpan={3}>No servers available.</td>
             </tr>
           ) : (
-            servers.map((server) => (
+            displayedServers!.map((server) => (
               <tr
                 key={server.uuid}
+                ref={(el) => {
+                  if (el) {
+                    rowRefs.current.set(server.uuid!, el);
+                  } else {
+                    rowRefs.current.delete(server.uuid!);
+                  }
+                }}
                 className={
                   "server-listing-entry " +
-                  (selectedServer == server.uuid ? "table-active" : "")
+                  (selectedServer == server.uuid ? "table-active " : "") +
+                  (draggingUuid == server.uuid ? "dragging" : "")
                 }
                 onClick={() => setSelectedServer(server.uuid!)}
                 onDoubleClick={() => onConnect(server.uuid!)}
@@ -242,6 +312,15 @@ export default function ServerList({
                 </td>
                 <td className="font-monospace text-end status-column">
                   <PlayerCount server={server} refreshes={statusRefreshes} />
+                  <span
+                    className="drag-handle"
+                    title="Drag to reorder"
+                    onPointerDown={(e) => startDrag(e, server.uuid!)}
+                    onClick={(e) => e.stopPropagation()}
+                    onDoubleClick={(e) => e.stopPropagation()}
+                  >
+                    <i className="fa fa-grip-lines-vertical"></i>
+                  </span>
                 </td>
               </tr>
             ))

@@ -205,10 +205,30 @@ body {
   padding-left: 15px;
 }
 
+#server-table .server-listing-entry .status-column {
+  position: relative;
+}
+
+#server-table .drag-handle {
+  position: absolute;
+  right: 6px;
+  top: 0;
+  bottom: 0;
+  width: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+}
+
+#server-table .server-listing-entry.dragging > * {
+  --bs-table-bg-state: var(--bs-table-hover-bg);
+}
+
 #server-table table .status-column {
-  width: 150px;
+  width: 170px;
   white-space: nowrap;
-  padding-right: 15px;
+  padding-right: 36px;
 }
 
 #auth-table table tr,

@@ -1327,6 +1327,16 @@ async fn update_server(
 }
 
 #[tauri::command]
+async fn reorder_servers(app_handle: tauri::AppHandle, order: Vec<Uuid>) -> CommandResult<()> {
+    debug!("reorder_servers {:?}", order);
+    let state = app_handle.state::<Mutex<AppState>>();
+    let mut state = state.lock().await;
+    state.servers.reorder_entries(&order);
+    state.save();
+    Ok(())
+}
+
+#[tauri::command]
 async fn delete_server(app_handle: tauri::AppHandle, uuid: Uuid) -> CommandResult<()> {
     let internal = async {
         let state = app_handle.state::<Mutex<AppState>>();
@@ -2021,6 +2031,7 @@ pub fn run() {
             reset_game_config,
             add_server,
             update_server,
+            reorder_servers,
             delete_server,
             import_version,
             add_version_manual,

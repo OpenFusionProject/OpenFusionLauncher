@@ -656,6 +656,18 @@ export default function Home() {
     }
   };
 
+  const reorderServers = async (order: string[]) => {
+    setServers((servers) =>
+      [...servers].sort((a, b) => order.indexOf(a.uuid!) - order.indexOf(b.uuid!)),
+    );
+    try {
+      await invoke("reorder_servers", { order });
+    } catch (e: unknown) {
+      alertError("Failed to reorder servers (" + e + ")");
+      await syncServers();
+    }
+  };
+
   const deleteServer = async (serverUuid?: string) => {
     if (serverUuid) {
       try {
@@ -862,6 +874,7 @@ export default function Home() {
               selectedServer={getSelectedServer()?.uuid}
               setSelectedServer={setSelectedServer}
               reloadVersions={syncVersions}
+              onReorder={reorderServers}
               onConnect={(serverUuid) => {
                 setSelectedServer(serverUuid);
                 setConnecting(true);
