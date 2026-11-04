@@ -6,11 +6,13 @@ use std::{
     ffi::{OsStr, OsString},
     path::{Path, PathBuf},
     sync::{OnceLock, mpsc},
-    time::Duration,
+    time::{Duration, SystemTime},
 };
 
+use chrono::{DateTime, Local};
 use discord_sdk::{
     Discord, DiscordApp, Subscriptions,
+    activity::{Activity, ActivityBuilder, Assets, Button},
     wheel::{UserState, Wheel},
 };
 use dns_lookup::lookup_host;
@@ -24,11 +26,13 @@ use uuid::Uuid;
 
 use crate::{
     CACHE_PROGRESS_EVENT, CacheEvent, CacheProgress, CacheProgressItem, NewServerDetails,
-    RELEASE_DOWNLOAD_URL, Result, UpdateMetadata,
+    RELEASE_DOWNLOAD_URL, Result, UpdateMetadata, endpoint,
     state::{self, AppState, LaunchProfile, get_app_statics},
 };
 
-static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
+pub(crate) static APP_USER_AGENT: &str =
+    concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
+
 static HTTP_CLIENT: OnceLock<reqwest::Client> = OnceLock::new();
 pub(crate) fn get_http_client() -> &'static reqwest::Client {
     HTTP_CLIENT.get_or_init(|| {
@@ -89,6 +93,60 @@ fn make_discord_client() -> Result<DiscordClient> {
     )?;
 
     Ok(DiscordClient { discord, wheel })
+}
+
+const DISCORD_TIMEOUT: Duration = Duration::from_secs(5);
+pub(crate) async fn set_discord_activity(
+    endpoint_url: &str,
+    start_time: DateTime<Local>,
+    player_name: Option<String>,
+) -> Result<Activity> {
+    let server_name = endpoint::get_info(endpoint_url).await?.server_name;
+    let discord_client = get_discord_client().await?;
+    let mut activity = ActivityBuilder::default().start_timestamp(SystemTime::from(start_time));
+    let endpoint_magnet_url = format!("http://{}/ofl", endpoint_url);
+
+    // we include the timestamp in the URL to cache-bust
+    let discord_icon_url = format!(
+        "http://{}/launcher/discord.png?t={}",
+        endpoint_url,
+        start_time.timestamp()
+    );
+
+    let mut assets = Assets::default();
+    if does_web_file_exist(&discord_icon_url).await {
+        assets.small_image = Some(discord_icon_url);
+    }
+
+    activity = activity.details(server_name).assets(assets).button(Button {
+        label: "Launch in OpenFusionLauncher".to_owned(),
+        url: endpoint_magnet_url,
+    });
+
+    if let Some(player_name) = player_name {
+        activity = activity.state(player_name);
+    }
+
+    match tokio::time::timeout(
+        DISCORD_TIMEOUT,
+        discord_client.discord.update_activity(activity),
+    )
+    .await
+    {
+        Ok(Ok(Some(activity))) => Ok(activity),
+        Ok(Ok(None)) => Err("No activity returned".into()),
+        Ok(Err(e)) => Err(e.into()),
+        Err(_) => Err("Timed out".into()),
+    }
+}
+
+pub(crate) async fn clear_discord_activity() -> Result<()> {
+    let discord_client = get_discord_client().await?;
+    match tokio::time::timeout(DISCORD_TIMEOUT, discord_client.discord.clear_activity()).await {
+        Ok(Ok(_)) => Ok(()),
+        Ok(Err(e)) => Err(e.into()),
+        Err(_) => Err("Timed out".into()),
+    }
 }
 
 // for serde

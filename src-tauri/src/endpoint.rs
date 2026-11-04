@@ -11,6 +11,9 @@ use ofapi::monitor::Status;
 use reqwest::StatusCode;
 use serde::Deserialize;
 use serde::Serialize;
+use tokio::net::TcpStream;
+use tokio_tungstenite::tungstenite::client::IntoClientRequest;
+use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
 use uuid::Uuid;
 
 use crate::Error;
@@ -297,4 +300,24 @@ pub async fn update_password(endpoint_host: &str, token: &str, new_password: &st
     } else {
         Err(make_api_error(&url, status, &body))
     }
+}
+
+pub async fn open_feed(
+    endpoint_host: &str,
+    session_token: &str,
+) -> Result<WebSocketStream<MaybeTlsStream<TcpStream>>> {
+    let mut ws_request = format!("wss://{}/feed", endpoint_host).into_client_request()?;
+
+    ws_request
+        .headers_mut()
+        .insert("User-Agent", util::APP_USER_AGENT.parse().unwrap());
+
+    ws_request.headers_mut().insert(
+        "Authorization",
+        format!("Bearer {}", session_token).parse().unwrap(),
+    );
+
+    let (ws_stream, _) = tokio_tungstenite::connect_async(ws_request).await?;
+
+    Ok(ws_stream)
 }

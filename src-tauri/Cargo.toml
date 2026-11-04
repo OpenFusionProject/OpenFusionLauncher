@@ -28,7 +28,7 @@ dns-lookup = "2.1.1"
 tokio = { version =  "1.52.3", features = ["sync", "time", "process"] }
 reqwest = { version = "0.12.28", features = ["json"] }
 ffbuildtool = { git = "https://github.com/OpenFusionProject/ffbuildtool.git", tag = "v5.1.1", default-features = false }
-ofapi = { git = "https://github.com/OpenFusionProject/ofapi.git", tag = "v2.0.0" }
+ofapi = { git = "https://github.com/OpenFusionProject/ofapi.git", rev = "df2d41351b36bdfa9c27853758663ccdd3e91329" }
 tauri-plugin-opener = "=2.5.4"
 tauri-plugin-dialog = "=2.4.0"
 regex = "1.12.3"
@@ -43,3 +43,5 @@ discord-sdk = "0.4.0"
 semver = "1.0.28"
 tauri-plugin-single-instance = { version = "2", features = ["deep-link"] }
 tauri-plugin-updater = "2.14.1"
+tokio-tungstenite = { version = "0.30.0", features = ["native-tls"] }
+futures-util = { version = "0.3", default-features = false, features = ["std"] }

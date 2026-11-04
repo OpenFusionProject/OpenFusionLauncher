@@ -440,7 +440,9 @@ export default function Home() {
       if (config!.launcher.launch_behavior != "stay_open") {
         await getCurrentWindow().hide();
       }
-      const exitCode: number = await invoke("do_launch");
+      const exitCode: number = await invoke("do_launch", {
+        sessionToken: sessionToken,
+      });
       setTagline("Thanks for playing!");
       if (exitCode != 0) {
         const formatted = exitCode.toString(16).toUpperCase();

@@ -5,11 +5,11 @@ mod state;
 mod util;
 
 use config::{LaunchBehavior, LauncherSettings};
-use discord_sdk::activity::{ActivityBuilder, Assets, Button};
 use endpoint::{AccountInfo, RegisterResponse};
 use ffbuildtool::{ItemProgress, Version};
-use ofapi::InfoResponse;
+use futures_util::StreamExt as _;
 use ofapi::auth::RefreshResponse;
+use ofapi::{InfoResponse, feed::FeedEvent};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use state::{
@@ -17,6 +17,7 @@ use state::{
 };
 use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_opener::OpenerExt;
+use tokio_tungstenite::tungstenite::Message;
 use util::{AlertVariant, ProtocolActivation};
 use zip::{ZipWriter, write::SimpleFileOptions};
 
@@ -24,7 +25,6 @@ use std::{
     collections::{HashMap, HashSet},
     process::Stdio,
     sync::{Arc, LazyLock, OnceLock, mpsc},
-    time::{Duration, SystemTime},
     vec,
 };
 use tokio::sync::{Mutex, Semaphore};
@@ -124,16 +124,16 @@ struct NewServerDetails {
 }
 
 #[tauri::command]
-async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
-    const DISCORD_TIMEOUT: Duration = Duration::from_secs(5);
-
+async fn do_launch(
+    app_handle: tauri::AppHandle,
+    session_token: Option<String>,
+) -> CommandResult<u32> {
     debug!("do_launch");
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
     let LaunchInfo {
         mut command,
         asset_url,
-        server_name,
         endpoint_url,
     } = state.launch_cmd.take().ok_or("No launch prepared")?;
 
@@ -213,11 +213,83 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
     drop(state);
 
     // Discord activity
-    let discord_client = if do_discord_activity {
-        match util::get_discord_client().await {
-            Ok(client) => Some(client),
+    let activity_set = if do_discord_activity && let Some(endpoint_url) = &endpoint_url {
+        match util::set_discord_activity(endpoint_url, launch_time, None).await {
+            Ok(activity) => {
+                debug!("Set Discord activity successfully: {:?}", activity);
+                true
+            }
             Err(e) => {
-                debug!("Discord unavailable: {}", e);
+                warn!("Failed to set Discord activity: {}", e);
+                false
+            }
+        }
+    } else {
+        false
+    };
+
+    // WebSocket for updates to forward to Discord
+    let feed_task = if activity_set && let Some(session_token) = session_token {
+        let feed_endpoint_url = endpoint_url.unwrap().clone();
+        match endpoint::open_feed(&feed_endpoint_url, &session_token).await {
+            Ok(mut ws_stream) => {
+                debug!("Opened feed WebSocket successfully");
+                Some(tauri::async_runtime::spawn(async move {
+                    while let Some(msg) = ws_stream.next().await {
+                        let event = match msg {
+                            Ok(Message::Text(text)) => {
+                                let Ok(event) = serde_json::from_str::<FeedEvent>(&text) else {
+                                    debug!("Failed to parse feed event: {}", text.escape_debug());
+                                    continue;
+                                };
+                                event
+                            }
+                            Ok(Message::Binary(bytes)) => {
+                                let Ok(event) = serde_json::from_slice::<FeedEvent>(&bytes) else {
+                                    debug!("Failed to parse feed event from binary: {:?}", bytes);
+                                    continue;
+                                };
+                                trace!("Parsed feed event: {:?}", event);
+                                event
+                            }
+                            Ok(Message::Close(frame)) => {
+                                debug!("Feed WebSocket closed: {:?}", frame);
+                                break;
+                            }
+                            Ok(_) => {
+                                continue;
+                            }
+                            Err(e) => {
+                                warn!("Feed WebSocket error: {}", e);
+                                break;
+                            }
+                        };
+
+                        trace!("Received feed event: {:?}", event);
+                        match event {
+                            FeedEvent::PlayerEntered(name) => {
+                                let _ = util::set_discord_activity(
+                                    &feed_endpoint_url,
+                                    launch_time,
+                                    Some(name),
+                                )
+                                .await;
+                            }
+                            FeedEvent::PlayerLeft(_) => {
+                                let _ = util::set_discord_activity(
+                                    &feed_endpoint_url,
+                                    launch_time,
+                                    None,
+                                )
+                                .await;
+                            }
+                            _ => {}
+                        }
+                    }
+                }))
+            }
+            Err(e) => {
+                warn!("Failed to open feed WebSocket: {}", e);
                 None
             }
         }
@@ -225,73 +297,26 @@ async fn do_launch(app_handle: tauri::AppHandle) -> CommandResult<u32> {
         None
     };
 
-    let mut activity_set = false;
-    if let Some(discord_client) = discord_client {
-        let mut activity =
-            ActivityBuilder::default().start_timestamp(SystemTime::from(launch_time));
-
-        if let Some(endpoint_url) = &endpoint_url {
-            let server_name = server_name.unwrap();
-            let endpoint_magnet_url = format!("http://{}/ofl", endpoint_url);
-
-            // we include the timestamp in the URL to cache-bust
-            let discord_icon_url = format!(
-                "http://{}/launcher/discord.png?t={}",
-                endpoint_url,
-                launch_time.timestamp()
-            );
-
-            let mut assets = Assets::default();
-            if util::does_web_file_exist(&discord_icon_url).await {
-                assets.small_image = Some(discord_icon_url);
-            }
-
-            activity = activity.details(server_name).assets(assets).button(Button {
-                label: "Launch in OpenFusionLauncher".to_owned(),
-                url: endpoint_magnet_url,
-            });
-        }
-
-        match tokio::time::timeout(
-            DISCORD_TIMEOUT,
-            discord_client.discord.update_activity(activity),
-        )
-        .await
-        {
-            Ok(Ok(activity)) => {
-                activity_set = true;
-                debug!("Set Discord activity successfully: {:?}", activity);
-            }
-            Ok(Err(e)) => {
-                warn!("Failed to set Discord activity: {}", e);
-            }
-            Err(_) => {
-                warn!("Timed out while setting Discord activity");
-            }
-        }
-    }
-
     let exit_result = proc.wait().await;
 
-    // End Discord activity
-    if activity_set && let Some(discord_client) = discord_client {
-        match tokio::time::timeout(DISCORD_TIMEOUT, discord_client.discord.clear_activity()).await {
-            Ok(Ok(_)) => {
-                debug!("Cleared Discord activity successfully");
-            }
-            Ok(Err(e)) => {
-                warn!("Failed to clear Discord activity: {}", e);
-            }
-            Err(_) => {
-                warn!("Timed out while clearing Discord activity");
-            }
-        }
+    if let Some(feed_task) = feed_task {
+        feed_task.abort();
+        debug!("Shutdown feed WebSocket");
     }
 
     // shutdown the asset proxy
     let state = app_handle.state::<Mutex<AppState>>();
     let mut state = state.lock().await;
     state.release_proxy_for_version(&asset_url);
+
+    // End Discord activity
+    if activity_set {
+        if let Err(e) = util::clear_discord_activity().await {
+            warn!("Failed to clear Discord activity: {}", e);
+        } else {
+            debug!("Cleared Discord activity successfully");
+        }
+    }
 
     util::prune_unity_logs();
 
@@ -968,7 +993,6 @@ async fn prep_launch(
         state.launch_cmd = Some(LaunchInfo {
             command: cmd,
             asset_url: original_asset_url,
-            server_name,
             endpoint_url,
         });
 
