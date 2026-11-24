@@ -22,6 +22,7 @@ fn main() {
         }
     }
 
+    ffbuildtool::set_max_concurrent_items(32).unwrap();
     ffbuildtool::set_max_concurrent_downloads(10).unwrap();
     scamper::run();
 }
