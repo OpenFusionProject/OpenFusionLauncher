@@ -1996,8 +1996,13 @@ pub fn run() {
                 // This desktop entry serves a different purpose from the one Tauri installs above:
                 // it's visual metadata only, for the shell. We keep them separate so that dev
                 // scenarios can test protocol activation without affecting the visual metadata.
+                // AppImage launchers set `DESKTOPINTEGRATION=1` to indicate that they already created this.
                 #[cfg(all(not(debug_assertions), target_os = "linux"))]
-                if let Err(e) = util::install_appimage_desktop_entry(app.handle()) {
+                if std::env::var("DESKTOPINTEGRATION")
+                    .ok()
+                    .is_none_or(|v| v.eq_ignore_ascii_case("0"))
+                    && let Err(e) = util::install_appimage_desktop_entry(app.handle())
+                {
                     warn!("Failed to install AppImage desktop entry: {}", e);
                 }
             }
