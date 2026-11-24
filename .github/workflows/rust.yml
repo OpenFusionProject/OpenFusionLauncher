@@ -173,6 +173,13 @@ jobs:
     - name: Install NPM packages
       run: npm install
 
+    # The AppImage bundler bakes these values in from ENV
+    # which is what things like AppImageLauncher/Gear Lever read.
+    - name: Set AppImage update info
+      run: |
+        echo "VERSION=$(sed -n 's/^version = "\(.*\)"$/\1/p' src-tauri/Cargo.toml | head -n1)" >> "$GITHUB_ENV"
+        echo "UPINFO=gh-releases-zsync|OpenFusionProject|OpenFusionLauncher|latest|OpenFusionLauncher.AppImage.zsync" >> "$GITHUB_ENV"
+
     - name: Build
       run: cargo tauri build --bundles appimage
 
